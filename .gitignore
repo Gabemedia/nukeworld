@@ -139,3 +139,4 @@ out
 .pnp.*
 nukeworld/node_modules
 .DS_Store
+nukeworld/
