@@ -47,45 +47,13 @@
           <h2 class="card-header">Attributes</h2>
           <div class="row">
             <div class="col-4">
-              <div class="attribute-card">
-                <label for="strength">Strength:</label>
-                <input type="number" v-model="character.attributes.strength" id="strength" min="1" class="game-input">
-              </div>
-              <div class="attribute-card">
-                <label for="intelligence">Intelligence:</label>
-                <input type="number" v-model="character.attributes.intelligence" id="intelligence" min="1" class="game-input">
-              </div>
-            </div>
-            <div class="col-4">
-              <div class="attribute-card">
-                <label for="perception">Perception:</label>
-                <input type="number" v-model="character.attributes.perception" id="perception" min="1" class="game-input">
-              </div>
-              <div class="attribute-card">
-                <label for="charisma">Charisma:</label>
-                <input type="number" v-model="character.attributes.charisma" id="charisma" min="1" class="game-input">
-              </div>
-            </div>
-            <div class="col-4">
-              <div class="attribute-card">
-                <label for="endurance">Endurance:</label>
-                <input type="number" v-model="character.attributes.endurance" id="endurance" min="1" class="game-input">
-              </div>
-              <div class="attribute-card">
-                <label for="luck">Luck:</label>
-                <input type="number" v-model="character.attributes.luck" id="luck" min="1" class="game-input">
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="card mb-4">
-        <div class="card-body">
-          <h2 class="card-header">Attributes</h2>
-          <div class="row">
-            <div class="col-12">
-              <label for="projectX">ProjectX:</label>
-              <input type="number" v-model="character.attributes.projectX" id="projectX" min="1" class="game-input">
+              <AttributeAdjuster
+  v-for="(value, attribute) in character.attributes"
+  :key="attribute"
+  :attribute="attribute"
+  :value="character.attributes[attribute]"
+  @input="value => updateAttribute(attribute, value)"
+/>
             </div>
           </div>
         </div>
@@ -100,9 +68,13 @@
 
 <script>
 import { mapActions } from 'vuex';
+import AttributeAdjuster from './AttributeAdjuster.vue';
 
 export default {
   name: 'CharacterCreation',
+  components: {
+    AttributeAdjuster
+  },
   data() {
     return {
       localCharacterName: '',
@@ -139,6 +111,27 @@ export default {
         this.showSuccessMessage = true;
       } else {
         alert('Please enter your character name.');
+      }
+    },
+    increaseAttribute(attribute) {
+      if (this.character.freePoints > 0) {
+        this.character.attributes[attribute]++;
+        this.$store.commit('updateFreePoints', this.character.freePoints - 1);
+      }
+    },
+    decreaseAttribute(attribute) {
+      if (this.character.attributes[attribute] > 1) {
+        this.character.attributes[attribute]--;
+        this.$store.commit('updateFreePoints', this.character.freePoints + 1);
+      }
+    },
+    updateAttribute(attribute, value) {
+      if (value > this.character.attributes[attribute] && this.character.freePoints > 0) {
+        this.character.attributes[attribute] = value;
+        this.$store.commit('updateFreePoints', this.character.freePoints - 1);
+      } else if (value < this.character.attributes[attribute]) {
+        this.character.attributes[attribute] = value;
+        this.$store.commit('updateFreePoints', this.character.freePoints + 1);
       }
     }
   },

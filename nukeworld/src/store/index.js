@@ -1,6 +1,7 @@
 import { createStore } from 'vuex';
+import { watch } from 'vue';
 
-export default createStore({
+const store = createStore({
   state: {
     character: JSON.parse(localStorage.getItem('character')) || {
       name: '',
@@ -24,36 +25,47 @@ export default createStore({
   mutations: {
     updateCharacter(state, character) {
       state.character = character;
-      localStorage.setItem('character', JSON.stringify(character));
     },
     updateCharacterAttributes(state, attributes) {
       state.character.attributes = attributes;
-      localStorage.setItem('character', JSON.stringify(state.character));
     },
     setCharacterEmailAndPassword(state, { email, password }) {
       state.character.email = email;
       state.character.password = password;
-      localStorage.setItem('character', JSON.stringify(state.character));
     },
     setCharacterGender(state, gender) {
       state.character.gender = gender;
-      localStorage.setItem('character', JSON.stringify(state.character));
     },
     setCharacterClass(state, characterClass) {
       state.character.class = characterClass;
-      localStorage.setItem('character', JSON.stringify(state.character));
     },
     updateFreePoints(state, freePoints) {
       state.character.freePoints = freePoints;
-      localStorage.setItem('character', JSON.stringify(state.character));
+    },
+    increaseAttribute(state, attribute) {
+      if (state.character.freePoints > 0) {
+        state.character.attributes[attribute]++;
+        state.character.freePoints--;
+      }
+    },
+    decreaseAttribute(state, attribute) {
+      if (state.character.attributes[attribute] > 1) {
+        state.character.attributes[attribute]--;
+        state.character.freePoints++;
+      }
+    },
+    updateAttribute(state, { attribute, value }) {
+      if (value > state.character.attributes[attribute] && state.character.freePoints > 0) {
+        state.character.attributes[attribute] = value;
+        state.character.freePoints--;
+      } else if (value < state.character.attributes[attribute]) {
+        state.character.attributes[attribute] = value;
+        state.character.freePoints++;
+      }
     },
   },
   actions: {
     login({ commit }, { username, email, password }) {
-      // Simulated login logic
-      // For simplicity, I'm assuming the user is logged in here
-      // You should implement your actual login logic and commit the mutation
-      // to update the character state accordingly
       const character = {
         name: username,
         email: email,
@@ -75,13 +87,9 @@ export default createStore({
       commit('updateCharacter', character);
     },
     increaseAttribute({ commit, state }, attribute) {
-      // Increase attribute logic
-      // Check if there are available free points to spend
       if (state.character.freePoints > 0) {
-        // Increase the attribute value by 1
-        state.character.attributes[attribute] += 1;
-        // Decrease the available free points
-        state.character.freePoints -= 1;
+        state.character.attributes[attribute]++;
+        state.character.freePoints--;
         commit('updateCharacter', state.character);
       } else {
         alert('No more free points available!');
@@ -89,3 +97,9 @@ export default createStore({
     },
   },
 });
+
+watch(() => store.state.character, (newCharacter) => {
+  localStorage.setItem('character', JSON.stringify(newCharacter));
+}, { deep: true });
+
+export default store;
