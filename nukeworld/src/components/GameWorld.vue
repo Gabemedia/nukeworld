@@ -16,15 +16,20 @@
         </div>
       </div>
       <div class="row justify-content-center">
-      <div class="col-12">
-        <ExpController />
+        <div class="col-12">
+          <ExpController />
+        </div>
       </div>
-    </div>
-    <div class="row justify-content-center">
-      <div class="col-12">
-        <MoneyController />
+      <div class="row justify-content-center">
+        <div class="col-12">
+          <MoneyController />
+        </div>
       </div>
-    </div>
+      <div class="row justify-content-center">
+        <div class="col-12">
+          <QuestsLines />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -34,6 +39,7 @@ import GameHeader from './GameHeader.vue';
 import { mapState } from 'vuex';
 import ExpController from './data/controller/ExpController.vue';
 import MoneyController from './data/controller/MoneyController.vue';
+import QuestsLines from './data/QuestsLines.vue';
 
 
 export default {
@@ -42,6 +48,7 @@ export default {
     GameHeader,
     ExpController,
     MoneyController,
+    QuestsLines,
   },
   computed: {
     ...mapState(['character'])
@@ -71,4 +78,4 @@ export default {
 .card-body > .row > .col-md-4 > .card {
   margin-bottom: 20px;
 }
-</style>
+</style>./data/QuestsLines.vue

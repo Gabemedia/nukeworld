@@ -15,7 +15,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex';
-import LvlPopUp from './LvlPopUp.vue';
+import LvlPopUp from './controller/popup/LvlPopUp.vue';
 
 export default {
   name: 'ExpLvl',
@@ -66,4 +66,4 @@ export default {
   align-items: center;
   justify-content: center;
 }
-</style>
+</style>./controller/popup/LvlPopUp.vue

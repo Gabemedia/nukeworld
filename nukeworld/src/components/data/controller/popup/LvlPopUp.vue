@@ -54,7 +54,7 @@ export default {
             this.closePopup();
           }, 100); // add a slight delay before closing the popup
         }
-      }, 1); // update progress every 1ms
+      }, 5); // update progress every 1ms
     },
   },
 };
@@ -77,6 +77,10 @@ export default {
     width: 100vw;
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  .modal-dialog {
+    width:500px;
   }
   
   .modal {

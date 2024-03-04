@@ -1,5 +1,6 @@
 import { createStore } from 'vuex';
 import { watch, reactive } from 'vue';
+import defaultQuests from './quests';
 
 const state = reactive({
   characters: JSON.parse(localStorage.getItem('characters')) || [],
@@ -12,6 +13,7 @@ const state = reactive({
     level: 1,
     money: 0,
   },
+  quests: reactive(JSON.parse(localStorage.getItem('quests')) || defaultQuests),
 });
 
 const store = createStore({
@@ -59,6 +61,27 @@ const store = createStore({
       }
       localStorage.setItem('characters', JSON.stringify(state.characters));
     },
+    startQuest(state, quest) {
+      const index = state.quests.findIndex(q => q.name === quest.name);
+      if (index !== -1) {
+        state.quests[index] = { ...quest, disabled: true, state: 'in-progress', progress: 0 };
+      }
+      localStorage.setItem('quests', JSON.stringify(state.quests));
+    },
+    completeQuest(state, quest) {
+      const index = state.quests.findIndex(q => q.name === quest.name);
+      if (index !== -1) {
+        state.quests[index] = { ...quest, state: 'completed' };
+      }
+      localStorage.setItem('quests', JSON.stringify(state.quests));
+    },
+    resetQuest(state, quest) {
+      const index = state.quests.findIndex(q => q.name === quest.name);
+      if (index !== -1) {
+        state.quests[index] = { ...quest, disabled: false, state: 'not-started', progress: 0 };
+      }
+      localStorage.setItem('quests', JSON.stringify(state.quests));
+    },
   },  
   actions: {
     login({ commit }, { username, email, password }) {
@@ -101,11 +124,43 @@ const store = createStore({
       commit('increaseCharacterLevel');
       commit('increaseCharacterLevelInArray', state.character);
     },
+    handleQuest({ commit, state }, quest) {
+      if (quest.state === 'not-started') {
+        commit('startQuest', quest);
+        const startTime = Date.now();
+        const intervalId = setInterval(() => {
+          // Find the quest in the state
+          const questIndex = state.quests.findIndex(q => q.name === quest.name);
+          if (questIndex !== -1) {
+            const elapsedTime = Date.now() - startTime;
+            const progress = Math.min((elapsedTime / quest.duration) * 100, 100);
+            const remainingTime = Math.max(0, quest.duration - elapsedTime);
+            // Replace the quest in the array with a new object
+            state.quests.splice(questIndex, 1, { ...state.quests[questIndex], progress, remainingTime });
+            if (progress >= 100) {
+              clearInterval(intervalId);
+              commit('completeQuest', quest);
+            }
+          }
+        }, 100); // Update progress and remaining time every second
+      } else if (quest.state === 'completed') {
+        commit('resetQuest', quest);
+      }
+    },
+    claimRewards({ commit, dispatch }, quest) {
+      dispatch('increaseExp', quest.exp);
+      dispatch('increaseMoney', quest.money);
+      commit('resetQuest', quest);
+    },
   },
 });
 
 watch(() => state.character, (newCharacter) => {
   localStorage.setItem('character', JSON.stringify(newCharacter));
+}, { deep: true });
+
+watch(() => state.quests, (newQuests) => {
+  localStorage.setItem('quests', JSON.stringify(newQuests));
 }, { deep: true });
 
 export default store;
