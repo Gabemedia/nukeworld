@@ -1,70 +1,52 @@
 <template>
   <div class="game-world">
-    <GameHeader /> 
-    <h1 class="text-center mt-4">Welcome to the Game World, {{ character.name }}!</h1>
+    <GameHeader />
+    <h1 class="text-center mt-4">Welcome to LokalNyt Vue, {{ character.name }}!</h1>
     <div class="container mt-4">
-      <div class="card mb-4" v-for="(value, key) in character" :key="key">
-        <div class="card-header">
-          <strong class="text-capitalize">{{ key.replace('_', ' ') }}</strong>
-        </div>
-        <div class="card-body">
-        <span v-if="key !== 'attributes'">{{ value }}</span>
-        <div class="row" v-else>
-          <div class="col-md-4 mb-4" v-for="(attrValue, attrKey) in value" :key="attrKey">
-            <div class="card">
-              <div class="card-header">
-                <strong class="text-capitalize">{{ attrKey.replace('_', ' ') }}</strong>
-              </div>
-              <div class="card-body">
-                <AttributeAdjuster
-                  :attribute="attrKey"
-                  :value="attrValue"
-                  @input="value => updateAttribute(attrKey, value)"
-                /> 
-              </div>
+      <div class="row">
+        <div class="col-md-3 mb-4" v-for="(value, key) in character" :key="key">
+          <div class="card">
+            <div class="card-header">
+              <strong class="text-capitalize">{{ key.replace('_', ' ') }}</strong>
+            </div>
+            <div class="card-body">
+              <span>{{ value }}</span>
             </div>
           </div>
         </div>
       </div>
+      <div class="row justify-content-center">
+      <div class="col-12">
+        <ExpController />
+      </div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-12">
+        <MoneyController />
+      </div>
+    </div>
     </div>
   </div>
-</div>
 </template>
+
 <script>
 import GameHeader from './GameHeader.vue';
-import AttributeAdjuster from './AttributeAdjuster.vue';
+import { mapState } from 'vuex';
+import ExpController from './data/controller/ExpController.vue';
+import MoneyController from './data/controller/MoneyController.vue';
 
 
 export default {
   name: 'GameWorld',
   components: {
     GameHeader,
-    AttributeAdjuster
-  },
-  methods: {
-    updateAttribute(attribute, value) {
-      this.$nextTick(() => {
-        this.$store.commit('updateAttribute', { attribute, value });
-      });
-    }
+    ExpController,
+    MoneyController,
   },
   computed: {
-    character() {
-      return JSON.parse(JSON.stringify(this.$store.state.character));
-    }
+    ...mapState(['character'])
   },
-  mutations: {
-    updateAttribute(state, { attribute, value }) {
-      if (value > state.character.attributes[attribute] && state.character.freePoints > 0) {
-        this._vm.$set(state.character.attributes, attribute, value);
-        state.character.freePoints--;
-      } else if (value < state.character.attributes[attribute]) {
-        this._vm.$set(state.character.attributes, attribute, value);
-        state.character.freePoints++;
-      }
-    },
-  },
-    mounted() {
+  mounted() {
     console.log('Logged in user:', this.character.name);
   }
 };

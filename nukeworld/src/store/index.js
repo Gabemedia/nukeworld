@@ -1,104 +1,110 @@
 import { createStore } from 'vuex';
-import { watch } from 'vue';
+import { watch, reactive } from 'vue';
+
+const state = reactive({
+  characters: JSON.parse(localStorage.getItem('characters')) || [],
+  character: JSON.parse(localStorage.getItem('character')) || {
+    name: '',
+    email: '',
+    password: '',
+    exp: 1,
+    maxExp: 10,
+    level: 1,
+    money: 0,
+  },
+});
 
 const store = createStore({
-  state: {
-    character: JSON.parse(localStorage.getItem('character')) || {
-      name: '',
-      email: '',
-      password: '',
-      class: '',
-      gender: '',
-      attributes: {
-        strength: 1,
-        perception: 1,
-        endurance: 1,
-        agility: 1,
-        intelligence: 1,
-        charisma: 1,
-        luck: 1,
-        projectX: 1,
-      },
-      freePoints: 5,
-    },
-  },
+  state,
   mutations: {
+    addCharacter(state, character) {
+      state.characters.push(character);
+      localStorage.setItem('characters', JSON.stringify(state.characters));
+    },
     updateCharacter(state, character) {
-      state.character = character;
-    },
-    updateCharacterAttributes(state, attributes) {
-      state.character.attributes = attributes;
-    },
-    setCharacterEmailAndPassword(state, { email, password }) {
-      state.character.email = email;
-      state.character.password = password;
-    },
-    setCharacterGender(state, gender) {
-      state.character.gender = gender;
-    },
-    setCharacterClass(state, characterClass) {
-      state.character.class = characterClass;
-    },
-    updateFreePoints(state, freePoints) {
-      state.character.freePoints = freePoints;
-    },
-    increaseAttribute(state, attribute) {
-      if (state.character.freePoints > 0) {
-        state.character.attributes[attribute]++;
-        state.character.freePoints--;
+      for (let key in character) {
+        if (Object.prototype.hasOwnProperty.call(character, key)) {
+          state.character[key] = character[key];
+        }
       }
+      localStorage.setItem('character', JSON.stringify(state.character));
     },
-    decreaseAttribute(state, attribute) {
-      if (state.character.attributes[attribute] > 1) {
-        state.character.attributes[attribute]--;
-        state.character.freePoints++;
+    addExp(state, exp) {
+      state.character.exp += exp;
+      localStorage.setItem('character', JSON.stringify(state.character));
+    },
+    increaseMaxExp(state, amount) {
+      state.character.maxExp += amount;
+      localStorage.setItem('character', JSON.stringify(state.character));
+    },
+    addMoney(state, amount) {
+      state.character.money += amount;
+      localStorage.setItem('character', JSON.stringify(state.character));
+    },
+    updateCharacterInArray(state, character) {
+      const characterInArray = state.characters.find(ch => ch.email === character.email);
+      if (characterInArray) {
+        Object.assign(characterInArray, character);
       }
+      localStorage.setItem('characters', JSON.stringify(state.characters));
     },
-    updateAttribute(state, { attribute, value }) {
-      if (value > state.character.attributes[attribute] && state.character.freePoints > 0) {
-        state.character.attributes[attribute] = value;
-        state.character.freePoints--;
-      } else if (value < state.character.attributes[attribute]) {
-        state.character.attributes[attribute] = value;
-        state.character.freePoints++;
+    increaseCharacterLevel(state) {
+      state.character.level += 1;
+      localStorage.setItem('character', JSON.stringify(state.character));
+    },
+    increaseCharacterLevelInArray(state, character) {
+      const characterInArray = state.characters.find(ch => ch.email === character.email);
+      if (characterInArray) {
+        characterInArray.level += 1;
       }
+      localStorage.setItem('characters', JSON.stringify(state.characters));
     },
-  },
+  },  
   actions: {
     login({ commit }, { username, email, password }) {
-      const character = {
-        name: username,
-        email: email,
-        password: password,
-        class: '',
-        gender: '',
-        attributes: {
-          strength: 1,
-          perception: 1,
-          endurance: 1,
-          agility: 1,
-          intelligence: 1,
-          charisma: 1,
-          luck: 1,
-          projectX: 1,
-        },
-        freePoints: 5,
-      };
+      commit('updateCharacter', { name: username, email: email, password: password });
+    },
+    createCharacter({ commit, state }) {
+      const newCharacter = { ...state.character, level: 1, exp: 1, maxExp: 10, money: 0 };
+      commit('addCharacter', newCharacter);
+      commit('updateCharacter', newCharacter);
+    },
+    updateCharacter({ commit }, character) {
       commit('updateCharacter', character);
     },
-    increaseAttribute({ commit, state }, attribute) {
-      if (state.character.freePoints > 0) {
-        state.character.attributes[attribute]++;
-        state.character.freePoints--;
-        commit('updateCharacter', state.character);
-      } else {
-        alert('No more free points available!');
+    increaseExp({ commit, state, dispatch }, amount) {
+      commit('addExp', amount);
+      if (state.character.exp >= state.character.maxExp) {
+        dispatch('levelUp');
       }
+    },
+    decreaseExp({ commit, state }) {
+      if (state.character.exp - 10 >= 0) {
+        commit('addExp', -10);
+      }
+    },
+    increaseMoney({ commit, state }, amount) {
+      commit('addMoney', amount);
+      commit('updateCharacterInArray', state.character);
+    },
+    decreaseMoney({ commit, state }, amount) {
+      if (state.character.money - amount >= 0) {
+        commit('addMoney', -amount);
+        commit('updateCharacterInArray', state.character);
+      }
+    },
+    levelUp({ commit, state }) {
+      this.levelingUp = true;
+      const overflowExp = state.character.exp - state.character.maxExp;
+      const newMaxExp = Math.floor(state.character.maxExp * 1.6);
+      commit('updateCharacter', { exp: overflowExp * 2, maxExp: newMaxExp });
+      commit('increaseCharacterLevel');
+      commit('increaseCharacterLevelInArray', state.character);
     },
   },
 });
 
-watch(() => store.state.character, (newCharacter) => {
+watch(() => state.character, (newCharacter) => {
   localStorage.setItem('character', JSON.stringify(newCharacter));
 }, { deep: true });
 

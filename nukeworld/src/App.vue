@@ -14,16 +14,13 @@
                             <router-link class="nav-link" :to="{ name: 'UserLogin' }">Login</router-link>
                         </li>
                         <li class="nav-item">
-                            <router-link class="nav-link" :to="{ name: 'CharacterCreation' }">Character Creation</router-link>
-                        </li>
-                        <li class="nav-item">
                             <router-link class="nav-link" :to="{ name: 'GameWorld' }">Game World</router-link>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
-        <router-view :loggedInUser="loggedInUser" />
+        <router-view/>
     </div>
 </template>
 

@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import store from '../store';
 import UserLogin from '../components/UserLogin.vue';
-import CharacterCreation from '../components/CharacterCreation.vue';
 import GameWorld from '../components/GameWorld.vue';
 
 const routes = [
@@ -8,11 +8,7 @@ const routes = [
     path: '/',
     name: 'UserLogin',
     component: UserLogin,
-  },
-  {
-    path: '/character-creation',
-    name: 'CharacterCreation',
-    component: CharacterCreation,
+    props: () => ({ loggedInUser: store.state.loggedInUser })
   },
   {
     path: '/game-world',
