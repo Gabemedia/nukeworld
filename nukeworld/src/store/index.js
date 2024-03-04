@@ -79,8 +79,8 @@ const store = createStore({
       }
     },
     decreaseExp({ commit, state }) {
-      if (state.character.exp - 10 >= 0) {
-        commit('addExp', -10);
+      if (state.character.exp - 5 >= 0) {
+        commit('addExp', -5);
       }
     },
     increaseMoney({ commit, state }, amount) {
