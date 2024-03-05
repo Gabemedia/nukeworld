@@ -5,7 +5,6 @@
       <div class="col-12 m-0 p-0 ">
         <div class="progress w-100 m-0 p-0 ">
           <div class="progress-bar" role="progressbar" :style="{ width: `${(character.exp / character.maxExp) * 100}%` }" :aria-valuenow="character.exp" aria-valuemin="0" :aria-valuemax="character.maxExp">
-            {{ character.exp }} / {{ character.maxExp }}
           </div>
         </div>
       </div>
@@ -51,19 +50,21 @@ export default {
 
 <style scoped>
 .progress {
-  height: 20px;
+  height: 10px;
   background-color: #f3f3f3;
   border-radius: 3px;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, .2);
 }
 .progress-bar {
-  height: 20px;
-  background-color: #007bff;
+  height: 10px;
+  background: linear-gradient(to right, #26db15, #11b403);
   border-radius: 3px;
   transition: width .4s ease-in-out;
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-size: 0.8em;
+  color:#000;
 }
-</style>./controller/popup/LvlPopUp.vue
+</style>

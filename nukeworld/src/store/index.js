@@ -9,7 +9,7 @@ const state = reactive({
     email: '',
     password: '',
     exp: 1,
-    maxExp: 10,
+    maxExp: 2500,
     level: 1,
     money: 0,
   },
@@ -102,7 +102,7 @@ const store = createStore({
       commit('updateCharacter', { name: username, email: email, password: password });
     },
     createCharacter({ commit, state }) {
-      const newCharacter = { ...state.character, level: 1, exp: 1, maxExp: 10, money: 0 };
+      const newCharacter = { ...state.character, level: 1, exp: 1, maxExp: 2500, money: 0 };
       commit('addCharacter', newCharacter);
       commit('updateCharacter', newCharacter);
     },
@@ -178,6 +178,10 @@ const store = createStore({
       dispatch('increaseExp', quest.exp);
       dispatch('increaseMoney', quest.money);
       commit('resetQuest', quest);
+    },
+    clearQuests({ commit }) {
+      commit('setQuests', []);
+      commit('setQuests', defaultQuests);
     },
   },
   created() {

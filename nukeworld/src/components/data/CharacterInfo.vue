@@ -1,15 +1,11 @@
 <template>
-<button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCharacterInfo">
-    Open Character Info
+<button class="btn btn-primary m-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCharacterInfo">
+    Character Info
   </button>
     <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasCharacterInfo" aria-labelledby="offcanvasCharacterInfoLabel">
-      <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="offcanvasCharacterInfoLabel">Character Information</h5>
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-      </div>
       <div class="offcanvas-body">
-        <div class="col-md-3 mb-4" v-for="(value, key) in character" :key="key">
-          <div class="card">
+        <div class="col-12" v-for="(value, key) in character" :key="key">
+          <div class="card my-2">
             <div class="card-header">
               <strong class="text-capitalize">{{ key.replace('_', ' ') }}</strong>
             </div>

@@ -53,7 +53,7 @@ export default {
             this.closePopup();
           }, 100);
         }
-      }, 10);
+      }, 5);
     },
   },
 };

@@ -54,7 +54,7 @@ export default {
             this.closePopup();
           }, 100); // add a slight delay before closing the popup
         }
-      }, 5); // update progress every 1ms
+      }, 3); // update progress every 1ms
     },
   },
 };

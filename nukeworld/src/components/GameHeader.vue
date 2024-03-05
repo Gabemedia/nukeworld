@@ -1,29 +1,25 @@
 <template>
-<div class="game-header">
-    <div class="card">
-        <div class="card-header">
-            <div class="d-flex justify-content-between">
-                <strong class="text-capitalize">Player: {{ character.name }} </strong>
-                <strong class="text-capitalize">Email: {{ character.email }} </strong>
-                <strong class="text-capitalize">Password: {{ character.password }} </strong>
-            </div>
-        </div>
-        <ExpLvl />
+    <div class="d-flex justify-content-between bg-primary bg-gradient p-2">
+        <div class="col-4 text-capitalize d-flex justify-content-start text-light text-center">Player: {{ character.name }} </div>
+        <div class="col-4 text-capitalize d-flex justify-content-center text-light text-center">Money: {{ character.money }}</div>
+        <div class="col-4 text-capitalize d-flex justify-content-end text-light text-center">Level: {{ character.level }} </div>
     </div>
+    <ExpLvl />
     <CharacterInfo />
-</div>
+    <QuestsLines />
 </template>
 <script>
 import { mapState } from 'vuex';
 import CharacterInfo from './data/CharacterInfo.vue';
 import ExpLvl from './data/ExpLvl.vue';
-
+import QuestsLines from './data/QuestsLines.vue';
 
 export default {
     name: 'GameHeader',
     components: {
         CharacterInfo,
         ExpLvl,
+        QuestsLines,
     },
     computed: {
         ...mapState(['character'])

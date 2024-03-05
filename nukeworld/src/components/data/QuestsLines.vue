@@ -1,35 +1,65 @@
 <template>
-  <div class="row">
-    <quest-pop-up ref="questPopup" :title="popupTitle" :desc="popupDesc"></quest-pop-up>
-    <div class="col-sm-4" v-for="quest in quests" :key="quest.name">
-      <div class="card" :style="{
-        backgroundImage: `url(${require(`@/assets/quests/bg/${quest.name}.jpg`)})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center center',
-        backgroundRepeat: 'no-repeat'
-      }">
-        <div class="card-body" style="color: white; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);">
-          <h5 class="card-title">{{ quest.name }}</h5>
-          <p class="card-text">{{ quest.desc }}</p>
-          <p class="card-text">Exp: {{ quest.exp }}</p>
-          <p class="card-text">Money: {{ quest.money }}</p>
-          <p class="card-text" v-if="quest.state === 'in-progress'">Remaining Time: {{ formatTime(quest.remainingTime) }}</p>          
-          <div class="progress">
-            <div class="progress-bar" :style="{ width: quest.progress + '%' }"></div>
-          </div>
-          <button class="btn btn-primary mt-4" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)">
-            {{ quest.state === 'not-started' ? 'Start Quest' : quest.state === 'in-progress' ? 'Please Wait' : 'Claim Rewards' }}
-          </button>
-        <button class="btn btn-primary" @click="resetQuests">Reset Quests</button>
-      </div>
+  <button class="btn btn-primary m-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasQuestsInfo">
+    Quest Log
+  </button>
+  <div style="width:30vw;" class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasQuestsInfo" aria-labelledby="offcanvasQuestsLabel">
+    <div class="offcanvas-header card-text-header text-light bg-primary bg-gradient d-flex justify-content-between align-items-center">
+      <h5 class="flex-grow-1">Quest Log</h5>
+      <div class="d-flex align-items-center">
+        <img class="icon-reload" @click="clearQuests" :src="require(`@/assets/interface/icons/reload.png`)" alt="Reload Quests">
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
     </div>
-  </div>
+
+      <div class="offcanvas-body">
+        <div class="row">
+          <quest-pop-up ref="questPopup" :title="popupTitle" :desc="popupDesc"></quest-pop-up>
+          <div class="col-12" v-for="quest in quests" :key="quest.name">
+            <div class="card my-2">
+              <div class="card-header p-0 d-flex ">
+                <div class="col-6" :style="{
+                  backgroundImage: `url(${require(`@/assets/quests/bg/${quest.id}.jpg`)})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'top center',
+                  backgroundRepeat: 'no-repeat'
+                }"></div>
+
+                <div class="col-6 bg-light">
+                  <h5 class="card-text-header text-capitalize p-2">{{ quest.name }}</h5>
+                  <p class="card-text card-text-desc p-2">{{ quest.desc }}</p>
+                </div>
+              </div>
+              <div class="progress p-0 m-0">
+                <div class="progress-bar p-0 m-0" :style="{ width: quest.progress + '%' }"></div>
+              </div>
+              <div class="card-body bg-secondary bg-gradient p-2">
+                <p class="card-text" v-if="quest.state === 'in-progress'">Remaining Time: {{ formatTime(quest.remainingTime) }}</p>
+                <div class="d-flex align-items-center justify-content-center">
+                  <div class="flex-grow-1 text-center">        
+                    <button class="btn btn-success bg-gradient" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)" style="width: 100%;">
+                      {{ quest.state === 'not-started' ? 'Start Quest' : quest.state === 'in-progress' ? 'Please Wait' : 'Claim Rewards' }}
+                    </button>
+                  </div>
+                  <div class="d-flex justify-content-around flex-grow-1 text-center">
+                    <div style="margin-top:5px;" class="card-text d-block fw-bold">
+                      <img style="width:25px; margin-top:-5px;" :src="require(`@/assets/interface/icons/exp.png`)" alt="Exp"> {{ quest.exp }}
+                    </div>
+                    <div style="margin-top:5px;" class="card-text d-block fw-bold"><img style="width:25px; margin-top:-5px;" :src="require(`@/assets/interface/icons/money.png`)" alt="Money"> {{ quest.money }}</div>
+                  </div>
+                </div>
+             </div>
+            </div>
+          </div>
+        </div>      
+      </div>
+    </div>
+
 </template>
 
 <script>
 import { reactive } from 'vue';
 import { mapState, mapMutations, mapActions } from 'vuex';
+import { toast } from "vue3-toastify";
 import QuestPopUp from './controller/popup/QuestPopUp.vue';
 
 export default {
@@ -47,8 +77,8 @@ export default {
     ...mapState(['quests']),
   },
   methods: {
-    ...mapActions(['increaseExp', 'increaseMoney', 'handleQuest', 'claimRewards', 'resetClaimedQuest']),
-    ...mapMutations(['completeQuest', 'setQuests', 'updateQuestState']), 
+    ...mapActions(['increaseExp', 'increaseMoney', 'handleQuest', 'claimRewards','clearQuests']),
+    ...mapMutations(['completeQuest', 'setQuests', 'updateQuestState']),
     isButtonDisabled(quest) {
       if (quest.state === 'not-started') {
         return false;
@@ -75,8 +105,8 @@ export default {
         if (this.$refs.questPopup) {
           this.$refs.questPopup.openPopup();
         }
-        this.resetClaimedQuest(reactiveQuest);
         reactiveQuest.claimed = true;
+        this.deleteQuestData(reactiveQuest);
       }
     },
     formatTime(milliseconds) {
@@ -114,6 +144,7 @@ export default {
         } else {
           clearInterval(reactiveQuest.intervalId);
           reactiveQuest.state = 'completed';
+          toast.success(`Quest ${reactiveQuest.name} completed!    You earned ${reactiveQuest.exp} exp and ${reactiveQuest.money} money.`);
         }
         this.saveQuests();
       }, 1000);
@@ -123,15 +154,29 @@ export default {
       localStorage.setItem('quests', JSON.stringify(this.quests));
     },
     resetQuests() {
-      this.quests.forEach(quest => {
-        quest.state = 'not-started';
-        quest.progress = 0;
-        quest.claimed = false;
+      this.quests.forEach((quest, index) => {
+        const newQuest = reactive({
+          ...quest,
+          state: 'not-started',
+          progress: 0,
+          claimed: false,
+          intervalId: null
+        });
+        this.quests[index] = newQuest;
         if (quest.intervalId) {
           clearInterval(quest.intervalId);
-          quest.intervalId = null;
         }
       });
+      this.saveQuests();
+    },
+    deleteQuestData(quest) {
+      this.$store.dispatch('clearQuests');
+      localStorage.removeItem('quests');
+      const index = this.quests.findIndex(q => q.name === quest.name);
+      if (index !== -1) {
+        this.quests.splice(index, 1);
+      }
+      this.quests = [];
       this.saveQuests();
     },
   },
@@ -175,3 +220,32 @@ export default {
   },
 };
 </script>
+<style scoped>
+.card-body {
+    color: white;
+    text-shadow:rgba(0, 0, 0, 1) 0px 0px 2px;
+}
+.card-text{
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+.card-text-header {
+    font-weight: 600;
+    font-size: 1rem;
+}
+.card-text-desc {
+    font-size: 1rem;
+    font-weight: 400;
+}
+.icon-reload {
+  width: 18px;
+  transition: opacity 0.3 ease;
+  cursor: pointer;
+  filter:opacity(0.5);
+}
+
+.icon-reload:hover {
+  filter:opacity(0.8);
+}
+</style>
+```
