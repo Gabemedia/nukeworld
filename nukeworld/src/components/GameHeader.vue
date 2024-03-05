@@ -8,19 +8,22 @@
                 <strong class="text-capitalize">Password: {{ character.password }} </strong>
             </div>
         </div>
-        <ExpLvl /> 
+        <ExpLvl />
     </div>
+    <CharacterInfo />
 </div>
 </template>
 <script>
 import { mapState } from 'vuex';
+import CharacterInfo from './data/CharacterInfo.vue';
 import ExpLvl from './data/ExpLvl.vue';
 
 
 export default {
     name: 'GameHeader',
     components: {
-     ExpLvl,
+        CharacterInfo,
+        ExpLvl,
     },
     computed: {
         ...mapState(['character'])

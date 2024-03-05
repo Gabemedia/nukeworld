@@ -1,5 +1,5 @@
 <template>
-    <div id="app">
+    <div class="bg-primary" id="app">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
                 <router-link class="navbar-brand" to="/">Admin Panel</router-link>
@@ -38,10 +38,11 @@ export default {
 };
 </script>
 
-<style>
-/* Add your existing styles here */
-
-/* Add these new styles */
+<style lang="scss">
+#app {
+    width: 100vw;
+    height: 100vh;
+}
 .menu-icon {
     display: none;
     cursor: pointer;

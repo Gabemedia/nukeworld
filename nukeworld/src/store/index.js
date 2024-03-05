@@ -82,6 +82,15 @@ const store = createStore({
       }
       localStorage.setItem('quests', JSON.stringify(state.quests));
     },
+    setQuests(state, quests) {
+      state.quests = quests;
+    },
+    
+    updateQuestProgress(state, { questIndex, progress, remainingTime }) {
+      state.quests[questIndex].progress = progress;
+      state.quests[questIndex].remainingTime = remainingTime;
+      localStorage.setItem('quests', JSON.stringify(state.quests));
+    },
   },  
   actions: {
     login({ commit }, { username, email, password }) {
@@ -124,27 +133,39 @@ const store = createStore({
       commit('increaseCharacterLevel');
       commit('increaseCharacterLevelInArray', state.character);
     },
-    handleQuest({ commit, state }, quest) {
+    startQuestProgress({ commit, state }, quest) {
+      const startTime = quest.startTime;
+      const questIndex = state.quests.findIndex(q => q.name === quest.name);
+  
+      // Set an interval to update the progress
+      const intervalId = setInterval(() => {
+        const elapsedTime = Date.now() - startTime;
+        const progress = Math.min((elapsedTime / quest.duration) * 100, 100);
+        const remainingTime = Math.max(0, quest.duration - elapsedTime);
+        commit('updateQuestProgress', { questIndex, progress, remainingTime });
+        if (remainingTime <= 0) {
+          clearInterval(intervalId);
+          commit('completeQuest', quest);
+        }
+      }, 1000);
+  
+      // Check if the quest is already completed when the page is refreshed
+      const elapsedTime = Date.now() - startTime;
+      const remainingTime = Math.max(0, quest.duration - elapsedTime);
+      if (remainingTime <= 0) {
+        clearInterval(intervalId);
+        commit('completeQuest', quest);
+      }
+    },
+    handleQuest({ dispatch, commit, state }, quest) {
       if (quest.state === 'not-started') {
         commit('startQuest', quest);
         const startTime = Date.now();
-        const intervalId = setInterval(() => {
-          // Find the quest in the state
-          const questIndex = state.quests.findIndex(q => q.name === quest.name);
-          if (questIndex !== -1) {
-            const elapsedTime = Date.now() - startTime;
-            const progress = Math.min((elapsedTime / quest.duration) * 100, 100);
-            const remainingTime = Math.max(0, quest.duration - elapsedTime);
-            // Replace the quest in the array with a new object
-            state.quests.splice(questIndex, 1, { ...state.quests[questIndex], progress, remainingTime });
-            if (progress >= 100) {
-              clearInterval(intervalId);
-              commit('completeQuest', quest);
-            }
-          }
-        }, 100); // Update progress and remaining time every second
-      } else if (quest.state === 'completed') {
-        commit('resetQuest', quest);
+        state.quests[state.quests.findIndex(q => q.name === quest.name)].startTime = startTime;
+        localStorage.setItem('quests', JSON.stringify(state.quests));
+        dispatch('startQuestProgress', { ...quest, startTime });
+      } else if (quest.state === 'in-progress') {
+        dispatch('startQuestProgress', quest);
       }
     },
     claimRewards({ commit, dispatch }, quest) {

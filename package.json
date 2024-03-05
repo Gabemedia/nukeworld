@@ -10,7 +10,10 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@vue/cli": "^5.0.8"
+    "@vue/cli": "^5.0.8",
+    "sass": "^1.71.1",
+    "sass-loader": "^14.1.1",
+    "webpack": "^5.90.3"
   },
   "dependencies": {
     "vue-router": "^4.3.0",
