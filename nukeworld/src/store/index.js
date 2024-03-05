@@ -174,6 +174,13 @@ const store = createStore({
       commit('resetQuest', quest);
     },
   },
+  created() {
+    window.onload = () => {
+      this.quests.forEach(quest => {
+        this.resetQuest(this.state, quest);
+      });
+    };
+  }
 });
 
 watch(() => state.character, (newCharacter) => {

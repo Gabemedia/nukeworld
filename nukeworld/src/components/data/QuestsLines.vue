@@ -20,7 +20,7 @@
           <button class="btn btn-primary mt-4" :disabled="quest.disabled || (quest.state === 'completed' && quest.claimed)" @click="handleQuestAction(quest)">
           {{ quest.state === 'not-started' ? 'Start Quest' : quest.state === 'in-progress' ? 'Please Wait' : 'Claim Rewards' }}
         </button>
-        </div>
+      </div>
       </div>
     </div>
   </div>
@@ -111,14 +111,10 @@ export default {
     window.removeEventListener('beforeunload', this.saveQuests);
   },
   created() {
-    const savedQuests = JSON.parse(localStorage.getItem('quests'));
-    if (savedQuests) {
-      this.setQuests(savedQuests);
-    }
-    this.quests.forEach(quest => {
-      if (quest.state === 'in-progress') {
-        this.startQuestProgress(quest);
-      }
+    window.addEventListener('load', () => {
+      this.$store.state.quests.forEach(quest => {
+        this.$store.commit('resetQuest', quest);
+      });
     });
   },
 };
