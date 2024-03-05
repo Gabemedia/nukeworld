@@ -31,3 +31,15 @@ export default {
   }
 };
 </script>
+
+<style lang="scss">
+
+.game-world {
+    width: 100vw;
+    height: 100vh;
+    background-image: url('../assets/bg.jpg');
+    background-size: fit; // to ensure the image covers the whole div
+    background-position: center; // to center the image
+    background-color: #ff0000;
+
+}</style>

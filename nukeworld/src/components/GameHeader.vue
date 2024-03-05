@@ -1,5 +1,5 @@
 <template>
-<div class="game-header bg-primary">
+<div class="game-header">
     <div class="card">
         <div class="card-header">
             <div class="d-flex justify-content-between">

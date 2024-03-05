@@ -61,10 +61,16 @@ const store = createStore({
       }
       localStorage.setItem('characters', JSON.stringify(state.characters));
     },
+  updateQuestState(state, { quest, newState }) {
+    const questIndex = state.quests.findIndex(q => q.name === quest.name);
+    if (questIndex !== -1) {
+      state.quests[questIndex] = { ...state.quests[questIndex], ...newState };
+    }
+  },
     startQuest(state, quest) {
       const index = state.quests.findIndex(q => q.name === quest.name);
       if (index !== -1) {
-        state.quests[index] = { ...quest, disabled: true, state: 'in-progress', progress: 0 };
+        state.quests[index] = { ...quest, disabled: true, state: 'in-progress', progress: 0, startTime: Date.now() };
       }
       localStorage.setItem('quests', JSON.stringify(state.quests));
     },
@@ -85,7 +91,6 @@ const store = createStore({
     setQuests(state, quests) {
       state.quests = quests;
     },
-    
     updateQuestProgress(state, { questIndex, progress, remainingTime }) {
       state.quests[questIndex].progress = progress;
       state.quests[questIndex].remainingTime = remainingTime;
@@ -134,9 +139,10 @@ const store = createStore({
       commit('increaseCharacterLevelInArray', state.character);
     },
     startQuestProgress({ commit, state }, quest) {
-      const startTime = quest.startTime;
+      const startTime = quest.startTime || Date.now();
       const questIndex = state.quests.findIndex(q => q.name === quest.name);
-  
+      state.quests[questIndex].startTime = startTime;
+      localStorage.setItem('quests', JSON.stringify(state.quests));
       // Set an interval to update the progress
       const intervalId = setInterval(() => {
         const elapsedTime = Date.now() - startTime;

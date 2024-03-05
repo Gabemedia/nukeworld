@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-primary" id="app">
+    <div id="app">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
                 <router-link class="navbar-brand" to="/">Admin Panel</router-link>
@@ -42,6 +42,7 @@ export default {
 #app {
     width: 100vw;
     height: 100vh;
+    overflow: hidden;
 }
 .menu-icon {
     display: none;

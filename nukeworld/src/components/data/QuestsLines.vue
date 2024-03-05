@@ -17,9 +17,10 @@
           <div class="progress">
             <div class="progress-bar" :style="{ width: quest.progress + '%' }"></div>
           </div>
-          <button class="btn btn-primary mt-4" :disabled="quest.disabled || (quest.state === 'completed' && quest.claimed)" @click="handleQuestAction(quest)">
-          {{ quest.state === 'not-started' ? 'Start Quest' : quest.state === 'in-progress' ? 'Please Wait' : 'Claim Rewards' }}
-        </button>
+          <button class="btn btn-primary mt-4" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)">
+            {{ quest.state === 'not-started' ? 'Start Quest' : quest.state === 'in-progress' ? 'Please Wait' : 'Claim Rewards' }}
+          </button>
+        <button class="btn btn-primary" @click="resetQuests">Reset Quests</button>
       </div>
       </div>
     </div>
@@ -27,6 +28,7 @@
 </template>
 
 <script>
+import { reactive } from 'vue';
 import { mapState, mapMutations, mapActions } from 'vuex';
 import QuestPopUp from './controller/popup/QuestPopUp.vue';
 
@@ -46,7 +48,16 @@ export default {
   },
   methods: {
     ...mapActions(['increaseExp', 'increaseMoney', 'handleQuest', 'claimRewards', 'resetClaimedQuest']),
-    ...mapMutations(['completeQuest', 'setQuests']),
+    ...mapMutations(['completeQuest', 'setQuests', 'updateQuestState']), 
+    isButtonDisabled(quest) {
+      if (quest.state === 'not-started') {
+        return false;
+      } else if (quest.state === 'in-progress') {
+        return true;
+      } else if (quest.state === 'completed') {
+        return false;
+      }
+    },
     handleQuestAction(quest) {
     if (quest.state === 'not-started') {
       this.handleQuest(quest);
@@ -56,14 +67,16 @@ export default {
     }
   },
     claimRewardsAction(quest) {
-      if (!quest.claimed) {
-        this.claimRewards(quest);
-        this.popupTitle = quest.name;
-        this.popupDesc = 'Quest completed! You earned ' + quest.exp + ' exp and ' + quest.money + ' money.';
+      const reactiveQuest = reactive(quest);
+      if (!reactiveQuest.claimed) {
+        this.claimRewards(reactiveQuest);
+        this.popupTitle = reactiveQuest.name;
+        this.popupDesc = 'Quest completed! You earned ' + reactiveQuest.exp + ' exp and ' + reactiveQuest.money + ' money.';
         if (this.$refs.questPopup) {
           this.$refs.questPopup.openPopup();
         }
-        this.resetClaimedQuest(quest);
+        this.resetClaimedQuest(reactiveQuest);
+        reactiveQuest.claimed = true;
       }
     },
     formatTime(milliseconds) {
@@ -82,22 +95,45 @@ export default {
         }
       });
     },
-      startQuestProgress(quest) {
-    quest.state = 'in-progress';
-    quest.intervalId = setInterval(() => {
-      if (quest.remainingTime > 0) {
-        quest.remainingTime -= 100;
-      } else {
-        clearInterval(quest.intervalId);
-        quest.state = 'completed';
-      }
-      this.saveQuests();
-    }, 1000);
-  },
+    startQuestProgress(quest) {
+      const reactiveQuest = reactive(quest);
+      reactiveQuest.state = 'in-progress';
+      reactiveQuest.startTime = Date.now(); // Save the start time
+      localStorage.setItem(reactiveQuest.name + 'StartTime', reactiveQuest.startTime);
+      reactiveQuest.remainingTime = reactiveQuest.duration; // Save the remaining time
+      localStorage.setItem(reactiveQuest.name + 'RemainingTime', reactiveQuest.remainingTime);
+      reactiveQuest.intervalId = setInterval(() => {
+        if (reactiveQuest.remainingTime > 0) {
+          reactiveQuest.remainingTime -= 1000;
+          localStorage.setItem(reactiveQuest.name + 'RemainingTime', reactiveQuest.remainingTime);
+          
+          // Calculate the elapsed time and progress
+          const elapsedTime = Date.now() - reactiveQuest.startTime;
+          const progress = Math.min((elapsedTime / reactiveQuest.duration) * 100, 100);
+          reactiveQuest.progress = progress;
+        } else {
+          clearInterval(reactiveQuest.intervalId);
+          reactiveQuest.state = 'completed';
+        }
+        this.saveQuests();
+      }, 1000);
+    },
 
     saveQuests() {
       localStorage.setItem('quests', JSON.stringify(this.quests));
-    }
+    },
+    resetQuests() {
+      this.quests.forEach(quest => {
+        quest.state = 'not-started';
+        quest.progress = 0;
+        quest.claimed = false;
+        if (quest.intervalId) {
+          clearInterval(quest.intervalId);
+          quest.intervalId = null;
+        }
+      });
+      this.saveQuests();
+    },
   },
   mounted() {
     window.addEventListener('beforeunload', this.saveQuests);
@@ -112,8 +148,28 @@ export default {
   },
   created() {
     window.addEventListener('load', () => {
-      this.$store.state.quests.forEach(quest => {
-        this.$store.commit('resetQuest', quest);
+      this.quests.forEach(quest => {
+        if (quest.state === 'in-progress') {
+          // Retrieve the start time and remaining time from localStorage
+          const startTime = Number(localStorage.getItem(quest.name + 'StartTime'));
+          const remainingTime = Number(localStorage.getItem(quest.name + 'RemainingTime'));
+
+          // Calculate the elapsed time and progress
+          const elapsedTime = Date.now() - startTime;
+          const progress = Math.min((elapsedTime / quest.duration) * 100, 100);
+          quest.progress = progress;
+
+          // Update the remaining time
+          quest.remainingTime = remainingTime - elapsedTime;
+
+          // If the quest is not yet completed, start the quest progress
+          if (progress < 100) {
+            this.startQuestProgress(quest);
+          } else {
+            // If the quest is completed, enable the claim button
+            quest.state = 'completed';
+          }
+        }
       });
     });
   },
