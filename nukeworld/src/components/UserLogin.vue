@@ -1,5 +1,5 @@
 <template>
-  <div class="login d-flex flex-column align-items-center mt-4 justify-content-start mx-auto w-75 vh-100">
+  <div class="login d-flex flex-column align-items-center mt-4 justify-content-start mx-auto w-75">
     <div class="row justify-content-center w-100 mt-4">
       <div class="col-12">
         <input autocomplete="name" class="game-input mx-4 p-4 w-100" v-model="character.name" placeholder="Enter your character's name">

@@ -7,12 +7,14 @@
     <ExpLvl />
     <CharacterInfo />
     <QuestsLines />
+    <LokalNyt />
 </template>
 <script>
 import { mapState } from 'vuex';
 import CharacterInfo from './data/CharacterInfo.vue';
 import ExpLvl from './data/ExpLvl.vue';
 import QuestsLines from './data/QuestsLines.vue';
+import LokalNyt from './data/LokalNyt.vue';
 
 export default {
     name: 'GameHeader',
@@ -20,6 +22,7 @@ export default {
         CharacterInfo,
         ExpLvl,
         QuestsLines,
+        LokalNyt,
     },
     computed: {
         ...mapState(['character'])

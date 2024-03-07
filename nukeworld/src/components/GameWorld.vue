@@ -4,6 +4,7 @@
     <div class="container mt-4">
       <div class="row justify-content-center">
         <div class="col-12">
+
         </div>
       </div>
     </div>
@@ -18,6 +19,7 @@ export default {
   name: 'GameWorld',
   components: {
     GameHeader,
+
   },
   computed: {
     ...mapState(['character'])
@@ -38,4 +40,4 @@ export default {
     background-position: center; // to center the image
     background-color: #ff0000;
 
-}</style>
+}</style>./data/LokalNyt copy.vue
