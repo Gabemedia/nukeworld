@@ -7,6 +7,7 @@ import store from './store'; // Import the Vuex store
 import Toast from "vue3-toastify";
 import 'vue3-toastify/dist/index.css';
 
+
 const app = createApp(App);
 app.use(router);
 app.use(store); // Use the Vuex store
