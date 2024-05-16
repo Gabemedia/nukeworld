@@ -1,10 +1,10 @@
 <template>
   <div class="game-world bg-primary">
-    <GameHeader class="game-header"/>
+    <GameHeader @toggleMap="toggleMapVisibility" class="game-header"/>
     <div class="container mt-4">
       <div class="row justify-content-center">
         <div class="col-12">
-          <MapComponent class="flex-grow-1"/> 
+          <MapComponent v-if="showMap" class="flex-grow-1"/> 
         </div>
       </div>
     </div>
@@ -23,12 +23,22 @@ export default {
     MapComponent,
 
   },
+  data() {
+    return {
+      showMap: false,
+    };
+  },
   computed: {
     ...mapState(['character'])
   },
   mounted() {
     console.log('Logged in user:', this.character.name);
-  }
+  },
+  methods: {
+    toggleMapVisibility() {
+      this.showMap = !this.showMap;
+    },
+  },
 };
 </script>
 
