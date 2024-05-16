@@ -1,10 +1,10 @@
 <template>
   <div class="game-world bg-primary">
-    <GameHeader />
+    <GameHeader class="game-header"/>
     <div class="container mt-4">
       <div class="row justify-content-center">
         <div class="col-12">
-          <map-component></map-component> 
+          <MapComponent class="flex-grow-1"/> 
         </div>
       </div>
     </div>
@@ -41,5 +41,11 @@ export default {
     background-size: fit; // to ensure the image covers the whole div
     background-position: center; // to center the image
     background-color: #ff0000;
-
-}</style>./data/LokalNyt copy.vue
+    position: absolute;
+    z-index:999;
+}
+.game-header {
+  position: absolute;
+  z-index:999;
+}
+</style>.
