@@ -1,5 +1,5 @@
 import { createStore } from 'vuex';
-import { watch, reactive } from 'vue';
+import { reactive, watch } from 'vue';
 import defaultQuests from './quests';
 
 const state = reactive({
@@ -21,72 +21,57 @@ const store = createStore({
   mutations: {
     addCharacter(state, character) {
       state.characters.push(character);
-      localStorage.setItem('characters', JSON.stringify(state.characters));
     },
     updateCharacter(state, character) {
-      for (let key in character) {
-        if (Object.prototype.hasOwnProperty.call(character, key)) {
-          state.character[key] = character[key];
-        }
-      }
-      localStorage.setItem('character', JSON.stringify(state.character));
+      Object.assign(state.character, character);
     },
     addExp(state, exp) {
       state.character.exp += exp;
-      localStorage.setItem('character', JSON.stringify(state.character));
     },
     increaseMaxExp(state, amount) {
       state.character.maxExp += amount;
-      localStorage.setItem('character', JSON.stringify(state.character));
     },
     addMoney(state, amount) {
       state.character.money += amount;
-      localStorage.setItem('character', JSON.stringify(state.character));
     },
     updateCharacterInArray(state, character) {
       const characterInArray = state.characters.find(ch => ch.email === character.email);
       if (characterInArray) {
         Object.assign(characterInArray, character);
       }
-      localStorage.setItem('characters', JSON.stringify(state.characters));
     },
     increaseCharacterLevel(state) {
       state.character.level += 1;
-      localStorage.setItem('character', JSON.stringify(state.character));
     },
     increaseCharacterLevelInArray(state, character) {
       const characterInArray = state.characters.find(ch => ch.email === character.email);
       if (characterInArray) {
         characterInArray.level += 1;
       }
-      localStorage.setItem('characters', JSON.stringify(state.characters));
     },
-  updateQuestState(state, { quest, newState }) {
-    const questIndex = state.quests.findIndex(q => q.name === quest.name);
-    if (questIndex !== -1) {
-      state.quests[questIndex] = { ...state.quests[questIndex], ...newState };
-    }
-  },
+    updateQuestState(state, { quest, newState }) {
+      const questIndex = state.quests.findIndex(q => q.name === quest.name);
+      if (questIndex !== -1) {
+        state.quests[questIndex] = { ...state.quests[questIndex], ...newState };
+      }
+    },
     startQuest(state, quest) {
       const index = state.quests.findIndex(q => q.name === quest.name);
       if (index !== -1) {
         state.quests[index] = { ...quest, disabled: true, state: 'in-progress', progress: 0, startTime: Date.now() };
       }
-      localStorage.setItem('quests', JSON.stringify(state.quests));
     },
     completeQuest(state, quest) {
       const index = state.quests.findIndex(q => q.name === quest.name);
       if (index !== -1) {
         state.quests[index] = { ...quest, state: 'completed' };
       }
-      localStorage.setItem('quests', JSON.stringify(state.quests));
     },
     resetQuest(state, quest) {
       const index = state.quests.findIndex(q => q.name === quest.name);
       if (index !== -1) {
         state.quests[index] = { ...quest, disabled: false, state: 'not-started', progress: 0 };
       }
-      localStorage.setItem('quests', JSON.stringify(state.quests));
     },
     setQuests(state, quests) {
       state.quests = quests;
@@ -94,12 +79,11 @@ const store = createStore({
     updateQuestProgress(state, { questIndex, progress, remainingTime }) {
       state.quests[questIndex].progress = progress;
       state.quests[questIndex].remainingTime = remainingTime;
-      localStorage.setItem('quests', JSON.stringify(state.quests));
     },
-  },  
+  },
   actions: {
     login({ commit }, { username, email, password }) {
-      commit('updateCharacter', { name: username, email: email, password: password });
+      commit('updateCharacter', { name: username, email, password });
     },
     createCharacter({ commit, state }) {
       const newCharacter = { ...state.character, level: 1, exp: 1, maxExp: 2500, money: 0 };
@@ -131,7 +115,6 @@ const store = createStore({
       }
     },
     levelUp({ commit, state }) {
-      this.levelingUp = true;
       const overflowExp = state.character.exp - state.character.maxExp;
       const newMaxExp = Math.floor(state.character.maxExp * 1.6);
       commit('updateCharacter', { exp: overflowExp * 2, maxExp: newMaxExp });
@@ -142,8 +125,7 @@ const store = createStore({
       const startTime = quest.startTime || Date.now();
       const questIndex = state.quests.findIndex(q => q.name === quest.name);
       state.quests[questIndex].startTime = startTime;
-      localStorage.setItem('quests', JSON.stringify(state.quests));
-      // Set an interval to update the progress
+
       const intervalId = setInterval(() => {
         const elapsedTime = Date.now() - startTime;
         const progress = Math.min((elapsedTime / quest.duration) * 100, 100);
@@ -154,8 +136,7 @@ const store = createStore({
           commit('completeQuest', quest);
         }
       }, 1000);
-  
-      // Check if the quest is already completed when the page is refreshed
+
       const elapsedTime = Date.now() - startTime;
       const remainingTime = Math.max(0, quest.duration - elapsedTime);
       if (remainingTime <= 0) {
@@ -168,7 +149,6 @@ const store = createStore({
         commit('startQuest', quest);
         const startTime = Date.now();
         state.quests[state.quests.findIndex(q => q.name === quest.name)].startTime = startTime;
-        localStorage.setItem('quests', JSON.stringify(state.quests));
         dispatch('startQuestProgress', { ...quest, startTime });
       } else if (quest.state === 'in-progress') {
         dispatch('startQuestProgress', quest);
@@ -184,21 +164,22 @@ const store = createStore({
       commit('setQuests', defaultQuests);
     },
   },
-  created() {
-    window.onload = () => {
-      this.quests.forEach(quest => {
-        this.resetQuest(this.state, quest);
-      });
-    };
-  }
 });
 
-watch(() => state.character, (newCharacter) => {
-  localStorage.setItem('character', JSON.stringify(newCharacter));
-}, { deep: true });
+watch(
+  () => state.character,
+  (newCharacter) => {
+    localStorage.setItem('character', JSON.stringify(newCharacter));
+  },
+  { deep: true }
+);
 
-watch(() => state.quests, (newQuests) => {
-  localStorage.setItem('quests', JSON.stringify(newQuests));
-}, { deep: true });
+watch(
+  () => state.quests,
+  (newQuests) => {
+    localStorage.setItem('quests', JSON.stringify(newQuests));
+  },
+  { deep: true }
+);
 
 export default store;

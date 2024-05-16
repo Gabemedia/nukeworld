@@ -4,7 +4,7 @@
     <div class="container mt-4">
       <div class="row justify-content-center">
         <div class="col-12">
-
+          <map-component></map-component> 
         </div>
       </div>
     </div>
@@ -13,12 +13,14 @@
 
 <script>
 import GameHeader from './GameHeader.vue';
+import MapComponent from './MapComponent.vue';
 import { mapState } from 'vuex';
 
 export default {
   name: 'GameWorld',
   components: {
     GameHeader,
+    MapComponent,
 
   },
   computed: {
