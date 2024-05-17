@@ -14,6 +14,7 @@ const state = reactive({
     level: 1,
     money: 0,
     inventory: [],
+    equippedWeapon: null,
   },
   quests: reactive(JSON.parse(localStorage.getItem('quests')) || defaultQuests),
   items,
@@ -75,6 +76,19 @@ const mutations = {
   updateQuestProgress(state, { questIndex, progress, remainingTime }) {
     state.quests[questIndex].progress = progress;
     state.quests[questIndex].remainingTime = remainingTime;
+  },
+  equipWeapon(state, itemId) {
+    const item = state.items.find(item => item.id === itemId);
+    if (item && item.state === 'none') {
+      if (state.character.equippedWeapon) {
+        const prevWeapon = state.items.find(item => item.id === state.character.equippedWeapon);
+        if (prevWeapon) {
+          prevWeapon.state = 'none';
+        }
+      }
+      item.state = 'equipped';
+      state.character.equippedWeapon = itemId;
+    }
   },
 };
 
@@ -167,6 +181,9 @@ const actions = {
   clearQuests({ commit }) {
     commit('setQuests', []);
     commit('setQuests', defaultQuests);
+  },
+  equipWeapon({ commit, state }, itemId) {
+    commit('equipWeapon', itemId);
   },
 };
 

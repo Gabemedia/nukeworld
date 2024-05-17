@@ -1,28 +1,39 @@
 <template>
-    <div>
-      <h2>Inventory</h2>
-      <ul>
-        <li v-for="item in character.inventory" :key="item.id">
-          {{ item.name }} <button @click="equipItem(item.id)">Equip</button>
-        </li>
-      </ul>
-      <h2>Equipped Item</h2>
-      <p v-if="character.equipped">{{ character.equipped.name }}</p>
-      <p v-else>No item equipped</p>
-    </div>
-  </template>
-  
-  <script>
-  import { mapActions, mapState } from 'vuex';
-  
-  export default {
-    name: 'InventoryStash',
-    computed: {
-      ...mapState(['character']),
+  <div>
+    <h2>Inventory</h2>
+    <ul>
+      <li v-for="item in inventory" :key="item.id">
+        {{ item.name }}
+        <button v-if="item.state === 'none'" @click="equipWeapon(item.id)">Equip</button>
+        <span v-else-if="item.state === 'equipped'" class="equipped-badge">Equipped</span>
+      </li>
+    </ul>
+  </div>
+</template>
+
+<script>
+import { mapActions, mapState } from 'vuex';
+
+export default {
+  name: 'InventoryStash',
+  computed: {
+    ...mapState(['character', 'items']),
+    inventory() {
+      return this.items.filter(item => item.attack > 0);
     },
-    methods: {
-      ...mapActions(['equipItem']),
-    },
-  };
-  </script>
-  
+  },
+  methods: {
+    ...mapActions(['equipWeapon']),
+  },
+};
+</script>
+
+<style scoped>
+.equipped-badge {
+  background-color: green;
+  color: white;
+  padding: 2px 4px;
+  border-radius: 4px;
+  margin-left: 8px;
+}
+</style>
