@@ -14,7 +14,7 @@ const state = reactive({
     level: 1,
     money: 0,
     inventory: [{ id: 0 }],
-    equippedWeapon: JSON.parse(localStorage.getItem('equippedWeapon')) || null,
+    equippedWeapon: JSON.parse(localStorage.getItem('equippedWeapon')) || 0,
   },
   quests: reactive(JSON.parse(localStorage.getItem('quests')) || defaultQuests),
   items,
@@ -102,7 +102,7 @@ const mutations = {
 
 const actions = {
   login({ commit }, { username, email, password }) {
-    commit('updateCharacter', { name: username, email, password, equippedWeapon: 0 });
+    commit('updateCharacter', { name: username, email, password,});
   },
   createCharacter({ commit, state, }) {
     const newCharacter = { ...state.character, level: 1, exp: 1, maxExp: 2500, money: 0, inventory: [state.items[0]] };
