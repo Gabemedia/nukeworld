@@ -2,6 +2,7 @@ import { createStore } from 'vuex';
 import { reactive, watch } from 'vue';
 import defaultQuests from './quests';
 import items from './items';
+import { generateQuest } from './questGenerator';
 
 const state = reactive({
   characters: JSON.parse(localStorage.getItem('characters')) || [],
@@ -16,7 +17,7 @@ const state = reactive({
     inventory: [],
     equippedWeapon: null,
   },
-  quests: reactive(JSON.parse(localStorage.getItem('quests')) || defaultQuests),
+  quests: reactive(Array.from({ length: 5 }, generateQuest)),
   items,
 });
 
