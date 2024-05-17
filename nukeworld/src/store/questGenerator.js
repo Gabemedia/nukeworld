@@ -19,12 +19,14 @@ const questRewards = [
   [30, 300],
 ];
 
+import defaultQuests from './quests';
 import items from './items';
 
 export function generateQuest() {
   const nameIndex = Math.floor(Math.random() * questNames.length);
   const descIndex = Math.floor(Math.random() * questDescriptions.length);
   const rewardIndex = Math.floor(Math.random() * questRewards.length);
+  const randomQuest = defaultQuests[Math.floor(Math.random() * defaultQuests.length)];
 
   const name = questNames[nameIndex];
   const desc = questDescriptions[descIndex];
@@ -44,6 +46,7 @@ export function generateQuest() {
     progress: 0,
     state: 'not-started',
     disabled: false,
+    ...randomQuest,
     lat: parseFloat(lat),
     lon: parseFloat(lon),
     reward,

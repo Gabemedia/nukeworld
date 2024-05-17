@@ -5,7 +5,7 @@
       <div class="card my-2">
         <div class="card-header p-0 d-flex">
           <div class="col-6" :style="{
-            backgroundImage: `url(${require(`@/assets/quests/bg/${quest.id}.jpg`)})`,
+            backgroundImage: `url(${require(`@/assets/interface/icons/${quest.icon || '1'}.jpg`)})`,
             backgroundSize: 'cover',
             backgroundPosition: 'top center',
             backgroundRepeat: 'no-repeat'
