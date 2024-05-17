@@ -167,7 +167,12 @@ const store = createStore({
         const rewardItemId = quest.reward[Math.floor(Math.random() * quest.reward.length)];
   
         // Find the item object in the items array from the state
-        const rewardItem = state.items.find(item => item.id === rewardItemId);
+        const rewardItem = state.items.weapons.find(item => item.id === rewardItemId) ||
+                           state.items.armor.find(item => item.id === rewardItemId) ||
+                           state.items.aid.find(item => item.id === rewardItemId) ||
+                           state.items.misc.find(item => item.id === rewardItemId) ||
+                           state.items.junk.find(item => item.id === rewardItemId) ||
+                           state.items.account.find(item => item.id === rewardItemId);
   
         if (rewardItem) {
           // Add the reward item to the character's inventory
