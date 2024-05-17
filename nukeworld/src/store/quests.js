@@ -9,8 +9,8 @@ export default [
     progress: 0,
     state: 'not-started',
     disabled: false,
-    lat: 51.5150, // Latitude for Gateway to the City
-    lon: -0.0883, // Longitude for Gateway to the City
+    lat: 51.5150,
+    lon: -0.0883,
     reward: [1],
   },
   {
@@ -23,8 +23,8 @@ export default [
     progress: 0,
     state: 'not-started',
     disabled: false,
-    lat: 51.5137, // Latitude for Gateway to the City
-    lon: -0.0983, // Longitude for Gateway to the City
+    lat: 51.5137,
+    lon: -0.0983,
     reward: [3],
   },
   {
@@ -37,8 +37,8 @@ export default [
     progress: 0,
     state: 'not-started',
     disabled: false,
-    lat: 51.5099, // Latitude for Clock Tower
-    lon: -0.0768, // Longitude for Clock Tower
+    lat: 51.5099,
+    lon: -0.0768, 
     reward: [1],
   },
   {
@@ -51,8 +51,8 @@ export default [
     progress: 0,
     state: 'not-started',
     disabled: false,
-    lat: 51.5015, // Latitude for Dunvick Castle
-    lon: -0.0762, // Longitude for Dunvick Castle
+    lat: 51.5015,
+    lon: -0.0762,
     reward: [2],
   },
 ];

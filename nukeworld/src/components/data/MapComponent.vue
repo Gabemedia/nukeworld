@@ -3,7 +3,7 @@
     <l-map ref="map" :zoom="zoom" :center="center" :options="mapOptions">
       <l-tile-layer :url="tileUrl" :attribution="attribution"></l-tile-layer>
       <l-marker v-for="quest in quests" :key="quest.id" :lat-lng="[quest.lat, quest.lon]" @click="centerOnMarker(quest.lat, quest.lon)">
-        <l-popup>
+        <l-popup :open-on="'bottom'">
           <QuestDetails :quest="quest"></QuestDetails>
         </l-popup>
       </l-marker>
@@ -90,5 +90,8 @@ export default {
   z-index: -999;
   width: 100%;
   height: 100vh;
+}
+.leaflet-popup-content-wrapper {
+  transform: translateY(10px);
 }
 </style>
