@@ -4,20 +4,40 @@
       <l-tile-layer :url="tileUrl" :attribution="attribution"></l-tile-layer>
       <l-marker :lat-lng="markerPosition">
         <l-popup>
-          <div v-if="randomQuest">
-            <h4>{{ randomQuest.name }}</h4>
-            <p>{{ randomQuest.description }}</p>
-            <p>Reward: {{ randomQuest.exp }} EXP, {{ randomQuest.money }} Money</p>
-            <p>Duration: {{ formatDuration(randomQuest.duration) }}</p>
-            <button v-if="randomQuest.state === 'not-started'" @click="startQuest(randomQuest)">Start Quest</button>
-            <div v-else-if="randomQuest.state === 'in-progress'">
-              <p>Quest in progress...</p>
-              <progress :value="randomQuest.progress" max="100"></progress>
-              <p>Remaining Time: {{ formatDuration(randomQuest.remainingTime) }}</p>
-            </div>
-            <div v-else-if="randomQuest.state === 'completed'">
-              <p>Quest completed!</p>
-              <button @click="claimRewards(randomQuest)">Claim Rewards</button>
+          <div v-if="selectedQuest">
+            <div class="card my-2">
+              <div class="card-header p-0 d-flex">
+                <div class="col-6" :style="{
+                  backgroundImage: `url(${require(`@/assets/quests/bg/${selectedQuest.id}.jpg`)})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'top center',
+                  backgroundRepeat: 'no-repeat'
+                }"></div>
+
+                <div class="col-6 bg-light">
+                  <h5 class="card-text-header text-capitalize p-2">{{ selectedQuest.name }}</h5>
+                  <p class="card-text card-text-desc p-2">{{ selectedQuest.desc }}</p>
+                </div>
+              </div>
+              <div class="progress p-0 m-0">
+                <div class="progress-bar p-0 m-0" :style="{ width: selectedQuest.progress + '%' }"></div>
+              </div>
+              <div class="card-body bg-secondary bg-gradient p-2">
+                <p class="card-text" v-if="selectedQuest.state === 'in-progress'">Remaining Time: {{ formatTime(selectedQuest.remainingTime) }}</p>
+                <div class="d-flex align-items-center justify-content-center">
+                  <div class="flex-grow-1 text-center">
+                    <button class="btn btn-success bg-gradient" :disabled="isButtonDisabled(selectedQuest)" @click="handleQuestAction(selectedQuest)" style="width: 100%;">
+                      {{ selectedQuest.state === 'not-started' ? 'Start Quest' : selectedQuest.state === 'in-progress' ? 'Please Wait' : 'Claim Rewards' }}
+                    </button>
+                  </div>
+                  <div class="d-flex justify-content-around flex-grow-1 text-center">
+                    <div style="margin-top:5px;" class="card-text d-block fw-bold">
+                      <img style="width:25px; margin-top:-5px;" :src="require(`@/assets/interface/icons/exp.png`)" alt="Exp"> {{ selectedQuest.exp }}
+                    </div>
+                    <div style="margin-top:5px;" class="card-text d-block fw-bold"><img style="width:25px; margin-top:-5px;" :src="require(`@/assets/interface/icons/money.png`)" alt="Money"> {{ selectedQuest.money }}</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div v-else>
@@ -42,32 +62,28 @@ export default {
   },
   data() {
     return {
-      zoom: 13, // Adjusted zoom level for a closer view of Seattle
-      center: [47.6062, -122.3321], // Center coordinates for Seattle, WA
+      zoom: 13,
+      center: [51.505, -0.09],
       tileUrl: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       mapOptions: {
-        zoomControl: false, // Disable zoom control
-        attributionControl: false, // Hide attribution control
-        maxBounds: [[47.5, -122.4], [47.7, -122.2]], // Set bounds to limit panning to Seattle area
-        scrollWheelZoom: false, // Disable zoom by scroll wheel
-        doubleClickZoom: false, // Disable zoom by double click
-        dragging: true, // Enable dragging to pan the map
+        zoomControl: false,
+        attributionControl: false,
       },
-      markerPosition: [47.6062, -122.3321], // Marker position in Seattle
+      markerPosition: [51.505, -0.09],
+      popupTitle: '',
+      popupDesc: '',
+      selectedQuest: null,
     };
   },
   computed: {
     ...mapState(['quests']),
-    randomQuest() {
-      const availableQuests = this.quests.filter(quest => quest.state === 'not-started');
-      return availableQuests.length > 0 ? availableQuests[Math.floor(Math.random() * availableQuests.length)] : null;
-    },
   },
   mounted() {
     this.$nextTick(() => {
       this.updateMapSize();
       window.addEventListener('resize', this.updateMapSize);
+      this.selectRandomQuest();
     });
   },
   beforeUnmount() {
@@ -80,22 +96,47 @@ export default {
         map.invalidateSize();
       }
     },
-    ...mapActions(['handleQuest', 'claimRewards']),
-    startQuest(quest) {
-      this.handleQuest(quest);
+    ...mapActions(['handleQuest', 'claimRewards', 'startQuestProgress']),
+    selectRandomQuest() {
+      const availableQuests = this.quests.filter(quest => quest.state === 'not-started');
+      this.selectedQuest = availableQuests.length > 0 ? availableQuests[0] : null;
     },
-    formatDuration(duration) {
-      const seconds = Math.floor(duration / 1000);
-      const minutes = Math.floor(seconds / 60);
-      const hours = Math.floor(minutes / 60);
-      const days = Math.floor(hours / 24);
-
-      const daysDisplay = days > 0 ? `${days} day${days > 1 ? 's' : ''} ` : '';
-      const hoursDisplay = hours % 24 > 0 ? `${hours % 24} hour${(hours % 24) > 1 ? 's' : ''} ` : '';
-      const minutesDisplay = minutes % 60 > 0 ? `${minutes % 60} minute${(minutes % 60) > 1 ? 's' : ''} ` : '';
-      const secondsDisplay = seconds % 60 > 0 ? `${seconds % 60} second${(seconds % 60) > 1 ? 's' : ''}` : '';
-
-      return `${daysDisplay}${hoursDisplay}${minutesDisplay}${secondsDisplay}`;
+    handleQuestAction(quest) {
+      if (quest.state === 'not-started') {
+        this.handleQuest(quest);
+        this.startQuestProgress(quest);
+      } else if (quest.state === 'completed') {
+        this.claimRewardsAction(quest);
+      }
+    },
+    claimRewardsAction(quest) {
+      if (!quest.claimed) {
+        this.claimRewards(quest);
+        this.popupTitle = quest.name;
+        this.popupDesc = 'Quest completed! You earned ' + quest.exp + ' exp and ' + quest.money + ' money.';
+        if (this.$refs.questPopup) {
+          this.$refs.questPopup.openPopup();
+        }
+        quest.claimed = true;
+      }
+    },
+    formatTime(milliseconds) {
+      if (isNaN(milliseconds)) {
+        return '';
+      }
+      const totalSeconds = Math.floor(milliseconds / 1000);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return `${minutes} min ${seconds} sec`;
+    },
+    isButtonDisabled(quest) {
+      if (quest.state === 'not-started') {
+        return false;
+      } else if (quest.state === 'in-progress') {
+        return true;
+      } else if (quest.state === 'completed') {
+        return false;
+      }
     },
   },
 };
@@ -109,5 +150,21 @@ export default {
   z-index: -999;
   width: 100%;
   height: 100vh;
+}
+.card-body {
+  color: white;
+  text-shadow: rgba(0, 0, 0, 1) 0px 0px 2px;
+}
+.card-text {
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+.card-text-header {
+  font-weight: 600;
+  font-size: 1rem;
+}
+.card-text-desc {
+  font-size: 1rem;
+  font-weight: 400;
 }
 </style>
