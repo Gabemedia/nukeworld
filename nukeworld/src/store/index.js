@@ -1,6 +1,7 @@
 import { createStore } from 'vuex';
 import { reactive, watch } from 'vue';
 import defaultQuests from './quests';
+import items from './items';
 
 const state = reactive({
   characters: JSON.parse(localStorage.getItem('characters')) || [],
@@ -12,8 +13,10 @@ const state = reactive({
     maxExp: 2500,
     level: 1,
     money: 0,
+    inventory: [],
   },
   quests: reactive(JSON.parse(localStorage.getItem('quests')) || defaultQuests),
+  items: items,
 });
 
 const store = createStore({
@@ -154,26 +157,27 @@ const store = createStore({
         dispatch('startQuestProgress', quest);
       }
     },
-    claimRewards({ commit, dispatch }, quest) {
+    claimRewards({ commit, dispatch, state }, quest) {
       dispatch('increaseExp', quest.exp);
       dispatch('increaseMoney', quest.money);
+  
       // Check if the quest has a reward
       if (quest.reward && quest.reward.length > 0) {
         // Select a random item ID from the reward array
         const rewardItemId = quest.reward[Math.floor(Math.random() * quest.reward.length)];
-
-        // Find the item object in the items.js file
-        const rewardItem = require('./items').default.find(item => item.id === rewardItemId);
-
+  
+        // Find the item object in the items array from the state
+        const rewardItem = state.items.find(item => item.id === rewardItemId);
+  
         if (rewardItem) {
           // Add the reward item to the character's inventory
-          // (Assuming you have an "inventory" property in the character object)
           state.character.inventory.push(rewardItem);
-
+  
           // Display a notification or message to the player
           console.log(`You received a ${rewardItem.name} as a reward for completing the quest "${quest.name}"!`);
         }
       }
+  
       commit('resetQuest', quest);
     },
     clearQuests({ commit }) {

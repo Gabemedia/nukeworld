@@ -32,6 +32,9 @@
                 <img style="width:25px; margin-top:-5px;" :src="require(`@/assets/interface/icons/exp.png`)" alt="Exp"> {{ quest.exp }}
               </div>
               <div style="margin-top:5px;" class="card-text d-block fw-bold"><img style="width:25px; margin-top:-5px;" :src="require(`@/assets/interface/icons/money.png`)" alt="Money"> {{ quest.money }}</div>
+              <div v-if="quest.reward && quest.reward.length > 0" style="margin-top:5px;" class="card-text d-block fw-bold">
+                <img style="width:25px; margin-top:-5px;" :src="require(`@/assets/interface/icons/reward.png`)" alt="Reward"> Reward
+              </div>
             </div>
           </div>
         </div>
@@ -112,16 +115,14 @@ export default {
     startQuestProgress(quest) {
       const reactiveQuest = reactive(quest);
       reactiveQuest.state = 'in-progress';
-      reactiveQuest.startTime = Date.now(); // Save the start time
+      reactiveQuest.startTime = Date.now();
       localStorage.setItem(reactiveQuest.name + 'StartTime', reactiveQuest.startTime);
-      reactiveQuest.remainingTime = reactiveQuest.duration; // Save the remaining time
+      reactiveQuest.remainingTime = reactiveQuest.duration;
       localStorage.setItem(reactiveQuest.name + 'RemainingTime', reactiveQuest.remainingTime);
       reactiveQuest.intervalId = setInterval(() => {
         if (reactiveQuest.remainingTime > 0) {
           reactiveQuest.remainingTime -= 1000;
           localStorage.setItem(reactiveQuest.name + 'RemainingTime', reactiveQuest.remainingTime);
-
-          // Calculate the elapsed time and progress
           const elapsedTime = Date.now() - reactiveQuest.startTime;
           const progress = Math.min((elapsedTime / reactiveQuest.duration) * 100, 100);
           reactiveQuest.progress = progress;
@@ -179,23 +180,15 @@ export default {
     window.addEventListener('load', () => {
       this.quests.forEach(quest => {
         if (quest.state === 'in-progress') {
-          // Retrieve the start time and remaining time from localStorage
           const startTime = Number(localStorage.getItem(quest.name + 'StartTime'));
           const remainingTime = Number(localStorage.getItem(quest.name + 'RemainingTime'));
-
-          // Calculate the elapsed time and progress
           const elapsedTime = Date.now() - startTime;
           const progress = Math.min((elapsedTime / quest.duration) * 100, 100);
           quest.progress = progress;
-
-          // Update the remaining time
           quest.remainingTime = remainingTime - elapsedTime;
-
-          // If the quest is not yet completed, start the quest progress
           if (progress < 100) {
             this.startQuestProgress(quest);
           } else {
-            // If the quest is completed, enable the claim button
             quest.state = 'completed';
           }
         }
