@@ -102,13 +102,13 @@ const mutations = {
 
 const actions = {
   login({ commit }, { username, email, password }) {
-    commit('updateCharacter', { name: username, email, password });
+    commit('updateCharacter', { name: username, email, password, equippedWeapon: 0 });
   },
-  createCharacter({ commit, state, dispatch }) {
+  createCharacter({ commit, state, }) {
     const newCharacter = { ...state.character, level: 1, exp: 1, maxExp: 2500, money: 0, inventory: [state.items[0]] };
     commit('addCharacter', newCharacter);
     commit('updateCharacter', newCharacter);
-    dispatch('equipWeapon', 0);
+    commit('equipWeapon', 0);
   },
   updateCharacter({ commit }, character) {
     commit('updateCharacter', character);

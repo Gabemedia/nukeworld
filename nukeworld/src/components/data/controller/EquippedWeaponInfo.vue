@@ -1,14 +1,14 @@
 <template>
-<div v-if="equippedWeapon" class="equipped-weapon-info">
+  <div v-if="equippedWeapon" class="equipped-weapon-info">
     <h3>Equipped Weapon</h3>
     <p><strong>Name:</strong> {{ equippedWeapon.name }}</p>
     <p><strong>Description:</strong> {{ equippedWeapon.desc }}</p>
     <p><strong>Attack:</strong> {{ equippedWeapon.attack }}</p>
     <p><strong>Defence:</strong> {{ equippedWeapon.defence }}</p>
-</div>
-<div v-else-if="character.equippedWeapon === null">
+  </div>
+  <div v-else-if="character.equippedWeapon === null">
     <p>No weapon equipped.</p>
-</div>
+  </div>
 </template>
 
 <script>
@@ -27,12 +27,3 @@ export default {
   },
 };
 </script>
-
-
-<style scoped>
-.equipped-weapon-info {
-  border: 1px solid #ccc;
-  padding: 10px;
-  border-radius: 5px;
-}
-</style>
