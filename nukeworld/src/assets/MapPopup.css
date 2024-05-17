@@ -1,0 +1,15 @@
+.leaflet-popup-content-wrapper {
+    width: 430px; /* Adjust the value as needed */
+  }
+  
+  .leaflet-popup-content {
+      margin: 12px!important;
+      line-height: 1.2;
+      font-size: 13px;
+      font-size: 1.08333em;
+      min-height: 1px;
+      overflow-y: auto!important;/* Add scrollbar if content exceeds the height */
+      width: 400px!important; /* Adjust the value as needed */
+  
+  
+  }

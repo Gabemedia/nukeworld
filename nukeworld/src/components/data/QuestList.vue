@@ -1,59 +1,43 @@
 <template>
-  <button class="btn btn-primary m-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasQuestsInfo">
-    Quest Log
-  </button>
-  <div style="width:30vw;" class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasQuestsInfo" aria-labelledby="offcanvasQuestsLabel">
-    <div class="offcanvas-header card-text-header text-light bg-primary bg-gradient d-flex justify-content-between align-items-center">
-      <h5 class="flex-grow-1">Quest Log</h5>
-      <div class="d-flex align-items-center">
-        <img class="icon-reload" @click="clearQuests" :src="require(`@/assets/interface/icons/reload.png`)" alt="Reload Quests">
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-      </div>
-    </div>
+  <div class="row">
+    <quest-pop-up ref="questPopup" :title="popupTitle" :desc="popupDesc"></quest-pop-up>
+    <div class="col-12" v-for="quest in quests" :key="quest.name">
+      <div class="card my-2">
+        <div class="card-header p-0 d-flex">
+          <div class="col-6" :style="{
+            backgroundImage: `url(${require(`@/assets/quests/bg/${quest.id}.jpg`)})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'top center',
+            backgroundRepeat: 'no-repeat'
+          }"></div>
 
-      <div class="offcanvas-body">
-        <div class="row">
-          <quest-pop-up ref="questPopup" :title="popupTitle" :desc="popupDesc"></quest-pop-up>
-          <div class="col-12" v-for="quest in quests" :key="quest.name">
-            <div class="card my-2">
-              <div class="card-header p-0 d-flex ">
-                <div class="col-6" :style="{
-                  backgroundImage: `url(${require(`@/assets/quests/bg/${quest.id}.jpg`)})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'top center',
-                  backgroundRepeat: 'no-repeat'
-                }"></div>
-
-                <div class="col-6 bg-light">
-                  <h5 class="card-text-header text-capitalize p-2">{{ quest.name }}</h5>
-                  <p class="card-text card-text-desc p-2">{{ quest.desc }}</p>
-                </div>
+          <div class="col-6 bg-light">
+            <h5 class="card-text-header text-capitalize p-2">{{ quest.name }}</h5>
+            <p class="card-text card-text-desc p-2">{{ quest.desc }}</p>
+          </div>
+        </div>
+        <div class="progress p-0 m-0">
+          <div class="progress-bar p-0 m-0" :style="{ width: quest.progress + '%' }"></div>
+        </div>
+        <div class="card-body bg-secondary bg-gradient p-2">
+          <p class="card-text" v-if="quest.state === 'in-progress'">Remaining Time: {{ formatTime(quest.remainingTime) }}</p>
+          <div class="d-flex align-items-center justify-content-center">
+            <div class="flex-grow-1 text-center">
+              <button class="btn btn-success bg-gradient" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)" style="width: 100%;">
+                {{ quest.state === 'not-started' ? 'Start Quest' : quest.state === 'in-progress' ? 'Please Wait' : 'Claim Rewards' }}
+              </button>
+            </div>
+            <div class="d-flex justify-content-around flex-grow-1 text-center">
+              <div style="margin-top:5px;" class="card-text d-block fw-bold">
+                <img style="width:25px; margin-top:-5px;" :src="require(`@/assets/interface/icons/exp.png`)" alt="Exp"> {{ quest.exp }}
               </div>
-              <div class="progress p-0 m-0">
-                <div class="progress-bar p-0 m-0" :style="{ width: quest.progress + '%' }"></div>
-              </div>
-              <div class="card-body bg-secondary bg-gradient p-2">
-                <p class="card-text" v-if="quest.state === 'in-progress'">Remaining Time: {{ formatTime(quest.remainingTime) }}</p>
-                <div class="d-flex align-items-center justify-content-center">
-                  <div class="flex-grow-1 text-center">        
-                    <button class="btn btn-success bg-gradient" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)" style="width: 100%;">
-                      {{ quest.state === 'not-started' ? 'Start Quest' : quest.state === 'in-progress' ? 'Please Wait' : 'Claim Rewards' }}
-                    </button>
-                  </div>
-                  <div class="d-flex justify-content-around flex-grow-1 text-center">
-                    <div style="margin-top:5px;" class="card-text d-block fw-bold">
-                      <img style="width:25px; margin-top:-5px;" :src="require(`@/assets/interface/icons/exp.png`)" alt="Exp"> {{ quest.exp }}
-                    </div>
-                    <div style="margin-top:5px;" class="card-text d-block fw-bold"><img style="width:25px; margin-top:-5px;" :src="require(`@/assets/interface/icons/money.png`)" alt="Money"> {{ quest.money }}</div>
-                  </div>
-                </div>
-             </div>
+              <div style="margin-top:5px;" class="card-text d-block fw-bold"><img style="width:25px; margin-top:-5px;" :src="require(`@/assets/interface/icons/money.png`)" alt="Money"> {{ quest.money }}</div>
             </div>
           </div>
-        </div>      
+        </div>
       </div>
     </div>
-
+  </div>
 </template>
 
 <script>
@@ -77,7 +61,7 @@ export default {
     ...mapState(['quests']),
   },
   methods: {
-    ...mapActions(['increaseExp', 'increaseMoney', 'handleQuest', 'claimRewards','clearQuests']),
+    ...mapActions(['increaseExp', 'increaseMoney', 'handleQuest', 'claimRewards', 'clearQuests']),
     ...mapMutations(['completeQuest', 'setQuests', 'updateQuestState']),
     isButtonDisabled(quest) {
       if (quest.state === 'not-started') {
@@ -89,13 +73,13 @@ export default {
       }
     },
     handleQuestAction(quest) {
-    if (quest.state === 'not-started') {
-      this.handleQuest(quest);
-      this.startQuestProgress(quest);
-    } else if (quest.state === 'completed') {
-      this.claimRewardsAction(quest);
-    }
-  },
+      if (quest.state === 'not-started') {
+        this.handleQuest(quest);
+        this.startQuestProgress(quest);
+      } else if (quest.state === 'completed') {
+        this.claimRewardsAction(quest);
+      }
+    },
     claimRewardsAction(quest) {
       const reactiveQuest = reactive(quest);
       if (!reactiveQuest.claimed) {
@@ -136,7 +120,7 @@ export default {
         if (reactiveQuest.remainingTime > 0) {
           reactiveQuest.remainingTime -= 1000;
           localStorage.setItem(reactiveQuest.name + 'RemainingTime', reactiveQuest.remainingTime);
-          
+
           // Calculate the elapsed time and progress
           const elapsedTime = Date.now() - reactiveQuest.startTime;
           const progress = Math.min((elapsedTime / reactiveQuest.duration) * 100, 100);
@@ -144,7 +128,7 @@ export default {
         } else {
           clearInterval(reactiveQuest.intervalId);
           reactiveQuest.state = 'completed';
-          toast.success(`Quest ${reactiveQuest.name} completed!    You earned ${reactiveQuest.exp} exp and ${reactiveQuest.money} money.`);
+          toast.success(`Quest ${reactiveQuest.name} completed! You earned ${reactiveQuest.exp} exp and ${reactiveQuest.money} money.`);
         }
         this.saveQuests();
       }, 1000);
@@ -222,20 +206,20 @@ export default {
 </script>
 <style scoped>
 .card-body {
-    color: white;
-    text-shadow:rgba(0, 0, 0, 1) 0px 0px 2px;
+  color: white;
+  text-shadow:rgba(0, 0, 0, 1) 0px 0px 2px;
 }
 .card-text{
   font-size: 0.8rem;
   font-weight: 400;
 }
 .card-text-header {
-    font-weight: 600;
-    font-size: 1rem;
+  font-weight: 600;
+  font-size: 1rem;
 }
 .card-text-desc {
-    font-size: 1rem;
-    font-weight: 400;
+  font-size: 1rem;
+  font-weight: 400;
 }
 .icon-reload {
   width: 18px;
@@ -248,4 +232,3 @@ export default {
   filter:opacity(0.8);
 }
 </style>
-```

@@ -1,0 +1,130 @@
+<template>
+  <quest-pop-up class="popup-details" ref="questPopup" :title="popupTitle" :desc="popupDesc"></quest-pop-up>
+  <div v-if="quest">
+    <div class="card my-2">
+      <div class="card-header p-0 d-flex">
+        <div class="col-6" :style="{
+          backgroundImage: `url(${require(`@/assets/quests/bg/${quest.id}.jpg`)})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'top center',
+          backgroundRepeat: 'no-repeat'
+        }"></div>
+
+        <div class="col-6 bg-light">
+          <h5 class="card-text-header text-capitalize p-2">{{ quest.name }}</h5>
+          <p class="card-text card-text-desc p-2">{{ quest.desc }}</p>
+        </div>
+      </div>
+      <div class="progress p-0 m-0">
+        <div class="progress-bar p-0 m-0" :style="{ width: quest.progress + '%' }"></div>
+      </div>
+      <div class="card-body bg-secondary bg-gradient p-2">
+        <p class="card-text" v-if="quest.state === 'in-progress'">Remaining Time: {{ formatTime(quest.remainingTime) }}</p>
+        <div class="d-flex align-items-center justify-content-center">
+          <div class="flex-grow-1 text-center">
+            <button class="btn btn-success bg-gradient" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)" style="width: 100%;">
+              {{ quest.state === 'not-started' ? 'Start Quest' : quest.state === 'in-progress' ? 'Please Wait' : 'Claim Rewards' }}
+            </button>
+          </div>
+          <div class="d-flex justify-content-around flex-grow-1 text-center">
+            <div style="margin-top:5px;" class="card-text d-block fw-bold">
+              <img style="width:25px; margin-top:-5px;" :src="require(`@/assets/interface/icons/exp.png`)" alt="Exp"> {{ quest.exp }}
+            </div>
+            <div style="margin-top:5px;" class="card-text d-block fw-bold"><img style="width:25px; margin-top:-5px;" :src="require(`@/assets/interface/icons/money.png`)" alt="Money"> {{ quest.money }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div v-else>
+    No available quests.
+  </div>
+</template>
+
+<script>
+import { mapActions } from 'vuex';
+import QuestPopUp from './controller/popup/QuestPopUp.vue';
+import '../../assets/MapPopup.css';
+
+export default {
+  components: {
+    QuestPopUp,
+  },
+  props: {
+    quest: {
+      type: Object,
+      required: true,
+    },
+  },
+  data() {
+    return {
+      popupTitle: '',
+      popupDesc: '',
+    };
+  },
+  methods: {
+    ...mapActions(['handleQuest', 'claimRewards', 'startQuestProgress']),
+    handleQuestAction(quest) {
+      if (quest.state === 'not-started') {
+        this.handleQuest(quest);
+        this.startQuestProgress(quest);
+      } else if (quest.state === 'completed') {
+        this.claimRewardsAction(quest);
+      }
+    },
+    claimRewardsAction(quest) {
+      if (!quest.claimed) {
+        this.claimRewards(quest);
+        this.popupTitle = quest.name;
+        this.popupDesc = 'Quest completed! You earned ' + quest.exp + ' exp and ' + quest.money + ' money.';
+        if (this.$refs.questPopup) {
+          this.$refs.questPopup.openPopup();
+        }
+        quest.claimed = true;
+      }
+    },
+    formatTime(milliseconds) {
+      if (isNaN(milliseconds)) {
+        return '';
+      }
+      const totalSeconds = Math.floor(milliseconds / 1000);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return `${minutes} min ${seconds} sec`;
+    },
+    isButtonDisabled(quest) {
+      if (quest.state === 'not-started') {
+        return false;
+      } else if (quest.state === 'in-progress') {
+        return true;
+      } else if (quest.state === 'completed') {
+        return false;
+      }
+    },
+  },
+};
+</script>
+
+<style scoped>
+.popup-details{
+    scale: 0.8;
+
+}
+
+.card-body {
+  color: white;
+  text-shadow: rgba(0, 0, 0, 1) 0px 0px 2px;
+}
+.card-text {
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+.card-text-header {
+  font-weight: 600;
+  font-size: 1rem;
+}
+.card-text-desc {
+  font-size: 1rem;
+  font-weight: 400;
+}
+</style>
