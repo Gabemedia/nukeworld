@@ -9,6 +9,7 @@
   <ExpLvl />
   <CharacterInfo />
   <QuestLog />
+  <InventoryLog />
   <button @click="toggleMap" class="btn btn-primary m-2" type="button">Toggle Map</button>
 
 </template>
@@ -18,6 +19,7 @@ import { mapState } from 'vuex';
 import CharacterInfo from './data/CharacterInfo.vue';
 import ExpLvl from './data/ExpLvl.vue';
 import QuestLog from './data/QuestLog.vue';
+import InventoryLog from './data/InventoryLog.vue';
 
 export default {
   name: 'GameHeader',
@@ -25,6 +27,7 @@ export default {
     CharacterInfo,
     ExpLvl,
     QuestLog,
+    InventoryLog,
   },
   computed: {
     ...mapState(['character']),
