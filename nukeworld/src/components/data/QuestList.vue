@@ -33,7 +33,10 @@
               </div>
               <div style="margin-top:5px;" class="card-text d-block fw-bold"><img style="width:25px; margin-top:-5px;" :src="require(`@/assets/interface/icons/money.png`)" alt="Money"> {{ quest.money }}</div>
               <div v-if="quest.reward && quest.reward.length > 0" style="margin-top:5px;" class="card-text d-block fw-bold">
-                <img style="width:25px; margin-top:-5px;" :src="require(`@/assets/interface/icons/reward.png`)" alt="Reward"> Reward
+                <img style="width:25px; margin-top:-5px;" :src="require(`@/assets/interface/icons/reward.png`)" alt="Reward">
+                <span v-for="rewardId in quest.reward" :key="rewardId">
+                  {{ getRewardItemName(rewardId) }}
+                </span>
               </div>
             </div>
           </div>
@@ -164,6 +167,10 @@ export default {
       this.quests = [];
       this.saveQuests();
     },
+    getRewardItemName(rewardId) {
+      const rewardItem = this.$store.state.items.find(item => item.id === rewardId);
+      return rewardItem ? rewardItem.name : '';
+    },
   },
   mounted() {
     window.addEventListener('beforeunload', this.saveQuests);
@@ -197,12 +204,13 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .card-body {
   color: white;
-  text-shadow:rgba(0, 0, 0, 1) 0px 0px 2px;
+  text-shadow: rgba(0, 0, 0, 1) 0px 0px 2px;
 }
-.card-text{
+.card-text {
   font-size: 0.8rem;
   font-weight: 400;
 }
@@ -218,10 +226,10 @@ export default {
   width: 18px;
   transition: opacity 0.3 ease;
   cursor: pointer;
-  filter:opacity(0.5);
+  filter: opacity(0.5);
 }
 
 .icon-reload:hover {
-  filter:opacity(0.8);
+  filter: opacity(0.8);
 }
 </style>

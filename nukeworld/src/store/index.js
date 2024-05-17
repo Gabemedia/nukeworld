@@ -160,27 +160,28 @@ const store = createStore({
     claimRewards({ commit, dispatch, state }, quest) {
       dispatch('increaseExp', quest.exp);
       dispatch('increaseMoney', quest.money);
-  
+    
       // Check if the quest has a reward
       if (quest.reward && quest.reward.length > 0) {
-        // Select a random item ID from the reward array
-        const rewardItemId = quest.reward[Math.floor(Math.random() * quest.reward.length)];
-  
-        // Find the item object in the items array from the state
-        const rewardItem = state.items.find(item => item.id === rewardItemId);
-  
-        if (rewardItem) {
-          // Add the reward item to the character's inventory
-          state.character.inventory.push(rewardItem);
-  
-          // Display a notification or message to the player
-          console.log(`You received a ${rewardItem.name} as a reward for completing the quest "${quest.name}"!`);
-        }
+        // Loop through the reward item IDs
+        quest.reward.forEach(rewardId => {
+          // Find the item object in the items array from the state
+          const rewardItem = state.items.find(item => item.id === rewardId);
+    
+          if (rewardItem) {
+            // Add the reward item to the character's inventory
+            state.character.inventory.push(rewardItem);
+    
+            // Display a notification or message to the player
+            console.log(`You received a ${rewardItem.name} as a reward for completing the quest "${quest.name}"!`);
+          }
+        });
       }
-  
+    
       commit('resetQuest', quest);
+      commit('updateCharacterInArray', state.character); // Add this line to update the character in the characters array
     },
-    clearQuests({ commit }) {
+      clearQuests({ commit }) {
       commit('setQuests', []);
       commit('setQuests', defaultQuests);
     },
