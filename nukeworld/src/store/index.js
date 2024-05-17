@@ -13,12 +13,7 @@ const state = reactive({
     maxExp: 2500,
     level: 1,
     money: 0,
-    weapons: [],
-    armor: [],
-    aid: [], 
-    misc: [],
-    junk: [], 
-    account: [],
+    inventory: [],
   },
   quests: reactive(JSON.parse(localStorage.getItem('quests')) || defaultQuests),
   items: items,
@@ -94,19 +89,7 @@ const store = createStore({
       commit('updateCharacter', { name: username, email, password });
     },
     createCharacter({ commit, state }) {
-      const newCharacter = {
-        ...state.character,
-        level: 1,
-        exp: 1,
-        maxExp: 2500,
-        money: 0,
-        weapons: [], // Initialize as an empty array
-        armor: [], // Initialize as an empty array
-        aid: [], // Initialize as an empty array
-        misc: [], // Initialize as an empty array
-        junk: [], // Initialize as an empty array
-        account: [], // Initialize as an empty array
-      };
+      const newCharacter = { ...state.character, level: 1, exp: 1, maxExp: 2500, money: 0 };
       commit('addCharacter', newCharacter);
       commit('updateCharacter', newCharacter);
     },
@@ -180,31 +163,19 @@ const store = createStore({
   
       // Check if the quest has a reward
       if (quest.reward && quest.reward.length > 0) {
-        // Loop through the reward objects
-        quest.reward.forEach(rewardObj => {
-          // Find the item object in the items array from the state
-          const rewardItem = state.items[rewardObj.category].find(item => item.id === rewardObj.id);
+        // Select a random item ID from the reward array
+        const rewardItemId = quest.reward[Math.floor(Math.random() * quest.reward.length)];
   
-          if (rewardItem) {
-            // Add the reward item to the corresponding array in the character object
-            if (rewardObj.category === 'weapon') {
-              state.character.weapons.push(rewardItem);
-            } else if (rewardObj.category === 'armor') {
-              state.character.armor.push(rewardItem);
-            } else if (rewardObj.category === 'aid') {
-              state.character.aid.push(rewardItem);
-            } else if (rewardObj.category === 'misc') {
-              state.character.misc.push(rewardItem);
-            } else if (rewardObj.category === 'junk') {
-              state.character.junk.push(rewardItem);
-            } else if (rewardObj.category === 'account') {
-              state.character.account.push(rewardItem);
-            }
+        // Find the item object in the items array from the state
+        const rewardItem = state.items.find(item => item.id === rewardItemId);
   
-            // Display a notification or message to the player
-            console.log(`You received a ${rewardItem.name} as a reward for completing the quest "${quest.name}"!`);
-          }
-        });
+        if (rewardItem) {
+          // Add the reward item to the character's inventory
+          state.character.inventory.push(rewardItem);
+  
+          // Display a notification or message to the player
+          console.log(`You received a ${rewardItem.name} as a reward for completing the quest "${quest.name}"!`);
+        }
       }
   
       commit('resetQuest', quest);
