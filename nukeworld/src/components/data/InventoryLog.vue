@@ -10,16 +10,19 @@
 
     <div class="offcanvas-body">
       <InventoryStash />
+      <EquippedWeaponInfo /> 
     </div>
   </div>
 </template>
 
 <script>
 import InventoryStash from './InventoryStash.vue';
+import EquippedWeaponInfo from './controller/EquippedWeaponInfo.vue';
 
 export default {
   components: {
     InventoryStash,
+    EquippedWeaponInfo,
   },
 };
 </script>

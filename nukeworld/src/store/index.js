@@ -79,7 +79,7 @@ const mutations = {
   },
   equipWeapon(state, itemId) {
     const item = state.items.find(item => item.id === itemId);
-    if (item && item.state === 'none') {
+    if (item) {
       if (state.character.equippedWeapon) {
         const prevWeapon = state.items.find(item => item.id === state.character.equippedWeapon);
         if (prevWeapon) {
@@ -182,7 +182,7 @@ const actions = {
     commit('setQuests', []);
     commit('setQuests', defaultQuests);
   },
-  equipWeapon({ commit, state }, itemId) {
+  equipWeapon({ commit }, itemId) {
     commit('equipWeapon', itemId);
   },
 };
