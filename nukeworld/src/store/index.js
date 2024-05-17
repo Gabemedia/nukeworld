@@ -157,6 +157,23 @@ const store = createStore({
     claimRewards({ commit, dispatch }, quest) {
       dispatch('increaseExp', quest.exp);
       dispatch('increaseMoney', quest.money);
+      // Check if the quest has a reward
+      if (quest.reward && quest.reward.length > 0) {
+        // Select a random item ID from the reward array
+        const rewardItemId = quest.reward[Math.floor(Math.random() * quest.reward.length)];
+
+        // Find the item object in the items.js file
+        const rewardItem = require('./items').default.find(item => item.id === rewardItemId);
+
+        if (rewardItem) {
+          // Add the reward item to the character's inventory
+          // (Assuming you have an "inventory" property in the character object)
+          state.character.inventory.push(rewardItem);
+
+          // Display a notification or message to the player
+          console.log(`You received a ${rewardItem.name} as a reward for completing the quest "${quest.name}"!`);
+        }
+      }
       commit('resetQuest', quest);
     },
     clearQuests({ commit }) {
