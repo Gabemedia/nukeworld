@@ -7,7 +7,7 @@
         <button v-if="item.state === 'none'" @click="equipWeapon(item.id)" :disabled="item.id === character.equippedWeapon">
           {{ item.id === character.equippedWeapon ? 'Equipped' : 'Equip' }}
         </button>
-        <span v-else-if="item.state === 'equipped'" class="equipped-badge">Equipped</span>
+        <span v-else-if="item.state === 'equipped' && item.id !== 0" class="equipped-badge">Equipped</span>
       </li>
     </ul>
   </div>

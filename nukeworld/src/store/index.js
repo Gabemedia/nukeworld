@@ -13,12 +13,13 @@ const state = reactive({
     maxExp: 2500,
     level: 1,
     money: 0,
-    inventory: [{ id: 0 }],
-    equippedWeapon: JSON.parse(localStorage.getItem('equippedWeapon')) || 0,
+    inventory: [],
+    equippedWeapon: null,
   },
   quests: reactive(JSON.parse(localStorage.getItem('quests')) || defaultQuests),
   items,
 });
+
 
 const getters = {
   characterInArray: (state) => (email) => state.characters.find((ch) => ch.email === email),
@@ -89,23 +90,16 @@ const mutations = {
       }
       item.state = 'equipped';
       state.character.equippedWeapon = itemId;
-    } else if (!state.character.equippedWeapon) {
-      // Udstyr "Hands"-våbnet som standard for en ny karakter
-      const handsWeapon = state.items.find(item => item.id === 0);
-      if (handsWeapon) {
-        handsWeapon.state = 'equipped';
-        state.character.equippedWeapon = 0;
-      }
     }
-  },
+  },  
 };
 
 const actions = {
   login({ commit }, { username, email, password }) {
     commit('updateCharacter', { name: username, email, password,});
   },
-  createCharacter({ commit, state, }) {
-    const newCharacter = { ...state.character, level: 1, exp: 1, maxExp: 2500, money: 0, inventory: [state.items[0]] };
+  createCharacter({ commit, state }) {
+    const newCharacter = { ...state.character, level: 1, exp: 1, maxExp: 2500, money: 0, inventory: [state.items[0]], equippedWeapon: 0 };
     commit('addCharacter', newCharacter);
     commit('updateCharacter', newCharacter);
     commit('equipWeapon', 0);
@@ -207,7 +201,6 @@ watch(
   () => state.character,
   (newCharacter) => {
     localStorage.setItem('character', JSON.stringify(newCharacter));
-    localStorage.setItem('equippedWeapon', JSON.stringify(newCharacter.equippedWeapon));
   },
   { deep: true }
 );

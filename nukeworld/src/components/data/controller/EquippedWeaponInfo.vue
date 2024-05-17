@@ -6,9 +6,6 @@
     <p><strong>Attack:</strong> {{ equippedWeapon.attack }}</p>
     <p><strong>Defence:</strong> {{ equippedWeapon.defence }}</p>
   </div>
-  <div v-else-if="character.equippedWeapon === null">
-    <p>No weapon equipped.</p>
-  </div>
 </template>
 
 <script>
@@ -19,10 +16,9 @@ export default {
   computed: {
     ...mapState(['character', 'items']),
     equippedWeapon() {
-      if (this.character.equippedWeapon) {
-        return this.items.find(item => item.id === this.character.equippedWeapon);
-      }
-      return null;
+      return this.character.equippedWeapon !== null
+        ? this.items.find(item => item.id === this.character.equippedWeapon)
+        : null;
     },
   },
 };
