@@ -4,23 +4,52 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 
 ## Changelog
 
-### Version 1.0.0 (2023-05-25)
+### Version 0.1.0 (2024-02-29)
 
-- Initial release
-- Implemented quest system with progress tracking
-- Added reward system for completed quests
+- Initial commit
+- Set up Vue.js project with Vue CLI
+- Configured Vuex store
+- Implemented basic components and routing
+
+### Version 0.2.0 (2024-02-29)
+- Added CharacterCreation component to allow players to create new characters
+- Added GameWorld component to display the main game area
+- Added UserLogin component to handle user authentication
+- Updated Vue Store to handle Character Creation and User Login state
+
+### Version 0.3.0 (2024-03-04)
+- Added CharacterList component to display all created characters
+- Implemented character selection to set active character
+- Added Character leveling system to track XP and level
+- Introduced money/currency system
+
+### Version 0.4.0 (2024-03-04)
+- Added quest system with progress tracking
+- Implemented reward system for completed quests
+- Implemented popup system for completed quests
+- Implemented level system for completed quests
+
+
+### Version 0.4.5 (2024-03-05)
+- Code cleanup and refactoring
+- Added offcanvas
+- Added CharacterInfo component to display character details
+- Added QuestLog component to track quest progress
+- Implemented more quests with different objectives.
+
+### Version 0.4.7 (2024-03-06)
+- Added Toastify notifications for quest completions.
+- Updated overall styling and UI.
+- Refactored Character component to inherit from base Character class.
+- Refactored ExpLvl component to inherit from base ExpLvl class.
+- Refactored QuestLines component.
+
+### Version 0.5.0 (2024-05-16)
 - Integrated map component with quest markers
-- Implemented character creation and login
 - Introduced inventory management system
-
-### Version 1.0.1 (2023-05-26)
-
 - Fixed an issue where reward items were not added to the character's inventory
-- Updated the `claimRewards` action in the Vuex store to correctly update the `inventory` array
-- Added the `updateCharacterInArray` mutation to update the character object in the `characters` array
 
 ## Getting Started
-
 To get started with NukeWorld, follow these steps:
 
 1. Clone the repository: git clone https://github.com/Gabemedia/nukeworld.git
