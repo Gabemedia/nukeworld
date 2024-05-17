@@ -11,7 +11,11 @@ export default [
     disabled: false,
     lat: 51.5074, // Latitude for Tunnel Access
     lon: -0.1278, // Longitude for Tunnel Access
-    reward: [1, 1, 1],
+    reward: [
+      { category: 'weapon', id: 1 }, // Tire Iron
+      { category: 'armor', id: 1 }, // Leather Armor
+      { category: 'aid', id: 1 }, // Stimpak
+    ],
   },
   {
     id: 2,
@@ -25,7 +29,11 @@ export default [
     disabled: false,
     lat: 51.5137, // Latitude for Gateway to the City
     lon: -0.0983, // Longitude for Gateway to the City
-    reward: [1,1],
+    reward: [
+      { category: 'weapon', id: 1 }, // Tire Iron
+      { category: 'armor', id: 1 }, // Leather Armor
+      { category: 'aid', id: 1 }, // Stimpak
+    ],
   },
   {
     id: 3,
@@ -39,7 +47,11 @@ export default [
     disabled: false,
     lat: 51.5099, // Latitude for Clock Tower
     lon: -0.0768, // Longitude for Clock Tower
-    reward: [2, 1],
+    reward: [
+      { category: 'weapon', id: 1 }, // Tire Iron
+      { category: 'armor', id: 1 }, // Leather Armor
+      { category: 'aid', id: 1 }, // Stimpak
+    ],
   },
   {
     id: 4,
@@ -53,6 +65,10 @@ export default [
     disabled: false,
     lat: 51.5015, // Latitude for Dunvick Castle
     lon: -0.0762, // Longitude for Dunvick Castle
-    reward: [2],
+    reward: [
+      { category: 'weapon', id: 1 }, // Tire Iron
+      { category: 'armor', id: 1 }, // Leather Armor
+      { category: 'aid', id: 1 }, // Stimpak
+    ],
   },
 ];

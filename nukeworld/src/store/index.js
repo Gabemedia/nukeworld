@@ -180,29 +180,24 @@ const store = createStore({
   
       // Check if the quest has a reward
       if (quest.reward && quest.reward.length > 0) {
-        // Loop through the reward item IDs
-        quest.reward.forEach(rewardItemId => {
+        // Loop through the reward objects
+        quest.reward.forEach(rewardObj => {
           // Find the item object in the items array from the state
-          const rewardItem = state.items.weapons.find(item => item.id === rewardItemId) ||
-                             state.items.armor.find(item => item.id === rewardItemId) ||
-                             state.items.aid.find(item => item.id === rewardItemId) ||
-                             state.items.misc.find(item => item.id === rewardItemId) ||
-                             state.items.junk.find(item => item.id === rewardItemId) ||
-                             state.items.account.find(item => item.id === rewardItemId);
+          const rewardItem = state.items[rewardObj.category].find(item => item.id === rewardObj.id);
   
           if (rewardItem) {
             // Add the reward item to the corresponding array in the character object
-            if (rewardItem.category === 'weapon' && state.character.weapons) {
+            if (rewardObj.category === 'weapon') {
               state.character.weapons.push(rewardItem);
-            } else if (rewardItem.category === 'armor' && state.character.armor) {
+            } else if (rewardObj.category === 'armor') {
               state.character.armor.push(rewardItem);
-            } else if (rewardItem.category === 'aid' && state.character.aid) {
+            } else if (rewardObj.category === 'aid') {
               state.character.aid.push(rewardItem);
-            } else if (rewardItem.category === 'misc' && state.character.misc) {
+            } else if (rewardObj.category === 'misc') {
               state.character.misc.push(rewardItem);
-            } else if (rewardItem.category === 'junk' && state.character.junk) {
+            } else if (rewardObj.category === 'junk') {
               state.character.junk.push(rewardItem);
-            } else if (rewardItem.category === 'account' && state.character.account) {
+            } else if (rewardObj.category === 'account') {
               state.character.account.push(rewardItem);
             }
   
