@@ -13,8 +13,8 @@ const state = reactive({
     maxExp: 2500,
     level: 1,
     money: 0,
-    inventory: [],
-    equippedWeapon: null,
+    inventory: [{ id: 0 }],
+    equippedWeapon: JSON.parse(localStorage.getItem('equippedWeapon')) || null,
   },
   quests: reactive(JSON.parse(localStorage.getItem('quests')) || defaultQuests),
   items,
@@ -79,7 +79,8 @@ const mutations = {
   },
   equipWeapon(state, itemId) {
     const item = state.items.find(item => item.id === itemId);
-    if (item) {
+    const characterItem = state.character.inventory.find(charItem => charItem.id === itemId);
+    if (item && characterItem) {
       if (state.character.equippedWeapon) {
         const prevWeapon = state.items.find(item => item.id === state.character.equippedWeapon);
         if (prevWeapon) {
@@ -88,6 +89,13 @@ const mutations = {
       }
       item.state = 'equipped';
       state.character.equippedWeapon = itemId;
+    } else if (!state.character.equippedWeapon) {
+      // Udstyr "Hands"-våbnet som standard for en ny karakter
+      const handsWeapon = state.items.find(item => item.id === 0);
+      if (handsWeapon) {
+        handsWeapon.state = 'equipped';
+        state.character.equippedWeapon = 0;
+      }
     }
   },
 };
@@ -96,10 +104,11 @@ const actions = {
   login({ commit }, { username, email, password }) {
     commit('updateCharacter', { name: username, email, password });
   },
-  createCharacter({ commit, state }) {
-    const newCharacter = { ...state.character, level: 1, exp: 1, maxExp: 2500, money: 0 };
+  createCharacter({ commit, state, dispatch }) {
+    const newCharacter = { ...state.character, level: 1, exp: 1, maxExp: 2500, money: 0, inventory: [state.items[0]] };
     commit('addCharacter', newCharacter);
     commit('updateCharacter', newCharacter);
+    dispatch('equipWeapon', 0);
   },
   updateCharacter({ commit }, character) {
     commit('updateCharacter', character);
@@ -198,6 +207,7 @@ watch(
   () => state.character,
   (newCharacter) => {
     localStorage.setItem('character', JSON.stringify(newCharacter));
+    localStorage.setItem('equippedWeapon', JSON.stringify(newCharacter.equippedWeapon));
   },
   { deep: true }
 );

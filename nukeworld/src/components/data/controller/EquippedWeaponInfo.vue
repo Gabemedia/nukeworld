@@ -1,14 +1,14 @@
 <template>
-  <div v-if="equippedWeapon" class="equipped-weapon-info">
+<div v-if="equippedWeapon" class="equipped-weapon-info">
     <h3>Equipped Weapon</h3>
     <p><strong>Name:</strong> {{ equippedWeapon.name }}</p>
     <p><strong>Description:</strong> {{ equippedWeapon.desc }}</p>
     <p><strong>Attack:</strong> {{ equippedWeapon.attack }}</p>
     <p><strong>Defence:</strong> {{ equippedWeapon.defence }}</p>
-  </div>
-  <div v-else>
+</div>
+<div v-else-if="character.equippedWeapon === null">
     <p>No weapon equipped.</p>
-  </div>
+</div>
 </template>
 
 <script>
@@ -19,13 +19,15 @@ export default {
   computed: {
     ...mapState(['character', 'items']),
     equippedWeapon() {
-      return this.character.equippedWeapon
-        ? this.items.find(item => item.id === this.character.equippedWeapon)
-        : null;
+      if (this.character.equippedWeapon) {
+        return this.items.find(item => item.id === this.character.equippedWeapon);
+      }
+      return null;
     },
   },
 };
 </script>
+
 
 <style scoped>
 .equipped-weapon-info {

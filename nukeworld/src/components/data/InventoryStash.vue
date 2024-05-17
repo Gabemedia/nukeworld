@@ -4,7 +4,9 @@
     <ul>
       <li v-for="item in inventory" :key="item.id">
         {{ item.name }}
-        <button v-if="item.state === 'none'" @click="equipWeapon(item.id)">Equip</button>
+        <button v-if="item.state === 'none'" @click="equipWeapon(item.id)" :disabled="item.id === character.equippedWeapon">
+          {{ item.id === character.equippedWeapon ? 'Equipped' : 'Equip' }}
+        </button>
         <span v-else-if="item.state === 'equipped'" class="equipped-badge">Equipped</span>
       </li>
     </ul>
@@ -19,7 +21,7 @@ export default {
   computed: {
     ...mapState(['character', 'items']),
     inventory() {
-      return this.items.filter(item => item.attack > 0);
+      return this.character.inventory.map(charItem => this.items.find(item => item.id === charItem.id));
     },
   },
   methods: {

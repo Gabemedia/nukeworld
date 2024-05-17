@@ -1,5 +1,13 @@
 export default [
   {
+    id: 0,
+    name: 'Hands',
+    desc: 'Hands is a great melee weapon. It is used for all sorts of combat.',
+    attack: 1,
+    defence: 0,
+    state: 'none',
+  },
+  {
     id: 1,
     name: 'Tire Iron',
     desc: 'Tire Iron is a great melee weapon. It is used for all sorts of combat.',
