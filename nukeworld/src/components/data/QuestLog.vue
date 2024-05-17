@@ -19,7 +19,7 @@
 
 <script>
 import { mapActions } from 'vuex';
-import QuestList from './QuestList.vue';
+import QuestList from './controller/QuestList.vue';
 
 export default {
   components: {

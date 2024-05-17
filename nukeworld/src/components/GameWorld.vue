@@ -13,7 +13,7 @@
 
 <script>
 import GameHeader from './GameHeader.vue';
-import MapComponent from './MapComponent.vue';
+import MapComponent from './data/MapComponent.vue';
 import { mapState } from 'vuex';
 
 export default {

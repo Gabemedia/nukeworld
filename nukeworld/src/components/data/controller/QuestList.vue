@@ -50,7 +50,7 @@
 import { reactive } from 'vue';
 import { mapState, mapMutations, mapActions } from 'vuex';
 import { toast } from "vue3-toastify";
-import QuestPopUp from './controller/popup/QuestPopUp.vue';
+import QuestPopUp from './popup/QuestPopUp.vue';
 
 export default {
   components: {

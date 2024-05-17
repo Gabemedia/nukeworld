@@ -49,7 +49,7 @@
 
 <script>
 import { mapActions } from 'vuex';
-import QuestPopUp from './controller/popup/QuestPopUp.vue';
+import QuestPopUp from './popup/QuestPopUp.vue';
 
 export default {
   components: {

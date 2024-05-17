@@ -14,7 +14,7 @@
 <script>
 import { LMap, LTileLayer, LMarker, LPopup } from '@vue-leaflet/vue-leaflet';
 import { mapState } from 'vuex';
-import QuestDetails from './data/QuestDetails.vue';
+import QuestDetails from './controller/QuestDetails.vue';
 
 export default {
   components: {

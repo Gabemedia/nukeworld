@@ -9,9 +9,9 @@ export default [
     progress: 0,
     state: 'not-started',
     disabled: false,
-    lat: 51.5074, // Latitude for Tunnel Access
-    lon: -0.1278, // Longitude for Tunnel Access
-    reward: [4],
+    lat: 51.5150, // Latitude for Gateway to the City
+    lon: -0.0883, // Longitude for Gateway to the City
+    reward: [1],
   },
   {
     id: 2,
