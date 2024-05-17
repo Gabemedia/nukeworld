@@ -173,7 +173,6 @@ const actions = {
         const rewardItem = state.items.find((item) => item.id === rewardId);
         if (rewardItem) {
           state.character.inventory.push(rewardItem);
-          console.log(`You received a ${rewardItem.name} as a reward for completing the quest "${quest.name}"!`);
         }
       });
     }
