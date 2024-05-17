@@ -6,62 +6,64 @@ export default {
       desc: 'Tire Iron is a great melee weapon. It is used for all sorts of combat.',
       attack: 2,
       defence: 0,
-      state: 'none',
-      category: 'weapon', // Add the category property
+      category: 'weapon',
     },
-    // ... other weapons
+    {
+      id: 2,
+      name: 'Hunting Rifle',
+      desc: 'Hunting Rifle is a great ranged weapon. It is used for hunting.',
+      attack: 20,
+      defence: 0,
+      category: 'weapon',
+    },
+    // Add more weapons here
   ],
   armor: [
     {
-      id: 10,
+      id: 1,
       name: 'Leather Armor',
       desc: 'Lightweight armor made from leather.',
       defence: 5,
-      state: 'none',
-      category: 'armor', // Add the category property
+      category: 'armor',
     },
-    // ... other armor items
+    // Add more armor items here
   ],
   aid: [
     {
-      id: 20,
+      id: 1,
       name: 'Stimpak',
       desc: 'A medical solution that can heal wounds and restore health.',
       healing: 25,
-      state: 'none',
-      category: 'aid', // Add the category property
+      category: 'aid',
     },
-    // ... other aid items
+    // Add more aid items here
   ],
   misc: [
     {
-      id: 30,
+      id: 1,
       name: 'Lockpick',
       desc: 'A tool used for picking locks.',
-      state: 'none',
-      category: 'misc', // Add the category property
+      category: 'misc',
     },
-    // ... other miscellaneous items
+    // Add more miscellaneous items here
   ],
   junk: [
     {
-      id: 40,
+      id: 1,
       name: 'Scrap Metal',
       desc: 'A pile of scrap metal that can be used for crafting.',
-      state: 'none',
-      category: 'junk', // Add the category property
+      category: 'junk',
     },
-    // ... other junk items
+    // Add more junk items here
   ],
   account: [
     {
-      id: 50,
+      id: 1,
       name: 'Bottle Caps',
       desc: 'The currency used in the wasteland.',
       value: 1,
-      state: 'none',
-      category: 'account', // Add the category property
+      category: 'account',
     },
-    // ... other account items
+    // Add more account items here
   ],
 };

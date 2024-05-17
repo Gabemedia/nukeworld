@@ -13,7 +13,12 @@ const state = reactive({
     maxExp: 2500,
     level: 1,
     money: 0,
-    inventory: [],
+    weapons: [],
+    armor: [],
+    aid: [], 
+    misc: [],
+    junk: [], 
+    account: [],
   },
   quests: reactive(JSON.parse(localStorage.getItem('quests')) || defaultQuests),
   items: items,
@@ -89,7 +94,19 @@ const store = createStore({
       commit('updateCharacter', { name: username, email, password });
     },
     createCharacter({ commit, state }) {
-      const newCharacter = { ...state.character, level: 1, exp: 1, maxExp: 2500, money: 0 };
+      const newCharacter = {
+        ...state.character,
+        level: 1,
+        exp: 1,
+        maxExp: 2500,
+        money: 0,
+        weapons: [], // Initialize as an empty array
+        armor: [], // Initialize as an empty array
+        aid: [], // Initialize as an empty array
+        misc: [], // Initialize as an empty array
+        junk: [], // Initialize as an empty array
+        account: [], // Initialize as an empty array
+      };
       commit('addCharacter', newCharacter);
       commit('updateCharacter', newCharacter);
     },
@@ -163,24 +180,36 @@ const store = createStore({
   
       // Check if the quest has a reward
       if (quest.reward && quest.reward.length > 0) {
-        // Select a random item ID from the reward array
-        const rewardItemId = quest.reward[Math.floor(Math.random() * quest.reward.length)];
+        // Loop through the reward item IDs
+        quest.reward.forEach(rewardItemId => {
+          // Find the item object in the items array from the state
+          const rewardItem = state.items.weapons.find(item => item.id === rewardItemId) ||
+                             state.items.armor.find(item => item.id === rewardItemId) ||
+                             state.items.aid.find(item => item.id === rewardItemId) ||
+                             state.items.misc.find(item => item.id === rewardItemId) ||
+                             state.items.junk.find(item => item.id === rewardItemId) ||
+                             state.items.account.find(item => item.id === rewardItemId);
   
-        // Find the item object in the items array from the state
-        const rewardItem = state.items.weapons.find(item => item.id === rewardItemId) ||
-                           state.items.armor.find(item => item.id === rewardItemId) ||
-                           state.items.aid.find(item => item.id === rewardItemId) ||
-                           state.items.misc.find(item => item.id === rewardItemId) ||
-                           state.items.junk.find(item => item.id === rewardItemId) ||
-                           state.items.account.find(item => item.id === rewardItemId);
+          if (rewardItem) {
+            // Add the reward item to the corresponding array in the character object
+            if (rewardItem.category === 'weapon' && state.character.weapons) {
+              state.character.weapons.push(rewardItem);
+            } else if (rewardItem.category === 'armor' && state.character.armor) {
+              state.character.armor.push(rewardItem);
+            } else if (rewardItem.category === 'aid' && state.character.aid) {
+              state.character.aid.push(rewardItem);
+            } else if (rewardItem.category === 'misc' && state.character.misc) {
+              state.character.misc.push(rewardItem);
+            } else if (rewardItem.category === 'junk' && state.character.junk) {
+              state.character.junk.push(rewardItem);
+            } else if (rewardItem.category === 'account' && state.character.account) {
+              state.character.account.push(rewardItem);
+            }
   
-        if (rewardItem) {
-          // Add the reward item to the character's inventory
-          state.character.inventory.push(rewardItem);
-  
-          // Display a notification or message to the player
-          console.log(`You received a ${rewardItem.name} as a reward for completing the quest "${quest.name}"!`);
-        }
+            // Display a notification or message to the player
+            console.log(`You received a ${rewardItem.name} as a reward for completing the quest "${quest.name}"!`);
+          }
+        });
       }
   
       commit('resetQuest', quest);
