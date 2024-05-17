@@ -1,23 +1,27 @@
-# nukeworld
 
-## Project setup
-```
-npm install
-```
+5. Open your web browser and visit `http://localhost:8080` to see the application running.
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+## Project Structure
 
-### Compiles and minifies for production
-```
-npm run build
-```
+- `src/components`: Contains Vue components for the game UI
+- `src/store`: Includes the Vuex store and related files
+- `src/router`: Defines the Vue Router configuration
+- `src/assets`: Stores static assets like images and icons
+- `public`: Contains the HTML entry point and other public assets
 
-### Lints and fixes files
-```
-npm run lint
-```
+## Dependencies
 
-### Known Bugs 
+- Vue.js
+- Vuex
+- Vue Router
+- Bootstrap
+- Leaflet (for the map component)
+- vue3-toastify (for notifications)
+
+## Contributing
+
+Contributions are welcome! If you find any issues or have suggestions for improvements, please open an issue or submit a pull request.
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
