@@ -1,5 +1,4 @@
 <template>
-  <quest-pop-up ref="questPopup" :title="popupTitle" :desc="popupDesc"></quest-pop-up>
   <div v-if="quest">
     <div class="card my-2">
       <div class="card-header p-0 d-flex">
@@ -50,12 +49,8 @@
 
 <script>
 import { mapActions } from 'vuex';
-import QuestPopUp from './popup/QuestPopUp.vue';
 
 export default {
-  components: {
-    QuestPopUp,
-  },
   props: {
     quest: {
       type: Object,
@@ -66,6 +61,7 @@ export default {
     return {
       popupTitle: '',
       popupDesc: '',
+      rollDice: null,
     };
   },
   methods: {
@@ -80,9 +76,9 @@ export default {
     },
     claimRewardsAction(quest) {
       if (!quest.claimed) {
-        this.claimRewards(quest);
+        this.rollDice = Math.random();
         let rewardText = 'Quest completed! You earned ' + quest.exp + ' exp and ' + quest.money + ' money.';
-        if (quest.reward && quest.reward.length > 0) {
+        if (quest.reward && quest.reward.length > 0 && this.rollDice <= quest.rewardChance) {
           const rewardItemNames = quest.reward.map(rewardId => this.getRewardItemName(rewardId)).join(', ');
           rewardText += ` You also received the following reward(s): ${rewardItemNames}.`;
         }
@@ -92,6 +88,7 @@ export default {
           this.$refs.questPopup.openPopup();
         }
         quest.claimed = true;
+        this.claimRewards(quest);
       }
     },
     formatTime(milliseconds) {
