@@ -64,6 +64,19 @@ const mutations = {
     if (index !== -1) {
       state.quests[index] = { ...quest, state: 'completed' };
     }
+    const rollDice = Math.random();
+    if (rollDice <= quest.rewardChance) {
+      if (quest.reward && quest.reward.length > 0) {
+        quest.reward.forEach((rewardId) => {
+          const rewardItem = state.items.find((item) => item.id === rewardId);
+          if (rewardItem) {
+            state.character.inventory.push(rewardItem);
+          }
+        });
+      }
+    } else {
+      console.log(`${quest.rewardChance * 100}% Chance to Drop, but no reward dropped.`);
+    }
   },
   resetQuest(state, quest) {
     const index = state.quests.findIndex((q) => q.name === quest.name);

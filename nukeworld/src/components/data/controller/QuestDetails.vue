@@ -35,6 +35,7 @@
               <img style="width:25px; margin-top:-5px;" :src="require(`@/assets/interface/icons/reward.png`)" alt="Reward">
               <span v-for="rewardId in quest.reward" :key="rewardId">
                 {{ getRewardItemName(rewardId) }}
+                <p>{{ quest.rewardChance * 100 }}% Chance to Drop</p>
               </span>
             </div>
           </div>

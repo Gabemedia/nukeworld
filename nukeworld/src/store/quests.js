@@ -12,7 +12,7 @@ export default [
     lat: 51.5150,
     lon: -0.0883,
     reward: [1],
-    rewardChance: 0.5,
+    rewardChance: 0.05,
   },
   {
     id: 2,
@@ -27,7 +27,7 @@ export default [
     lat: 51.5137,
     lon: -0.0983,
     reward: [3],
-    rewardChance: 1,
+    rewardChance: 0.02,
   },
   {
     id: 3,
@@ -42,7 +42,7 @@ export default [
     lat: 51.5099,
     lon: -0.0768, 
     reward: [1],
-    rewardChance: 2,
+    rewardChance: 0.15,
   },
   {
     id: 4,
@@ -57,6 +57,6 @@ export default [
     lat: 51.5015,
     lon: -0.0762,
     reward: [2],
-    rewardChance: 1.5,
+    rewardChance: 0.0010,
   },
 ];
