@@ -49,6 +49,19 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Introduced inventory management system
 - Fixed an issue where reward items were not added to the character's inventory
 
+### Version 0.5.5 (2024-05-19)
+- Added Loot Chance Roll on Quest Completion.
+- Added equipment system for weapons/armor.
+- Added Equipped Weapons Info to Character Details.
+- Added Equipped Weapons Button Logic to handle equipping/unequipping weapons.
+- Implemented barter to sell weapons/armor for currency.
+- Refactored Quest Details to display more info.
+- Refactored Quests Button Logic to handle multiple quests.
+- Major refactor of state management to simplify code.
+- Minor styling tweaks.
+- Minor bug fixes.
+
+
 ## Getting Started
 To get started with NukeWorld, follow these steps:
 

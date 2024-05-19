@@ -14,7 +14,7 @@ const state = reactive({
     maxExp: 2500,
     level: 1,
     money: 0,
-    inventory: [],
+    weapons: [], // Ændret fra inventory
     equippedWeapons: [],
   },
   quests: reactive(JSON.parse(localStorage.getItem('quests')) || defaultQuests),
@@ -80,15 +80,15 @@ const mutations = {
     state.quests[questIndex].progress = progress;
     state.quests[questIndex].remainingTime = remainingTime;
   },
-  addItemToInventory(state, itemId) {
+  addItemToWeapons(state, itemId) { // Ændret fra addItemToInventory
     const item = state.items.find(i => i.id === itemId);
     if (item) {
       const newItem = { ...item, uuid: uuidv4() }; // Generér en unik uuid for det nye våben
-      state.character.inventory.push(newItem);
+      state.character.weapons.push(newItem); // Ændret fra inventory
     }
   },
   equipWeapon(state, itemUuid) {
-    const characterItem = state.character.inventory.find(item => item.uuid === itemUuid);
+    const characterItem = state.character.weapons.find(item => item.uuid === itemUuid); // Ændret fra inventory
     if (characterItem) {
       // Fjern alle eksisterende udrustede våben
       state.character.equippedWeapons = [];
@@ -96,7 +96,18 @@ const mutations = {
       // Tilføj det nye udrustede våben
       state.character.equippedWeapons.push(characterItem);
     }
-  }, 
+  },
+  sellWeapon(state, itemUuid) {
+    const itemIndex = state.character.weapons.findIndex(item => item.uuid === itemUuid);
+    if (itemIndex !== -1) {
+      const soldItem = state.character.weapons[itemIndex];
+      if (soldItem.price !== '-1') {
+        state.character.weapons.splice(itemIndex, 1);
+        state.character.money += parseInt(soldItem.price);
+        state.character.equippedWeapons = state.character.equippedWeapons.filter(item => item.uuid !== itemUuid);
+      }
+    }
+  },
 };
 
 const actions = {
@@ -104,7 +115,7 @@ const actions = {
     commit('updateCharacter', { name: username, email, password,});
   },
   createCharacter({ commit, state }) {
-    const newCharacter = { ...state.character, level: 1, exp: 1, maxExp: 2500, money: 0, inventory: [state.items[0]]};
+    const newCharacter = { ...state.character, level: 1, exp: 1, maxExp: 2500, money: 0, weapons: [state.items[0]], equippedWeapons: [state.items[0]] };
     commit('addCharacter', newCharacter);
     commit('updateCharacter', newCharacter);
     commit('equipWeapon', 0);
@@ -176,7 +187,7 @@ const actions = {
         quest.reward.forEach((rewardId) => {
           const rewardItem = state.items.find((item) => item.id === rewardId);
           if (rewardItem) {
-            state.character.inventory.push(rewardItem);
+            state.character.weapons.push(rewardItem); // Ændret fra inventory
           }
         });
       }
@@ -197,6 +208,9 @@ const actions = {
   },
   equipWeapon({ commit }, itemId) {
     commit('equipWeapon', itemId);
+  },
+  sellWeapon({ commit }, itemUuid) {
+    commit('sellWeapon', itemUuid);
   },
 };
 

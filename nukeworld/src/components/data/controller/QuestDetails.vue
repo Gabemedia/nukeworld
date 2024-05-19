@@ -1,15 +1,14 @@
 <template>
-  <div v-if="quest">
-    <div class="card">
-      <div class="card-header p-0 d-flex">
-        <div class="col-6" :style="{
+  <div class="row" v-if="quest">
+    <div class="col-3" :style="{
           backgroundImage: `url(${require(`@/assets/quests/bg/${quest.id}.jpg`)})`,
           backgroundSize: 'cover',
-          backgroundPosition: 'top center',
+          backgroundPosition: 'center center',
           backgroundRepeat: 'no-repeat'
         }"></div>
-
-        <div class="col-6 bg-light">
+    <div class="card col-9 p-0 pe-2">
+      <div class="card-header p-0 d-flex">
+        <div class="bg-light">
           <h5 class="card-text-header text-capitalize p-2">{{ quest.name }}</h5>
           <p class="card-text card-text-desc p-2">{{ quest.desc }}</p>
         </div>
@@ -134,7 +133,7 @@ export default {
   text-shadow: rgba(0, 0, 0, 1) 0px 0px 2px;
 }
 .card-text {
-  font-size: 0.8rem;
+  font-size: 0.655rem;
   font-weight: 400;
 }
 .card-text-header {
@@ -142,7 +141,7 @@ export default {
   font-size: 1rem;
 }
 .card-text-desc {
-  font-size: 0.8rem;
+  font-size: 0.655rem;
   font-weight: 400;
 }
 .icon-reload {

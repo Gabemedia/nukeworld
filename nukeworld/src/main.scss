@@ -5,13 +5,18 @@ $primary-color: rgb(0, 183, 6);
 $primary: rgb(0, 183, 6);
 $gray: #6c757d;
 
+
 /* Define global styles */
 body {
   color: $primary-color;
   background-color: $primary;
 }
 
+.btn-main{
+  font-size: 0.8rem!important;
+}
+
 .btn{
-  font-size: 0.8rem;
+  font-size: 0.655rem;
 }
 // Import Bootstrap's styles

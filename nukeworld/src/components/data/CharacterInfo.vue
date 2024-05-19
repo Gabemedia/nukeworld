@@ -1,8 +1,8 @@
 <template>
-<button class="btn btn-primary m-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCharacterInfo">
+<button class="btn btn-main btn-primary m-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCharacterInfo">
     Character Info
   </button>
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasCharacterInfo" aria-labelledby="offcanvasCharacterInfoLabel">
+    <div style="width:600px;" class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasCharacterInfo" aria-labelledby="offcanvasCharacterInfoLabel">
       <div class="offcanvas-body">
         <div class="col-12" v-for="(value, key) in character" :key="key">
           <div class="card my-2">

@@ -1,17 +1,16 @@
 <template>
-  <div class="row">
-    <quest-pop-up ref="questPopup" :title="popupTitle" :desc="popupDesc"></quest-pop-up>
-    <div class="col-12" v-for="quest in quests" :key="quest.name">
+  <quest-pop-up ref="questPopup" :title="popupTitle" :desc="popupDesc"></quest-pop-up>
+  <div class="row my-2" v-for="quest in quests" :key="quest.name">
+    <div class="col-3" :style="{
+          backgroundImage: `url(${require(`@/assets/quests/bg/${quest.id}.jpg`)})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center center',
+          backgroundRepeat: 'no-repeat'
+        }"></div>
+    <div class="col-9 p-0">
       <div class="card">
         <div class="card-header p-0 d-flex">
-          <div class="col-6" :style="{
-            backgroundImage: `url(${require(`@/assets/quests/bg/${quest.id}.jpg`)})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'top center',
-            backgroundRepeat: 'no-repeat'
-          }"></div>
-
-          <div class="col-6 bg-light">
+          <div class="bg-light">
             <h5 class="card-text-header text-capitalize p-2">{{ quest.name }}</h5>
             <p class="card-text card-text-desc p-2">{{ quest.desc }}</p>
           </div>

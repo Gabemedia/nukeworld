@@ -10,7 +10,7 @@
   <CharacterInfo />
   <QuestLog />
   <InventoryLog />
-  <button @click="toggleMap" class="btn btn-primary m-2" type="button">Toggle Map</button>
+  <button @click="toggleMap" class="btn btn-main btn-primary m-2" type="button">Toggle Map</button>
 
 </template>
 

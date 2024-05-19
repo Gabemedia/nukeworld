@@ -8,6 +8,7 @@ export default [
     attack: 1,
     defence: 0,
     state: 'none',
+    price: '-1',
   },
   {
     id: 1,
@@ -16,7 +17,9 @@ export default [
     desc: 'Tire Iron is a great melee weapon. It is used for all sorts of combat.',
     attack: 2,
     defence: 0,
-    state: 'none',
+    state: '0',
+    price: '5',
+
   },
   {
     id: 2,
@@ -26,6 +29,8 @@ export default [
     attack: 20,
     defence: 0,
     state: 'none',
+    price: '100',
+
   },
   {
     id: 3,
@@ -35,6 +40,8 @@ export default [
     attack: 5,
     defence: 0,
     state: 'none',
+    price: '10',
+
   },
   {
     id: 4,
@@ -44,5 +51,7 @@ export default [
     attack: 12,
     defence: 0,
     state: 'none',
+    price: '25',
+
   },
 ];

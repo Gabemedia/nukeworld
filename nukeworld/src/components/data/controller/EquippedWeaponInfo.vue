@@ -7,6 +7,7 @@
         <p><strong>Description:</strong> {{ weapon.desc }}</p>
         <p><strong>Attack:</strong> {{ weapon.attack }}</p>
         <p><strong>Defence:</strong> {{ weapon.defence }}</p>
+        <p><strong>Price:</strong> <span v-if="weapon.price === '-1'" class="badge bg-danger">Not for Sale</span><span v-else>{{ weapon.price }} coins</span></p>
       </li>
     </ul>
   </div>
