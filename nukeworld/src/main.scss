@@ -1,12 +1,17 @@
 @import '~bootstrap/scss/bootstrap.scss';
 
 /* Define your variables */
-$primary-color: #5A9;
-$primary: #f92404;
+$primary-color: rgb(0, 183, 6);
+$primary: rgb(0, 183, 6);
 $gray: #6c757d;
 
 /* Define global styles */
 body {
   color: $primary-color;
+  background-color: $primary;
+}
+
+.btn{
+  font-size: 0.8rem;
 }
 // Import Bootstrap's styles

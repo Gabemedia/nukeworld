@@ -18,31 +18,36 @@
         <div class="progress-bar p-0 m-0" :style="{ width: quest.progress + '%' }"></div>
       </div>
       <div class="card-body bg-secondary bg-gradient p-2">
-        <p class="card-text" v-if="quest.state === 'in-progress'">Remaining Time: {{ formatTime(quest.remainingTime) }}</p>
+        <div class="d-flex align-items-center justify-content-between py-1">
+          <p class="card-text" v-if="quest.state === 'in-progress'">Remaining Time: {{ formatTime(quest.remainingTime) }}</p>
+        </div>
         <div class="d-flex align-items-center justify-content-center">
           <div class="text-center">
-            <button class="btn btn-success bg-gradient fs-6" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)">
-              {{ quest.state === 'not-started' ? 'Start Quest' : quest.state === 'in-progress' ? 'Please Wait' : 'Claim Rewards' }}
-            </button>
+            <button type="button" class="btn btn-success bg-gradient position-relative fw-bold" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)">
+                {{ quest.state === 'not-started' ? 'Start Quest' : quest.state === 'in-progress' ? 'Please Wait' : 'Claim Rewards' }}
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fst-italic" title="Reward Drop Chance">
+                  <p class="card-text m-0">{{ quest.rewardChance * 100 }}%</p>
+                </span>
+              </button>
           </div>
-          <div class="d-flex justify-content-around flex-grow-1 text-center">
-            <div  class="card-text d-block fw-bold">
-              <img style="width:25px; margin-top:-5px;" :src="require(`@/assets/interface/icons/exp.png`)" alt="Exp"> {{ quest.exp }}
+          <div class="d-flex justify-content-end flex-grow-1 gap-2 text-center">
+            <div class="card-text d-block fw-bold">
+              <img style="width:25px;" :src="require(`@/assets/interface/icons/exp.png`)" alt="Exp">
+              <span class="ps-1"> {{ quest.exp }} </span>
             </div>
-            <div  class="card-text d-block fw-bold"><img style="width:25px; margin-top:-5px;" :src="require(`@/assets/interface/icons/money.png`)" alt="Money"> {{ quest.money }}</div>
+            <div class="card-text d-block fw-bold">
+              <img style="width:25px;" :src="require(`@/assets/interface/icons/money.png`)" alt="Money">
+              <span class="ps-1"> {{ quest.money }} </span>
+            </div>
             <div v-if="quest.reward && quest.reward.length > 0"  class="card-text d-block fw-bold">
-              <img style="width:25px; margin-top:-5px;" :src="require(`@/assets/interface/icons/reward.png`)" alt="Reward">
-              <span v-for="rewardId in quest.reward" :key="rewardId">
+              <img style="width:25px;" :src="require(`@/assets/interface/icons/reward.png`)" alt="Reward">
+              <span class="ps-1" v-for="rewardId in quest.reward" :key="rewardId">
                 {{ getRewardItemName(rewardId) }}
               </span>
             </div>
           </div>
         </div>
-        <div class="d-flex align-items-center justify-content-end">
-          <p class="card-text">{{ quest.rewardChance * 100 }}% Chance to Drop</p>
-        </div>
-      </div>
-      
+      </div>      
     </div>
   </div>
   <div v-else>

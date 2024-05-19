@@ -48,9 +48,8 @@ export default {
     width: 100vw;
     height: 100vh;
     background-image: url('../assets/bg.jpg');
-    background-size: fit; // to ensure the image covers the whole div
+    background-size: cover; // to ensure the image covers the whole div
     background-position: center; // to center the image
-    background-color: #ff0000;
     position: absolute;
     z-index:999;
 }
