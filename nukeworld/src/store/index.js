@@ -1,6 +1,7 @@
 import { createStore } from 'vuex';
 import { reactive, watch } from 'vue';
 import defaultQuests from './quests';
+import { v4 as uuidv4 } from 'uuid'; 
 import items from './items';
 
 const state = reactive({
@@ -14,7 +15,7 @@ const state = reactive({
     level: 1,
     money: 0,
     inventory: [],
-    equippedWeapon: null,
+    equippedWeapons: [],
   },
   quests: reactive(JSON.parse(localStorage.getItem('quests')) || defaultQuests),
   items,
@@ -79,20 +80,23 @@ const mutations = {
     state.quests[questIndex].progress = progress;
     state.quests[questIndex].remainingTime = remainingTime;
   },
-  equipWeapon(state, itemId) {
-    const item = state.items.find(item => item.id === itemId);
-    const characterItem = state.character.inventory.find(charItem => charItem.id === itemId);
-    if (item && characterItem) {
-      if (state.character.equippedWeapon) {
-        const prevWeapon = state.items.find(item => item.id === state.character.equippedWeapon);
-        if (prevWeapon) {
-          prevWeapon.state = 'none';
-        }
-      }
-      item.state = 'equipped';
-      state.character.equippedWeapon = itemId;
+  addItemToInventory(state, itemId) {
+    const item = state.items.find(i => i.id === itemId);
+    if (item) {
+      const newItem = { ...item, uuid: uuidv4() }; // Generér en unik uuid for det nye våben
+      state.character.inventory.push(newItem);
     }
-  },  
+  },
+  equipWeapon(state, itemUuid) {
+    const characterItem = state.character.inventory.find(item => item.uuid === itemUuid);
+    if (characterItem) {
+      // Fjern alle eksisterende udrustede våben
+      state.character.equippedWeapons = [];
+
+      // Tilføj det nye udrustede våben
+      state.character.equippedWeapons.push(characterItem);
+    }
+  }, 
 };
 
 const actions = {
@@ -100,7 +104,7 @@ const actions = {
     commit('updateCharacter', { name: username, email, password,});
   },
   createCharacter({ commit, state }) {
-    const newCharacter = { ...state.character, level: 1, exp: 1, maxExp: 2500, money: 0, inventory: [state.items[0]], equippedWeapon: 0 };
+    const newCharacter = { ...state.character, level: 1, exp: 1, maxExp: 2500, money: 0, inventory: [state.items[0]]};
     commit('addCharacter', newCharacter);
     commit('updateCharacter', newCharacter);
     commit('equipWeapon', 0);

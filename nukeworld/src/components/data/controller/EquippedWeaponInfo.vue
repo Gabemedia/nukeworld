@@ -1,10 +1,14 @@
 <template>
-  <div v-if="equippedWeapon" class="equipped-weapon-info">
-    <h3>Equipped Weapon</h3>
-    <p><strong>Name:</strong> {{ equippedWeapon.name }}</p>
-    <p><strong>Description:</strong> {{ equippedWeapon.desc }}</p>
-    <p><strong>Attack:</strong> {{ equippedWeapon.attack }}</p>
-    <p><strong>Defence:</strong> {{ equippedWeapon.defence }}</p>
+  <div v-if="equippedWeapons.length" class="equipped-weapon-info">
+    <h3>Equipped Weapons</h3>
+    <ul>
+      <li v-for="weapon in equippedWeapons" :key="weapon.uuid">
+        <p><strong>Name:</strong> {{ weapon.name }}</p>
+        <p><strong>Description:</strong> {{ weapon.desc }}</p>
+        <p><strong>Attack:</strong> {{ weapon.attack }}</p>
+        <p><strong>Defence:</strong> {{ weapon.defence }}</p>
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -14,11 +18,9 @@ import { mapState } from 'vuex';
 export default {
   name: 'EquippedWeaponInfo',
   computed: {
-    ...mapState(['character', 'items']),
-    equippedWeapon() {
-      return this.character.equippedWeapon !== null
-        ? this.items.find(item => item.id === this.character.equippedWeapon)
-        : null;
+    ...mapState(['character']),
+    equippedWeapons() {
+      return this.character.equippedWeapons;
     },
   },
 };

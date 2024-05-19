@@ -2,12 +2,12 @@
   <div>
     <h2>Inventory</h2>
     <ul>
-      <li v-for="item in inventory" :key="item.id">
+      <li v-for="item in inventory" :key="item.uuid">
         {{ item.name }}
-        <button v-if="item.state === 'none'" @click="equipWeapon(item.id)" :disabled="item.id === character.equippedWeapon">
-          {{ item.id === character.equippedWeapon ? 'Equipped' : 'Equip' }}
+        <button @click="toggleEquipWeapon(item.uuid)">
+          {{ isEquipped(item.uuid) ? 'Unequip' : 'Equip' }}
         </button>
-        <span v-else-if="item.state === 'equipped' && item.id !== 0" class="equipped-badge">Equipped</span>
+        <span v-if="isEquipped(item.uuid)" class="equipped-badge">Equipped</span>
       </li>
     </ul>
   </div>
@@ -19,13 +19,19 @@ import { mapActions, mapState } from 'vuex';
 export default {
   name: 'InventoryStash',
   computed: {
-    ...mapState(['character', 'items']),
+    ...mapState(['character']),
     inventory() {
-      return this.character.inventory.map(charItem => this.items.find(item => item.id === charItem.id));
+      return this.character.inventory;
     },
   },
   methods: {
     ...mapActions(['equipWeapon']),
+    toggleEquipWeapon(itemUuid) {
+      this.equipWeapon(itemUuid);
+    },
+    isEquipped(itemUuid) {
+      return this.character.equippedWeapons.some(weapon => weapon.uuid === itemUuid);
+    },
   },
 };
 </script>
