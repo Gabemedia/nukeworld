@@ -2,7 +2,7 @@
   <div class="row">
     <quest-pop-up ref="questPopup" :title="popupTitle" :desc="popupDesc"></quest-pop-up>
     <div class="col-12" v-for="quest in quests" :key="quest.name">
-      <div class="card my-2">
+      <div class="card">
         <div class="card-header p-0 d-flex">
           <div class="col-6" :style="{
             backgroundImage: `url(${require(`@/assets/quests/bg/${quest.id}.jpg`)})`,
@@ -22,24 +22,26 @@
         <div class="card-body bg-secondary bg-gradient p-2">
           <p class="card-text" v-if="quest.state === 'in-progress'">Remaining Time: {{ formatTime(quest.remainingTime) }}</p>
           <div class="d-flex align-items-center justify-content-center">
-            <div class="flex-grow-1 text-center">
-              <button class="btn btn-success bg-gradient" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)" style="width: 100%;">
+            <div class="text-center">
+              <button class="btn btn-success bg-gradient fs-6" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)">
                 {{ quest.state === 'not-started' ? 'Start Quest' : quest.state === 'in-progress' ? 'Please Wait' : 'Claim Rewards' }}
               </button>
             </div>
             <div class="d-flex justify-content-around flex-grow-1 text-center">
-              <div style="margin-top:5px;" class="card-text d-block fw-bold">
+              <div  class="card-text d-block fw-bold">
                 <img style="width:25px; margin-top:-5px;" :src="require(`@/assets/interface/icons/exp.png`)" alt="Exp"> {{ quest.exp }}
               </div>
-              <div style="margin-top:5px;" class="card-text d-block fw-bold"><img style="width:25px; margin-top:-5px;" :src="require(`@/assets/interface/icons/money.png`)" alt="Money"> {{ quest.money }}</div>
-              <div v-if="quest.reward && quest.reward.length > 0" style="margin-top:5px;" class="card-text d-block fw-bold">
+              <div  class="card-text d-block fw-bold"><img style="width:25px; margin-top:-5px;" :src="require(`@/assets/interface/icons/money.png`)" alt="Money"> {{ quest.money }}</div>
+              <div v-if="quest.reward && quest.reward.length > 0"  class="card-text d-block fw-bold">
                 <img style="width:25px; margin-top:-5px;" :src="require(`@/assets/interface/icons/reward.png`)" alt="Reward">
                 <span v-for="rewardId in quest.reward" :key="rewardId">
                   {{ getRewardItemName(rewardId) }}
-                  <p>{{ quest.rewardChance * 100 }}% Chance to Drop</p>
                 </span>
               </div>
             </div>
+          </div>
+          <div class="d-flex align-items-center justify-content-end">
+            <p class="card-text">{{ quest.rewardChance * 100 }}% Chance to Drop</p>
           </div>
         </div>
       </div>
@@ -220,7 +222,7 @@ export default {
   font-size: 1rem;
 }
 .card-text-desc {
-  font-size: 1rem;
+  font-size: 0.8rem;
   font-weight: 400;
 }
 .icon-reload {

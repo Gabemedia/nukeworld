@@ -28,7 +28,7 @@ export default {
     return {
       zoom: 13,
       center: [51.505, -0.09],
-      tileUrl: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      tileUrl: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
       mapOptions: {
         zoomControl: false,
@@ -83,6 +83,7 @@ export default {
 </script>
 
 <style scoped>
+@import url(../../assets/MapPopup.css);
 .map-container {
   position: absolute;
   top: 0;
