@@ -23,11 +23,11 @@
         <div class="d-flex align-items-center justify-content-center">
           <div class="text-center">
             <button type="button" class="btn btn-success bg-gradient position-relative fw-bold" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)">
-                {{ quest.state === 'not-started' ? 'Start Quest' : quest.state === 'in-progress' ? 'Please Wait' : 'Claim Rewards' }}
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fst-italic" title="Reward Drop Chance">
-                  <p class="card-text m-0">{{ quest.rewardChance * 100 }}%</p>
-                </span>
-              </button>
+              {{ quest.state === 'not-started' ? 'Start Quest' : quest.state === 'in-progress' ? 'Please Wait' : 'Claim Rewards' }}
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fst-italic" title="Reward Drop Chance">
+                <p class="card-text m-0">{{ quest.rewardChance * 100 }}%</p>
+              </span>
+            </button>
           </div>
           <div class="d-flex justify-content-end flex-grow-1 gap-2 text-center">
             <div class="card-text d-block fw-bold">
@@ -38,7 +38,7 @@
               <img style="width:25px;" :src="require(`@/assets/interface/icons/money.png`)" alt="Money">
               <span class="ps-1"> {{ quest.money }} </span>
             </div>
-            <div v-if="quest.reward && quest.reward.length > 0"  class="card-text d-block fw-bold">
+            <div v-if="quest.reward && quest.reward.length > 0" class="card-text d-block fw-bold">
               <img style="width:25px;" :src="require(`@/assets/interface/icons/reward.png`)" alt="Reward">
               <span class="ps-1" v-for="rewardId in quest.reward" :key="rewardId">
                 {{ getRewardItemName(rewardId) }}
@@ -46,7 +46,7 @@
             </div>
           </div>
         </div>
-      </div>      
+      </div>
     </div>
   </div>
   <div v-else>
@@ -55,7 +55,9 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { reactive } from 'vue';
+import { mapActions, mapState, mapMutations } from 'vuex';
+import { toast } from "vue3-toastify";
 
 export default {
   props: {
@@ -68,11 +70,23 @@ export default {
     return {
       popupTitle: '',
       popupDesc: '',
-      rollDice: null,
     };
   },
+  computed: {
+    ...mapState(['quests']),
+  },
   methods: {
-    ...mapActions(['handleQuest', 'claimRewards', 'startQuestProgress']),
+    ...mapActions(['increaseExp', 'increaseMoney', 'handleQuest', 'claimRewards', 'clearQuests']),
+    ...mapMutations(['completeQuest', 'setQuests', 'updateQuestState']),
+    isButtonDisabled(quest) {
+      if (quest.state === 'not-started') {
+        return false;
+      } else if (quest.state === 'in-progress') {
+        return true;
+      } else if (quest.state === 'completed') {
+        return false;
+      }
+    },
     handleQuestAction(quest) {
       if (quest.state === 'not-started') {
         this.handleQuest(quest);
@@ -82,20 +96,16 @@ export default {
       }
     },
     claimRewardsAction(quest) {
-      if (!quest.claimed) {
-        this.rollDice = Math.random();
-        let rewardText = 'Quest completed! You earned ' + quest.exp + ' exp and ' + quest.money + ' money.';
-        if (quest.reward && quest.reward.length > 0 && this.rollDice <= quest.rewardChance) {
-          const rewardItemNames = quest.reward.map(rewardId => this.getRewardItemName(rewardId)).join(', ');
-          rewardText += ` You also received the following reward(s): ${rewardItemNames}.`;
-        }
-        this.popupTitle = quest.name;
-        this.popupDesc = rewardText;
+      const reactiveQuest = reactive(quest);
+      if (!reactiveQuest.claimed) {
+        this.claimRewards(reactiveQuest);
+        this.popupTitle = reactiveQuest.name;
+        this.popupDesc = 'Quest completed! You earned ' + reactiveQuest.exp + ' exp and ' + reactiveQuest.money + ' money.';
         if (this.$refs.questPopup) {
           this.$refs.questPopup.openPopup();
         }
-        quest.claimed = true;
-        this.claimRewards(quest);
+        reactiveQuest.claimed = true;
+        this.deleteQuestData(reactiveQuest);
       }
     },
     formatTime(milliseconds) {
@@ -107,19 +117,98 @@ export default {
       const seconds = totalSeconds % 60;
       return `${minutes} min ${seconds} sec`;
     },
-    isButtonDisabled(quest) {
-      if (quest.state === 'not-started') {
-        return false;
-      } else if (quest.state === 'in-progress') {
-        return true;
-      } else if (quest.state === 'completed') {
-        return false;
+    checkQuestState() {
+      this.quests.forEach(quest => {
+        if (quest.state === 'in-progress' && !quest.intervalId) {
+          this.startQuestTimer(quest);
+        }
+      });
+    },
+    startQuestProgress(quest) {
+      const reactiveQuest = reactive(quest);
+      reactiveQuest.state = 'in-progress';
+      reactiveQuest.startTime = Date.now();
+      localStorage.setItem(reactiveQuest.name + 'StartTime', reactiveQuest.startTime);
+      reactiveQuest.remainingTime = reactiveQuest.duration;
+      localStorage.setItem(reactiveQuest.name + 'RemainingTime', reactiveQuest.remainingTime);
+      reactiveQuest.intervalId = setInterval(() => {
+        if (reactiveQuest.remainingTime > 0) {
+          reactiveQuest.remainingTime -= 1000;
+          localStorage.setItem(reactiveQuest.name + 'RemainingTime', reactiveQuest.remainingTime);
+          const elapsedTime = Date.now() - reactiveQuest.startTime;
+          const progress = Math.min((elapsedTime / reactiveQuest.duration) * 100, 100);
+          reactiveQuest.progress = progress;
+        } else {
+          clearInterval(reactiveQuest.intervalId);
+          reactiveQuest.state = 'completed';
+          toast.success(`Quest ${reactiveQuest.name} completed! You earned ${reactiveQuest.exp} exp and ${reactiveQuest.money} money.`);
+        }
+        this.saveQuests();
+      }, 1000);
+    },
+    saveQuests() {
+      localStorage.setItem('quests', JSON.stringify(this.quests));
+    },
+    resetQuests() {
+      this.quests.forEach((quest, index) => {
+        const newQuest = reactive({
+          ...quest,
+          state: 'not-started',
+          progress: 0,
+          claimed: false,
+          intervalId: null
+        });
+        this.quests[index] = newQuest;
+        if (quest.intervalId) {
+          clearInterval(quest.intervalId);
+        }
+      });
+      this.saveQuests();
+    },
+    deleteQuestData(quest) {
+      this.$store.dispatch('clearQuests');
+      localStorage.removeItem('quests');
+      const index = this.quests.findIndex(q => q.name === quest.name);
+      if (index !== -1) {
+        this.quests.splice(index, 1);
       }
+      this.quests = [];
+      this.saveQuests();
     },
     getRewardItemName(rewardId) {
       const rewardItem = this.$store.state.items.find(item => item.id === rewardId);
       return rewardItem ? rewardItem.name : '';
     },
+  },
+  mounted() {
+    window.addEventListener('beforeunload', this.saveQuests);
+  },
+  beforeUnmount() {
+    this.quests.forEach(quest => {
+      if (quest.intervalId) {
+        clearInterval(quest.intervalId);
+      }
+    });
+    window.removeEventListener('beforeunload', this.saveQuests);
+  },
+  created() {
+    window.addEventListener('load', () => {
+      this.quests.forEach(quest => {
+        if (quest.state === 'in-progress') {
+          const startTime = Number(localStorage.getItem(quest.name + 'StartTime'));
+          const remainingTime = Number(localStorage.getItem(quest.name + 'RemainingTime'));
+          const elapsedTime = Date.now() - startTime;
+          const progress = Math.min((elapsedTime / quest.duration) * 100, 100);
+          quest.progress = progress;
+          quest.remainingTime = remainingTime - elapsedTime;
+          if (progress < 100) {
+            this.startQuestProgress(quest);
+          } else {
+            quest.state = 'completed';
+          }
+        }
+      });
+    });
   },
 };
 </script>
@@ -150,7 +239,6 @@ export default {
   cursor: pointer;
   filter: opacity(0.5);
 }
-
 .icon-reload:hover {
   filter: opacity(0.8);
 }
