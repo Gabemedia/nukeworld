@@ -1,5 +1,4 @@
 <template>
-  <quest-pop-up ref="questPopup" :title="popupTitle" :desc="popupDesc"></quest-pop-up>
   <div class="row my-2" v-for="quest in quests" :key="quest.name">
     <div class="col-3" :style="{
           backgroundImage: `url(${require(`@/assets/quests/bg/${quest.id}.jpg`)})`,
@@ -24,14 +23,12 @@
           </div>
           <div class="d-flex align-items-center justify-content-center">
             <div class="text-center">
-
               <button type="button" class="btn btn-success bg-gradient position-relative fw-bold" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)">
                 {{ quest.state === 'not-started' ? 'Start Quest' : quest.state === 'in-progress' ? 'Please Wait' : 'Claim Rewards' }}
                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fst-italic" title="Reward Drop Chance">
                   <p class="card-text m-0">{{ quest.rewardChance * 100 }}%</p>
                 </span>
               </button>
-
             </div>
             <div class="d-flex justify-content-end flex-grow-1 gap-2 text-center">
               <div class="card-text d-block fw-bold">
@@ -42,13 +39,16 @@
                 <img style="width:25px;" :src="require(`@/assets/interface/icons/money.png`)" alt="Money">
                 <span class="ps-1"> {{ quest.money }} </span>
               </div>
-              <div v-if="quest.reward && quest.reward.length > 0"  class="card-text d-block fw-bold">
+              <div v-if="quest.reward && quest.reward.length > 0" class="card-text d-block fw-bold">
                 <img style="width:25px;" :src="require(`@/assets/interface/icons/reward.png`)" alt="Reward">
                 <span class="ps-1" v-for="rewardId in quest.reward" :key="rewardId">
                   {{ getRewardItemName(rewardId) }}
                 </span>
               </div>
             </div>
+          </div>
+          <div v-if="character.level < quest.levelRequirement" class="alert alert-warning mt-2 alert-clear-text">
+            Level {{ quest.levelRequirement }} required to start this quest.
           </div>
         </div>
       </div>
@@ -60,28 +60,18 @@
 import { reactive } from 'vue';
 import { mapState, mapMutations, mapActions } from 'vuex';
 import { toast } from "vue3-toastify";
-import QuestPopUp from './popup/QuestPopUp.vue';
+import confetti from 'canvas-confetti';
 
 export default {
-  components: {
-    QuestPopUp,
-  },
-  data() {
-    return {
-      popupTitle: '',
-      popupDesc: '',
-      questInterval: null,
-    };
-  },
   computed: {
-    ...mapState(['quests']),
+    ...mapState(['quests', 'character']),
   },
   methods: {
     ...mapActions(['increaseExp', 'increaseMoney', 'handleQuest', 'claimRewards', 'clearQuests']),
     ...mapMutations(['completeQuest', 'setQuests', 'updateQuestState']),
     isButtonDisabled(quest) {
       if (quest.state === 'not-started') {
-        return false;
+        return this.character.level < quest.levelRequirement;
       } else if (quest.state === 'in-progress') {
         return true;
       } else if (quest.state === 'completed') {
@@ -92,6 +82,7 @@ export default {
       if (quest.state === 'not-started') {
         this.handleQuest(quest);
         this.startQuestProgress(quest);
+        toast.success(`Quest ${quest.name} started!`);
       } else if (quest.state === 'completed') {
         this.claimRewardsAction(quest);
       }
@@ -100,11 +91,43 @@ export default {
       const reactiveQuest = reactive(quest);
       if (!reactiveQuest.claimed) {
         this.claimRewards(reactiveQuest);
-        this.popupTitle = reactiveQuest.name;
-        this.popupDesc = 'Quest completed! You earned ' + reactiveQuest.exp + ' exp and ' + reactiveQuest.money + ' money.';
-        if (this.$refs.questPopup) {
-          this.$refs.questPopup.openPopup();
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          zIndex: 9999, // Ensure confetti is on top
+        });
+
+        // Construct the reward message
+        let rewardMessage = `
+          <div>
+            <p>Quest ${reactiveQuest.name} completed!</p>
+            <p>You earned:</p>
+            <div class="reward-info">
+              <img src="${require('@/assets/interface/icons/exp.png')}" alt="Exp" style="width: 20px;"> ${reactiveQuest.exp} exp
+            </div>
+            <div class="reward-info">
+              <img src="${require('@/assets/interface/icons/money.png')}" alt="Money" style="width: 20px;"> ${reactiveQuest.money} money
+            </div>
+        `;
+
+        if (reactiveQuest.reward && reactiveQuest.reward.length > 0) {
+          rewardMessage += '<div class="reward-info"><img src="' + require('@/assets/interface/icons/reward.png') + '" alt="Reward" style="width: 20px;"> Rewards: ';
+          reactiveQuest.reward.forEach(rewardId => {
+            const rewardItem = this.getRewardItemName(rewardId);
+            rewardMessage += `${rewardItem}, `;
+          });
+          rewardMessage = rewardMessage.slice(0, -2); // Remove the trailing comma and space
+          rewardMessage += '</div>';
         }
+
+        rewardMessage += '</div>';
+
+        toast.success(rewardMessage, {
+          dangerouslyHTMLString: true,
+          autoClose: 1200000,
+        });
+
         reactiveQuest.claimed = true;
         this.deleteQuestData(reactiveQuest);
       }
@@ -147,7 +170,6 @@ export default {
         this.saveQuests();
       }, 1000);
     },
-
     saveQuests() {
       localStorage.setItem('quests', JSON.stringify(this.quests));
     },
@@ -241,5 +263,12 @@ export default {
 
 .icon-reload:hover {
   filter: opacity(0.8);
+}
+.alert-clear-text {
+  text-shadow: none; /* Remove any text shadow */
+  color: #000; /* Ensure text color is set to black for clarity */
+}
+.reward-info {
+
 }
 </style>

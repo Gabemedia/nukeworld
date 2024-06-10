@@ -48,6 +48,9 @@ const mutations = {
       characterInArray.level += 1;
     }
   },
+  deleteCharacter(state, character) {
+    state.characters = state.characters.filter(ch => ch.email !== character.email);
+  },
   updateQuestState(state, { quest, newState }) {
     const questIndex = state.quests.findIndex((q) => q.name === quest.name);
     if (questIndex !== -1) {
@@ -123,6 +126,9 @@ const actions = {
   updateCharacter({ commit }, character) {
     commit('updateCharacter', character);
     commit('updateCharacterInArray', character);
+  },
+  deleteCharacter({ commit }, character) {
+    commit('deleteCharacter', character);
   },
   increaseExp({ commit, state, dispatch }, amount) {
     commit('updateCharacter', { exp: state.character.exp + amount });
@@ -220,6 +226,14 @@ const store = createStore({
   mutations,
   actions,
 });
+
+watch(
+  () => state.characters,
+  (newCharacters) => {
+    localStorage.setItem('characters', JSON.stringify(newCharacters));
+  },
+  { deep: true }
+);
 
 watch(
   () => state.character,

@@ -9,8 +9,12 @@
             <p class="card-text">
               Level: {{ character.level }}<br>
               Experience: {{ character.exp }}<br>
-              Money: {{ character.money }}
+              Money: {{ character.money }}<br>
+              Username: {{ character.name }}<br>
+              Email: {{ character.email }}<br>
+              Password: {{ character.password }}
             </p>
+            <button @click="confirmDelete(character)" class="btn btn-danger">Delete</button>
           </div>
         </div>
       </div>
@@ -19,11 +23,25 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 
 export default {
   computed: {
     ...mapState(['characters'])
+  },
+  methods: {
+    ...mapActions(['deleteCharacter']),
+    confirmDelete(character) {
+      const confirmation = prompt(`Please enter the name of the character to delete: ${character.name}`);
+      if (confirmation === character.name) {
+        this.deleteCharacter(character);
+      } else {
+        alert('Character name does not match. Deletion cancelled.');
+      }
+    }
+  },
+  mounted() {
+    console.log('Characters:', this.characters);
   }
 };
 </script>

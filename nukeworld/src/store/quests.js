@@ -13,6 +13,7 @@ export default [
     lon: -0.0883,
     reward: [1],
     rewardChance: 1,
+    levelRequirement: 1,
   },
   {
     id: 2,
@@ -28,6 +29,7 @@ export default [
     lon: -0.0983,
     reward: [3],
     rewardChance: 0.25,
+    levelRequirement: 2,
   },
   {
     id: 3,
@@ -43,6 +45,7 @@ export default [
     lon: -0.0768, 
     reward: [1],
     rewardChance: 0.10,
+    levelRequirement: 3,
   },
   {
     id: 4,
@@ -58,5 +61,6 @@ export default [
     lon: -0.0762,
     reward: [2],
     rewardChance: 0.5,
+    levelRequirement: 4
   },
 ];
