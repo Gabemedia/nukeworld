@@ -100,19 +100,23 @@ export default {
 
         // Construct the reward message
         let rewardMessage = `
-          <div>
-            <p>Quest ${reactiveQuest.name} completed!</p>
-            <p>You earned:</p>
-            <div class="reward-info">
-              <img src="${require('@/assets/interface/icons/exp.png')}" alt="Exp" style="width: 20px;"> ${reactiveQuest.exp} exp
-            </div>
-            <div class="reward-info">
-              <img src="${require('@/assets/interface/icons/money.png')}" alt="Money" style="width: 20px;"> ${reactiveQuest.money} money
-            </div>
+        <div class="d-flex flex-column align-items-center justify-content-center h-100">
+        <p class="text-center fw-bold  mb-1">${reactiveQuest.name} completed!</p>
+        <p class="text-center fw-semi mb-2">You earned:</p>
+        <div class="d-flex flex-column align-items-center justify-content-center mb-1 flex-grow-1">
+          <div class="d-flex align-items-center justify-content-center reward-info mb-2">
+            <img src="${require('@/assets/interface/icons/exp.png')}" alt="Exp" style="width: 20px;" class="me-2">
+            <span>${reactiveQuest.exp} exp</span>
+          </div>
+          <div class="d-flex align-items-center justify-content-center reward-info mb-2">
+            <img src="${require('@/assets/interface/icons/money.png')}" alt="Money" style="width: 20px;" class="me-2">
+            <span>${reactiveQuest.money} money</span>
+          </div>
+        </div>
         `;
 
         if (reactiveQuest.reward && reactiveQuest.reward.length > 0) {
-          rewardMessage += '<div class="reward-info"><img src="' + require('@/assets/interface/icons/reward.png') + '" alt="Reward" style="width: 20px;"> Rewards: ';
+          rewardMessage += '<div class="d-flex align-items-center justify-content-center reward-info mb-2 reward-info"><img src="' + require('@/assets/interface/icons/reward.png') + '" alt="Reward" style="width: 20px;"> Rewards: ';
           reactiveQuest.reward.forEach(rewardId => {
             const rewardItem = this.getRewardItemName(rewardId);
             rewardMessage += `${rewardItem}, `;
@@ -121,11 +125,15 @@ export default {
           rewardMessage += '</div>';
         }
 
-        rewardMessage += '</div>';
+        rewardMessage += '</div></div>';
 
         toast.success(rewardMessage, {
           dangerouslyHTMLString: true,
           autoClose: 1200000,
+          hideProgressBar: false,
+          icon: false,
+          bodyClassName:'quest-toast',
+
         });
 
         reactiveQuest.claimed = true;
