@@ -186,26 +186,31 @@ const actions = {
       dispatch('startQuestProgress', quest);
     }
   },
+
   claimRewards({ commit, dispatch, state }, quest) {
-    const rollDice = Math.random();
-    if (rollDice <= quest.rewardChance) {
-      if (quest.reward && quest.reward.length > 0) {
-        quest.reward.forEach((rewardId) => {
-          const rewardItem = state.items.find((item) => item.id === rewardId);
-          if (rewardItem) {
-            state.character.weapons.push(rewardItem); // Ændret fra inventory
-          }
-        });
+    let obtainedReward = null;
+
+    if (quest.reward && quest.reward.length > 0) {
+      const rollDice = Math.random();
+      if (rollDice <= quest.rewardChance) {
+        const randomIndex = Math.floor(Math.random() * quest.reward.length);
+        const rewardId = quest.reward[randomIndex];
+        const rewardItem = state.items.find((item) => item.id === rewardId);
+        if (rewardItem) {
+          const newItem = { ...rewardItem, uuid: uuidv4() };
+          state.character.weapons.push(newItem);
+          obtainedReward = newItem;
+        }
       }
-    } else {
-      console.log(`${quest.rewardChance * 100}% Chance to Drop, but no reward dropped.`);
     }
-  
+
     dispatch('increaseExp', quest.exp);
     dispatch('increaseMoney', quest.money);
-  
+
     commit('resetQuest', quest);
     commit('updateCharacterInArray', state.character);
+
+    return obtainedReward;
   },
   
   clearQuests({ commit }) {
