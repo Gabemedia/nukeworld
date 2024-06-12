@@ -24,4 +24,20 @@ body {
 display: flex;
 width: 100%;
 }
+
+.quest-toast-container {
+  /* Styles for the toast container */
+  background-color: #f0f0f0;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.quest-toast-body {
+  /* Styles for the toast body */
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  color: #333;
+  padding: 10px;
+}
+
 // Import Bootstrap's styles

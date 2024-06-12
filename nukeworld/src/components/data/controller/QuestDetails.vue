@@ -97,61 +97,68 @@ export default {
       if (quest.state === 'not-started') {
         this.handleQuest(quest);
         this.startQuestProgress(quest);
-        toast.success(`Quest ${quest.name} started!`);
+        toast.success(`<strong>${quest.name} started!</strong>`, {
+          autoClose: 5000, // Set the desired duration in milliseconds
+          toastClassName: 'quest-toast-container',
+          bodyClassName: 'quest-toast-body',
+          dangerouslyHTMLString: true,
+        });
       } else if (quest.state === 'completed') {
         this.claimRewardsAction(quest);
       }
     },
+
     async claimRewardsAction(quest) {
-  const reactiveQuest = reactive(quest);
-  if (!reactiveQuest.claimed) {
-    const obtainedReward = await this.claimRewards(reactiveQuest);
-    this.popupTitle = reactiveQuest.name;
-    this.popupDesc = 'Quest completed! You earned ' + reactiveQuest.exp + ' exp and ' + reactiveQuest.money + ' money.';
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 },
-      zIndex: 9999, // Ensure confetti is on top
-    });
+      const reactiveQuest = reactive(quest);
+      if (!reactiveQuest.claimed) {
+        const obtainedReward = await this.claimRewards(reactiveQuest);
+        this.popupTitle = reactiveQuest.name;
+        this.popupDesc = 'Quest completed! You earned ' + reactiveQuest.exp + ' exp and ' + reactiveQuest.money + ' money.';
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+          zIndex: 9999, // Ensure confetti is on top
+        });
 
-    // Construct the reward message
-    let rewardMessage = `
-    <div class="d-flex flex-column align-items-center justify-content-center h-100">
-      <p class="text-center fw-bold mb-1">${reactiveQuest.name} completed!</p>
-      <p class="text-center fw-semi mb-2">You earned:</p>
-      <div class="d-flex flex-column align-items-center justify-content-center mb-1 flex-grow-1">
-        <div class="d-flex align-items-center justify-content-center reward-info mb-2">
-          <img src="${require('@/assets/interface/icons/exp.png')}" alt="Exp" style="width: 20px;" class="me-2">
-          <span>${reactiveQuest.exp} exp</span>
-        </div>
-        <div class="d-flex align-items-center justify-content-center reward-info mb-1">
-          <img src="${require('@/assets/interface/icons/money.png')}" alt="Money" style="width: 20px;" class="me-2">
-          <span>${reactiveQuest.money} money</span>
-        </div>
-      </div>
-    `;
+        // Construct the reward message
+        let rewardMessage = `
+        <div class="d-flex flex-column align-items-start justify-content-start h-100">
+          <p class="text-left fw-bold mb-1">${reactiveQuest.name} completed!</p>
+          <p class="text-left fw-semi mb-2">You earned:</p>
+          <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
+            <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+              <img src="${require('@/assets/interface/icons/exp.png')}" alt="Exp" style="width: 20px;" class="me-2">
+              <span>${reactiveQuest.exp} exp</span>
+            </div>
+            <div class="d-flex align-items-start justify-content-start reward-info mb-1">
+              <img src="${require('@/assets/interface/icons/money.png')}" alt="Money" style="width: 20px;" class="me-2">
+              <span>${reactiveQuest.money} money</span>
+            </div>
+          </div>
+        `;
 
-    if (obtainedReward) {
-      rewardMessage += '<div class="d-flex align-items-center justify-content-center reward-info mb-1"><img src="' + require('@/assets/interface/icons/reward.png') + '" alt="Reward" style="width: 20px;" class="me-2">';
-      rewardMessage += `<span>${obtainedReward.name}</span>`;
-      rewardMessage += '</div>';
-    }
+        if (obtainedReward) {
+          rewardMessage += '<div class="d-flex align-items-start justify-content-start reward-info mb-1"><img src="' + require('@/assets/interface/icons/reward.png') + '" alt="Reward" style="width: 20px;" class="me-2">';
+          rewardMessage += `<span>${obtainedReward.name}</span>`;
+          rewardMessage += '</div>';
+        }
 
-    rewardMessage += '</div></div>';
+        rewardMessage += '</div></div>';
 
-    toast.success(rewardMessage, {
-      dangerouslyHTMLString: true,
-      autoClose: 10000, // Duration in milliseconds (e.g., 10000ms = 10 seconds)
-      hideProgressBar: false,
-      icon: false,
-      bodyClassName:'quest-toast',
-    });
+        toast.success(rewardMessage, {
+          dangerouslyHTMLString: true,
+          autoClose: 10000, // Duration in milliseconds (e.g., 1000ms = 1 seconds)
+          hideProgressBar: false,
+          icon: false,
+          toastClassName: 'quest-toast-container',
+          bodyClassName: 'quest-toast-body quest-toast',
+        });
 
-    reactiveQuest.claimed = true;
-    this.deleteQuestData(reactiveQuest);
-  }
-},
+        reactiveQuest.claimed = true;
+        this.deleteQuestData(reactiveQuest);
+      }
+    },
 
     formatTime(milliseconds) {
       if (isNaN(milliseconds)) {
@@ -186,11 +193,20 @@ export default {
         } else {
           clearInterval(reactiveQuest.intervalId);
           reactiveQuest.state = 'completed';
-          toast.success(`Quest ${reactiveQuest.name} completed! You earned ${reactiveQuest.exp} exp and ${reactiveQuest.money} money.`);
+          setTimeout(() => {
+            toast.success(`<strong>${reactiveQuest.name} completed!</strong> <br>Claim your rewards!`,{
+              autoClose: 5000,
+              toastClassName: 'quest-toast-container',
+              bodyClassName: 'quest-toast-body',
+              dangerouslyHTMLString: true,
+            });
+            }, reactiveQuest.duration);
         }
         this.saveQuests();
-      }, 1000);
+      }, 100);
     },
+
+
     saveQuests() {
       localStorage.setItem('quests', JSON.stringify(this.quests));
     },
