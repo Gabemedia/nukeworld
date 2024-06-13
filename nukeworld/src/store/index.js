@@ -3,6 +3,7 @@ import { reactive, watch } from 'vue';
 import defaultQuests from './quests';
 import { v4 as uuidv4 } from 'uuid'; 
 import items from './items';
+import armor from './armor';
 
 const state = reactive({
   characters: JSON.parse(localStorage.getItem('characters')) || [],
@@ -16,9 +17,12 @@ const state = reactive({
     money: 0,
     weapons: [], // Ændret fra inventory
     equippedWeapons: [],
+    armor: [], 
+    equippedArmor: null,
   },
   quests: reactive(JSON.parse(localStorage.getItem('quests')) || defaultQuests),
   items,
+  armor,
 });
 
 
@@ -111,6 +115,32 @@ const mutations = {
       }
     }
   },
+  addItemToArmor(state, itemId) {
+    const item = state.armor.find(i => i.id === itemId);
+    if (item) {
+      const newItem = { ...item, uuid: uuidv4() };
+      state.character.armor.push(newItem);
+    }
+  },
+  equipArmor(state, itemUuid) {
+    const characterItem = state.character.armor.find(item => item.uuid === itemUuid);
+    if (characterItem) {
+      state.character.equippedArmor = characterItem;
+    }
+  },
+  sellArmor(state, itemUuid) {
+    const itemIndex = state.character.armor.findIndex(item => item.uuid === itemUuid);
+    if (itemIndex !== -1) {
+      const soldItem = state.character.armor[itemIndex];
+      if (soldItem.price !== '-1') {
+        state.character.armor.splice(itemIndex, 1);
+        state.character.money += parseInt(soldItem.price);
+        if (state.character.equippedArmor && state.character.equippedArmor.uuid === itemUuid) {
+          state.character.equippedArmor = null;
+        }
+      }
+    }
+  },
 };
 
 const actions = {
@@ -189,7 +219,7 @@ const actions = {
 
   claimRewards({ commit, dispatch, state }, quest) {
     let obtainedReward = null;
-
+  
     if (quest.reward && quest.reward.length > 0) {
       const rollDice = Math.random();
       if (rollDice <= quest.rewardChance) {
@@ -203,15 +233,30 @@ const actions = {
         }
       }
     }
-
+  
+    if (quest.armorReward && quest.armorReward.length > 0) {
+      const rollDice = Math.random();
+      if (rollDice <= quest.armorRewardChance) {
+        const randomIndex = Math.floor(Math.random() * quest.armorReward.length);
+        const rewardId = quest.armorReward[randomIndex];
+        const rewardItem = state.armor.find((item) => item.id === rewardId);
+        if (rewardItem) {
+          const newItem = { ...rewardItem, uuid: uuidv4() };
+          state.character.armor.push(newItem);
+          obtainedReward = newItem;
+        }
+      }
+    }
+  
     dispatch('increaseExp', quest.exp);
     dispatch('increaseMoney', quest.money);
-
+  
     commit('resetQuest', quest);
     commit('updateCharacterInArray', state.character);
-
+  
     return obtainedReward;
   },
+  
   
   clearQuests({ commit }) {
     commit('setQuests', []);
@@ -222,6 +267,12 @@ const actions = {
   },
   sellWeapon({ commit }, itemUuid) {
     commit('sellWeapon', itemUuid);
+  },
+  equipArmor({ commit }, itemUuid) {
+    commit('equipArmor', itemUuid);
+  },
+  sellArmor({ commit }, itemUuid) {
+    commit('sellArmor', itemUuid);
   },
 };
 

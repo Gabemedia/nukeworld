@@ -13,6 +13,8 @@ export default [
     lon: -0.0883,
     reward: [1, 2, 3],
     rewardChance: 1,
+    armorReward: [1],
+    armorRewardChance: 0.5,
     levelRequirement: 1,
   },
   {
@@ -29,6 +31,8 @@ export default [
     lon: -0.0983,
     reward: [3],
     rewardChance: 0.75,
+    armorReward: [1],
+    armorRewardChance: 0.5,
     levelRequirement: 2,
   },
   {
@@ -45,6 +49,8 @@ export default [
     lon: -0.0768, 
     reward: [1],
     rewardChance: 0.10,
+    armorReward: [1],
+    armorRewardChance: 0.5,
     levelRequirement: 3,
   },
   {
@@ -61,6 +67,8 @@ export default [
     lon: -0.0762,
     reward: [2],
     rewardChance: 0.5,
+    armorReward: [1],
+    armorRewardChance: 0.5,
     levelRequirement: 4
   },
 ];
