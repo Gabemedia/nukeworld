@@ -24,6 +24,7 @@ const state = reactive({
   items,
   armor,
   mapBounds: null,
+  markers: [],
 });
 
 
@@ -68,6 +69,9 @@ const mutations = {
       quest.lat = lat;
       quest.lon = lon;
     });
+  },
+  addMarker(state, marker) {
+    state.markers.push(marker);
   },
   updateQuestState(state, { quest, newState }) {
     const questIndex = state.quests.findIndex((q) => q.name === quest.name);

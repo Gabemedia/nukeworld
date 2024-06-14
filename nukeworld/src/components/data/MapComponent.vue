@@ -1,6 +1,6 @@
 <template>
   <div class="map-container">
-    <l-map ref="map" :zoom="zoom" :center="center" :options="mapOptions">
+    <l-map ref="map" :zoom="zoom" :center="center" :options="mapOptions" @click="onMapClick">
       <l-tile-layer :url="tileUrl" :attribution="attribution"></l-tile-layer>
       <l-marker
         v-for="quest in quests"
@@ -51,6 +51,7 @@ export default {
         iconSize: [25, 25],
         iconAnchor: [12, 12],
       }),
+      isMarkerPlacementEnabled: false,
     };
   },
   computed: {
@@ -67,15 +68,27 @@ export default {
   },
   methods: {
     updateMapSize() {
-    const map = this.$refs.map?.$mapObject;
-    if (map) {
-      map.setView([51.505, -0.09], 13, {
-        animate: false,
-        maxBounds: [[51.2, -0.4], [51.8, 0.2]], // Set the maxBounds option
-      });
-      map.invalidateSize(false);
-    }
-  },
+      const map = this.$refs.map?.$mapObject;
+      if (map) {
+        map.setView([51.505, -0.09], 13, {
+          animate: false,
+          maxBounds: [[51.2, -0.4], [51.8, 0.2]], // Set the maxBounds option
+        });
+        map.invalidateSize(false);
+      }
+    },
+    onMapClick(event) {
+      if (this.isMarkerPlacementEnabled) {
+        const { lat, lng } = event.latlng;
+        const newMarker = {
+          id: Date.now(),
+          lat,
+          lon: lng,
+          label: `LAT: ${lat.toFixed(6)}, LON: ${lng.toFixed(6)}`,
+        };
+        this.$store.commit('addMarker', newMarker);
+      }
+    },
     centerOnMarker(lat, lon) {
       this.selectedMarkerCoords = [lat, lon];
       const map = this.$refs.map?.$mapObject;
