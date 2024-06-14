@@ -4,13 +4,12 @@
   </button>
   <div style="width:500px;" class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasQuestsInfo" aria-labelledby="offcanvasQuestsLabel">
     <div class="offcanvas-header card-text-header text-light bg-primary bg-gradient d-flex justify-content-between align-items-center">
-      <h5 class="flex-grow-1">Quest Log</h5>
-      <div class="d-flex align-items-center">
-        <img class="icon-reload" @click="clearQuests" :src="require(`@/assets/interface/icons/reload.png`)" alt="Reload Quests">
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-      </div>
+    <h5 class="flex-grow-1">Quest Log</h5>
+    <div class="d-flex align-items-center">
+      <img class="icon-reload" @click="reloadPage" :src="require(`@/assets/interface/icons/reload.png`)" alt="Reload Quests">
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
-
+  </div>
     <div class="offcanvas-body">
       <QuestList />
     </div>
@@ -18,7 +17,6 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
 import QuestList from './controller/QuestList.vue';
 
 export default {
@@ -26,7 +24,9 @@ export default {
     QuestList,
   },
   methods: {
-    ...mapActions(['clearQuests']),
+    reloadPage() {
+      location.reload();
+    },
   },
 };
 </script>

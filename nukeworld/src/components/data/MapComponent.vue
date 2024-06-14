@@ -3,7 +3,7 @@
     <l-map ref="map" :zoom="zoom" :center="center" :options="mapOptions" @click="onMapClick">
       <l-tile-layer :url="tileUrl" :attribution="attribution"></l-tile-layer>
       <l-marker
-        v-for="quest in quests"
+        v-for="quest in filteredQuests"
         :key="quest.id"
         :lat-lng="[quest.lat, quest.lon]"
         @click="centerOnMarker(quest.lat, quest.lon)"
@@ -11,6 +11,15 @@
       >
         <l-popup :open-on="'bottom'">
           <QuestDetails :quest="quest"></QuestDetails>
+        </l-popup>
+      </l-marker>
+      <l-marker
+        v-for="marker in markers"
+        :key="marker.id"
+        :lat-lng="[marker.lat, marker.lon]"
+      >
+        <l-popup :open-on="'bottom'">
+          <div>{{ marker.label }}</div>
         </l-popup>
       </l-marker>
     </l-map>
@@ -40,7 +49,7 @@ export default {
       mapOptions: {
         zoomControl: false,
         attributionControl: false,
-        maxBounds: [[51.2, -0.4], [51.8, 0.2]], // Increase the maxBounds area
+        maxBounds: [[51.470, -0.3], [51.50, -0.06]], // Increase the maxBounds area
         scrollWheelZoom: false,
         doubleClickZoom: false,
         dragging: false,
@@ -51,11 +60,14 @@ export default {
         iconSize: [25, 25],
         iconAnchor: [12, 12],
       }),
-      isMarkerPlacementEnabled: false,
+      isMarkerPlacementEnabled: true,
     };
   },
   computed: {
-    ...mapState(['quests']),
+    ...mapState(['quests', 'markers']),
+    filteredQuests() {
+      return this.quests.filter(quest => !quest.userCreated && quest.lat && quest.lon);
+    },
   },
   mounted() {
     this.$nextTick(() => {
@@ -72,7 +84,7 @@ export default {
       if (map) {
         map.setView([51.505, -0.09], 13, {
           animate: false,
-          maxBounds: [[51.2, -0.4], [51.8, 0.2]], // Set the maxBounds option
+          maxBounds: [[51.470, -0.3], [51.50, -0.06]], // Set the maxBounds option
         });
         map.invalidateSize(false);
       }
@@ -85,10 +97,12 @@ export default {
           lat,
           lon: lng,
           label: `LAT: ${lat.toFixed(6)}, LON: ${lng.toFixed(6)}`,
+          userCreated: true,
         };
         this.$store.commit('addMarker', newMarker);
       }
     },
+
     centerOnMarker(lat, lon) {
       this.selectedMarkerCoords = [lat, lon];
       const map = this.$refs.map?.$mapObject;

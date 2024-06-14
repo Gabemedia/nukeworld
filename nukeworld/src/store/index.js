@@ -59,8 +59,8 @@ const mutations = {
   },
   assignRandomCoordinates(state) {
     const playableArea = [
-      [51.505, -0.35],
-      [51.7, 0.15],
+      [51.470, -0.3],
+      [51.50, -0.06],
     ];
 
     state.quests.forEach((quest) => {
