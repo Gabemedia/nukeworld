@@ -23,6 +23,7 @@ const state = reactive({
   quests: reactive(JSON.parse(localStorage.getItem('quests')) || defaultQuests),
   items,
   armor,
+  mapBounds: null,
 });
 
 
@@ -54,6 +55,19 @@ const mutations = {
   },
   deleteCharacter(state, character) {
     state.characters = state.characters.filter(ch => ch.email !== character.email);
+  },
+  assignRandomCoordinates(state) {
+    const playableArea = [
+      [51.505, -0.35],
+      [51.7, 0.15],
+    ];
+
+    state.quests.forEach((quest) => {
+      const lat = Math.random() * (playableArea[1][0] - playableArea[0][0]) + playableArea[0][0];
+      const lon = Math.random() * (playableArea[1][1] - playableArea[0][1]) + playableArea[0][1];
+      quest.lat = lat;
+      quest.lon = lon;
+    });
   },
   updateQuestState(state, { quest, newState }) {
     const questIndex = state.quests.findIndex((q) => q.name === quest.name);
@@ -282,6 +296,8 @@ const store = createStore({
   mutations,
   actions,
 });
+
+store.commit('assignRandomCoordinates');
 
 watch(
   () => state.characters,

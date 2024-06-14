@@ -2,7 +2,13 @@
   <div class="map-container">
     <l-map ref="map" :zoom="zoom" :center="center" :options="mapOptions">
       <l-tile-layer :url="tileUrl" :attribution="attribution"></l-tile-layer>
-      <l-marker v-for="quest in quests" :key="quest.id" :lat-lng="[quest.lat, quest.lon]" @click="centerOnMarker(quest.lat, quest.lon)">
+      <l-marker
+        v-for="quest in quests"
+        :key="quest.id"
+        :lat-lng="[quest.lat, quest.lon]"
+        @click="centerOnMarker(quest.lat, quest.lon)"
+        :icon="customIcon"
+      >
         <l-popup :open-on="'bottom'">
           <QuestDetails :quest="quest"></QuestDetails>
         </l-popup>
@@ -15,6 +21,7 @@
 import { LMap, LTileLayer, LMarker, LPopup } from '@vue-leaflet/vue-leaflet';
 import { mapState } from 'vuex';
 import QuestDetails from './controller/QuestDetails.vue';
+import L from 'leaflet';
 
 export default {
   components: {
@@ -36,9 +43,14 @@ export default {
         maxBounds: [[51.2, -0.4], [51.8, 0.2]], // Increase the maxBounds area
         scrollWheelZoom: false,
         doubleClickZoom: false,
-        dragging: true,
+        dragging: false,
       },
       selectedMarkerCoords: null,
+        customIcon: L.icon({
+        iconUrl: require('@/assets/interface/icons/reward.png'),
+        iconSize: [25, 25],
+        iconAnchor: [12, 12],
+      }),
     };
   },
   computed: {
