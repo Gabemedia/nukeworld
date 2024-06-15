@@ -77,8 +77,9 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Major Tweaks and Bug Fixes. (Alpha Stable Build)
 - Minor styling tweaks to Toasts in QuestList & QuestDetails.
 
-### Version 0.1.90 (2024-06-15)
-
+### Version 0.1.00 (2024-06-15)
+- Added Refresh Quests for 2500 money.
+- Refactored QuestList to display quests better.
 
 ## Getting Started
 To get started with NukeWorld, follow these steps:
