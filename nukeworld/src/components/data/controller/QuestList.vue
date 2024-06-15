@@ -1,66 +1,221 @@
 <template>
-  <div class="row my-2" v-for="quest in quests" :key="quest.name">
-    <div class="col-3" :style="{
-          backgroundImage: `url(${require(`@/assets/quests/bg/${quest.id}.jpg`)})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center center',
-          backgroundRepeat: 'no-repeat'
-        }"></div>
-    <div class="col-9 p-0">
-      <div class="card">
-        <div class="card-header p-0 d-flex">
-          <div class="bg-light">
-            <h5 class="card-text-header text-capitalize p-2">{{ quest.name }}</h5>
-            <p class="card-text card-text-desc p-2">{{ quest.desc }}</p>
+  <div class="accordion" id="questAccordion">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="availableQuestsHeader">
+        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#availableQuests" aria-expanded="true" aria-controls="availableQuests">
+          Available Quests
+        </button>
+      </h2>
+      <div id="availableQuests" class="accordion-collapse collapse show" aria-labelledby="availableQuestsHeader" data-bs-parent="#questAccordion">
+        <div class="accordion-body">
+          <div class="row my-2" v-for="quest in availableQuests" :key="quest.name">
+            <div class="col-3" :style="{
+              backgroundImage: `url(${require(`@/assets/quests/bg/${quest.id}.jpg`)})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center center',
+              backgroundRepeat: 'no-repeat'
+            }"></div>
+            <div class="col-9 p-0">
+              <div class="card">
+                <div class="card-header p-0 d-flex">
+                  <div class="bg-light">
+                    <h5 class="card-text-header text-capitalize p-2">{{ quest.name }}</h5>
+                    <p class="card-text card-text-desc p-2">{{ quest.desc }}</p>
+                  </div>
+                </div>
+                <div class="progress p-0 m-0">
+                  <div class="progress-bar p-0 m-0" :style="{ width: quest.progress + '%' }"></div>
+                </div>
+                <div class="card-body bg-secondary bg-gradient p-2">
+                  <div class="d-flex align-items-center justify-content-between py-1">
+                    <p class="card-text" v-if="quest.state === 'in-progress'">Remaining Time: {{ formatTime(quest.remainingTime) }}</p>
+                  </div>
+                  <div class="d-flex align-items-center justify-content-center">
+                    <div class="text-center">
+                      <button type="button" class="btn btn-success bg-gradient position-relative fw-bold" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)">
+                        {{ getButtonText(quest) }}
+                        <span v-if="quest.state !== 'completed'" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fst-italic" title="Quest Duration">
+                          <p class="card-text m-0">{{ getQuestDuration(quest) }}</p>
+                        </span>
+                      </button>
+                    </div>
+                    <div class="d-flex justify-content-between flex-grow-1 mx-4 text-center">
+                      <div class="card-text d-block fw-bold">
+                        <img style="width:20px;" :src="require(`@/assets/interface/icons/exp.png`)" title="Exp">
+                        <span class="ps-1"> {{ quest.exp }} </span>
+                      </div>
+                      <div class="card-text d-block fw-bold">
+                        <img style="width:20px;" :src="require(`@/assets/interface/icons/money.png`)" title="Money">
+                        <span class="ps-1"> {{ quest.money }} </span>
+                      </div>
+                      <div v-if="hasWeaponReward(quest) || hasArmorReward(quest)" class="card-text d-block fw-bold">
+                        <img v-if="hasWeaponReward(quest)" :src="require('@/assets/interface/icons/gun.png')" alt="Attack" :title="'Weapon Reward Chance: ' + (quest.rewardChance * 100) + '%'" style="width: 20px;" class="me-2">
+                        <span v-if="hasWeaponReward(quest)" class="position-absolute start-25 translate-middle badge rounded-pill bg-danger fst-italic" title="Reward Drop Chance">
+                          <p class="card-text m-0">{{ quest.rewardChance * 100 }}%</p>
+                        </span>
+                      </div>
+                      <div v-if="hasWeaponReward(quest) || hasArmorReward(quest)" class="card-text d-block fw-bold">
+                        <img v-if="hasArmorReward(quest)" :src="require('@/assets/interface/icons/shield.png')" alt="Defence" :title="'Armor Reward Chance: ' + (quest.armorRewardChance * 100) + '%'" style="width: 20px;" class="me-2">
+                        <span v-if="hasArmorReward(quest)" class="position-absolute start-75 translate-middle badge rounded-pill bg-danger fst-italic" title="Reward Drop Chance">
+                          <p class="card-text m-0">{{ quest.armorRewardChance * 100 }}%</p>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div v-if="character.level < quest.levelRequirement" class="alert alert-warning mt-2 p-2 mb-2 alert-clear-text">
+                    Level {{ quest.levelRequirement }} required to start this quest.
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="progress p-0 m-0">
-          <div class="progress-bar p-0 m-0" :style="{ width: quest.progress + '%' }"></div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="highLevelQuestsHeader">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#highLevelQuests" aria-expanded="false" aria-controls="highLevelQuests">
+          High Level Quests
+        </button>
+      </h2>
+      <div id="highLevelQuests" class="accordion-collapse collapse" aria-labelledby="highLevelQuestsHeader" data-bs-parent="#questAccordion">
+        <div class="accordion-body">
+          <div class="row my-2" v-for="quest in highLevelQuests" :key="quest.name">
+            <div class="col-3" :style="{
+              backgroundImage: `url(${require(`@/assets/quests/bg/${quest.id}.jpg`)})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center center',
+              backgroundRepeat: 'no-repeat'
+            }"></div>
+            <div class="col-9 p-0">
+              <div class="card">
+                <div class="card-header p-0 d-flex">
+                  <div class="bg-light">
+                    <h5 class="card-text-header text-capitalize p-2">{{ quest.name }}</h5>
+                    <p class="card-text card-text-desc p-2">{{ quest.desc }}</p>
+                  </div>
+                </div>
+                <div class="progress p-0 m-0">
+                  <div class="progress-bar p-0 m-0" :style="{ width: quest.progress + '%' }"></div>
+                </div>
+                <div class="card-body bg-secondary bg-gradient p-2">
+                  <div class="d-flex align-items-center justify-content-between py-1">
+                    <p class="card-text" v-if="quest.state === 'in-progress'">Remaining Time: {{ formatTime(quest.remainingTime) }}</p>
+                  </div>
+                  <div class="d-flex align-items-center justify-content-center">
+                    <div class="text-center">
+                      <button type="button" class="btn btn-success bg-gradient position-relative fw-bold" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)">
+                        {{ getButtonText(quest) }}
+                        <span v-if="quest.state !== 'completed'" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fst-italic" title="Quest Duration">
+                          <p class="card-text m-0">{{ getQuestDuration(quest) }}</p>
+                        </span>
+                      </button>
+                    </div>
+                    <div class="d-flex justify-content-between flex-grow-1 mx-4 text-center">
+                      <div class="card-text d-block fw-bold">
+                        <img style="width:20px;" :src="require(`@/assets/interface/icons/exp.png`)" title="Exp">
+                        <span class="ps-1"> {{ quest.exp }} </span>
+                      </div>
+                      <div class="card-text d-block fw-bold">
+                        <img style="width:20px;" :src="require(`@/assets/interface/icons/money.png`)" title="Money">
+                        <span class="ps-1"> {{ quest.money }} </span>
+                      </div>
+                      <div v-if="hasWeaponReward(quest) || hasArmorReward(quest)" class="card-text d-block fw-bold">
+                        <img v-if="hasWeaponReward(quest)" :src="require('@/assets/interface/icons/gun.png')" alt="Attack" :title="'Weapon Reward Chance: ' + (quest.rewardChance * 100) + '%'" style="width: 20px;" class="me-2">
+                        <span v-if="hasWeaponReward(quest)" class="position-absolute start-25 translate-middle badge rounded-pill bg-danger fst-italic" title="Reward Drop Chance">
+                          <p class="card-text m-0">{{ quest.rewardChance * 100 }}%</p>
+                        </span>
+                      </div>
+                      <div v-if="hasWeaponReward(quest) || hasArmorReward(quest)" class="card-text d-block fw-bold">
+                        <img v-if="hasArmorReward(quest)" :src="require('@/assets/interface/icons/shield.png')" alt="Defence" :title="'Armor Reward Chance: ' + (quest.armorRewardChance * 100) + '%'" style="width: 20px;" class="me-2">
+                        <span v-if="hasArmorReward(quest)" class="position-absolute start-75 translate-middle badge rounded-pill bg-danger fst-italic" title="Reward Drop Chance">
+                          <p class="card-text m-0">{{ quest.armorRewardChance * 100 }}%</p>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div v-if="character.level < quest.levelRequirement" class="alert alert-warning mt-2 p-2 mb-2 alert-clear-text">
+                    Level {{ quest.levelRequirement }} required to start this quest.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="card-body bg-secondary bg-gradient p-2">
-          <div class="d-flex align-items-center justify-content-between py-1">
-            <p class="card-text" v-if="quest.state === 'in-progress'">Remaining Time: {{ formatTime(quest.remainingTime) }}</p>
-          </div>
-          <div class="d-flex align-items-center justify-content-center">
-            <div class="text-center">
-              <button type="button" class="btn btn-success bg-gradient position-relative fw-bold" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)">
-                {{ getButtonText(quest) }}
-                <span v-if="quest.state !== 'completed'" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fst-italic" title="Quest Duration">
-                  <p class="card-text m-0">{{ getQuestDuration(quest) }}</p>
-                </span>
-              </button>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="completedQuestsHeader">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#completedQuests" aria-expanded="false" aria-controls="completedQuests">
+          Completed Quests
+        </button>
+      </h2>
+      <div id="completedQuests" class="accordion-collapse collapse" aria-labelledby="completedQuestsHeader" data-bs-parent="#questAccordion">
+        <div class="accordion-body">
+          <div class="row my-2" v-for="quest in completedQuests" :key="quest.name">
+            <div class="col-3" :style="{
+              backgroundImage: `url(${require(`@/assets/quests/bg/${quest.id}.jpg`)})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center center',
+              backgroundRepeat: 'no-repeat'
+            }"></div>
+            <div class="col-9 p-0">
+              <div class="card">
+                <div class="card-header p-0 d-flex">
+                  <div class="bg-light">
+                    <h5 class="card-text-header text-capitalize p-2">{{ quest.name }}</h5>
+                    <p class="card-text card-text-desc p-2">{{ quest.desc }}</p>
+                  </div>
+                </div>
+                <div class="progress p-0 m-0">
+                  <div class="progress-bar p-0 m-0" :style="{ width: quest.progress + '%' }"></div>
+                </div>
+                <div class="card-body bg-secondary bg-gradient p-2">
+                  <div class="d-flex align-items-center justify-content-between py-1">
+                    <p class="card-text" v-if="quest.state === 'in-progress'">Remaining Time: {{ formatTime(quest.remainingTime) }}</p>
+                  </div>
+                  <div class="d-flex align-items-center justify-content-center">
+                    <div class="text-center">
+                      <button type="button" class="btn btn-success bg-gradient position-relative fw-bold" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)">
+                        {{ getButtonText(quest) }}
+                        <span v-if="quest.state !== 'completed'" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fst-italic" title="Quest Duration">
+                          <p class="card-text m-0">{{ getQuestDuration(quest) }}</p>
+                        </span>
+                      </button>
+                    </div>
+                    <div class="d-flex justify-content-between flex-grow-1 mx-4 text-center">
+                      <div class="card-text d-block fw-bold">
+                        <img style="width:20px;" :src="require(`@/assets/interface/icons/exp.png`)" title="Exp">
+                        <span class="ps-1"> {{ quest.exp }} </span>
+                      </div>
+                      <div class="card-text d-block fw-bold">
+                        <img style="width:20px;" :src="require(`@/assets/interface/icons/money.png`)" title="Money">
+                        <span class="ps-1"> {{ quest.money }} </span>
+                      </div>
+                      <div v-if="hasWeaponReward(quest) || hasArmorReward(quest)" class="card-text d-block fw-bold">
+                        <img v-if="hasWeaponReward(quest)" :src="require('@/assets/interface/icons/gun.png')" alt="Attack" :title="'Weapon Reward Chance: ' + (quest.rewardChance * 100) + '%'" style="width: 20px;" class="me-2">
+                        <span v-if="hasWeaponReward(quest)" class="position-absolute start-25 translate-middle badge rounded-pill bg-danger fst-italic" title="Reward Drop Chance">
+                          <p class="card-text m-0">{{ quest.rewardChance * 100 }}%</p>
+                        </span>
+                      </div>
+                      <div v-if="hasWeaponReward(quest) || hasArmorReward(quest)" class="card-text d-block fw-bold">
+                        <img v-if="hasArmorReward(quest)" :src="require('@/assets/interface/icons/shield.png')" alt="Defence" :title="'Armor Reward Chance: ' + (quest.armorRewardChance * 100) + '%'" style="width: 20px;" class="me-2">
+                        <span v-if="hasArmorReward(quest)" class="position-absolute start-75 translate-middle badge rounded-pill bg-danger fst-italic" title="Reward Drop Chance">
+                          <p class="card-text m-0">{{ quest.armorRewardChance * 100 }}%</p>
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div class="d-flex justify-content-between flex-grow-1 mx-4 text-center">
-              <div class="card-text d-block fw-bold">
-                <img style="width:25px;" :src="require(`@/assets/interface/icons/exp.png`)" title="Exp">
-                <span class="ps-1"> {{ quest.exp }} </span>
-              </div>
-              <div class="card-text d-block fw-bold">
-                <img style="width:25px;" :src="require(`@/assets/interface/icons/money.png`)" title="Money">
-                <span class="ps-1"> {{ quest.money }} </span>
-              </div>
-              <div v-if="hasWeaponReward(quest) || hasArmorReward(quest)" class="card-text d-block fw-bold">
-                <img v-if="hasWeaponReward(quest)" :src="require('@/assets/interface/icons/gun.png')" alt="Attack" :title="'Weapon Reward Chance: ' + (quest.rewardChance * 100) + '%'" style="width: 20px;" class="me-2">
-                <span v-if="hasWeaponReward(quest)" class="position-absolute start-25 translate-middle badge rounded-pill bg-danger fst-italic" title="Reward Drop Chance">
-                  <p class="card-text m-0">{{ quest.rewardChance * 100 }}%</p>
-                </span>
-              </div>
-              <div v-if="hasWeaponReward(quest) || hasArmorReward(quest)" class="card-text d-block fw-bold">
-                <img v-if="hasArmorReward(quest)" :src="require('@/assets/interface/icons/shield.png')" alt="Defence" :title="'Armor Reward Chance: ' + (quest.armorRewardChance * 100) + '%'" style="width: 20px;" class="me-2">
-                <span v-if="hasArmorReward(quest)" class="position-absolute start-75 translate-middle badge rounded-pill bg-danger fst-italic" title="Reward Drop Chance">
-                  <p class="card-text m-0">{{ quest.armorRewardChance * 100 }}%</p>
-                </span>
-              </div>
-            </div>
-          </div>
-          <div v-if="character.level < quest.levelRequirement" class="alert alert-warning mt-2 p-2 mb-2 alert-clear-text">
-            Level {{ quest.levelRequirement }} required to start this quest.
           </div>
         </div>
       </div>
     </div>
   </div>
 </template>
+
 
 <script>
 import { reactive } from 'vue';
@@ -71,6 +226,15 @@ import confetti from 'canvas-confetti';
 export default {
   computed: {
     ...mapState(['quests', 'character']),
+    availableQuests() {
+      return this.quests.filter(quest => quest.state === 'not-started' && this.character.level >= quest.levelRequirement);
+    },
+    highLevelQuests() {
+      return this.quests.filter(quest => quest.state === 'not-started' && this.character.level < quest.levelRequirement);
+    },
+    completedQuests() {
+      return this.quests.filter(quest => quest.state === 'completed');
+    },
   },
   methods: {
     ...mapActions(['increaseExp', 'increaseMoney', 'handleQuest', 'claimRewards', 'clearQuests']),

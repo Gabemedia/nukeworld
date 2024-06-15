@@ -32,11 +32,11 @@
             </div>
             <div class="d-flex justify-content-between flex-grow-1 mx-4 text-center">
               <div class="card-text d-block fw-bold">
-                <img style="width:25px;" :src="require(`@/assets/interface/icons/exp.png`)" title="Exp">
+                <img style="width:20px;" :src="require(`@/assets/interface/icons/exp.png`)" title="Exp">
                 <span class="ps-1"> {{ quest.exp }} </span>
               </div>
               <div class="card-text d-block fw-bold">
-                <img style="width:25px;" :src="require(`@/assets/interface/icons/money.png`)" title="Money">
+                <img style="width:20px;" :src="require(`@/assets/interface/icons/money.png`)" title="Money">
                 <span class="ps-1"> {{ quest.money }} </span>
               </div>
               <div v-if="hasWeaponReward(quest) || hasArmorReward(quest)" class="card-text d-block fw-bold">
