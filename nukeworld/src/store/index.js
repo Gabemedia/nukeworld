@@ -78,7 +78,7 @@ const mutations = {
   },
 
   updateQuestState(state, { quest, newState }) {
-    const questIndex = state.quests.findIndex((q) => q.name === quest.name);
+    const questIndex = state.quests.findIndex((q) => q.id === quest.id);
     if (questIndex !== -1) {
       state.quests[questIndex] = { ...state.quests[questIndex], ...newState };
     }
@@ -272,9 +272,8 @@ const actions = {
   
     dispatch('increaseExp', quest.exp);
     dispatch('increaseMoney', quest.money);
-  
     commit('updateCharacterInArray', state.character);
-  
+    commit('updateQuestState', { quest, newState: { claimed: true } });
     return obtainedReward;
   },
   

@@ -149,7 +149,6 @@ export default {
           bodyClassName: 'quest-toast-body quest-toast',
         });
 
-        reactiveQuest.state = 'completed';
         reactiveQuest.claimed = true;
         this.saveQuests();
       }
