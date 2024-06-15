@@ -19,7 +19,7 @@
       >
       </l-marker>
     </l-map>
-    <div v-if="showModal" class="modal">
+    <div v-if="showModal" class="modal" @click.self="closeModal">
       <div class="modal-content">
         <span class="close" @click="closeModal">&times;</span>
         <QuestDetails v-if="selectedQuest" :quest="selectedQuest"></QuestDetails>
