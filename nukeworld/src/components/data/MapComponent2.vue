@@ -7,10 +7,12 @@
         v-for="quest in filteredQuests"
         :key="quest.id"
         :lat-lng="[quest.lat, quest.lon]"
-        :icon="customIcon(quest)"
+        :icon="customIcon"
         @click="openModal(quest)"
+        :class="{ 'bounce-marker': quest.state === 'completed' && !quest.claimed }"
       >
       </l-marker>
+
 
       <l-marker
         v-for="marker in markers"
@@ -61,14 +63,11 @@ export default {
         crs: L.CRS.Simple,
       },
       selectedMarkerCoords: null,
-      customIcon: function(quest) {
-        return L.icon({
-          iconUrl: require('@/assets/interface/icons/marker.png'),
-          iconSize: [25, 36],
-          iconAnchor: [12, 12],
-          className: quest && quest.state === 'completed' && !quest.claimed ? 'custom-marker bounce-marker' : 'custom-marker',
-        });
-      },
+      customIcon: L.icon({
+        iconUrl: require('@/assets/interface/icons/marker.png'),
+        iconSize: [25, 36],
+        iconAnchor: [12, 12],
+      }),
       isMarkerPlacementEnabled: false,
       showModal: false,
       selectedQuest: null,
@@ -78,7 +77,7 @@ export default {
   computed: {
     ...mapState(['quests', 'markers']),
     filteredQuests() {
-      return this.quests.filter(quest => !quest.userCreated && quest.lat && quest.lon && (quest.state === 'not-started' || quest.state === 'completed'));
+      return this.quests.filter(quest => !quest.userCreated && quest.lat && quest.lon && (quest.state === 'not-started' || quest.state === 'in-progress' || quest.state === 'completed'));
     },
   },
   mounted() {
@@ -122,7 +121,11 @@ export default {
       }
       this.showModal = true;
     },
-
+    closeModal() {
+      this.showModal = false;
+      this.selectedQuest = null;
+      this.selectedMarker = null;
+    },
   },
 };
 </script>

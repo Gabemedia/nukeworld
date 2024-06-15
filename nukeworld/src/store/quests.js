@@ -31,7 +31,7 @@ export default [
     rewardChance: 0.5,
     armorReward: [1],
     armorRewardChance: 0.05,
-    levelRequirement: 2,
+    levelRequirement: 1,
   },
   {
     id: 3,
@@ -48,7 +48,7 @@ export default [
     rewardChance: 0.05,
     armorReward: [1],
     armorRewardChance: 0.05,
-    levelRequirement: 3,
+    levelRequirement: 1,
   },
   {
     id: 4,
