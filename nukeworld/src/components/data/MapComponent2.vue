@@ -1,7 +1,8 @@
+<!-- MapComponent2.vue -->
 <template>
   <div class="map-container">
     <l-map ref="map" :zoom="zoom" :center="center" :options="mapOptions" @click="onMapClick">
-      <l-tile-layer :url="tileUrl" :attribution="attribution"></l-tile-layer>
+      <l-image-overlay :url="mapImageUrl" :bounds="mapBounds" :opacity="1"></l-image-overlay>
       <l-marker
         v-for="quest in filteredQuests"
         :key="quest.id"
@@ -27,7 +28,7 @@
 </template>
 
 <script>
-import { LMap, LTileLayer, LMarker, LPopup } from '@vue-leaflet/vue-leaflet';
+import { LMap, LMarker, LPopup, LImageOverlay } from '@vue-leaflet/vue-leaflet';
 import { mapState } from 'vuex';
 import QuestDetails from './controller/QuestDetails.vue';
 import L from 'leaflet';
@@ -35,24 +36,24 @@ import L from 'leaflet';
 export default {
   components: {
     LMap,
-    LTileLayer,
     LMarker,
     LPopup,
     QuestDetails,
+    LImageOverlay,
   },
   data() {
     return {
-      zoom: 12, // Ændret zoom niveau
-      center: [51.52, -0.11], // Ændret center koordinater
-      tileUrl: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', // Ændret tile URL
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      zoom: 0,
+      center: [600, 960],
+      mapImageUrl: require('@/assets/maps/nukemap2.webp'),
+      mapBounds: [[0, 0], [1200, 1920]],
       mapOptions: {
         zoomControl: false,
         attributionControl: false,
-        maxBounds: this.getRandomBounds(), // Tilfældige maxBounds
         scrollWheelZoom: false,
         doubleClickZoom: false,
         dragging: false,
+        crs: L.CRS.Simple,
       },
       selectedMarkerCoords: null,
       customIcon: L.icon({
@@ -82,10 +83,7 @@ export default {
     updateMapSize() {
       const map = this.$refs.map?.$mapObject;
       if (map) {
-        map.setView(this.center, this.zoom, {
-          animate: false,
-          maxBounds: this.mapOptions.maxBounds,
-        });
+        map.fitBounds(this.mapBounds);
         map.invalidateSize(false);
       }
     },
@@ -109,12 +107,10 @@ export default {
         map.panTo([lat, lon]);
       }
     },
-    getRandomBounds() {
-      const lat1 = Math.random() * (51.6 - 51.4) + 51.4;
-      const lat2 = Math.random() * (51.6 - 51.4) + 51.4;
-      const lon1 = Math.random() * (-0.2 - -0.4) + -0.4;
-      const lon2 = Math.random() * (0.0 - -0.2) + -0.2;
-      return [[Math.min(lat1, lat2), Math.min(lon1, lon2)], [Math.max(lat1, lat2), Math.max(lon1, lon2)]];
+    getMapCenter(bounds) {
+      const lat = (bounds[0][0] + bounds[1][0]) / 2;
+      const lon = (bounds[0][1] + bounds[1][1]) / 2;
+      return [lat, lon];
     },
   },
   watch: {

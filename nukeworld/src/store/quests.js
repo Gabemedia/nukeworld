@@ -10,7 +10,7 @@ export default [
     state: 'not-started',
     disabled: false,
     reward: [1, 2, 3],
-    rewardChance: 0.8,
+    rewardChance: 0.18,
     armorReward: [1],
     armorRewardChance: 0.05,
     levelRequirement: 1,

@@ -1,7 +1,8 @@
+<!-- MapComponent.vue -->
 <template>
   <div class="map-container">
     <l-map ref="map" :zoom="zoom" :center="center" :options="mapOptions" @click="onMapClick">
-      <l-tile-layer :url="tileUrl" :attribution="attribution"></l-tile-layer>
+      <l-image-overlay :url="mapImageUrl" :bounds="mapBounds" :opacity="1"></l-image-overlay>
       <l-marker
         v-for="quest in filteredQuests"
         :key="quest.id"
@@ -27,7 +28,7 @@
 </template>
 
 <script>
-import { LMap, LTileLayer, LMarker, LPopup } from '@vue-leaflet/vue-leaflet';
+import { LMap, LMarker, LPopup, LImageOverlay } from '@vue-leaflet/vue-leaflet';
 import { mapState } from 'vuex';
 import QuestDetails from './controller/QuestDetails.vue';
 import L from 'leaflet';
@@ -35,27 +36,27 @@ import L from 'leaflet';
 export default {
   components: {
     LMap,
-    LTileLayer,
     LMarker,
     LPopup,
     QuestDetails,
+    LImageOverlay,
   },
   data() {
     return {
-      zoom: 13,
-      center: [51.505, -0.09],
-      tileUrl: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-      attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+      zoom: 0,
+      center: [600, 960],
+      mapImageUrl: require('@/assets/maps/nukemap1.webp'),
+      mapBounds: [[0, 0], [1200, 1920]],
       mapOptions: {
         zoomControl: false,
         attributionControl: false,
-        maxBounds: [[51.470, -0.3], [51.50, -0.06]], // Increase the maxBounds area
         scrollWheelZoom: false,
         doubleClickZoom: false,
         dragging: false,
+        crs: L.CRS.Simple,
       },
       selectedMarkerCoords: null,
-        customIcon: L.icon({
+      customIcon: L.icon({
         iconUrl: require('@/assets/interface/icons/reward.png'),
         iconSize: [25, 25],
         iconAnchor: [12, 12],
@@ -82,10 +83,7 @@ export default {
     updateMapSize() {
       const map = this.$refs.map?.$mapObject;
       if (map) {
-        map.setView([51.505, -0.09], 13, {
-          animate: false,
-          maxBounds: [[51.470, -0.3], [51.50, -0.06]], // Set the maxBounds option
-        });
+        map.fitBounds(this.mapBounds);
         map.invalidateSize(false);
       }
     },
@@ -102,13 +100,17 @@ export default {
         this.$store.commit('addMarker', newMarker);
       }
     },
-
     centerOnMarker(lat, lon) {
       this.selectedMarkerCoords = [lat, lon];
       const map = this.$refs.map?.$mapObject;
       if (map) {
         map.panTo([lat, lon]);
       }
+    },
+    getMapCenter(bounds) {
+      const lat = (bounds[0][0] + bounds[1][0]) / 2;
+      const lon = (bounds[0][1] + bounds[1][1]) / 2;
+      return [lat, lon];
     },
   },
   watch: {
