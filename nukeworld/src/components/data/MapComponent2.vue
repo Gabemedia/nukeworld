@@ -8,26 +8,29 @@
         :key="quest.id"
         :lat-lng="[quest.lat, quest.lon]"
         :icon="customIcon"
+        @click="openModal(quest)"
       >
-        <l-popup :open-on="'bottom'">
-          <QuestDetails :quest="quest"></QuestDetails>
-        </l-popup>
       </l-marker>
       <l-marker
         v-for="marker in markers"
         :key="marker.id"
         :lat-lng="[marker.lat, marker.lon]"
+        @click="openModal(marker)"
       >
-        <l-popup :open-on="'bottom'">
-          <div>{{ marker.label }}</div>
-        </l-popup>
       </l-marker>
     </l-map>
+    <div v-if="showModal" class="modal">
+      <div class="modal-content">
+        <span class="close" @click="closeModal">&times;</span>
+        <QuestDetails v-if="selectedQuest" :quest="selectedQuest"></QuestDetails>
+        <div v-if="selectedMarker">{{ selectedMarker.label }}</div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { LMap, LMarker, LPopup, LImageOverlay } from '@vue-leaflet/vue-leaflet';
+import { LMap, LMarker, LImageOverlay } from '@vue-leaflet/vue-leaflet';
 import { mapState } from 'vuex';
 import QuestDetails from './controller/QuestDetails.vue';
 import L from 'leaflet';
@@ -36,7 +39,6 @@ export default {
   components: {
     LMap,
     LMarker,
-    LPopup,
     QuestDetails,
     LImageOverlay,
   },
@@ -61,6 +63,9 @@ export default {
         iconAnchor: [12, 12],
       }),
       isMarkerPlacementEnabled: true,
+      showModal: false,
+      selectedQuest: null,
+      selectedMarker: null,
     };
   },
   computed: {
@@ -99,10 +104,18 @@ export default {
         this.$store.commit('addMarker', newMarker);
       }
     },
-    getMapCenter(bounds) {
-      const lat = (bounds[0][0] + bounds[1][0]) / 2;
-      const lon = (bounds[0][1] + bounds[1][1]) / 2;
-      return [lat, lon];
+    openModal(item) {
+      if (Object.prototype.hasOwnProperty.call(item, 'name')) {
+        this.selectedQuest = item;
+      } else {
+        this.selectedMarker = item;
+      }
+      this.showModal = true;
+    },
+    closeModal() {
+      this.showModal = false;
+      this.selectedQuest = null;
+      this.selectedMarker = null;
     },
   },
   watch: {
@@ -125,7 +138,35 @@ export default {
   width: 100%;
   height: 100vh;
 }
-.leaflet-popup-content-wrapper {
-  transform: translateY(10px);
+.modal {
+  display: block;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
 }
 </style>
