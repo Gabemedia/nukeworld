@@ -90,7 +90,6 @@ const mutations = {
     if (index !== -1) {
       state.quests[index] = { ...quest, state: 'completed' };
     }
-    
   },
   resetQuest(state, quest) {
     const index = state.quests.findIndex((q) => q.name === quest.name);

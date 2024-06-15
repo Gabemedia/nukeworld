@@ -155,8 +155,8 @@ export default {
           bodyClassName: 'quest-toast-body quest-toast',
         });
 
-        reactiveQuest.claimed = true;
-        this.deleteQuestData(reactiveQuest);
+        reactiveQuest.state = 'completed';
+        this.saveQuests();
       }
     },
 
@@ -224,16 +224,6 @@ export default {
           clearInterval(quest.intervalId);
         }
       });
-      this.saveQuests();
-    },
-    deleteQuestData(quest) {
-      this.$store.dispatch('clearQuests');
-      localStorage.removeItem('quests');
-      const index = this.quests.findIndex(q => q.name === quest.name);
-      if (index !== -1) {
-        this.quests.splice(index, 1);
-      }
-      this.quests = [];
       this.saveQuests();
     },
     getRewardItemName(rewardId) {

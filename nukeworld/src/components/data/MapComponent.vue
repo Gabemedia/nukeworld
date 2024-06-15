@@ -66,7 +66,7 @@ export default {
   computed: {
     ...mapState(['quests', 'markers']),
     filteredQuests() {
-      return this.quests.filter(quest => !quest.userCreated && quest.lat && quest.lon);
+      return this.quests.filter(quest => !quest.userCreated && quest.lat && quest.lon && (quest.state === 'not-started' || quest.state === 'completed'));
     },
   },
   mounted() {
