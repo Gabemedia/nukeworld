@@ -6,7 +6,7 @@
     <div class="offcanvas-header card-text-header text-light bg-primary bg-gradient d-flex justify-content-between align-items-center">
     <h5 class="flex-grow-1">Quest Log</h5>
     <div class="d-flex align-items-center">
-      <img class="icon-reload" @click="reloadPage" :src="require(`@/assets/interface/icons/reload.png`)" title="Reload Quests">
+      <img class="icon-reload" @click="confirmResetQuests" :src="require(`@/assets/interface/icons/reload.png`)" title="Reset Quests (Cost: 2500)">
       <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
   </div>
@@ -17,15 +17,30 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import QuestList from './controller/QuestList.vue';
+import { toast } from 'vue3-toastify';
 
 export default {
   components: {
     QuestList,
   },
   methods: {
-    reloadPage() {
-      location.reload();
+    ...mapActions(['resetQuests', 'decreaseMoney']),
+    async confirmResetQuests() {
+      if (confirm('Are you sure you want to reset the quests? This will cost 2500 money.')) {
+        if (this.$store.state.character.money >= 2500) {
+          await this.decreaseMoney(2500);
+          await this.resetQuests();
+          toast.success('Quests have been reset successfully.', {
+            autoClose: 3000,
+          });
+        } else {
+          toast.warning('You don\'t have enough money to reset the quests. Cost: 2500', {
+            autoClose: 3000,
+          });
+        }
+      }
     },
   },
 };

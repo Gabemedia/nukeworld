@@ -25,8 +25,8 @@
             <div class="text-center">
               <button type="button" class="btn btn-success bg-gradient position-relative fw-bold" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)">
                 {{ getButtonText(quest) }}
-                <span v-if="quest.state !== 'completed'" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fst-italic" title="Reward Drop Chance">
-                  <p class="card-text m-0">{{ quest.rewardChance * 100 }}%</p>
+                <span v-if="quest.state !== 'completed'" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fst-italic" title="Quest Duration">
+                  <p class="card-text m-0">{{ getQuestDuration(quest) }}</p>
                 </span>
               </button>
             </div>
@@ -128,6 +128,15 @@ export default {
         return 'Claim Rewards';
       } else {
         return 'Completed';
+      }
+    },
+    getQuestDuration(quest) {
+      const duration = quest.duration / 1000; // Convert milliseconds to seconds
+      if (duration >= 60) {
+        const minutes = Math.floor(duration / 60);
+        return `${minutes} min`;
+      } else {
+        return `${duration} sec`;
       }
     },
 

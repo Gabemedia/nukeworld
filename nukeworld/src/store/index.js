@@ -98,7 +98,15 @@ const mutations = {
   resetQuest(state, quest) {
     const index = state.quests.findIndex((q) => q.name === quest.name);
     if (index !== -1) {
-      state.quests[index] = { ...quest, disabled: false, state: 'not-started', progress: 0 };
+      state.quests[index] = {
+        ...quest,
+        disabled: false,
+        state: 'not-started',
+        progress: 0,
+        claimed: false,
+        startTime: null,
+        remainingTime: quest.duration,
+      };
     }
   },
   setQuests(state, quests) {
@@ -276,7 +284,12 @@ const actions = {
     commit('updateQuestState', { quest, newState: { claimed: true } });
     return obtainedReward;
   },
-  
+  resetQuests({ state, commit }) {
+    state.quests.forEach((quest) => {
+      commit('resetQuest', quest);
+    });
+  },
+
   
   clearQuests({ commit }) {
     commit('setQuests', []);
