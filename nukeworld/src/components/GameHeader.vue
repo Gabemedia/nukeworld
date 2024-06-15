@@ -25,7 +25,7 @@
   <QuestLog />
   <InventoryLog />
   <button @click="toggleMap" class="btn btn-main btn-primary m-2" type="button">Toggle Map</button>
-
+  <button @click="toggleMap2" class="btn btn-main btn-primary m-2" type="button">Toggle Map 2</button>
 </template>
 
 <script>
@@ -55,6 +55,9 @@ export default {
   methods: {
     toggleMap() {
       this.$emit('toggleMap');
+    },
+    toggleMap2() {
+      this.$emit('toggleMap2');
     },
   },
 };

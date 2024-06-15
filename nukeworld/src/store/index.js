@@ -170,6 +170,7 @@ const actions = {
     commit('addCharacter', newCharacter);
     commit('updateCharacter', newCharacter);
     commit('equipWeapon', 0);
+    commit('setQuests', defaultQuests);
   },
   updateCharacter({ commit }, character) {
     commit('updateCharacter', character);

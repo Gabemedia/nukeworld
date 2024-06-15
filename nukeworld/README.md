@@ -62,6 +62,7 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Minor bug fixes.
 
 ### Version 0.0.9 (2024-06-14)
+- Added Generated Quest Locations
 - Toasts logic changed to display rewards and none reward drops.
 - Toasts timers refactored to display quest status and rewards.
 - Minor styling tweaks to Toasts in QuestList & QuestDetails.
