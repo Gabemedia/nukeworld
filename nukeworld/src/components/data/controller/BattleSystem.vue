@@ -1,29 +1,22 @@
-<!-- src/components/data/controller/BattleSystem.vue -->
 <template>
   <div class="battle-system">
-    <!-- Display player and enemy health, actions, and battle log -->
     <div class="player-info">
-      <!-- Display player information, health, equipped weapons, and armor -->
       <p>Player: {{ character.name }}</p>
       <p>Health: {{ playerHealth }}</p>
       <p>Equipped Weapon: {{ equippedWeapon ? equippedWeapon.name : 'None' }}</p>
       <p>Equipped Armor: {{ equippedArmor ? equippedArmor.name : 'None' }}</p>
     </div>
     <div class="enemy-info">
-      <!-- Display enemy information and health -->
       <p>Enemy: {{ enemy.name }}</p>
       <p>Health: {{ enemyHealth }}</p>
     </div>
     <div class="battle-actions">
-      <!-- Display available actions (e.g., attack, defend, use item) -->
-      <button @click="attack" class="btn btn-primary">Attack</button>
-      <button @click="defend" class="btn btn-secondary">Defend</button>
-      <button @click="useItem" class="btn btn-info">Use Item</button>
+      <button @click="attack" class="btn btn-primary attack-button">Attack</button>
+      <button @click="useItem" class="btn btn-info use-item-button">Use Item</button>
     </div>
     <div class="battle-log">
-      <!-- Display battle log -->
       <ul>
-        <li v-for="(log, index) in battleLog" :key="index">{{ log }}</li>
+        <li v-for="(log, index) in battleLog" :key="index" :class="log.type">{{ log.message }}</li>
       </ul>
     </div>
   </div>
@@ -55,28 +48,101 @@ export default {
       return this.character.equippedArmor;
     },
   },
+
   methods: {
     attack() {
-      const damage = this.calculateDamage(this.equippedWeapon.attack, this.enemy.defense);
-      this.enemyHealth -= damage;
-      this.battleLog.push(`You attacked the ${this.enemy.name} for ${damage} damage.`);
-      this.checkBattleEnd();
+      if (this.equippedWeapon) {
+        const playerDamage = this.calculateDamage(this.equippedWeapon.attack, this.enemy.defense);
+        this.enemyHealth = Math.max(this.enemyHealth - playerDamage, 0);
+        this.addToLog(`You attacked the ${this.enemy.name} with your ${this.equippedWeapon.name} for ${playerDamage} damage.`, 'player-action');
+      } else {
+        this.addToLog('You have no weapon equipped!', 'player-action');
+      }
+
+      if (this.enemyHealth <= 0) {
+        this.addToLog(`You defeated the ${this.enemy.name}!`, 'player-action');
+        this.checkBattleEnd();
+      } else {
+        this.enemyAttack();
+      }
     },
-    defend() {
-      this.battleLog.push('You defended against the enemy attack.');
+
+    enemyAttack() {
+      const enemyDamage = this.calculateDamage(this.enemy.attack, this.equippedArmor ? this.equippedArmor.defence : 0);
+      this.playerHealth = Math.max(this.playerHealth - enemyDamage, 0);
+      this.addToLog(`The ${this.enemy.name} attacked you for ${enemyDamage} damage.`, 'enemy-action');
+      
+      if (this.playerHealth <= 0) {
+        this.addToLog('You were defeated!', 'enemy-action');
+        this.checkBattleEnd();
+      }
     },
     useItem() {
-      this.battleLog.push('You used an item.');
+      this.addToLog('You used an item.', 'player-action');
     },
     calculateDamage(attack, defense) {
       return Math.max(attack - defense, 0);
     },
     checkBattleEnd() {
-      if (this.enemyHealth <= 0) {
-        this.battleLog.push(`You defeated the ${this.enemy.name}!`);
-        // Trigger battle end logic, rewards, etc.
-      }
+      // Trigger battle end logic, rewards, etc.
+    },
+    addToLog(message, type) {
+      this.battleLog.unshift({ message, type });
     },
   },
 };
 </script>
+
+<style scoped>
+.battle-system {
+  background-color: #f5f5f5;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.player-info,
+.enemy-info {
+  margin-bottom: 20px;
+}
+
+.battle-actions {
+  margin-bottom: 20px;
+}
+
+.attack-button {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.use-item-button {
+  background-color: #17a2b8;
+  border-color: #17a2b8;
+}
+
+.battle-log {
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.battle-log ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.battle-log li {
+  margin-bottom: 5px;
+  padding: 5px;
+  border-radius: 3px;
+}
+
+.player-action {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.enemy-action {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+</style>
