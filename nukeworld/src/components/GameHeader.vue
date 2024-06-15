@@ -24,6 +24,7 @@
   <CharacterInfo />
   <QuestLog />
   <InventoryLog />
+  <EnemyEncounters />
   <button @click="toggleMap" class="btn btn-main btn-primary m-2" type="button">Toggle Map</button>
   <button @click="toggleMap2" class="btn btn-main btn-primary m-2" type="button">Toggle Map 2</button>
 </template>
@@ -34,6 +35,7 @@ import CharacterInfo from './data/CharacterInfo.vue';
 import ExpLvl from './data/ExpLvl.vue';
 import QuestLog from './data/QuestLog.vue';
 import InventoryLog from './data/InventoryLog.vue';
+import EnemyEncounters from './data/EnemyEncounters.vue';
 
 export default {
   name: 'GameHeader',
@@ -42,6 +44,7 @@ export default {
     ExpLvl,
     QuestLog,
     InventoryLog,
+    EnemyEncounters,
   },
   computed: {
     ...mapState(['character']),
