@@ -273,7 +273,6 @@ const actions = {
     dispatch('increaseExp', quest.exp);
     dispatch('increaseMoney', quest.money);
   
-    commit('resetQuest', quest);
     commit('updateCharacterInArray', state.character);
   
     return obtainedReward;

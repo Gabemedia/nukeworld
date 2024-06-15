@@ -87,40 +87,35 @@ export default {
     hasWeaponReward(quest) {
       return quest.reward && quest.reward.length > 0;
     },
-
-    
     hasArmorReward(quest) {
       return quest.armorReward && quest.armorReward.length > 0;
     },
-    
     handleQuestAction(quest) {
       if (quest.state === 'not-started') {
         this.handleQuest(quest);
         this.startQuestProgress(quest);
         toast.success(`<strong>${quest.name} started!</strong>`, {
-          autoClose: 5000, // Set the desired duration in milliseconds
+          autoClose: 5000,
           toastClassName: 'quest-toast-container',
           bodyClassName: 'quest-toast-body',
           dangerouslyHTMLString: true,
         });
-      } else if (quest.state === 'completed') {
+      } else if (quest.state === 'completed' && !quest.claimed) {
         this.claimRewardsAction(quest);
       }
     },
-
     async claimRewardsAction(quest) {
       const reactiveQuest = reactive(quest);
-      if (!reactiveQuest.claimed) {
+      if (!reactiveQuest.claimed && reactiveQuest.state === 'completed') {
         const obtainedReward = await this.claimRewards(reactiveQuest);
         console.log('Obtained reward in component:', obtainedReward);
         confetti({
           particleCount: 100,
           spread: 70,
           origin: { y: 0.6 },
-          zIndex: 9999, // Ensure confetti is on top
+          zIndex: 9999,
         });
 
-        // Construct the reward message
         let rewardMessage = `
         <div class="d-flex flex-column align-items-start justify-content-start h-100">
         <p class="text-left fw-bold  mb-1">${reactiveQuest.name} completed!</p>
@@ -147,17 +142,16 @@ export default {
 
         toast.success(rewardMessage, {
           dangerouslyHTMLString: true,
-          autoClose: 10000, // Duration in milliseconds (e.g., 1000ms = 1 seconds)
+          autoClose: 10000,
           hideProgressBar: false,
           icon: false,
           toastClassName: 'quest-toast-container',
           bodyClassName: 'quest-toast-body quest-toast',
-
         });
 
         reactiveQuest.state = 'completed';
+        reactiveQuest.claimed = true;
         this.saveQuests();
-
       }
     },
     getButtonText(quest) {
@@ -179,13 +173,6 @@ export default {
       const minutes = Math.floor(totalSeconds / 60);
       const seconds = totalSeconds % 60;
       return `${minutes} min ${seconds} sec`;
-    },
-    checkQuestState() {
-      this.quests.forEach(quest => {
-        if (quest.state === 'in-progress' && !quest.intervalId) {
-          this.startQuestTimer(quest);
-        }
-      });
     },
     startQuestProgress(quest) {
       const reactiveQuest = reactive(quest);
@@ -217,25 +204,8 @@ export default {
         this.saveQuests();
       }, 1000);
     },
-
     saveQuests() {
       localStorage.setItem('quests', JSON.stringify(this.quests));
-    },
-    resetQuests() {
-      this.quests.forEach((quest, index) => {
-        const newQuest = reactive({
-          ...quest,
-          state: 'not-started',
-          progress: 0,
-          claimed: false,
-          intervalId: null
-        });
-        this.quests[index] = newQuest;
-        if (quest.intervalId) {
-          clearInterval(quest.intervalId);
-        }
-      });
-      this.saveQuests();
     },
     getRewardItemName(rewardId) {
       const rewardItem = this.$store.state.items.find(item => item.id === rewardId);
@@ -273,9 +243,7 @@ export default {
     });
   },
 };
-
 </script>
-
 <style scoped>
 
 img {

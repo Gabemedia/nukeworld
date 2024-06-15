@@ -7,10 +7,11 @@
         v-for="quest in filteredQuests"
         :key="quest.id"
         :lat-lng="[quest.lat, quest.lon]"
-        :icon="customIcon"
+        :icon="customIcon(quest)"
         @click="openModal(quest)"
       >
       </l-marker>
+
       <l-marker
         v-for="marker in markers"
         :key="marker.id"
@@ -60,12 +61,14 @@ export default {
         crs: L.CRS.Simple,
       },
       selectedMarkerCoords: null,
-      customIcon: L.icon({
-        iconUrl: require('@/assets/interface/icons/marker.png'),
-        iconSize: [25, 36],
-        iconAnchor: [12, 12],
-        className: 'custom-marker',
-      }),
+      customIcon: function(quest) {
+        return L.icon({
+          iconUrl: require('@/assets/interface/icons/marker.png'),
+          iconSize: [25, 36],
+          iconAnchor: [12, 12],
+          className: quest && quest.state === 'completed' && !quest.claimed ? 'custom-marker bounce-marker' : 'custom-marker',
+        });
+      },
       isMarkerPlacementEnabled: false,
       showModal: false,
       selectedQuest: null,
@@ -111,16 +114,15 @@ export default {
     openModal(item) {
       if (Object.prototype.hasOwnProperty.call(item, 'name')) {
         this.selectedQuest = item;
+        if (item.state === 'completed' && !item.claimed) {
+          this.selectedQuest.state = 'completed';
+        }
       } else {
         this.selectedMarker = item;
       }
       this.showModal = true;
     },
-    closeModal() {
-      this.showModal = false;
-      this.selectedQuest = null;
-      this.selectedMarker = null;
-    },
+
   },
 };
 </script>

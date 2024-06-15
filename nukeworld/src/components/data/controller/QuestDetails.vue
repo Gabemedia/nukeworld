@@ -224,22 +224,6 @@ export default {
     saveQuests() {
       localStorage.setItem('quests', JSON.stringify(this.quests));
     },
-    resetQuests() {
-      this.quests.forEach((quest, index) => {
-        const newQuest = reactive({
-          ...quest,
-          state: 'not-started',
-          progress: 0,
-          claimed: false,
-          intervalId: null
-        });
-        this.quests[index] = newQuest;
-        if (quest.intervalId) {
-          clearInterval(quest.intervalId);
-        }
-      });
-      this.saveQuests();
-    },
     getRewardItemName(rewardId) {
       const rewardItem = this.$store.state.items.find(item => item.id === rewardId);
       return rewardItem ? rewardItem.name : '';
