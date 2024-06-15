@@ -57,15 +57,14 @@ const mutations = {
   deleteCharacter(state, character) {
     state.characters = state.characters.filter(ch => ch.email !== character.email);
   },
+
   assignRandomCoordinates(state) {
     const playableArea = state.character.level < 5 ? [
-      [51.470, -0.3],
-      [51.50, -0.06],
+      [270, 270], [850, 1650],
     ] : [
-      [40.7, -74.1],
-      [40.8, -73.9],
+      [270, 270], [850, 1650],
+      
     ];
-  
     state.quests.forEach((quest) => {
       const lat = Math.random() * (playableArea[1][0] - playableArea[0][0]) + playableArea[0][0];
       const lon = Math.random() * (playableArea[1][1] - playableArea[0][1]) + playableArea[0][1];
@@ -73,10 +72,11 @@ const mutations = {
       quest.lon = lon;
     });
   },
-  
+
   addMarker(state, marker) {
     state.markers.push(marker);
   },
+
   updateQuestState(state, { quest, newState }) {
     const questIndex = state.quests.findIndex((q) => q.name === quest.name);
     if (questIndex !== -1) {

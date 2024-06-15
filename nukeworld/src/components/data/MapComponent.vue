@@ -7,7 +7,6 @@
         v-for="quest in filteredQuests"
         :key="quest.id"
         :lat-lng="[quest.lat, quest.lon]"
-        @click="centerOnMarker(quest.lat, quest.lon)"
         :icon="customIcon"
       >
         <l-popup :open-on="'bottom'">
@@ -46,7 +45,7 @@ export default {
       zoom: 0,
       center: [600, 960],
       mapImageUrl: require('@/assets/maps/nukemap1.webp'),
-      mapBounds: [[0, 0], [1200, 1920]],
+      mapBounds: [[230, 230], [930, 1700]],
       mapOptions: {
         zoomControl: false,
         attributionControl: false,
@@ -98,13 +97,6 @@ export default {
           userCreated: true,
         };
         this.$store.commit('addMarker', newMarker);
-      }
-    },
-    centerOnMarker(lat, lon) {
-      this.selectedMarkerCoords = [lat, lon];
-      const map = this.$refs.map?.$mapObject;
-      if (map) {
-        map.panTo([lat, lon]);
       }
     },
     getMapCenter(bounds) {
