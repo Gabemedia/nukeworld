@@ -53,7 +53,7 @@
               </div>
             </div>
           </div>
-          <div v-if="character.level < quest.levelRequirement" class="alert alert-warning mt-2 alert-clear-text">
+          <div v-if="character.level < quest.levelRequirement" class="alert alert-warning mt-2 p-2 mb-2 alert-clear-text">
             Level {{ quest.levelRequirement }} required to start this quest.
           </div>
         </div>
@@ -298,6 +298,9 @@ img {
   display: flex;
   align-items: center;
   margin-top: 5px;
+}
+.alert-clear-text{
+  font-size: 0.666rem!important;
 }
 
 </style>
