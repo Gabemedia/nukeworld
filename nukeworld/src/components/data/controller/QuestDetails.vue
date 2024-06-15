@@ -24,7 +24,7 @@
           <div class="d-flex align-items-center justify-content-center">
             <div class="text-center">
               <button type="button" class="btn btn-success bg-gradient position-relative fw-bold" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)">
-                {{ quest.state === 'not-started' ? 'Start Quest' : quest.state === 'in-progress' ? 'Please Wait' : 'Claim Rewards' }}
+                {{ getButtonText(quest) }}
                 <span v-if="quest.state !== 'completed'" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fst-italic" title="Reward Drop Chance">
                   <p class="card-text m-0">{{ quest.rewardChance * 100 }}%</p>
                 </span>
@@ -102,7 +102,6 @@ export default {
     hasWeaponReward(quest) {
       return quest.reward && quest.reward.length > 0;
     },
-
     hasArmorReward(quest) {
       return quest.armorReward && quest.armorReward.length > 0;
     },
@@ -111,7 +110,7 @@ export default {
         this.handleQuest(quest);
         this.startQuestProgress(quest);
         toast.success(`<strong>${quest.name} started!</strong>`, {
-          autoClose: 5000, // Set the desired duration in milliseconds
+          autoClose: 5000,
           toastClassName: 'quest-toast-container',
           bodyClassName: 'quest-toast-body',
           dangerouslyHTMLString: true,
@@ -130,10 +129,9 @@ export default {
           particleCount: 100,
           spread: 70,
           origin: { y: 0.6 },
-          zIndex: 9999, // Ensure confetti is on top
+          zIndex: 9999,
         });
 
-        // Construct the reward message
         let rewardMessage = `
         <div class="d-flex flex-column align-items-start justify-content-start h-100">
           <p class="text-left fw-bold mb-1">${reactiveQuest.name} completed!</p>
@@ -160,7 +158,7 @@ export default {
 
         toast.success(rewardMessage, {
           dangerouslyHTMLString: true,
-          autoClose: 10000, // Duration in milliseconds (e.g., 1000ms = 1 seconds)
+          autoClose: 10000,
           hideProgressBar: false,
           icon: false,
           toastClassName: 'quest-toast-container',
@@ -168,7 +166,19 @@ export default {
         });
 
         reactiveQuest.state = 'completed';
+        reactiveQuest.claimed = true;
         this.saveQuests();
+      }
+    },
+    getButtonText(quest) {
+      if (quest.state === 'not-started') {
+        return 'Start Quest';
+      } else if (quest.state === 'in-progress') {
+        return 'Please Wait';
+      } else if (quest.state === 'completed' && !quest.claimed) {
+        return 'Claim Rewards';
+      } else {
+        return 'Completed';
       }
     },
 
@@ -181,45 +191,36 @@ export default {
       const seconds = totalSeconds % 60;
       return `${minutes} min ${seconds} sec`;
     },
-    checkQuestState() {
-      this.quests.forEach(quest => {
-        if (quest.state === 'in-progress' && !quest.intervalId) {
-          this.startQuestTimer(quest);
-        }
-      });
-    },
     startQuestProgress(quest) {
       const reactiveQuest = reactive(quest);
       reactiveQuest.state = 'in-progress';
       reactiveQuest.claimed = false;
       reactiveQuest.startTime = Date.now();
-      localStorage.setItem(reactiveQuest.name + 'StartTime', reactiveQuest.startTime);
       reactiveQuest.remainingTime = reactiveQuest.duration;
-      localStorage.setItem(reactiveQuest.name + 'RemainingTime', reactiveQuest.remainingTime);
+      reactiveQuest.progress = 0;
+
       reactiveQuest.intervalId = setInterval(() => {
         if (reactiveQuest.remainingTime > 0) {
           reactiveQuest.remainingTime -= 1000;
-          localStorage.setItem(reactiveQuest.name + 'RemainingTime', reactiveQuest.remainingTime);
           const elapsedTime = Date.now() - reactiveQuest.startTime;
           const progress = Math.min((elapsedTime / reactiveQuest.duration) * 100, 100);
           reactiveQuest.progress = progress;
         } else {
           clearInterval(reactiveQuest.intervalId);
           reactiveQuest.state = 'completed';
+          reactiveQuest.progress = 100;
           setTimeout(() => {
-            toast.success(`<strong>${reactiveQuest.name} completed!</strong> <br>Claim your rewards!`,{
+            toast.success(`<strong>${reactiveQuest.name} completed!</strong> <br>Claim your rewards!`, {
               autoClose: 5000,
               toastClassName: 'quest-toast-container',
               bodyClassName: 'quest-toast-body',
               dangerouslyHTMLString: true,
             });
-            }, reactiveQuest.duration);
+          }, 0);
         }
         this.saveQuests();
-      }, 100);
+      }, 1000);
     },
-
-
     saveQuests() {
       localStorage.setItem('quests', JSON.stringify(this.quests));
     },
@@ -256,26 +257,11 @@ export default {
     window.removeEventListener('beforeunload', this.saveQuests);
   },
   created() {
-    window.addEventListener('load', () => {
-      this.quests.forEach(quest => {
-        if (quest.state === 'in-progress') {
-          const startTime = Number(localStorage.getItem(quest.name + 'StartTime'));
-          const remainingTime = Number(localStorage.getItem(quest.name + 'RemainingTime'));
-          const elapsedTime = Date.now() - startTime;
-          const progress = Math.min((elapsedTime / quest.duration) * 100, 100);
-          quest.progress = progress;
-          quest.remainingTime = remainingTime - elapsedTime;
-          if (progress < 100) {
-            this.startQuestProgress(quest);
-          } else {
-            quest.state = 'completed';
-          }
-        }
-      });
-    });
+    if (this.quest.state === 'in-progress') {
+      this.startQuestProgress(this.quest);
+    }
   },
 };
-
 </script>
 
 <style scoped>

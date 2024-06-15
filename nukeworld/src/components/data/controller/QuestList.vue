@@ -190,32 +190,34 @@ export default {
     startQuestProgress(quest) {
       const reactiveQuest = reactive(quest);
       reactiveQuest.state = 'in-progress';
+      reactiveQuest.claimed = false;
       reactiveQuest.startTime = Date.now();
-      localStorage.setItem(reactiveQuest.name + 'StartTime', reactiveQuest.startTime);
       reactiveQuest.remainingTime = reactiveQuest.duration;
-      localStorage.setItem(reactiveQuest.name + 'RemainingTime', reactiveQuest.remainingTime);
+      reactiveQuest.progress = 0;
+
       reactiveQuest.intervalId = setInterval(() => {
         if (reactiveQuest.remainingTime > 0) {
           reactiveQuest.remainingTime -= 1000;
-          localStorage.setItem(reactiveQuest.name + 'RemainingTime', reactiveQuest.remainingTime);
           const elapsedTime = Date.now() - reactiveQuest.startTime;
           const progress = Math.min((elapsedTime / reactiveQuest.duration) * 100, 100);
           reactiveQuest.progress = progress;
         } else {
           clearInterval(reactiveQuest.intervalId);
           reactiveQuest.state = 'completed';
+          reactiveQuest.progress = 100;
           setTimeout(() => {
-            toast.success(`<strong>${reactiveQuest.name} completed!</strong> <br>Claim your rewards!`,{
+            toast.success(`<strong>${reactiveQuest.name} completed!</strong> <br>Claim your rewards!`, {
               autoClose: 5000,
               toastClassName: 'quest-toast-container',
               bodyClassName: 'quest-toast-body',
               dangerouslyHTMLString: true,
             });
-          }, reactiveQuest.duration);
+          }, 0);
         }
         this.saveQuests();
-      }, 100);
+      }, 1000);
     },
+
     saveQuests() {
       localStorage.setItem('quests', JSON.stringify(this.quests));
     },
