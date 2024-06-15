@@ -24,7 +24,7 @@
           <div class="d-flex align-items-center justify-content-center">
             <div class="text-center">
               <button type="button" class="btn btn-success bg-gradient position-relative fw-bold" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)">
-                {{ getButtonText(quest) }}
+                {{ quest.state === 'not-started' ? 'Start Quest' : quest.state === 'in-progress' ? 'Please Wait' : 'Claim Rewards' }}
                 <span v-if="quest.state !== 'completed'" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fst-italic" title="Reward Drop Chance">
                   <p class="card-text m-0">{{ quest.rewardChance * 100 }}%</p>
                 </span>
@@ -116,24 +116,13 @@ export default {
           bodyClassName: 'quest-toast-body',
           dangerouslyHTMLString: true,
         });
-      } else if (quest.state === 'completed') {
-        this.claimRewardsAction(quest);
-      }
-    },
-    getButtonText(quest) {
-      if (quest.state === 'not-started') {
-        return 'Start Quest';
-      } else if (quest.state === 'in-progress') {
-        return 'Please Wait';
       } else if (quest.state === 'completed' && !quest.claimed) {
-        return 'Claim Rewards';
-      } else {
-        return 'Completed';
+        this.claimRewardsAction(quest);
       }
     },
     async claimRewardsAction(quest) {
       const reactiveQuest = reactive(quest);
-      if (!reactiveQuest.claimed) {
+      if (!reactiveQuest.claimed && reactiveQuest.state === 'completed') {
         const obtainedReward = await this.claimRewards(reactiveQuest);
         this.popupTitle = reactiveQuest.name;
         this.popupDesc = 'Quest completed! You earned ' + reactiveQuest.exp + ' exp and ' + reactiveQuest.money + ' money.';
@@ -202,6 +191,7 @@ export default {
     startQuestProgress(quest) {
       const reactiveQuest = reactive(quest);
       reactiveQuest.state = 'in-progress';
+      reactiveQuest.claimed = false;
       reactiveQuest.startTime = Date.now();
       localStorage.setItem(reactiveQuest.name + 'StartTime', reactiveQuest.startTime);
       reactiveQuest.remainingTime = reactiveQuest.duration;

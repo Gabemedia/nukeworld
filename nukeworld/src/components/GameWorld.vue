@@ -5,7 +5,7 @@
       <div class="row justify-content-center">
         <div class="col-12">
           <MapComponent v-if="character.level < 5" ref="mapComponent" class="flex-grow-1 "/> 
-          <MapComponent2 v-else-if="character.level >= 5 && character.level <= 10" ref="mapComponent2" class="flex-grow-1 "/>
+          <MapComponent2 v-else-if="character.level >= 5 && character.level <= 100" ref="mapComponent2" class="flex-grow-1 "/>
         </div>
       </div>
     </div>
@@ -42,7 +42,7 @@ export default {
       this.$nextTick(() => {
         if (level < 5 && this.$refs.mapComponent) {
           this.$refs.mapComponent.updateMapSize();
-        } else if (level >= 5 && level <= 10 && this.$refs.mapComponent2) {
+        } else if (level >= 5 && level <= 100 && this.$refs.mapComponent2) {
           this.$refs.mapComponent2.updateMapSize();
         }
       });
