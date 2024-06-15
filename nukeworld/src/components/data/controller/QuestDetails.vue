@@ -24,25 +24,31 @@
           <div class="d-flex align-items-center justify-content-center">
             <div class="text-center">
               <button type="button" class="btn btn-success bg-gradient position-relative fw-bold" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)">
-                {{ quest.state === 'not-started' ? 'Start Quest' : quest.state === 'in-progress' ? 'Please Wait' : 'Claim Rewards' }}
-                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fst-italic" title="Reward Drop Chance">
+                {{ getButtonText(quest) }}
+                <span v-if="quest.state !== 'completed'" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fst-italic" title="Reward Drop Chance">
                   <p class="card-text m-0">{{ quest.rewardChance * 100 }}%</p>
                 </span>
               </button>
             </div>
-            <div class="d-flex justify-content-end flex-grow-1 gap-2 text-center">
+            <div class="d-flex justify-content-between flex-grow-1 mx-4 text-center">
               <div class="card-text d-block fw-bold">
-                <img style="width:25px;" :src="require(`@/assets/interface/icons/exp.png`)" alt="Exp">
+                <img style="width:25px;" :src="require(`@/assets/interface/icons/exp.png`)" title="Exp">
                 <span class="ps-1"> {{ quest.exp }} </span>
               </div>
               <div class="card-text d-block fw-bold">
-                <img style="width:25px;" :src="require(`@/assets/interface/icons/money.png`)" alt="Money">
+                <img style="width:25px;" :src="require(`@/assets/interface/icons/money.png`)" title="Money">
                 <span class="ps-1"> {{ quest.money }} </span>
               </div>
-              <div v-if="quest.reward && quest.reward.length > 0" class="card-text d-block fw-bold">
-                <img style="width:25px;" :src="require(`@/assets/interface/icons/reward.png`)" alt="Reward">
-                <span class="ps-1" v-for="rewardId in quest.reward" :key="rewardId">
-                  {{ getRewardItemName(rewardId) }}
+              <div v-if="hasWeaponReward(quest) || hasArmorReward(quest)" class="card-text d-block fw-bold">
+                <img v-if="hasWeaponReward(quest)" :src="require('@/assets/interface/icons/gun.png')" alt="Attack" :title="'Weapon Reward Chance: ' + (quest.rewardChance * 100) + '%'" style="width: 20px;" class="me-2">
+                <span v-if="hasWeaponReward(quest)" class="position-absolute start-25 translate-middle badge rounded-pill bg-danger fst-italic" title="Reward Drop Chance">
+                  <p class="card-text m-0">{{ quest.rewardChance * 100 }}%</p>
+                </span>
+              </div>
+              <div v-if="hasWeaponReward(quest) || hasArmorReward(quest)" class="card-text d-block fw-bold">
+                <img v-if="hasArmorReward(quest)" :src="require('@/assets/interface/icons/shield.png')" alt="Defence" :title="'Armor Reward Chance: ' + (quest.armorRewardChance * 100) + '%'" style="width: 20px;" class="me-2">
+                <span v-if="hasArmorReward(quest)" class="position-absolute start-75 translate-middle badge rounded-pill bg-danger fst-italic" title="Reward Drop Chance">
+                  <p class="card-text m-0">{{ quest.armorRewardChance * 100 }}%</p>
                 </span>
               </div>
             </div>
@@ -93,6 +99,13 @@ export default {
         return false;
       }
     },
+    hasWeaponReward(quest) {
+      return quest.reward && quest.reward.length > 0;
+    },
+
+    hasArmorReward(quest) {
+      return quest.armorReward && quest.armorReward.length > 0;
+    },
     handleQuestAction(quest) {
       if (quest.state === 'not-started') {
         this.handleQuest(quest);
@@ -107,7 +120,17 @@ export default {
         this.claimRewardsAction(quest);
       }
     },
-
+    getButtonText(quest) {
+      if (quest.state === 'not-started') {
+        return 'Start Quest';
+      } else if (quest.state === 'in-progress') {
+        return 'Please Wait';
+      } else if (quest.state === 'completed' && !quest.claimed) {
+        return 'Claim Rewards';
+      } else {
+        return 'Completed';
+      }
+    },
     async claimRewardsAction(quest) {
       const reactiveQuest = reactive(quest);
       if (!reactiveQuest.claimed) {
@@ -128,18 +151,18 @@ export default {
           <p class="text-left fw-semi mb-2">You earned:</p>
           <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
             <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-              <img src="${require('@/assets/interface/icons/exp.png')}" alt="Exp" style="width: 20px;" class="me-2">
+              <img src="${require('@/assets/interface/icons/exp.png')}" title="Exp" style="width: 20px;" class="me-2">
               <span>${reactiveQuest.exp} exp</span>
             </div>
             <div class="d-flex align-items-start justify-content-start reward-info mb-1">
-              <img src="${require('@/assets/interface/icons/money.png')}" alt="Money" style="width: 20px;" class="me-2">
+              <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
               <span>${reactiveQuest.money} money</span>
             </div>
           </div>
         `;
 
         if (obtainedReward) {
-          rewardMessage += '<div class="d-flex align-items-start justify-content-start reward-info mb-1"><img src="' + require('@/assets/interface/icons/reward.png') + '" alt="Reward" style="width: 20px;" class="me-2">';
+          rewardMessage += '<div class="d-flex align-items-start justify-content-start reward-info mb-1"><img src="' + require('@/assets/interface/icons/reward.png') + '" title="Reward" style="width: 20px;" class="me-2">';
           rewardMessage += `<span>${obtainedReward.name}</span>`;
           rewardMessage += '</div>';
         }
@@ -266,6 +289,11 @@ export default {
 </script>
 
 <style scoped>
+img {
+  text-decoration: none;
+  pointer-events: none;
+}
+
 .popup-details {
   scale: 0.85;
 }
@@ -276,7 +304,14 @@ export default {
 .card-text {
   font-size: 0.655rem;
   font-weight: 400;
+  text-decoration: none;
+  pointer-events: none;
 }
+.card-text img {
+  text-decoration: initial;
+  pointer-events: auto;
+}
+
 .card-text-header {
   font-weight: 600;
   font-size: 1rem;
@@ -304,4 +339,5 @@ export default {
   align-items: center;
   margin-top: 5px;
 }
+
 </style>

@@ -19,7 +19,6 @@ export default [
     defence: 0,
     state: '0',
     price: '5',
-
   },
   {
     id: 2,
@@ -30,28 +29,55 @@ export default [
     defence: 0,
     state: 'none',
     price: '100',
-
   },
   {
     id: 3,
     uuid: uuidv4(),
     name: 'Baseball Bat',
-    desc: 'Baseball Bat is a great ranged weapon. It is used for hunting.',
+    desc: 'Baseball Bat is a great melee weapon. It is used for bashing enemies.',
     attack: 5,
     defence: 0,
     state: 'none',
     price: '10',
-
   },
   {
     id: 4,
     uuid: uuidv4(),
     name: '10mm Pistol',
-    desc: '10mm Pistol is a great ranged weapon. It is used for hunting.',
+    desc: '10mm Pistol is a reliable sidearm. It is used for close-range combat.',
     attack: 12,
     defence: 0,
     state: 'none',
     price: '25',
-
+  },
+  {
+    id: 5,
+    uuid: uuidv4(),
+    name: 'Machete',
+    desc: 'Machete is a versatile melee weapon. It is used for slashing and hacking.',
+    attack: 8,
+    defence: 0,
+    state: 'none',
+    price: '15',
+  },
+  {
+    id: 6,
+    uuid: uuidv4(),
+    name: 'Crossbow',
+    desc: 'Crossbow is a powerful ranged weapon. It is used for long-range combat.',
+    attack: 18,
+    defence: 0,
+    state: 'none',
+    price: '75',
+  },
+  {
+    id: 7,
+    uuid: uuidv4(),
+    name: 'Sledgehammer',
+    desc: 'Sledgehammer is a heavy melee weapon. It is used for crushing enemies.',
+    attack: 15,
+    defence: 0,
+    state: 'none',
+    price: '50',
   },
 ];

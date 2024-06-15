@@ -1,7 +1,7 @@
 <template>
   <div>
     <h1>Character List</h1>
-    <div class="row">
+    <div class="row mt-4">
       <div class="col-md-4" v-for="(character, index) in characters" :key="index">
         <div class="card mb-4">
           <div class="card-body">

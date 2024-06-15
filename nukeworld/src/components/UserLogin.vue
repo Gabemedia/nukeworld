@@ -1,34 +1,38 @@
 <template>
-  <div class="login d-flex flex-column align-items-center mt-4 justify-content-start mx-auto w-75">
-    <div class="row justify-content-center w-100 mt-4">
-      <div class="col-12">
-        <input autocomplete="name" class="game-input mx-4 p-4 w-100" v-model="character.name" placeholder="Enter your character's name">
+  <div class="login-container">
+    <div class="login d-flex flex-column align-items-center mt-4 justify-content-start mx-auto w-75">
+      <div class="row justify-content-center w-100 mt-4">
+        <div class="col-12">
+          <input autocomplete="name" class="game-input mx-4 w-100" v-model="character.name" placeholder="Enter your character's name">
+        </div>
+      </div>
+      <div class="row justify-content-center mt-4 w-100">
+        <div class="col-6">
+          <input autocomplete="email" class="game-input mx-4 w-100" v-model="character.email" placeholder="Enter your email">
+        </div>
+        <div class="col-6">
+          <input type="password" class="game-input mx-4 w-100" v-model="character.password" placeholder="Enter your password">
+        </div>
+      </div>
+      <div class="row justify-content-center w-100">
+        <div class="col-6">
+          <button class="game-button col-3 mx-4" @click="login">Login</button>
+        </div>
+        <div class="col-6">
+          <button class="game-create col-5 mx-4" @click="createCharacter">Create Character</button>
+        </div>
+      </div>
+      <div class="row justify-content-start ms-3 mt-4 w-100">
+        <div v-if="showSuccessMessage" class="alert alert-success mx-4" role="alert">
+          Character created successfully!
+        </div>
       </div>
     </div>
-    <div class="row justify-content-center mt-4 w-100">
-      <div class="col-6">
-        <input autocomplete="email" class="game-input mx-4 p-4 w-100" v-model="character.email" placeholder="Enter your email">
-      </div>
-      <div class="col-6">
-        <input type="password" class="game-input mx-4 p-4 w-100" v-model="character.password" placeholder="Enter your password">
-      </div>
-    </div>
-    <div class="row justify-content-center w-100">
-      <div class="col-6">
-        <button class="game-button col-6 mx-4 p-4" @click="login">Login</button>
-      </div>
-      <div class="col-6">
-        <button class="game-create col-6 mx-4 p-4" @click="createCharacter">Create Character</button>
-      </div>
-    </div>
-    <div v-if="showSuccessMessage" class="alert alert-success" role="alert">
-      Character created successfully!
-    </div>
-  </div>
-  <div class="login d-flex flex-column align-items-center mt-4 justify-content-start mx-auto w-75 vh-100">
-    <div class="row justify-content-center w-100 mt-4">
-      <div class="col-12">
-        <CharacterList />
+    <div class="login d-flex flex-column align-items-center justify-content-start mx-auto w-75 vh-100">
+      <div class="row justify-content-center w-100">
+        <div class="col-12">
+          <CharacterList />
+        </div>
       </div>
     </div>
   </div>
@@ -109,6 +113,15 @@ export default {
 </script>
 
 <style scoped>
+.login-container {
+  width: 100vw;
+  height: 100vh;
+  background-image: url('../assets/bg.jpg');
+  background-size: cover;
+  background-position: center;
+  position: absolute;
+  z-index: 999;
+}
 .game-input {
   box-sizing: border-box;
   border: none;

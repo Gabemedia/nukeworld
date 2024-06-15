@@ -61,11 +61,12 @@ export default {
       },
       selectedMarkerCoords: null,
       customIcon: L.icon({
-        iconUrl: require('@/assets/interface/icons/reward.png'),
-        iconSize: [25, 25],
+        iconUrl: require('@/assets/interface/icons/marker.png'),
+        iconSize: [25, 36],
         iconAnchor: [12, 12],
+        className: 'custom-marker',
       }),
-      isMarkerPlacementEnabled: true,
+      isMarkerPlacementEnabled: false,
       showModal: false,
       selectedQuest: null,
       selectedMarker: null,
@@ -151,4 +152,5 @@ export default {
 .modal-body{
   padding: 0!important;
 }
+
 </style>

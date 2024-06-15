@@ -6,7 +6,7 @@
     <div class="offcanvas-header card-text-header text-light bg-primary bg-gradient d-flex justify-content-between align-items-center">
     <h5 class="flex-grow-1">Quest Log</h5>
     <div class="d-flex align-items-center">
-      <img class="icon-reload" @click="reloadPage" :src="require(`@/assets/interface/icons/reload.png`)" alt="Reload Quests">
+      <img class="icon-reload" @click="reloadPage" :src="require(`@/assets/interface/icons/reload.png`)" title="Reload Quests">
       <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
   </div>
