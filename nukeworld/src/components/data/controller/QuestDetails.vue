@@ -24,11 +24,11 @@
           <div class="d-flex align-items-center justify-content-center">
             <div class="text-center">
               <button type="button" class="btn btn-success bg-gradient position-relative fw-bold" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)">
-              {{ getButtonText(quest) }}
-              <span v-if="quest.state !== 'completed'" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fst-italic" title="Reward Drop Chance">
-                <p class="card-text m-0">{{ quest.rewardChance * 100 }}%</p>
-              </span>
-            </button>
+                {{ getButtonText(quest) }}
+                <span v-if="quest.state !== 'completed'" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fst-italic" title="Reward Drop Chance">
+                  <p class="card-text m-0">{{ quest.rewardChance * 100 }}%</p>
+                </span>
+              </button>
             </div>
             <div class="d-flex justify-content-between flex-grow-1 mx-4 text-center">
               <div class="card-text d-block fw-bold">
@@ -96,7 +96,7 @@ export default {
       } else if (quest.state === 'in-progress') {
         return true;
       } else if (quest.state === 'completed') {
-        return false;
+        return quest.claimed;
       }
     },
     hasWeaponReward(quest) {
@@ -119,6 +119,18 @@ export default {
         this.claimRewardsAction(quest);
       }
     },
+    getButtonText(quest) {
+      if (quest.state === 'not-started') {
+        return 'Start Quest';
+      } else if (quest.state === 'in-progress') {
+        return 'Please Wait';
+      } else if (quest.state === 'completed' && !quest.claimed) {
+        return 'Claim Rewards';
+      } else {
+        return 'Completed';
+      }
+    },
+
     async claimRewardsAction(quest) {
       const reactiveQuest = reactive(quest);
       if (!reactiveQuest.claimed && reactiveQuest.state === 'completed') {
@@ -165,20 +177,8 @@ export default {
           bodyClassName: 'quest-toast-body quest-toast',
         });
 
-        reactiveQuest.state = 'completed';
         reactiveQuest.claimed = true;
         this.saveQuests();
-      }
-    },
-    getButtonText(quest) {
-      if (quest.state === 'not-started') {
-        return 'Start Quest';
-      } else if (quest.state === 'in-progress') {
-        return 'Please Wait';
-      } else if (quest.state === 'completed' && !quest.claimed) {
-        return 'Claim Rewards';
-      } else {
-        return 'Completed';
       }
     },
 
