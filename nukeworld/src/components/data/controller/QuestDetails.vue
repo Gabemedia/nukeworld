@@ -1,13 +1,13 @@
 <template>
   <div>
-    <div class="row" v-if="quest">
+    <div style="padding:8px 20px;" class="row" v-if="quest">
       <div class="col-3" :style="{
             backgroundImage: `url(${require(`@/assets/quests/bg/${quest.id}.jpg`)})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center center',
             backgroundRepeat: 'no-repeat'
           }"></div>
-      <div class="card col-9 p-0 pe-2">
+      <div class="card col-9 p-0">
         <div class="card-header p-0 d-flex">
           <div class="bg-light">
             <h5 class="card-text-header text-capitalize p-2">{{ quest.name }}</h5>

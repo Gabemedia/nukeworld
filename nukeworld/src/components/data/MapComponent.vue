@@ -19,11 +19,14 @@
       >
       </l-marker>
     </l-map>
-    <div v-if="showModal" class="modal" @click.self="closeModal">
-      <div class="modal-content">
-        <span class="close" @click="closeModal">&times;</span>
-        <QuestDetails v-if="selectedQuest" :quest="selectedQuest"></QuestDetails>
-        <div v-if="selectedMarker">{{ selectedMarker.label }}</div>
+    <div v-if="showModal" class="modal" tabindex="-1" @click.self="closeModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-body">
+            <QuestDetails v-if="selectedQuest" :quest="selectedQuest"></QuestDetails>
+            <div v-if="selectedMarker">{{ selectedMarker.label }}</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -118,13 +121,6 @@ export default {
       this.selectedMarker = null;
     },
   },
-  watch: {
-    selectedMarkerCoords(newCoords) {
-      if (newCoords) {
-        this.center = newCoords;
-      }
-    },
-  },
 };
 </script>
 
@@ -140,8 +136,8 @@ export default {
 }
 .modal {
   display: block;
-  position: fixed;
-  z-index: 1;
+  position: absolute;
+  z-index: 999;
   left: 0;
   top: 0;
   width: 100%;
@@ -150,23 +146,9 @@ export default {
   background-color: rgba(0, 0, 0, 0.4);
 }
 .modal-content {
-  background-color: #fefefe;
   margin: 15% auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
 }
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-  cursor: pointer;
-}
-.close:hover,
-.close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
+.modal-body{
+  padding: 0!important;
 }
 </style>
