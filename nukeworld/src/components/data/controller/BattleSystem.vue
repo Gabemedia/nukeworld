@@ -1,55 +1,68 @@
 <template>
   <div class="battle-system">
-    <div class="player-info">
-      <div class="player-name">{{ character.name }}</div>
-      <div class="player-health">
-        <img :src="require('@/assets/interface/icons/exp.png')" alt="Health" class="icon">
-        <div class="health-bar">
-          <div class="health-bar-fill" :style="{ width: playerHealthPercentage + '%' }"></div>
+    <div class="mb-1">
+      <div class="player-info d-flex justify-content-between align-items-center">
+        <div class="player-name">{{ character.name }}</div>
+        <div class="player-health">
+          <img :src="require('@/assets/interface/icons/exp.png')" alt="Health" class="icon me-2">
+          <span>{{ playerHealth }}/100</span>
         </div>
-        <div class="health-text">{{ playerHealth }}/100</div>
       </div>
-      <div class="player-equipment">
+    </div>
+    <div class="mb-4">
+      <div class="player-equipment d-flex justify-content-between align-items-center">
         <div class="equipment-item">
           <img :src="require('@/assets/interface/icons/gun.png')" alt="Weapon" class="icon">
-          <span>{{ equippedWeapon ? equippedWeapon.name : 'None' }}</span>
+          <span class="ms-2">{{ equippedWeapon ? equippedWeapon.name : 'None' }}: {{ equippedWeapon ? equippedWeapon.attack : 0 }}</span>
         </div>
         <div class="equipment-item">
-          <img :src="require('@/assets/interface/icons/shield.png')" alt="Armor" class="icon">
-          <span>{{ equippedArmor ? equippedArmor.name : 'None' }}</span>
+          <img :src="require('@/assets/interface/icons/shield.png')" alt="Armor" class="icon me-2">
+          <span>{{ equippedArmor ? equippedArmor.name : 'None' }}: {{ equippedArmor ? equippedArmor.defence : 0 }}</span>
         </div>
       </div>
     </div>
-    
-    <div class="enemy-info">
-      <div class="enemy-name">{{ enemy.name }}</div>
-      <div class="enemy-health">
-        <img :src="require('@/assets/interface/icons/exp.png')" alt="Health" class="icon">
-        <div class="health-bar">
-          <div class="health-bar-fill" :style="{ width: enemyHealthPercentage + '%' }"></div>
+    <div class="my-4 border border-2 border-primary"></div>
+    <div class="mb-1">
+      <div class="enemy-info d-flex justify-content-between align-items-center">
+        <div class="enemy-name">{{ enemy.name }}</div>
+        <div class="enemy-health">
+          <img :src="require('@/assets/interface/icons/exp.png')" alt="Health" class="icon me-2">
+          <span>{{ enemyHealth }}/50</span>
         </div>
-        <div class="health-text">{{ enemyHealth }}/50</div>
       </div>
     </div>
-    
-    <div class="battle-actions">
-      <button @click="attack" class="btn btn-primary attack-button">
-        <img :src="require('@/assets/interface/icons/gun.png')" alt="Attack" class="icon">
-        Attack
-      </button>
-      <button @click="useItem" class="btn btn-info use-item-button">
-        <img :src="require('@/assets/interface/icons/reload2.png')" alt="Item" class="icon">
-        Use Item
-      </button>
+    <div class="mb-4">
+      <div class="enemy-stats d-flex justify-content-between align-items-center">
+        <div class="stat-item">
+          <img :src="require('@/assets/interface/icons/gun.png')" alt="Weapon" class="icon">
+          <span class="ms-2">Attack: {{ enemy.attack }}</span>
+        </div>
+        <div class="stat-item">
+          <img :src="require('@/assets/interface/icons/shield.png')" alt="Armor" class="icon me-2">
+          <span>Defence: {{ enemy.defense }}</span>
+        </div>
+      </div>
     </div>
-    
-    <div class="battle-log">
+    <div class="mb-0">
+      <div class="battle-actions d-flex justify-content-between align-items-center mb-3">
+        <button @click="attack" class="btn btn-primary attack-button me-2">
+          <img :src="require('@/assets/interface/icons/gun.png')" alt="Attack" class="icon">
+          Attack
+        </button>
+        <button @click="useItem" class="btn btn-info use-item-button">
+          <img :src="require('@/assets/interface/icons/reload2.png')" alt="Item" class="icon">
+          Use Item
+        </button>
+      </div>
+    </div>
+    <div class="battle-log border border-1 small">
       <ul>
         <li v-for="(log, index) in battleLog" :key="index" :class="log.type">{{ log.message }}</li>
       </ul>
     </div>
   </div>
 </template>
+
 
 <script>
 import { mapState } from 'vuex';
@@ -135,23 +148,23 @@ export default {
 </script>
 
 <style scoped>
+div.modal-body {
+  margin:0!important;
+  padding:0!important;
+}
+div.modal-content {
+  background-color: #f0f0f0!important;
+  margin:0!important;
+}
 .battle-system {
-  background-color: #f5f5f5;
-  padding: 20px;
+  background-color: #f0f0f0;
+  padding: 1rem;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 .battle-system .icon{
   height: 20px;
   width: auto;
-}
-.player-info,
-.enemy-info {
-  margin-bottom: 20px;
-}
-
-.battle-actions {
-  margin-bottom: 20px;
 }
 
 .attack-button {
