@@ -30,6 +30,7 @@ export default {
       this.$emit('close');
     },
     quitGame() {
+      this.$store.commit('updateCharacter', { health: 0 });
       this.$router.push('/');
     },
   },
