@@ -16,8 +16,9 @@
 </template>
 
 <script>
+
 export default {
-  name: 'GameOver',
+name: 'GameOver',
   props: {
     showModal: {
       type: Boolean,
@@ -30,11 +31,10 @@ export default {
       this.$emit('close');
     },
     quitGame() {
-      this.$store.commit('updateCharacter', { health: 0 });
+      this.$store.dispatch('quitGame');
       this.$router.push('/');
     },
-  },
-};
+  },};
 </script>
 
 <style scoped>

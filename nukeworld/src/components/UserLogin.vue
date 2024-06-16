@@ -63,38 +63,38 @@ export default {
   },
   methods: {
     async login() {
-  if (this.character.email.trim() !== '' && this.character.password.trim() !== '') {
-    try {
-      // Load existing characters array from Vuex store
-      let characters = this.$store.state.characters;
+      if (this.character.email.trim() !== '' && this.character.password.trim() !== '') {
+        try {
+          // Load existing characters array from Vuex store
+          let characters = this.$store.state.characters;
 
-      // Check if the entered email and password match any character in the characters array
-      let characterExists = characters.some(character => 
-        character.email === this.character.email && character.password === this.character.password
-      );
+          // Check if the entered email and password match any character in the characters array
+          let characterExists = characters.some(character => 
+            character.email === this.character.email && character.password === this.character.password
+          );
 
-      if (!characterExists) {
-        alert('Invalid login credentials. Please enter a valid email and password.');
-        return;
+          if (!characterExists) {
+            alert('Invalid login credentials. Please enter a valid email and password.');
+            return;
+          }
+
+          // Find the character with the matching email and password
+          let character = characters.find(character => 
+            character.email === this.character.email && character.password === this.character.password
+          );
+
+          // Commit updated character object to Vuex store
+          await this.$store.commit('updateCharacter', character);
+
+          // Navigate to the game world if the character exists
+          this.$router.push('/game-world');
+        } catch (error) {
+          alert('Invalid login credentials. Please enter valid email and password.');
+        }
+      } else {
+        alert('Please enter all required fields.');
       }
-
-      // Find the character with the matching email and password
-      let character = characters.find(character => 
-        character.email === this.character.email && character.password === this.character.password
-      );
-
-      // Commit updated character object to Vuex store
-      await this.$store.commit('updateCharacter', character);
-
-      // Navigate to the game world if the character exists
-      this.$router.push('/game-world');
-    } catch (error) {
-      alert('Invalid login credentials. Please enter valid email and password.');
-    }
-  } else {
-    alert('Please enter all required fields.');
-  }
-},
+    },
     ...mapActions(['updateCharacter', 'createCharacter']),
     createCharacter() {
       if (this.character.name.trim() !== '') {
