@@ -9,6 +9,7 @@
         </div>
       </div>
     </div>
+    <GameOver @game-over="isGameOver = true" />
   </div>
 </template>
 
@@ -16,6 +17,7 @@
 import GameHeader from './GameHeader.vue';
 import MapComponent from './data/MapComponent.vue';
 import MapComponent2 from './data/MapComponent2.vue';
+import GameOver from './data/GameOver.vue';
 import { mapState } from 'vuex';
 
 export default {
@@ -24,6 +26,12 @@ export default {
     GameHeader,
     MapComponent,
     MapComponent2,
+    GameOver,
+  },
+  data() {
+    return {
+      isGameOver: false,
+    };
   },
   computed: {
     ...mapState(['character']),

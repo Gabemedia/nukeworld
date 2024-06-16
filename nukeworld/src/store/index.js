@@ -291,6 +291,12 @@ const actions = {
     });
   },
 
+  resetCharacter({ commit }) {
+    commit('updateCharacter', {
+      health: 100,
+      // Nulstil andre karakteregenskaber her
+    });
+  },
   
   clearQuests({ commit }) {
     commit('setQuests', []);

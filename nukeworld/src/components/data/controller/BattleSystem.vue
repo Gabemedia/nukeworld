@@ -45,7 +45,7 @@
     </div>
     <div class="mb-0">
       <div class="battle-actions d-flex justify-content-center mb-3">
-        <button @click="startAutoAttack" :disabled="isAutoAttackActive || isBattleWon" class="btn btn-primary attack-button me-2">
+        <button @click="startAutoAttack" :disabled="isAutoAttackActive || isBattleWon || character.health === 0" class="btn btn-primary attack-button me-2">
           <img :src="require('@/assets/interface/icons/gun.png')" alt="Attack" class="icon">
           {{ isAutoAttackActive ? 'Attacking...' : 'Auto Attack' }}
         </button>
@@ -135,6 +135,7 @@ export default {
       if (this.playerHealth <= 0) {
         this.addToLog('You were defeated!', 'enemy-action');
         this.checkBattleEnd();
+        this.$emit('game-over');
       }
     },
     calculateDamage(attack, defense) {
@@ -165,10 +166,19 @@ export default {
     },
     startAutoAttack() {
       if (!this.isAutoAttackActive) {
-        this.isAutoAttackActive = true;
-        this.autoAttackInterval = setInterval(() => {
-          this.attack();
-        }, 500);
+        if (this.character.health < 50) {
+          if (confirm('Your health is low. Are you sure you want to auto-attack?')) {
+            this.isAutoAttackActive = true;
+            this.autoAttackInterval = setInterval(() => {
+              this.attack();
+            }, 500);
+          }
+        } else {
+          this.isAutoAttackActive = true;
+          this.autoAttackInterval = setInterval(() => {
+            this.attack();
+          }, 500);
+        }
       }
     },
     stopAutoAttack() {
