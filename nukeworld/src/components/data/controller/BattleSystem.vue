@@ -5,7 +5,7 @@
         <div class="player-name">{{ character.name }}</div>
         <div class="player-health">
           <img :src="require('@/assets/interface/icons/exp.png')" alt="Health" class="icon me-2">
-          <span>{{ playerHealth }}/100</span>
+          <span>{{ character.health }}/100</span>
         </div>
       </div>
     </div>
@@ -128,7 +128,7 @@ export default {
       if (dodgeChance <= (this.equippedArmor ? this.equippedArmor.defence : 0) / 100) {
         this.addToLog(`You dodged the ${this.enemy.name}'s attack!`, 'player-action');
       } else {
-        this.playerHealth = Math.max(this.playerHealth - enemyDamage, 0);
+        this.$store.commit('updateCharacter', { health: Math.max(this.character.health - enemyDamage, 0) });
         this.addToLog(`The ${this.enemy.name} attacked you for ${enemyDamage} damage.`, 'enemy-action');
       }
       
@@ -156,7 +156,7 @@ export default {
     },
     resetBattleState() {
       this.isBattleWon = false;
-      this.playerHealth = 100;
+      this.$store.commit('updateCharacter', { health: 100 });
       this.getRandomEnemy();
       this.battleLog = [];
     },
