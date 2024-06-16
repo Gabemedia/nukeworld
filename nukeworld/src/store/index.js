@@ -305,6 +305,7 @@ const actions = {
       maxExp: 2500,
       level: 1,
       money: 0,
+      health: 100,
       weapons: [state.items[0]],
       equippedWeapons: [state.items[0]],
       armor: [],
@@ -312,8 +313,7 @@ const actions = {
     });
     commit('equipWeapon', state.items[0].uuid);
     commit('setQuests', defaultQuests);
-  },
-  
+  },  
   clearQuests({ commit }) {
     commit('setQuests', []);
     commit('setQuests', defaultQuests);
