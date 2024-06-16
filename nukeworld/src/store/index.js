@@ -4,6 +4,7 @@ import defaultQuests from './quests';
 import { v4 as uuidv4 } from 'uuid'; 
 import items from './items';
 import armor from './armor';
+import enemies from './enemy';
 
 const state = reactive({
   characters: JSON.parse(localStorage.getItem('characters')) || [],
@@ -314,6 +315,7 @@ const store = createStore({
   getters,
   mutations,
   actions,
+  enemies,
 });
 
 store.commit('assignRandomCoordinates');

@@ -75,20 +75,14 @@ export default {
       playerHealth: 100,
       enemyHealth: 50,
       battleLog: [],
-      enemy: {
-        name: 'Goblin',
-        attack: 10,
-        defense: 5,
-        exp: 10000,
-        money: 50000,
-      },
+      enemy: null,
       isBattleWon: false,
       isAutoAttackActive: false,
       autoAttackInterval: null,
     };
   },
   computed: {
-    ...mapState(['character']),
+    ...mapState(['character', 'enemies']),
     equippedWeapon() {
       return this.character.equippedWeapons[0];
     },
@@ -96,8 +90,16 @@ export default {
       return this.character.equippedArmor;
     },
   },
+  created() {
+    this.getRandomEnemy();
+  },
 
   methods: {
+    getRandomEnemy() {
+      const randomIndex = Math.floor(Math.random() * this.enemies.length);
+      this.enemy = { ...this.enemies[randomIndex] };
+      this.enemyHealth = this.enemy.health;
+    },
     attack() {
       if (this.equippedWeapon) {
         const playerDamage = this.calculateDamage(this.equippedWeapon.attack, this.enemy.defense);
@@ -157,7 +159,7 @@ export default {
     resetBattleState() {
       this.isBattleWon = false;
       this.playerHealth = 100;
-      this.enemyHealth = 50;
+      this.getRandomEnemy();
       this.battleLog = [];
       // Reset any other battle-related state properties
     },
