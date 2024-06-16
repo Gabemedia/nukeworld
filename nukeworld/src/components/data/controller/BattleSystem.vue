@@ -44,14 +44,14 @@
       </div>
     </div>
     <div class="mb-0">
-      <div class="battle-actions d-flex justify-content-between align-items-center mb-3">
-        <button @click="attack" class="btn btn-primary attack-button me-2">
+      <div class="battle-actions d-flex justify-content-center mb-3">
+        <button @click="startAutoAttack" :disabled="isAutoAttackActive || isBattleWon" class="btn btn-primary attack-button me-2">
           <img :src="require('@/assets/interface/icons/gun.png')" alt="Attack" class="icon">
-          Attack
+          {{ isAutoAttackActive ? 'Attacking...' : 'Auto Attack' }}
         </button>
-        <button @click="useItem" class="btn btn-info use-item-button">
-          <img :src="require('@/assets/interface/icons/reload2.png')" alt="Item" class="icon">
-          Use Item
+        <button @click="claimRewards" :disabled="!isBattleWon" class="btn btn-info claim-rewards-button">
+          <img :src="require('@/assets/interface/icons/reload2.png')" alt="Claim Rewards" class="icon">
+          Claim Rewards
         </button>
       </div>
     </div>
@@ -66,6 +66,7 @@
 
 <script>
 import { mapState } from 'vuex';
+import confetti from 'canvas-confetti';
 
 export default {
   name: 'BattleSystem',
@@ -81,6 +82,9 @@ export default {
         exp: 10000,
         money: 50000,
       },
+      isBattleWon: false,
+      isAutoAttackActive: false,
+      autoAttackInterval: null,
     };
   },
   computed: {
@@ -133,17 +137,62 @@ export default {
         this.checkBattleEnd();
       }
     },
-    useItem() {
-      this.addToLog('You used an item.', 'player-action');
-    },
     calculateDamage(attack, defense) {
       return Math.max(attack - defense, 0);
     },
     checkBattleEnd() {
-      // Trigger battle end logic, rewards, etc.
+      if (this.enemyHealth <= 0) {
+        this.isBattleWon = true;
+        this.stopAutoAttack();
+        this.showVictoryConfetti();
+      }
+    },
+    claimRewards() {
+      if (this.isBattleWon) {
+        this.$store.dispatch('claimRewards', this.enemy);
+        this.showRewardConfetti();
+        this.resetBattleState();
+      }
+    },
+    resetBattleState() {
+      this.isBattleWon = false;
+      this.playerHealth = 100;
+      this.enemyHealth = 50;
+      this.battleLog = [];
+      // Reset any other battle-related state properties
     },
     addToLog(message, type) {
       this.battleLog.unshift({ message, type });
+    },
+    startAutoAttack() {
+      if (!this.isAutoAttackActive) {
+        this.isAutoAttackActive = true;
+        this.autoAttackInterval = setInterval(() => {
+          this.attack();
+        }, 500);
+      }
+    },
+    stopAutoAttack() {
+      if (this.isAutoAttackActive) {
+        this.isAutoAttackActive = false;
+        clearInterval(this.autoAttackInterval);
+      }
+    },
+    showVictoryConfetti() {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+        zIndex: 9999,
+      });
+    },
+    showRewardConfetti() {
+      confetti({
+        particleCount: 50,
+        spread: 60,
+        origin: { y: 0.7 },
+        zIndex: 9999,
+      });
     },
   },
 };
