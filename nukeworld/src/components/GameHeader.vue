@@ -2,8 +2,6 @@
   <div class="d-flex justify-content-between bg-primary bg-gradient p-2">
     <div v-if="equippedWeapons.length && equippedArmor" class="col-4 text-capitalize d-flex justify-content-start text-light text-center">
       Player: {{ character.name }}
-      <img :src="require('@/assets/interface/icons/exp.png')" title="Health" style="width: 20px;" class="mx-2">
-      Health: {{ character.health }}/100
       <img :src="require('@/assets/interface/icons/gun.png')" title="Exp" style="width: 20px;" class="mx-2">
       Attack: {{ equippedWeapons[0].attack }}
       <img :src="require('@/assets/interface/icons/shield.png')" title="Exp" style="width: 20px;" class="mx-2">
@@ -11,19 +9,17 @@
     </div>
     <div v-else-if="equippedWeapons.length" class="col-4 text-capitalize d-flex justify-content-start text-light text-center">
       Player: {{ character.name }}
-      <img :src="require('@/assets/interface/icons/exp.png')" title="Health" style="width: 20px;" class="mx-2">
-      Health: {{ character.health }}/100
       <img :src="require('@/assets/interface/icons/gun.png')" title="Exp" style="width: 20px;" class="mx-2">
       Attack: {{ equippedWeapons[0].attack }}
     </div>
     <div v-else class="col-4 text-capitalize d-flex justify-content-start text-light text-center">
       Player: {{ character.name }}
-      <img :src="require('@/assets/interface/icons/exp.png')" title="Health" style="width: 20px;" class="mx-2">
+    </div>
+    <div class="col-4 text-capitalize d-flex justify-content-center text-light text-center">
       Health: {{ character.health }}/100
     </div>
-    <div class="col-4 text-capitalize d-flex justify-content-center text-light text-center">Money: {{ character.money }}</div>
     <div class="col-4 text-capitalize d-flex justify-content-end text-light text-center">
-      Level: {{ character.level }}
+      Money: {{ character.money }}
     </div>
   </div>
   <ExpLvl />
