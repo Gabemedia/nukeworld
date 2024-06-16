@@ -3,9 +3,9 @@ export default [
   {
     id: 0,
     uuid: uuidv4(),
-    name: 'No Armor',
-    desc: 'No armor equipped.',
-    defence: 0,
+    name: 'Rags',
+    desc: 'Rags provided basic protection.',
+    defence: 2,
     state: 'none',
     price: '-1',
   },

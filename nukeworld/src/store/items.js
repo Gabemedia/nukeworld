@@ -13,8 +13,8 @@ export default [
   {
     id: 1,
     uuid: uuidv4(),
-    name: 'Tire Iron',
-    desc: 'Tire Iron is a great melee weapon. It is used for all sorts of combat.',
+    name: 'Knife',
+    desc: 'Knife is a great melee weapon. It is used for all sorts of combat.',
     attack: 2,
     defence: 0,
     state: '0',
@@ -63,8 +63,8 @@ export default [
   {
     id: 6,
     uuid: uuidv4(),
-    name: 'Crossbow',
-    desc: 'Crossbow is a powerful ranged weapon. It is used for long-range combat.',
+    name: 'smg',
+    desc: 'smg is a powerful ranged weapon. It is used for short-range combat.',
     attack: 18,
     defence: 0,
     state: 'none',
@@ -73,8 +73,8 @@ export default [
   {
     id: 7,
     uuid: uuidv4(),
-    name: 'Sledgehammer',
-    desc: 'Sledgehammer is a heavy melee weapon. It is used for crushing enemies.',
+    name: 'Rocket Launcher',
+    desc: 'Rocket Launcher is a heavy lancher weapon. It is used for crushing enemies.',
     attack: 15,
     defence: 0,
     state: 'none',
