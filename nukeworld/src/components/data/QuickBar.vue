@@ -1,82 +1,89 @@
+<!-- QuickBar.vue -->
 <template>
-    <div class="quick-bar">
-      <div class="quick-bar-slot" v-for="(slot, index) in slots" :key="index" @click="toggleDropdown(index)">
-        <div class="quick-bar-key">{{ index + 1 }}</div>
-        <div class="quick-bar-item" v-if="getEquippedItem(index)">
-          <img v-if="index === 0" :src="require(`@/assets/interface/icons/weapons/${getEquippedItem(index).name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="getEquippedItem(index).name" />
-          <img v-else-if="index === 1" :src="require(`@/assets/interface/icons/armor/${getEquippedItem(index).name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="getEquippedItem(index).name" />
-        </div>
-        <div class="dropdown-menu" v-show="showDropdown[index]">
-          <div v-for="item in getItems(index)" :key="item.uuid" @click="selectItem(index, item)">
-            <img :src="require(`@/assets/interface/icons/${index === 0 ? 'weapons' : 'armor'}/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="item.name" />
-          </div>
+  <div class="quick-bar">
+    <div class="quick-bar-slot" v-for="(slot, index) in slots" :key="index">
+      <div class="quick-bar-key">{{ index + 1 }}</div>
+      <div class="quick-bar-item" v-if="getEquippedItem(index)" @click="toggleDropdown(index)">
+        <img v-if="index === 0" :src="require(`@/assets/interface/icons/weapons/${getEquippedItem(index).name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="getEquippedItem(index).name" />
+        <img v-else-if="index === 1" :src="require(`@/assets/interface/icons/armor/${getEquippedItem(index).name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="getEquippedItem(index).name" />
+      </div>
+      <div class="dropdown-menu" v-show="showDropdown[index]">
+        <div v-for="item in getItems(index)" :key="item.uuid" @click="handleSelectItem(index, item)">
+          <img :src="require(`@/assets/interface/icons/${index === 0 ? 'weapons' : 'armor'}/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="item.name" />
         </div>
       </div>
     </div>
-  </template>
-  
-  <script>
-  import { mapState, mapActions } from 'vuex';
-  
-  export default {
-    name: 'QuickBar',
-    data() {
-      return {
-        slots: Array(10).fill({ item: null }),
-        showDropdown: Array(10).fill(false),
-      };
+  </div>
+</template>
+
+<script>
+import { mapState, mapActions } from 'vuex';
+
+export default {
+  name: 'QuickBar',
+  data() {
+    return {
+      slots: Array(10).fill({ item: null }),
+      showDropdown: Array(10).fill(false),
+    };
+  },
+  computed: {
+    ...mapState(['character']),
+  },
+  mounted() {
+    window.addEventListener('keydown', this.handleKeyDown);
+  },
+  beforeUnmount() {
+    window.removeEventListener('keydown', this.handleKeyDown);
+  },
+  methods: {
+    ...mapActions(['equipWeapon', 'equipArmor']),
+    toggleDropdown(index) {
+      this.showDropdown = this.showDropdown.map((show, i) => i === index ? !show : false);
     },
-    computed: {
-      ...mapState(['character']),
+    getItems(index) {
+      if (index === 0) {
+        return this.character.weapons;
+      } else if (index === 1) {
+        return this.character.armor;
+      }
+      return [];
     },
-    mounted() {
-      window.addEventListener('keydown', this.handleKeyDown);
+    handleSelectItem(index, item) {
+      this.selectItem(index, item);
+      this.closeDropdown(index);
     },
-    beforeUnmount() {
-      window.removeEventListener('keydown', this.handleKeyDown);
+    selectItem(index, item) {
+      this.slots[index].item = item;
+      if (index === 0) {
+        this.equipWeapon(item.uuid);
+      } else if (index === 1) {
+        this.equipArmor(item.uuid);
+      }
     },
-    methods: {
-      ...mapActions(['equipWeapon', 'equipArmor']),
-      toggleDropdown(index) {
-        this.showDropdown.splice(index, 1, !this.showDropdown[index]);
-      },
-      getItems(index) {
-        if (index === 0) {
-          return this.character.weapons;
-        } else if (index === 1) {
-          return this.character.armor;
-        }
-        return [];
-      },
-      selectItem(index, item) {
-        this.slots[index].item = item;
-        this.showDropdown[index] = false;
-        if (index === 0) {
-          this.equipWeapon(item.uuid);
-        } else if (index === 1) {
-          this.equipArmor(item.uuid);
-        }
-      },
-      getEquippedItem(index) {
-        if (index === 0) {
-          return this.character.equippedWeapons[0];
-        } else if (index === 1) {
-          return this.character.equippedArmor;
-        }
-        return null;
-      },
-      handleKeyDown(event) {
-        const key = event.key;
-        if (key >= '1' && key <= '9') {
-          event.preventDefault();
-          const index = parseInt(key) - 1;
-          this.toggleDropdown(index);
-        }
-      },
+    getEquippedItem(index) {
+      if (index === 0) {
+        return this.character.equippedWeapons[0];
+      } else if (index === 1) {
+        return this.character.equippedArmor;
+      }
+      return null;
     },
-  };
-  </script>
-  
+    handleKeyDown(event) {
+      const key = event.key;
+      if (key >= '1' && key <= '9') {
+        event.preventDefault();
+        const index = parseInt(key) - 1;
+        this.toggleDropdown(index);
+      }
+    },
+    closeDropdown(index) {
+      this.showDropdown[index] = false;
+    },
+  },
+};
+</script>
+
 <style lang="scss" scoped>
 .quick-bar {
   position: fixed;
