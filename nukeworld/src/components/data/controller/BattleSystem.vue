@@ -1,19 +1,48 @@
 <template>
   <div class="battle-system">
     <div class="player-info">
-      <p>Player: {{ character.name }}</p>
-      <p>Health: {{ playerHealth }}</p>
-      <p>Equipped Weapon: {{ equippedWeapon ? equippedWeapon.name : 'None' }}</p>
-      <p>Equipped Armor: {{ equippedArmor ? equippedArmor.name : 'None' }}</p>
+      <div class="player-name">{{ character.name }}</div>
+      <div class="player-health">
+        <img :src="require('@/assets/interface/icons/exp.png')" alt="Health" class="icon">
+        <div class="health-bar">
+          <div class="health-bar-fill" :style="{ width: playerHealthPercentage + '%' }"></div>
+        </div>
+        <div class="health-text">{{ playerHealth }}/100</div>
+      </div>
+      <div class="player-equipment">
+        <div class="equipment-item">
+          <img :src="require('@/assets/interface/icons/gun.png')" alt="Weapon" class="icon">
+          <span>{{ equippedWeapon ? equippedWeapon.name : 'None' }}</span>
+        </div>
+        <div class="equipment-item">
+          <img :src="require('@/assets/interface/icons/shield.png')" alt="Armor" class="icon">
+          <span>{{ equippedArmor ? equippedArmor.name : 'None' }}</span>
+        </div>
+      </div>
     </div>
+    
     <div class="enemy-info">
-      <p>Enemy: {{ enemy.name }}</p>
-      <p>Health: {{ enemyHealth }}</p>
+      <div class="enemy-name">{{ enemy.name }}</div>
+      <div class="enemy-health">
+        <img :src="require('@/assets/interface/icons/exp.png')" alt="Health" class="icon">
+        <div class="health-bar">
+          <div class="health-bar-fill" :style="{ width: enemyHealthPercentage + '%' }"></div>
+        </div>
+        <div class="health-text">{{ enemyHealth }}/50</div>
+      </div>
     </div>
+    
     <div class="battle-actions">
-      <button @click="attack" class="btn btn-primary attack-button">Attack</button>
-      <button @click="useItem" class="btn btn-info use-item-button">Use Item</button>
+      <button @click="attack" class="btn btn-primary attack-button">
+        <img :src="require('@/assets/interface/icons/gun.png')" alt="Attack" class="icon">
+        Attack
+      </button>
+      <button @click="useItem" class="btn btn-info use-item-button">
+        <img :src="require('@/assets/interface/icons/reload2.png')" alt="Item" class="icon">
+        Use Item
+      </button>
     </div>
+    
     <div class="battle-log">
       <ul>
         <li v-for="(log, index) in battleLog" :key="index" :class="log.type">{{ log.message }}</li>
@@ -53,8 +82,14 @@ export default {
     attack() {
       if (this.equippedWeapon) {
         const playerDamage = this.calculateDamage(this.equippedWeapon.attack, this.enemy.defense);
-        this.enemyHealth = Math.max(this.enemyHealth - playerDamage, 0);
-        this.addToLog(`You attacked the ${this.enemy.name} with your ${this.equippedWeapon.name} for ${playerDamage} damage.`, 'player-action');
+        const dodgeChance = Math.random();
+        
+        if (dodgeChance <= this.enemy.defense / 100) {
+          this.addToLog(`The ${this.enemy.name} dodged your attack!`, 'enemy-action');
+        } else {
+          this.enemyHealth = Math.max(this.enemyHealth - playerDamage, 0);
+          this.addToLog(`You attacked the ${this.enemy.name} with your ${this.equippedWeapon.name} for ${playerDamage} damage.`, 'player-action');
+        }
       } else {
         this.addToLog('You have no weapon equipped!', 'player-action');
       }
@@ -69,8 +104,14 @@ export default {
 
     enemyAttack() {
       const enemyDamage = this.calculateDamage(this.enemy.attack, this.equippedArmor ? this.equippedArmor.defence : 0);
-      this.playerHealth = Math.max(this.playerHealth - enemyDamage, 0);
-      this.addToLog(`The ${this.enemy.name} attacked you for ${enemyDamage} damage.`, 'enemy-action');
+      const dodgeChance = Math.random();
+      
+      if (dodgeChance <= (this.equippedArmor ? this.equippedArmor.defence : 0) / 100) {
+        this.addToLog(`You dodged the ${this.enemy.name}'s attack!`, 'player-action');
+      } else {
+        this.playerHealth = Math.max(this.playerHealth - enemyDamage, 0);
+        this.addToLog(`The ${this.enemy.name} attacked you for ${enemyDamage} damage.`, 'enemy-action');
+      }
       
       if (this.playerHealth <= 0) {
         this.addToLog('You were defeated!', 'enemy-action');
@@ -100,7 +141,10 @@ export default {
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
-
+.battle-system .icon{
+  height: 20px;
+  width: auto;
+}
 .player-info,
 .enemy-info {
   margin-bottom: 20px;
