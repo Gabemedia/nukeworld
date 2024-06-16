@@ -1,6 +1,6 @@
 <!-- src/components/data/EnemyEncounters.vue -->
 <template>
-      <button @click="openModal" class="btn btn-main btn-danger m-2" type="button">Enemy Encounters</button>
+      <button @click="openModal" class="btn btn-main btn-danger m-2" type="button">Encounters</button>
       <div v-if="showModal" class="modal" tabindex="-1" @click.self="closeModal">
         <div class="modal-dialog">
           <div class="modal-content">
