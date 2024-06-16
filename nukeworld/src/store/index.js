@@ -199,6 +199,12 @@ const actions = {
   deleteCharacter({ commit }, character) {
     commit('deleteCharacter', character);
   },
+  async quitGame({ commit, state }) {
+    const updatedCharacter = { ...state.character, health: 0 };
+    commit('updateCharacter', updatedCharacter);
+    commit('updateCharacterInArray', updatedCharacter);
+    localStorage.setItem('character', JSON.stringify(updatedCharacter));
+  },
   increaseExp({ commit, state, dispatch }, amount) {
     commit('updateCharacter', { exp: state.character.exp + amount });
     if (state.character.exp >= state.character.maxExp) {

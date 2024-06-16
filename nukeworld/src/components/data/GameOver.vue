@@ -16,9 +16,8 @@
 </template>
 
 <script>
-
 export default {
-name: 'GameOver',
+  name: 'GameOver',
   props: {
     showModal: {
       type: Boolean,
@@ -30,13 +29,13 @@ name: 'GameOver',
       this.$store.dispatch('resetCharacter');
       this.$emit('close');
     },
-    quitGame() {
-      this.$store.dispatch('quitGame');
+    async quitGame() {
+      await this.$store.dispatch('quitGame');
       this.$router.push('/');
     },
-  },};
+  },
+};
 </script>
-
 <style scoped>
 .modal {
   display: block;
