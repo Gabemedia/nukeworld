@@ -9,7 +9,7 @@
         </div>
       </div>
     </div>
-    <GameOver @game-over="isGameOver = true" />
+    <GameOver :showModal="showModal" @close="closeModal" />
   </div>
 </template>
 
@@ -30,7 +30,7 @@ export default {
   },
   data() {
     return {
-      isGameOver: false,
+      showModal: false,
     };
   },
   computed: {
@@ -54,6 +54,12 @@ export default {
           this.$refs.mapComponent2.updateMapSize();
         }
       });
+    },
+    openModal() {
+      this.showModal = true;
+    },
+    closeModal() {
+      this.showModal = false;
     },
   },
 };

@@ -1,10 +1,16 @@
 <template>
-  <div v-if="isGameOver" class="game-over-modal">
-    <div class="game-over-content">
-      <h2>Game Over</h2>
-      <p>Your character has been defeated.</p>
-      <button @click="restartGame" class="btn btn-primary">Restart</button>
-      <button @click="quitGame" class="btn btn-secondary">Quit</button>
+  <div v-if="showModal" class="modal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="game-over-content">
+            <h2>Game Over</h2>
+            <p>Your character has been defeated.</p>
+            <button @click="restartGame" class="btn btn-primary">Restart</button>
+            <button @click="quitGame" class="btn btn-secondary">Quit</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -13,7 +19,7 @@
 export default {
   name: 'GameOver',
   props: {
-    isGameOver: {
+    showModal: {
       type: Boolean,
       required: true,
     },
@@ -31,23 +37,27 @@ export default {
 </script>
 
 <style scoped>
-.game-over-modal {
+.modal {
+  display: block;
   position: fixed;
-  top: 0;
+  z-index: 9999;
   left: 0;
+  top: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
 }
 
 .game-over-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 5px;
   text-align: center;
 }
 </style>
