@@ -20,7 +20,7 @@
     </div>
   </div>
   <ExpLvl />    
-    <CharacterInfo />
+    <!-- <CharacterInfo /> -->
     <QuestLog />
     <InventoryLog />
     <EnemyEncounters />
@@ -28,7 +28,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import CharacterInfo from './data/CharacterInfo.vue';
+// import CharacterInfo from './data/CharacterInfo.vue';
 import ExpLvl from './data/ExpLvl.vue';
 import QuestLog from './data/QuestLog.vue';
 import InventoryLog from './data/InventoryLog.vue';
@@ -37,7 +37,7 @@ import EnemyEncounters from './data/EnemyEncounters.vue';
 export default {
   name: 'GameHeader',
   components: {
-    CharacterInfo,
+    // CharacterInfo,
     ExpLvl,
     QuestLog,
     InventoryLog,

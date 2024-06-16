@@ -62,6 +62,11 @@ export default {
     ...mapState(['characters'])
   },
   methods: {
+    autoFillLoginForm(selectedCharacter) {
+      this.character.name = selectedCharacter.name;
+      this.character.email = selectedCharacter.email;
+      this.character.password = selectedCharacter.password;
+    },
     async login() {
       if (this.character.email.trim() !== '' && this.character.password.trim() !== '') {
         try {
