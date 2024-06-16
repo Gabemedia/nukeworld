@@ -78,6 +78,8 @@ export default {
         name: 'Goblin',
         attack: 10,
         defense: 5,
+        exp: 10000,
+        money: 50000,
       },
     };
   },
