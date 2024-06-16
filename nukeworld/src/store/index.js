@@ -4,7 +4,6 @@ import defaultQuests from './quests';
 import { v4 as uuidv4 } from 'uuid'; 
 import items from './items';
 import armor from './armor';
-import enemies from './enemy';
 
 const state = reactive({
   characters: JSON.parse(localStorage.getItem('characters')) || [],
@@ -16,6 +15,7 @@ const state = reactive({
     maxExp: 2500,
     level: 1,
     money: 0,
+    health: 100,
     weapons: [], // Ændret fra inventory
     equippedWeapons: [],
     armor: [], 
@@ -178,7 +178,7 @@ const actions = {
     commit('updateCharacter', { name: username, email, password,});
   },
   createCharacter({ commit, state }) {
-    const newCharacter = { ...state.character, level: 1, exp: 1, maxExp: 2500, money: 0, weapons: [state.items[0]], equippedWeapons: [state.items[0]] };
+    const newCharacter = { ...state.character, level: 1, exp: 1, maxExp: 2500, money: 0, health: 100, weapons: [state.items[0]], equippedWeapons: [state.items[0]] };
     commit('addCharacter', newCharacter);
     commit('updateCharacter', newCharacter);
     commit('equipWeapon', 0);
@@ -315,7 +315,6 @@ const store = createStore({
   getters,
   mutations,
   actions,
-  enemies,
 });
 
 store.commit('assignRandomCoordinates');

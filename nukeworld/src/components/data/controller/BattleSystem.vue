@@ -22,16 +22,16 @@
       </div>
     </div>
     <div class="my-4 border border-2 border-primary"></div>
-    <div class="mb-1">
+    <div v-if="enemy" class="mb-1">
       <div class="enemy-info d-flex justify-content-between align-items-center">
         <div class="enemy-name">{{ enemy.name }}</div>
         <div class="enemy-health">
           <img :src="require('@/assets/interface/icons/exp.png')" alt="Health" class="icon me-2">
-          <span>{{ enemyHealth }}/50</span>
+          <span>{{ enemy.enemyHealth }}/{{ enemy.enemyHealth }}</span>
         </div>
       </div>
     </div>
-    <div class="mb-4">
+    <div v-if="enemy" class="mb-4">
       <div class="enemy-stats d-flex justify-content-between align-items-center">
         <div class="stat-item">
           <img :src="require('@/assets/interface/icons/gun.png')" alt="Weapon" class="icon">
@@ -63,25 +63,18 @@
   </div>
 </template>
 
-
 <script>
 import { mapState } from 'vuex';
 import confetti from 'canvas-confetti';
+import enemies from '@/store/enemy';
 
 export default {
   name: 'BattleSystem',
   data() {
     return {
       playerHealth: 100,
-      enemyHealth: 50,
       battleLog: [],
-      enemy: {
-        name: 'Goblin',
-        attack: 10,
-        defense: 5,
-        exp: 10000,
-        money: 50000,
-      },
+      enemy: null,
       isBattleWon: false,
       isAutoAttackActive: false,
       autoAttackInterval: null,
@@ -96,12 +89,15 @@ export default {
       return this.character.equippedArmor;
     },
   },
-
+  created() {
+    this.getRandomEnemy();
+  },
   methods: {
     getRandomEnemy() {
-      const randomIndex = Math.floor(Math.random() * this.enemies.length);
-      this.enemy = { ...this.enemies[randomIndex] };
-      this.enemyHealth = this.enemy.health;
+      if (enemies && enemies.length > 0) {
+        const randomIndex = Math.floor(Math.random() * enemies.length);
+        this.enemy = { ...enemies[randomIndex] };
+      }
     },
     attack() {
       if (this.equippedWeapon) {
@@ -111,21 +107,20 @@ export default {
         if (dodgeChance <= this.enemy.defense / 100) {
           this.addToLog(`The ${this.enemy.name} dodged your attack!`, 'enemy-action');
         } else {
-          this.enemyHealth = Math.max(this.enemyHealth - playerDamage, 0);
+          this.enemy.enemyHealth = Math.max(this.enemy.enemyHealth - playerDamage, 0);
           this.addToLog(`You attacked the ${this.enemy.name} with your ${this.equippedWeapon.name} for ${playerDamage} damage.`, 'player-action');
         }
       } else {
         this.addToLog('You have no weapon equipped!', 'player-action');
       }
 
-      if (this.enemyHealth <= 0) {
+      if (this.enemy.enemyHealth <= 0) {
         this.addToLog(`You defeated the ${this.enemy.name}!`, 'player-action');
         this.checkBattleEnd();
       } else {
         this.enemyAttack();
       }
     },
-
     enemyAttack() {
       const enemyDamage = this.calculateDamage(this.enemy.attack, this.equippedArmor ? this.equippedArmor.defence : 0);
       const dodgeChance = Math.random();
@@ -146,7 +141,7 @@ export default {
       return Math.max(attack - defense, 0);
     },
     checkBattleEnd() {
-      if (this.enemyHealth <= 0) {
+      if (this.enemy.enemyHealth <= 0) {
         this.isBattleWon = true;
         this.stopAutoAttack();
         this.showVictoryConfetti();
@@ -164,7 +159,6 @@ export default {
       this.playerHealth = 100;
       this.getRandomEnemy();
       this.battleLog = [];
-      // Reset any other battle-related state properties
     },
     addToLog(message, type) {
       this.battleLog.unshift({ message, type });

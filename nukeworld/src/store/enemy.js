@@ -2,6 +2,7 @@ export default [
     {
         id: 1,
         name: 'Goblin',
+        enemyHealth: 100,
         attack: 10,
         defense: 5,
         exp: 10000,
@@ -10,6 +11,7 @@ export default [
     {
         id: 2,
         name: 'Dog',
+        enemyHealth: 50,
         attack: 5,
         defense: 2,
         exp: 100,
@@ -18,6 +20,7 @@ export default [
     {
         id: 3,
         name: 'Mutant',
+        enemyHealth: 1000,
         attack: 25,
         defense: 12,
         exp: 20000,
