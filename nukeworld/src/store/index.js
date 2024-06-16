@@ -182,6 +182,7 @@ const actions = {
       ...state.character,
       level: 1,
       exp: 1,
+      health: 100,
       maxExp: 2500,
       money: 0,
       weapons: [state.items[0]],
