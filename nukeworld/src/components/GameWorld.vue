@@ -40,10 +40,16 @@ export default {
     'character.level': function (newLevel) {
       this.updateMapVisibility(newLevel);
     },
+    'character.health': function (newHealth) {
+      if (newHealth === 0) {
+        this.openModal();
+      }
+    },
   },
   mounted() {
     console.log('Logged in user:', this.character.name);
     this.updateMapVisibility(this.character.level);
+    this.checkCharacterHealth(); // Tilføj denne linje for at kontrollere spillerens health ved montering
   },
   methods: {
     updateMapVisibility(level) {
@@ -60,6 +66,11 @@ export default {
     },
     closeModal() {
       this.showModal = false;
+    },
+    checkCharacterHealth() {
+      if (this.character.health === 0) {
+        this.openModal(); // Vis "Game Over"-modalen, hvis spillerens health er 0
+      }
     },
   },
 };

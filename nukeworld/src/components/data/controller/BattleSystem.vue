@@ -72,7 +72,6 @@ export default {
   name: 'BattleSystem',
   data() {
     return {
-      playerHealth: 100,
       battleLog: [],
       enemy: null,
       isBattleWon: false,
@@ -131,10 +130,9 @@ export default {
         this.$store.commit('updateCharacter', { health: Math.max(this.character.health - enemyDamage, 0) });
         this.addToLog(`The ${this.enemy.name} attacked you for ${enemyDamage} damage.`, 'enemy-action');
       }
-      
-      if (this.playerHealth <= 0) {
+      if (this.character.health <= 0) {
         this.addToLog('You were defeated!', 'enemy-action');
-        this.checkBattleEnd();
+        this.stopAutoAttack(); // Tilføj denne linje for at stoppe auto-angreb
         this.$emit('game-over');
       }
     },

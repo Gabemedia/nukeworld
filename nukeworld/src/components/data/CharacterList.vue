@@ -8,6 +8,7 @@
             <h5 class="card-title">{{ character.name }}</h5>
             <p class="card-text">
               Level: {{ character.level }}<br>
+              Liv: {{ character.health }}<br>
               Experience: {{ character.exp }}<br>
               Money: {{ character.money }}<br>
               Username: {{ character.name }}<br>

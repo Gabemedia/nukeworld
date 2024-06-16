@@ -291,11 +291,20 @@ const actions = {
     });
   },
 
-  resetCharacter({ commit }) {
+  resetCharacter({ commit, state }) {
     commit('updateCharacter', {
+      exp: 1,
+      maxExp: 2500,
+      level: 1,
+      money: 0,
       health: 100,
-      // Nulstil andre karakteregenskaber her
+      weapons: [state.items[0]],
+      equippedWeapons: [state.items[0]],
+      armor: [],
+      equippedArmor: null,
     });
+    commit('equipWeapon', state.items[0].uuid);
+    commit('setQuests', defaultQuests);
   },
   
   clearQuests({ commit }) {
