@@ -75,23 +75,26 @@ export default {
       playerHealth: 100,
       enemyHealth: 50,
       battleLog: [],
-      enemy: null,
+      enemy: {
+        name: 'Goblin',
+        attack: 10,
+        defense: 5,
+        exp: 10000,
+        money: 50000,
+      },
       isBattleWon: false,
       isAutoAttackActive: false,
       autoAttackInterval: null,
     };
   },
   computed: {
-    ...mapState(['character', 'enemies']),
+    ...mapState(['character']),
     equippedWeapon() {
       return this.character.equippedWeapons[0];
     },
     equippedArmor() {
       return this.character.equippedArmor;
     },
-  },
-  created() {
-    this.getRandomEnemy();
   },
 
   methods: {
