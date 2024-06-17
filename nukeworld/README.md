@@ -89,6 +89,8 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Refactored QuestList to display quests better.
 - Refactored QuestDetails to display more info.
 - Refactored Health Logics.
+- Tweaked UI.
+- Tweaked Mobile-friendly UI.
 
 ## Getting Started
 To get started with NukeWorld, follow these steps:

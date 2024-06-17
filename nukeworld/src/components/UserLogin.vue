@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
     <div class="login d-flex flex-column align-items-center mt-4 justify-content-start mx-auto w-75">
-      <div class="row justify-content-center w-100 mt-4">
+      <div class="row justify-content-center w-100 mt-4 ">
         <div class="col-12">
           <input autocomplete="name" class="game-input mx-4 w-100" v-model="character.name" placeholder="Enter your character's name">
         </div>
@@ -16,10 +16,10 @@
       </div>
       <div class="row justify-content-center w-100">
         <div class="col-6">
-          <button class="game-button col-3 mx-4" @click="login">Login</button>
+          <button class="game-button mx-4" @click="login">Login</button>
         </div>
         <div class="col-6">
-          <button class="game-create col-5 mx-4" @click="createCharacter">Create Character</button>
+          <button class="game-create mx-4" @click="createCharacter">Create Character</button>
         </div>
       </div>
       <div class="row justify-content-start ms-3 mt-4 w-100">
