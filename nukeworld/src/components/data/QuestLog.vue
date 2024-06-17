@@ -1,5 +1,5 @@
 <template>
-  <button class="btn btn-main btn-primary m-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasQuestsInfo">
+  <button class="btn btn-main btn-primary m-2" type="button" >
     Quest Log
   </button>
   <div style="width:500px;" class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasQuestsInfo" aria-labelledby="offcanvasQuestsLabel">
