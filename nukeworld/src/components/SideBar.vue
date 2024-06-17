@@ -11,6 +11,9 @@
       <li class="nav-item">
         <EnemyEncounters />
       </li>
+      <li class="nav-item">
+        <PlayerShop />
+      </li>
     </ul>
   </div>
 </template>
@@ -19,6 +22,7 @@
 import QuestLog from './data/QuestLog.vue';
 import InventoryLog from './data/InventoryLog.vue';
 import EnemyEncounters from './data/EnemyEncounters.vue';
+import PlayerShop from './data/PlayerShop.vue';
 
 export default {
   name: 'SideBar',
@@ -26,6 +30,7 @@ export default {
     QuestLog,
     InventoryLog,
     EnemyEncounters,
+    PlayerShop,
   },
   data() {
     return {

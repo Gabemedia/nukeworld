@@ -7,8 +7,7 @@
         <div class="col-12">
           <MapComponent v-if="character.level < 5" ref="mapComponent" class="flex-grow-1 "/> 
           <MapComponent2 v-else-if="character.level >= 5 && character.level <= 100" ref="mapComponent2" class="flex-grow-1 "/>
-            <QuickBar ref="quickBar" />
-
+          <QuickBar ref="quickBar" />
         </div>
       </div>
     </div>

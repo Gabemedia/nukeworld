@@ -155,7 +155,7 @@ export default {
     },
     resetBattleState() {
       this.isBattleWon = false;
-      this.$store.commit('updateCharacter', { health: 100 });
+      this.$store.commit('updateCharacter');
       this.getRandomEnemy();
       this.battleLog = [];
     },

@@ -4,6 +4,7 @@ import defaultQuests from './quests';
 import { v4 as uuidv4 } from 'uuid'; 
 import items from './items';
 import armor from './armor';
+import aid from './aid';
 
 const state = reactive({
   characters: JSON.parse(localStorage.getItem('characters')) || [],
@@ -24,6 +25,7 @@ const state = reactive({
   quests: reactive(JSON.parse(localStorage.getItem('quests')) || defaultQuests),
   items,
   armor,
+  aid,
   mapBounds: null,
   markers: [],
 });
@@ -116,11 +118,11 @@ const mutations = {
     state.quests[questIndex].progress = progress;
     state.quests[questIndex].remainingTime = remainingTime;
   },
-  addItemToWeapons(state, itemId) { // Ændret fra addItemToInventory
+  addItemToWeapons(state, itemId) {
     const item = state.items.find(i => i.id === itemId);
     if (item) {
-      const newItem = { ...item, uuid: uuidv4() }; // Generér en unik uuid for det nye våben
-      state.character.weapons.push(newItem); // Ændret fra inventory
+      const newItem = { ...item, uuid: uuidv4() };
+      state.character.weapons.push(newItem);
     }
   },
   equipWeapon(state, itemUuid) {
@@ -170,6 +172,21 @@ const mutations = {
       }
     }
   },
+  addItemToAid(state, itemId) {
+    const item = state.aid.find(i => i.id === itemId);
+    if (item) {
+      const newItem = { ...item, uuid: uuidv4() };
+      state.character.aid.push(newItem);
+    }
+  },  
+  useAid(state, itemUuid) {
+    const itemIndex = state.character.aid.findIndex(item => item.uuid === itemUuid);
+    if (itemIndex !== -1) {
+      const usedItem = state.character.aid[itemIndex];
+      state.character.health = Math.min(state.character.health + usedItem.health, 100);
+      state.character.aid.splice(itemIndex, 1);
+    }
+  },  
 };
 
 const actions = {
@@ -188,6 +205,7 @@ const actions = {
       equippedWeapons: [state.items[0]],
       armor: [state.armor[0]],
       equippedArmor: state.armor[0],
+      aid: [state.aid[1], state.aid[1], state.aid[1]],
     };
     commit('addCharacter', newCharacter);
     commit('updateCharacter', newCharacter);
@@ -341,6 +359,19 @@ const actions = {
   sellArmor({ commit }, itemUuid) {
     commit('sellArmor', itemUuid);
   },
+  useAid({ commit }, itemUuid) {
+    commit('useAid', itemUuid);
+  },
+  addItemToAid({ commit }, itemId) {
+    commit('addItemToAid', itemId);
+  },
+  addItemToWeapons({ commit }, itemId) {
+    commit('addItemToWeapons', itemId);
+  },
+  addItemToArmor({ commit }, itemId) {
+    commit('addItemToArmor', itemId);
+  },
+  
 };
 
 const store = createStore({

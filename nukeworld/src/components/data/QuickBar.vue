@@ -1,4 +1,3 @@
-<!-- QuickBar.vue -->
 <template>
   <div class="quick-bar">
     <div class="quick-bar-slot" v-for="(slot, index) in slots" :key="index">
@@ -6,10 +5,16 @@
       <div class="quick-bar-item" v-if="getEquippedItem(index)" @click="toggleDropdown(index)">
         <img v-if="index === 0" :src="require(`@/assets/interface/icons/weapons/${getEquippedItem(index).name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="getEquippedItem(index).name" />
         <img v-else-if="index === 1" :src="require(`@/assets/interface/icons/armor/${getEquippedItem(index).name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="getEquippedItem(index).name" />
+        <img v-else-if="index === 2" :src="require(`@/assets/interface/icons/aid/${getEquippedItem(index).name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="getEquippedItem(index).name" />
+        <span v-if="index === 2" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success  py-1" title="Use Aid Item" @click.stop="useEquippedAidItem">
+          <p class="card-text m-0">+</p>
+        </span>
       </div>
       <div class="dropdown-menu-hotbar" v-show="showDropdown[index]">
         <div v-for="item in getItems(index)" :key="item.uuid" @click="handleSelectItem(index, item)">
-          <img :src="require(`@/assets/interface/icons/${index === 0 ? 'weapons' : 'armor'}/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="item.name" />
+          <img v-if="index === 0" :src="require(`@/assets/interface/icons/weapons/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="item.name" />
+          <img v-else-if="index === 1" :src="require(`@/assets/interface/icons/armor/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="item.name" />
+          <img v-else-if="index === 2" :src="require(`@/assets/interface/icons/aid/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="item.name" />
         </div>
       </div>
     </div>
@@ -37,7 +42,7 @@ export default {
     window.removeEventListener('keydown', this.handleKeyDown);
   },
   methods: {
-    ...mapActions(['equipWeapon', 'equipArmor']),
+    ...mapActions(['equipWeapon', 'equipArmor', 'useAid']),
     toggleDropdown(index) {
       this.showDropdown = this.showDropdown.map((show, i) => i === index ? !show : false);
     },
@@ -46,6 +51,8 @@ export default {
         return this.character.weapons;
       } else if (index === 1) {
         return this.character.armor;
+      } else if (index === 2) {
+        return this.character.aid;
       }
       return [];
     },
@@ -66,6 +73,8 @@ export default {
         return this.character.equippedWeapons[0];
       } else if (index === 1) {
         return this.character.equippedArmor;
+      } else if (index === 2) {
+        return this.character.aid[0];
       }
       return null;
     },
@@ -79,6 +88,12 @@ export default {
     },
     closeDropdown(index) {
       this.showDropdown[index] = false;
+    },
+    useEquippedAidItem() {
+      const equippedAidItem = this.getEquippedItem(2);
+      if (equippedAidItem) {
+        this.useAid(equippedAidItem.uuid);
+      }
     },
   },
 };

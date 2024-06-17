@@ -12,9 +12,8 @@
     </div>
     <div v-else class="col-md-4 text-capitalize d-flex justify-content-start text-light text-center my-sm-1">
     </div>
-    <div class="col-auto text-capitalize d-flex justify-content-center text-light text-center my-sm-1">
-      <img style="width:20px;" :src="require(`@/assets/interface/icons/health.png`)" title="HealthBar" class="me-1">
-      <span class="mobile-text">{{ character.health }} / 100</span>
+    <div class="col-md-4 text-capitalize d-flex justify-content-center text-light text-center my-sm-1">
+      <HealthBar />
     </div>
     <div class="col-md-4 text-capitalize d-flex justify-content-end text-light text-center my-sm-1">
       <img style="width:20px;" :src="require(`@/assets/interface/icons/money.png`)" title="Money" class="me-1">
@@ -29,11 +28,13 @@
 <script>
 import { mapState } from 'vuex';
 import ExpLvl from './data/ExpLvl.vue';
+import HealthBar from './data/HealthBar.vue';
 
 export default {
   name: 'GameHeader',
   components: {
     ExpLvl,
+    HealthBar,
   },
   data() {
     return {
