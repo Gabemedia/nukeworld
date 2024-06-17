@@ -78,15 +78,13 @@ export default {
       return this.quests.filter(quest => !quest.userCreated && quest.lat && quest.lon && (quest.state === 'not-started' || quest.state === 'in-progress' || quest.state === 'completed'));
     },
   },
-  created() {
-    this.forceUpdateZoom();
-    this.updateDragging();
-  },
   mounted() {
     this.$nextTick(() => {
       this.updateMapSize();
       window.addEventListener('resize', this.updateMapSize);
       window.addEventListener('resize', this.updateZoom);
+      this.forceUpdateZoom();
+      this.updateDragging();
     });
   },
   beforeUnmount() {
@@ -110,12 +108,10 @@ export default {
           map.invalidateSize(true);
           map.fitBounds(this.mapBounds);
         }
-        this.updateDragging();
       });
     },
     updateZoom() {
       this.zoom = window.innerWidth >= 1200 ? 1 : 0;
-      this.updateDragging();
     },
     updateDragging() {
       this.mapOptions.dragging = window.innerWidth >= 1200;

@@ -64,7 +64,6 @@ const mutations = {
       [270, 270], [850, 1650],
     ] : [
       [270, 270], [850, 1650],
-      
     ];
     state.quests.forEach((quest) => {
       const lat = Math.random() * (playableArea[1][0] - playableArea[0][0]) + playableArea[0][0];
@@ -72,7 +71,7 @@ const mutations = {
       quest.lat = lat;
       quest.lon = lon;
     });
-  },
+  },  
 
   addMarker(state, marker) {
     state.markers.push(marker);

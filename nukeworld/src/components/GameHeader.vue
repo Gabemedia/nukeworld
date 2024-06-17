@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column flex-md-row justify-content-between bg-primary bg-gradient p-2">
+  <div class="d-flex flex-column flex-md-row justify-content-between header p-2">
     <div v-if="equippedWeapons.length && equippedArmor" class="col-md-4 text-capitalize d-flex justify-content-start text-light text-center mb-2 mb-md-0">
       <img :src="require(`@/assets/interface/icons/weapons/${equippedWeapons[0].name.toLowerCase().replace(/ /g, '_')}.png`)" :title="equippedWeapons[0].name" style="width: 20px;" class="mx-2">
       Attack: {{ equippedWeapons[0].attack }}
@@ -54,4 +54,7 @@ export default {
 </script>
 
 <style scoped>
+.header {
+  background-color: rgba(0, 0, 0, 0.7);
+}
 </style>
