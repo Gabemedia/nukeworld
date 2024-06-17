@@ -1,6 +1,6 @@
 <template>
   <button class="btn btn-main btn-primary m-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasInventoryInfo">
-    Inventory Log
+    <img class="sidebar-icon" :src="require(`@/assets/interface/icons/inventory.png`)" title="Quest Log">
   </button>
   <div style="width:500px" class="offcanvas offcanvas-start inventory-log-container" tabindex="-1" id="offcanvasInventoryInfo" aria-labelledby="offcanvasInventoryLabel">
     <div class="offcanvas-header card-text-header text-light bg-primary bg-gradient d-flex justify-content-between align-items-center">

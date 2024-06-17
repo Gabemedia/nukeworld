@@ -1,6 +1,7 @@
 <template>
   <div class="game-world bg-primary">
     <GameHeader class="game-header"/>
+    <SideBar />
     <div class="container mt-4">
       <div class="row justify-content-center">
         <div class="col-12">
@@ -17,6 +18,7 @@
 
 <script>
 import GameHeader from './GameHeader.vue';
+import SideBar from './SideBar.vue';
 import MapComponent from './data/MapComponent.vue';
 import MapComponent2 from './data/MapComponent2.vue';
 import QuickBar from './data/QuickBar.vue';
@@ -27,6 +29,7 @@ export default {
   name: 'GameWorld',
   components: {
     GameHeader,
+    SideBar,
     MapComponent,
     MapComponent2,
     GameOver,

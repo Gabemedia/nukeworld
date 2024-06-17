@@ -1,6 +1,6 @@
 <template>
-  <button class="btn btn-main btn-primary m-2" type="button" >
-    Quest Log
+  <button class="btn btn-main btn-primary m-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasQuestsInfo">
+    <img class="sidebar-icon" :src="require(`@/assets/interface/icons/quests.png`)" title="Quest Log">
   </button>
   <div style="width:500px;" class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasQuestsInfo" aria-labelledby="offcanvasQuestsLabel">
     <div class="offcanvas-header card-text-header text-light bg-primary bg-gradient d-flex justify-content-between align-items-center">

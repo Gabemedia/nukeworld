@@ -1,6 +1,8 @@
 <!-- src/components/data/EnemyEncounters.vue -->
 <template>
-      <button @click="openModal" class="btn btn-main btn-danger m-2" type="button">Encounters</button>
+    <button class="btn btn-main btn-primary m-2" type="button" >
+      <img @click="openModal"  class="sidebar-icon" :src="require(`@/assets/interface/icons/encounter.png`)" title="Enemy Encounter">
+    </button>
       <div v-if="showModal" class="modal" tabindex="-1" @click.self="closeModal">
         <div class="modal-dialog">
           <div class="modal-content">
