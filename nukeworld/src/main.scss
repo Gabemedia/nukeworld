@@ -30,8 +30,15 @@ div.modal-content {
 .btn{
   font-size: 0.655rem;
 }
+.sidebar-btn{
+  background-color: rgba(0, 0, 0, 0.7);
+}
+.sidebar-btn:hover{
+  @extend .btn-success
+}
 .sidebar-icon{
   width: 25px;
+  @extend .my-2;
 }
 
 .quest-toast div{

@@ -102,7 +102,7 @@ export default {
       }
     },
     forceUpdateZoom() {
-      this.zoom = window.innerWidth >= 1200 ? 1 : 0;
+      this.zoom = window.innerWidth >= 1600 ? 1 : 0;
       this.$nextTick(() => {
         const map = this.$refs.map?.$mapObject;
         if (map) {
@@ -114,11 +114,11 @@ export default {
       });
     },
     updateZoom() {
-      this.zoom = window.innerWidth >= 1200 ? 1 : 0;
+      this.zoom = window.innerWidth >= 1600 ? 1 : 0;
       this.updateDragging();
     },
     updateDragging() {
-      this.mapOptions.dragging = window.innerWidth >= 1200;
+      this.mapOptions.dragging = window.innerWidth >= 1600;
     },
     onMapClick(event) {
       if (this.isMarkerPlacementEnabled) {

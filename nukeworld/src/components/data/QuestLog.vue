@@ -1,5 +1,5 @@
 <template>
-  <button class="btn btn-main border border-1 border-white m-2" type="button" @click="openModal">
+  <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="openModal">
     <img class="sidebar-icon" :src="require(`@/assets/interface/icons/quests.png`)" title="Quest Log">
   </button>
   <div v-if="showModal" class="modal" tabindex="-1" @click.self="closeModal">

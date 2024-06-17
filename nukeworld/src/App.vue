@@ -41,55 +41,70 @@ export default {
 
 <style lang="scss">
 #app {
-    width: 100vw;
-    height: 100vh;
-   // overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  // overflow: hidden;
 }
+
 .menu-icon {
-    display: none;
-    cursor: pointer;
+  display: none;
+  cursor: pointer;
 }
 
 .bar {
-    width: 35px;
-    height: 5px;
-    background-color: #fff;
-    margin: 6px 0;
-    transition: 0.4s;
+  width: 30px;
+  height: 4px;
+  background-color: #fff;
+  margin: 5px 0;
+  transition: 0.4s;
 }
 
 /* Rotate first bar */
 .change .bar:nth-child(1) {
-    transform: rotate(-45deg) translate(-9px, 6px);
+  transform: rotate(-45deg) translate(-8px, 5px);
 }
 
 /* Fade out the second bar */
 .change .bar:nth-child(2) {
-    opacity: 0;
+  opacity: 0;
 }
 
 /* Rotate last bar */
 .change .bar:nth-child(3) {
-    transform: rotate(45deg) translate(-8px, -8px);
+  transform: rotate(45deg) translate(-8px, -8px);
 }
 
 @media screen and (max-width: 992px) {
-    .menu-icon {
-        display: block;
-    }
+  .menu-icon {
+    display: block;
+  }
 
-    .navbar-collapse {
-        position: absolute;
-        top: 56px;
-        right: 0;
-        background-color: #343a40;
-        width: 100%;
-        transform: translateX(100%);
-        transition: transform 0.3s ease-in-out;
-    }
+  .navbar-collapse {
+    position: absolute;
+    top: 56px;
+    right: 0;
+    background-color: #343a40;
+    width: 100%;
+    transform: translateX(100%);
+    transition: transform 0.3s ease-in-out;
+  }
 
-    .show-nav {
-        transform: translateX(0);
-    }
+  .show-nav {
+    transform: translateX(0);
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .container {
+    flex-direction: column;
+    padding: 10px;
+  }
+  .character-info {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  .quest-list {
+    width: 100%;
+  }
 }
 </style>

@@ -124,6 +124,8 @@ export default {
 .quick-bar-item img {
   max-width: 100%;
   max-height: 100%;
+  scale: 0.8;
+  margin-top:2px;
 }
 
 .dropdown-menu-hotbar {
@@ -142,5 +144,39 @@ export default {
   height: 40px;
   margin: 5px;
   cursor: pointer;
+}
+
+@media screen and (max-width: 600px) {
+  .quick-bar {
+    justify-content: flex-start;
+    padding: 10px 20px;
+    width: 100%;
+  }
+
+  .quick-bar-slot {
+    flex-basis: 20%;
+    max-width: 20%;
+  }
+
+  .quick-bar-slot:nth-child(n+6) {
+    display: none;
+  }
+
+  .quick-bar-slot:nth-child(5) {
+    margin-right: 20px;
+  }
+
+  .quick-bar-item img {
+    max-width: 100%;
+    max-height: 100%;
+    scale: 0.8;
+    margin-top:2px;
+  }
+  
+  .dropdown-menu-hotbar img {
+    width: 40px;
+    height: 40px;
+    margin: 5px;
+  }
 }
 </style>
