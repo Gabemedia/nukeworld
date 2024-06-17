@@ -10,7 +10,7 @@
             </div>
             <div class="modal-body">
                 <p>{{ desc }}</p>
-                <p><b>Congratulations!</b><br/>You have reached level {{ character.level }}<br/>Experience: {{ character.exp }} / {{ character.maxExp }}.</p>
+                <p><b>Congratulations!</b><br/>You have reached level {{ character.level }}</p>
                 <p><b>You have gained the following rewards</b><br/>
                 <img style="width:20px;" :src="require(`@/assets/interface/icons/exp.png`)" title="Experience"> {{ expGained }}
                 <img style="width:20px;" :src="require(`@/assets/interface/icons/money.png`)" title="Money"> {{ moneyGained }}
@@ -59,8 +59,8 @@ export default {
         spread: 70,
         origin: { y: 0.6 }
       });
-      const duration = 7000; // 5 sekunder
-      const interval = 10; // opdatering hvert 50ms
+      const duration = 5000; // 5 sekunder
+      const interval = 50; // opdatering hvert 50ms
       const increment = 100 / (duration / interval); // beregn inkrement baseret på varighed og interval
       let currentProgress = 0;
 

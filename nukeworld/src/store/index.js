@@ -187,12 +187,16 @@ const actions = {
       money: 0,
       weapons: [state.items[0]],
       equippedWeapons: [state.items[0]],
+      armor: [state.armor[0]],
+      equippedArmor: state.armor[0],
     };
     commit('addCharacter', newCharacter);
     commit('updateCharacter', newCharacter);
     commit('equipWeapon', 0);
+    commit('equipArmor', 0); 
     commit('setQuests', defaultQuests);
   },
+  
   updateCharacter({ commit }, character) {
     commit('updateCharacter', character);
     commit('updateCharacterInArray', character);
@@ -315,10 +319,11 @@ const actions = {
       health: 100,
       weapons: [state.items[0]],
       equippedWeapons: [state.items[0]],
-      armor: [],
-      equippedArmor: null,
+      armor: [state.armor[0]],
+      equippedArmor: state.armor[0], 
     });
     commit('equipWeapon', state.items[0].uuid);
+    commit('equipArmor', state.armor[0].uuid); 
     commit('setQuests', defaultQuests);
   },  
   clearQuests({ commit }) {
