@@ -32,6 +32,7 @@
       <div class="row justify-content-center w-100">
         <div class="col-12">
           <CharacterList />
+          <button class="game-delete" @click="clearLocalStorage">Slet alt</button>
         </div>
       </div>
     </div>
@@ -111,8 +112,15 @@ export default {
       } else {
         alert('Please enter your character name.');
       }
-    }
-
+    },
+    clearLocalStorage() {
+      if (confirm('Er du sikker på, at du vil slette alt gemt data for dette spil?')) {
+        localStorage.clear();
+        alert('Alt gemt data er blevet slettet.');
+        // Genindlæs siden for at nulstille spillet
+        location.reload();
+      }
+    },
   }
 };
 </script>
@@ -135,7 +143,7 @@ export default {
   color: #fff;
   padding: 10px;
   margin-bottom: 10px;
-  font-size: 1.2em;
+  font-size: 1rem;
 }
 
 input::placeholder{
@@ -147,11 +155,11 @@ input::placeholder{
   background-color: #007bff;
   border: none;
   color: #fff;
-  padding: 10px 20px;
+  padding: 5px 10px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 1.2em;
+  font-size: 1rem;
   margin: 10px 2px;
   cursor: pointer;
   border-radius: 3px;
@@ -161,7 +169,7 @@ input::placeholder{
   background-color: #0acc7b;
   border: none;
   color: #fff;
-  padding: 10px 20px;
+  padding: 5px 10px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
@@ -170,6 +178,21 @@ input::placeholder{
   cursor: pointer;
   border-radius: 3px;
 }
+
+.game-delete {
+  background-color: #dc3545;
+  border: none;
+  color: #fff;
+  padding: 5px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 0.888rem;
+  margin: 10px 2px;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
 
 .game-link {
   color: #007bff;
