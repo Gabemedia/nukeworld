@@ -134,9 +134,4 @@ export default {
   line-height: 1.5;
 }
 
-.modal-body {
-  position: relative;
-  flex: 1 1 auto;
-  padding: 1rem;
-}
 </style>

@@ -7,15 +7,13 @@
         <div class="card mb-4" @click="selectCharacter(character)">
           <div class="card-body">
             <h5 class="card-title">{{ character.name }}</h5>
-            <p class="card-text">
-              Level: {{ character.level }}<br>
-              Liv: {{ character.health }}<br>
-              Experience: {{ character.exp }}<br>
-              Money: {{ character.money }}<br>
-              Username: {{ character.name }}<br>
-              Email: {{ character.email }}<br>
-              Password: {{ character.password }}
+            <p class="card-text d-flex">
+              Level: {{ character.level }}
+              Liv: {{ character.health }}
+              Experience: {{ character.exp }}
+              Money: {{ character.money }}
             </p>
+            <button @click.stop="selectCharacter(character)" class="btn btn-success">Continue</button>
             <button @click.stop="confirmDelete(character)" class="btn btn-danger">Delete</button>
           </div>
         </div>

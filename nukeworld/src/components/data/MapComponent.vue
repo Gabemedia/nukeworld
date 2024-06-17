@@ -1,17 +1,16 @@
-<!-- MapComponent.vue -->
 <template>
   <div class="map-container">
     <l-map ref="map" :zoom="zoom" :center="center" :options="mapOptions" @click="onMapClick">
       <l-image-overlay :url="mapImageUrl" :bounds="mapBounds" :opacity="1"></l-image-overlay>
       <l-marker
-      v-for="quest in filteredQuests"
-      :key="quest.id"
-      :lat-lng="[quest.lat, quest.lon]"
-      :icon="customIcon"
-      @click="openModal(quest)"
-      :class="{ 'bounce-marker': quest.state === 'completed' && !quest.claimed }"
-    >
-    </l-marker>
+        v-for="quest in filteredQuests"
+        :key="quest.id"
+        :lat-lng="[quest.lat, quest.lon]"
+        :icon="customIcon"
+        @click="openModal(quest)"
+        :class="{ 'bounce-marker': quest.state === 'completed' && !quest.claimed }"
+      >
+      </l-marker>
 
       <l-marker
         v-for="marker in markers"
@@ -79,22 +78,47 @@ export default {
       return this.quests.filter(quest => !quest.userCreated && quest.lat && quest.lon && (quest.state === 'not-started' || quest.state === 'in-progress' || quest.state === 'completed'));
     },
   },
+  created() {
+    this.forceUpdateZoom();
+    this.updateDragging();
+  },
   mounted() {
     this.$nextTick(() => {
       this.updateMapSize();
       window.addEventListener('resize', this.updateMapSize);
+      window.addEventListener('resize', this.updateZoom);
     });
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.updateMapSize);
+    window.removeEventListener('resize', this.updateZoom);
   },
   methods: {
     updateMapSize() {
       const map = this.$refs.map?.$mapObject;
       if (map) {
         map.fitBounds(this.mapBounds);
-        map.invalidateSize(false);
+        map.invalidateSize(true);
       }
+    },
+    forceUpdateZoom() {
+      this.zoom = window.innerWidth >= 1200 ? 1 : 0;
+      this.$nextTick(() => {
+        const map = this.$refs.map?.$mapObject;
+        if (map) {
+          map.setZoom(this.zoom);
+          map.invalidateSize(true);
+          map.fitBounds(this.mapBounds);
+        }
+        this.updateDragging();
+      });
+    },
+    updateZoom() {
+      this.zoom = window.innerWidth >= 1200 ? 1 : 0;
+      this.updateDragging();
+    },
+    updateDragging() {
+      this.mapOptions.dragging = window.innerWidth >= 1200;
     },
     onMapClick(event) {
       if (this.isMarkerPlacementEnabled) {
@@ -120,7 +144,6 @@ export default {
       }
       this.showModal = true;
     },
-
     closeModal() {
       this.showModal = false;
       this.selectedQuest = null;
@@ -136,14 +159,19 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: -999;
   width: 100%;
-  height: 100vh;
+  height: 100%;
+  z-index: -999;
+}
+.leaflet-container{
+  background: linear-gradient(180deg, rgb(180, 141, 102) 0%, rgb(188, 140, 87) 100%);
 }
 .modal {
-  display: block;
-  position: absolute;
-  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  z-index: 1050;
   left: 0;
   top: 0;
   width: 100%;
@@ -151,11 +179,46 @@ export default {
   overflow: auto;
   background-color: rgba(0, 0, 0, 0.4);
 }
-.modal-content {
-  margin: 15% auto;
-}
-.modal-body{
-  padding: 0!important;
+
+.modal-dialog {
+  max-width: 500px;
+  width: 90%;
+  margin: 1.75rem auto;
 }
 
+@media (max-width: 576px) {
+  .modal-dialog {
+    width: 100%;
+    margin: 1.75rem auto;
+  }
+}
+
+.modal-body {
+  position: relative;
+  flex: 1 1 auto;
+  overflow-y: scroll;
+  padding: 0px;
+}
+.modal-content {
+  position: relative;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 0.3rem;
+  outline: 0;
+}
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-bottom: 1px solid #dee2e6;
+  border-top-left-radius: calc(0.3rem - 1px);
+  border-top-right-radius: calc(0.3rem - 1px);
+}
+
+.modal-title {
+  margin-bottom: 0;
+  line-height: 1.5;
+}
 </style>

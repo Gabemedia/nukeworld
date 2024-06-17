@@ -1,4 +1,3 @@
-<!-- MapComponent2.vue -->
 <template>
   <div class="map-container">
     <l-map ref="map" :zoom="zoom" :center="center" :options="mapOptions" @click="onMapClick">
@@ -12,7 +11,6 @@
         :class="{ 'bounce-marker': quest.state === 'completed' && !quest.claimed }"
       >
       </l-marker>
-
 
       <l-marker
         v-for="marker in markers"
@@ -80,22 +78,47 @@ export default {
       return this.quests.filter(quest => !quest.userCreated && quest.lat && quest.lon && (quest.state === 'not-started' || quest.state === 'in-progress' || quest.state === 'completed'));
     },
   },
+  created() {
+    this.forceUpdateZoom();
+    this.updateDragging();
+  },
   mounted() {
     this.$nextTick(() => {
       this.updateMapSize();
       window.addEventListener('resize', this.updateMapSize);
+      window.addEventListener('resize', this.updateZoom);
     });
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.updateMapSize);
+    window.removeEventListener('resize', this.updateZoom);
   },
   methods: {
     updateMapSize() {
       const map = this.$refs.map?.$mapObject;
       if (map) {
         map.fitBounds(this.mapBounds);
-        map.invalidateSize(false);
+        map.invalidateSize(true);
       }
+    },
+    forceUpdateZoom() {
+      this.zoom = window.innerWidth >= 1200 ? 1 : 0;
+      this.$nextTick(() => {
+        const map = this.$refs.map?.$mapObject;
+        if (map) {
+          map.setZoom(this.zoom);
+          map.invalidateSize(true);
+          map.fitBounds(this.mapBounds);
+        }
+        this.updateDragging();
+      });
+    },
+    updateZoom() {
+      this.zoom = window.innerWidth >= 1200 ? 1 : 0;
+      this.updateDragging();
+    },
+    updateDragging() {
+      this.mapOptions.dragging = window.innerWidth >= 1200;
     },
     onMapClick(event) {
       if (this.isMarkerPlacementEnabled) {
@@ -136,9 +159,9 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: -999;
   width: 100%;
-  height: 100vh;
+  height: 100%;
+  z-index: -999;
 }
 .modal {
   display: block;
@@ -157,5 +180,4 @@ export default {
 .modal-body{
   padding: 0!important;
 }
-
 </style>

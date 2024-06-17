@@ -7,7 +7,7 @@
         <img v-if="index === 0" :src="require(`@/assets/interface/icons/weapons/${getEquippedItem(index).name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="getEquippedItem(index).name" />
         <img v-else-if="index === 1" :src="require(`@/assets/interface/icons/armor/${getEquippedItem(index).name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="getEquippedItem(index).name" />
       </div>
-      <div class="dropdown-menu" v-show="showDropdown[index]">
+      <div class="dropdown-menu-hotbar" v-show="showDropdown[index]">
         <div v-for="item in getItems(index)" :key="item.uuid" @click="handleSelectItem(index, item)">
           <img :src="require(`@/assets/interface/icons/${index === 0 ? 'weapons' : 'armor'}/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="item.name" />
         </div>
@@ -126,10 +126,9 @@ export default {
   max-height: 100%;
 }
 
-.dropdown-menu {
+.dropdown-menu-hotbar {
   position: absolute;
-  bottom: 100%;
-  left: 0;
+  bottom: 50px;
   background-color: rgba(0, 0, 0, 0.8);
   padding: 5px;
   border-radius: 5px;
@@ -138,7 +137,7 @@ export default {
   z-index: 9999;
 }
 
-.dropdown-menu img {
+.dropdown-menu-hotbar img {
   width: 40px;
   height: 40px;
   margin: 5px;
