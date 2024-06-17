@@ -13,10 +13,7 @@
     <div v-else class="col-md-4 text-capitalize d-flex justify-content-start text-light text-center mb-2 mb-md-0">
     </div>
     <div class="col-auto text-capitalize d-flex justify-content-center text-light text-center mb-2 mb-md-0">
-      <img style="width:20px;" :src="require(`@/assets/interface/icons/health.png`)" title="HealthBar" class="me-1"> {{ character.health }}/100
-    </div>
-    <div class="col-auto text-capitalize d-flex justify-content-center text-light text-center mb-2 mb-md-0">
-      <img style="width:20px;" :src="require(`@/assets/interface/icons/exp.png`)" title="Needed Experince Points" class="me-1"> {{ character.exp }} / {{ character.maxExp }}
+      <img style="width:20px;" :src="require(`@/assets/interface/icons/health.png`)" title="HealthBar" class="me-1"> {{ character.health }} / 100
     </div>
     <div class="col-md-4 text-capitalize d-flex justify-content-end text-light text-center">
       Money: {{ character.money }}

@@ -3,9 +3,9 @@
     <LvlPopUp ref="lvlPopUp" title="Congratulations!" @popup-closed="onPopupClosed" />    
     <div class="row m-0 p-0 justify-content-center w-100">
       <div class="col-12 m-0 p-0 ">
-        <div class="progress w-100 m-0 p-0 ">
-          <div class="progress-bar" role="progressbar" :style="{ width: `${(character.exp / character.maxExp) * 100}%` }" :aria-valuenow="character.exp" aria-valuemin="0" :aria-valuemax="character.maxExp">
-          </div>
+        <div class="progress">
+          <div class="progress-bar" role="progressbar" :style="{ width: `${(character.exp / character.maxExp) * 100}%` }" :aria-valuenow="character.exp" aria-valuemin="0" :aria-valuemax="character.maxExp"></div>
+          <p class="text-center">{{ character.exp }} / {{ character.maxExp }}</p>
         </div>
       </div>
     </div>
@@ -54,6 +54,9 @@ export default {
   background-color: #f3f3f3;
   border-radius: 3px;
   box-shadow: inset 0 1px 3px rgba(0, 0, 0, .2);
+  position: relative;
+  height: 13px;
+
 }
 .progress-bar {
   height: 10px;
@@ -62,9 +65,20 @@ export default {
   transition: width .4s ease-in-out;
   color: #fff;
   display: flex;
-  align-items: center;
   justify-content: center;
+  align-items: center;
   font-size: 0.655rem;
   color:#000;
+  height: 13px;
+
 }
+.text-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.655rem;
+  font-weight: bold;
+}
+
 </style>
