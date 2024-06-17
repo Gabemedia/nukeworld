@@ -5,7 +5,7 @@
         <div class="player-name">{{ character.name }}</div>
         <div class="player-health">
           <img :src="require('@/assets/interface/icons/exp.png')" alt="Health" class="icon me-2">
-          <span>{{ character.health }}/100</span>
+          <span>{{ character.health }}/{{ character.maxHealth }}</span>
         </div>
       </div>
     </div>

@@ -16,7 +16,7 @@ export default {
   computed: {
     ...mapState(['character']),
     healthPercentage() {
-      return (this.character.health / 100) * 100;
+      return (this.character.health / this.character.maxHealth) * 100; // Ændre denne linje
     },
   },
 };

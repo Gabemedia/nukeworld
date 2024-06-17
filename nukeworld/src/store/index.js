@@ -17,6 +17,7 @@ const state = reactive({
     level: 1,
     money: 0,
     health: 100,
+    maxHealth: 100,
     weapons: [], // Ændret fra inventory
     equippedWeapons: [],
     armor: [], 
@@ -247,9 +248,15 @@ const actions = {
   levelUp({ commit, state }) {
     const overflowExp = state.character.exp - state.character.maxExp;
     const newMaxExp = Math.floor(state.character.maxExp * 1.6);
-    commit('updateCharacter', { exp: overflowExp * 2, maxExp: newMaxExp, level: state.character.level + 1 });
+    commit('updateCharacter', {
+      exp: overflowExp * 2,
+      maxExp: newMaxExp,
+      level: state.character.level + 1,
+      maxHealth: state.character.maxHealth + 50, // Tilføj denne linje
+    });
     commit('increaseCharacterLevelInArray', state.character);
   },
+  
   startQuestProgress({ commit, state }, quest) {
     const startTime = quest.startTime || Date.now();
     const questIndex = state.quests.findIndex((q) => q.name === quest.name);
