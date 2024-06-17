@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex flex-column align-items-center justify-content-start m-0 p-0 w-100">
-    <LvlPopUp ref="lvlPopUp" title="Congratulations!" desc="You've reached the maximum experience level." @popup-closed="onPopupClosed" />    
+    <LvlPopUp ref="lvlPopUp" title="Congratulations!" @popup-closed="onPopupClosed" />    
     <div class="row m-0 p-0 justify-content-center w-100">
       <div class="col-12 m-0 p-0 ">
         <div class="progress w-100 m-0 p-0 ">

@@ -10,7 +10,12 @@
             </div>
             <div class="modal-body">
                 <p>{{ desc }}</p>
-                <div class="progress">
+                <p><b>Congratulations!</b><br/>You have reached level {{ character.level }}<br/>Experience: {{ character.exp }} / {{ character.maxExp }}.</p>
+                <p><b>You have gained the following rewards</b><br/>
+                <img style="width:20px;" :src="require(`@/assets/interface/icons/exp.png`)" title="Experience"> {{ expGained }}
+                <img style="width:20px;" :src="require(`@/assets/interface/icons/money.png`)" title="Money"> {{ moneyGained }}
+                </p>
+                <div class="progress mt-2">
                 <div class="progress-bar" role="progressbar" :style="{width: progress + '%'}"></div>
                 </div>
             </div>
@@ -22,6 +27,7 @@
   
 <script>
 import confetti from 'canvas-confetti';
+import { mapState } from 'vuex';
 
 export default {
     name: 'LvlPopUp',
@@ -31,7 +37,13 @@ export default {
     return {
       showPopup: false,
       progress: 0,
+      expGained: 0,
+      moneyGained: 0,
+      healthGained: 0,
     };
+  },
+  computed: {
+    ...mapState(['character']),
   },
   methods: {
     closePopup() {
@@ -41,20 +53,33 @@ export default {
     },
     openPopup() {
       this.showPopup = true;
+      this.calculateRewards();
       confetti({
         particleCount: 100,
         spread: 70,
         origin: { y: 0.6 }
       });
-      let intervalId = setInterval(() => {
-        this.progress += 0.1; // increment progress by a smaller amount
-        if (this.progress >= 100) {
-          clearInterval(intervalId);
+      const duration = 7000; // 5 sekunder
+      const interval = 10; // opdatering hvert 50ms
+      const increment = 100 / (duration / interval); // beregn inkrement baseret på varighed og interval
+      let currentProgress = 0;
+
+      const timer = setInterval(() => {
+        currentProgress += increment;
+        this.progress = Math.min(currentProgress, 100); // sørg for, at progress ikke overstiger 100%
+        if (currentProgress >= 100) {
+          clearInterval(timer);
           setTimeout(() => {
             this.closePopup();
-          }, 100); // add a slight delay before closing the popup
+            console.log('Popup closed');
+          }, 1000); // forsink lukning af popup med 1 sekund
         }
-      }, 3); // update progress every 1ms
+      }, interval);
+    },
+    calculateRewards() {
+      this.expGained = this.character.maxExp - this.character.exp;
+      this.moneyGained = Math.floor(this.character.level * 100);
+      this.healthGained = Math.floor(this.character.level * 10);
     },
   },
 };
@@ -110,6 +135,5 @@ export default {
   width: 0;
   height: 100%;
   background-color: #007bff;
-  transition: width 0.2s;
 }
 </style>
