@@ -184,7 +184,7 @@ export default {
   .quick-bar-item img {
     max-width: 100%;
     max-height: 100%;
-    scale: 0.8;
+    scale: 0.5;
     margin-top:2px;
   }
   

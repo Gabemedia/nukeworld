@@ -2,16 +2,20 @@
   <div class="d-flex flex-column flex-shrink-0 sidebar" :class="{ 'show': sidebarOpen }">
     <div class="d-block p-3 link-dark text-decoration-none" style="height:70px;"></div>
     <ul class="nav nav-pills nav-flush flex-column mb-auto text-center">
-      <li class="nav-item">
+      <li class="nav-item mb-4">
+        <div class="nav-item-name">Quests</div>
         <QuestLog />
       </li>
-      <li class="nav-item">
+      <li class="nav-item mb-4">
+        <div class="nav-item-name">Inventory</div>
         <InventoryLog />
       </li>
-      <li class="nav-item">
+      <li class="nav-item mb-4">
+        <div class="nav-item-name">Enemies</div>
         <EnemyEncounters />
       </li>
-      <li class="nav-item">
+      <li class="nav-item mb-4">
+        <div class="nav-item-name">Shop</div>
         <PlayerShop />
       </li>
     </ul>
@@ -59,5 +63,14 @@ export default {
 .sidebar.show {
   width: 280px;
 }
+
+.nav-item-name {
+  font-size: 0.888rem;
+  color: #fff;
+  font-weight: 700;
+  box-shadow: 0px 0px 10px 10px rgba(0,0,0,0.1);
+}
+
+
 
 </style>
