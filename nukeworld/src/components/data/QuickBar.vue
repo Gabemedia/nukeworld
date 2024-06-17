@@ -86,8 +86,8 @@ export default {
 
 <style lang="scss" scoped>
 .quick-bar {
-  position: fixed;
-  bottom: 20px;
+  position: absolute;
+  bottom: 0px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;

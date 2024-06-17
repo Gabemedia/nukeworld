@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <!-- <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container-fluid">
                 <router-link class="navbar-brand" to="/">Admin Panel</router-link>
                 <div class="menu-icon" @click="navOpen = !navOpen">
@@ -19,7 +19,7 @@
                     </ul>
                 </div>
             </div>
-        </nav>
+        </nav> -->
         <router-view/>
     </div>
 </template>

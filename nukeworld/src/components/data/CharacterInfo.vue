@@ -1,5 +1,5 @@
 <template>
-<button class="btn btn-main btn-primary m-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCharacterInfo">
+<button class="btn btn-main border border-1 border-white m-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasCharacterInfo">
     Character Info
   </button>
     <div style="width:600px;" class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasCharacterInfo" aria-labelledby="offcanvasCharacterInfoLabel">

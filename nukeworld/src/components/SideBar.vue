@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex flex-column flex-shrink-0 bg-light sidebar" :class="{ 'show': sidebarOpen }">
+  <div class="d-flex flex-column flex-shrink-0 sidebar" :class="{ 'show': sidebarOpen }">
     <a href="/" class="d-block p-3 link-dark text-decoration-none" title="Icon-only" data-bs-toggle="tooltip" data-bs-placement="right">
       <svg class="bi" width="40" height="32"><use xlink:href="#bootstrap"></use></svg>
       <span class="visually-hidden">Icon-only</span>
@@ -57,13 +57,14 @@ export default {
 
 <style scoped>
 .sidebar {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   height: 100%;
   width: 4.5rem;
   transition: width 0.3s ease-in-out;
-  z-index: 9999;
+  z-index: -1;
+  background-color: rgba(0, 0, 0, 0.7);
 }
 
 .sidebar.show {
