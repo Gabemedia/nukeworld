@@ -360,6 +360,7 @@ export default {
           const elapsedTime = Date.now() - reactiveQuest.startTime;
           const progress = Math.min((elapsedTime / reactiveQuest.duration) * 100, 100);
           reactiveQuest.progress = progress;
+          this.$forceUpdate();
         } else {
           clearInterval(reactiveQuest.intervalId);
           reactiveQuest.state = 'completed';
