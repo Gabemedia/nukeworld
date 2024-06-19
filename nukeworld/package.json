@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
-    "@programic/vue3-tooltip": "^1.0.0",
     "@vue-leaflet/vue-leaflet": "^0.10.1",
     "@vue/compiler-sfc": "^3.4.21",
     "bootstrap": "^5.3.3",
