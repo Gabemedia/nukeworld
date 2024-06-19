@@ -359,8 +359,10 @@ export default {
           reactiveQuest.remainingTime -= 1000;
           const elapsedTime = Date.now() - reactiveQuest.startTime;
           const progress = Math.min((elapsedTime / reactiveQuest.duration) * 100, 100);
+          const questIndex = this.quests.findIndex(q => q.id === reactiveQuest.id);
+          this.$store.commit('updateQuestProgress', { questIndex, progress, remainingTime: reactiveQuest.remainingTime });
           reactiveQuest.progress = progress;
-          this.$forceUpdate();
+
         } else {
           clearInterval(reactiveQuest.intervalId);
           reactiveQuest.state = 'completed';

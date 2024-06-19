@@ -14,7 +14,7 @@
             <div class="shop-section">
               <h4>Weapons</h4>
               <div class="shop-items">
-                <div v-for="weapon in availableWeapons" :key="weapon.id" class="shop-item" @click="buyItem(weapon, 'weapons')" :ref="'item-weapons-' + weapon.id">
+                <div v-for="weapon in availableWeapons" :key="weapon.id" class="shop-item" @click="buyItem(weapon, 'weapons')" :ref="'item-weapons-' + weapon.id" v-tooltip="getTooltip(weapon)">
                   <img :src="require(`@/assets/interface/icons/weapons/${weapon.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="weapon.name" />
                 </div>
               </div>
@@ -22,7 +22,7 @@
             <div class="shop-section">
               <h4>Armor</h4>
               <div class="shop-items">
-                <div v-for="armor in availableArmor" :key="armor.id" class="shop-item" @click="buyItem(armor, 'armor')" :ref="'item-armor-' + armor.id">
+                <div v-for="armor in availableArmor" :key="armor.id" class="shop-item" @click="buyItem(armor, 'armor')" :ref="'item-armor-' + armor.id" v-tooltip="getTooltip(armor)">
                   <img :src="require(`@/assets/interface/icons/armor/${armor.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="armor.name" />
                 </div>
               </div>
@@ -30,7 +30,7 @@
             <div class="shop-section">
               <h4>Aid</h4>
               <div class="shop-items">
-                <div v-for="aid in availableAid" :key="aid.id" class="shop-item" @click="buyItem(aid, 'aid')" :ref="'item-aid-' + aid.id">
+                <div v-for="aid in availableAid" :key="aid.id" class="shop-item" @click="buyItem(aid, 'aid')" :ref="'item-aid-' + aid.id" v-tooltip="getTooltip(aid)">
                   <img :src="require(`@/assets/interface/icons/aid/${aid.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="aid.name" />
                 </div>
               </div>
@@ -104,7 +104,10 @@ export default {
         alert('Not enough money to buy this item.');
       }
     },
-
+    getTooltip(item) {
+      const price = Math.round(parseInt(item.price) * 1.65);
+      return `Price: ${price}`;
+    },
   },
 };
 </script>
@@ -226,6 +229,5 @@ export default {
   max-height: 100%;
   scale: 0.8;
 }
-
 
 </style>
