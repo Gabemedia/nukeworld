@@ -70,7 +70,4 @@ export default {
   font-weight: 700;
   box-shadow: 0px 0px 10px 10px rgba(0,0,0,0.1);
 }
-
-
-
 </style>

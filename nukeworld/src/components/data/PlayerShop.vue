@@ -14,7 +14,8 @@
             <div class="shop-section">
               <h4>Weapons</h4>
               <div class="shop-items">
-                <div v-for="weapon in availableWeapons" :key="weapon.id" class="shop-item" @click="buyItem(weapon, 'weapons')" :ref="'item-weapons-' + weapon.id" v-tooltip="getTooltip(weapon)">
+                <div v-for="weapon in availableWeapons" :key="weapon.id" class="shop-item" @click="buyItem(weapon, 'weapons')" :ref="'item-weapons-' + weapon.id">
+                  <p><span v-tooltip="this is a tooltip">Hover me</span></p>
                   <img :src="require(`@/assets/interface/icons/weapons/${weapon.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="weapon.name" />
                 </div>
               </div>
@@ -22,7 +23,7 @@
             <div class="shop-section">
               <h4>Armor</h4>
               <div class="shop-items">
-                <div v-for="armor in availableArmor" :key="armor.id" class="shop-item" @click="buyItem(armor, 'armor')" :ref="'item-armor-' + armor.id" v-tooltip="getTooltip(armor)">
+                <div v-for="armor in availableArmor" :key="armor.id" class="shop-item" @click="buyItem(armor, 'armor')" :ref="'item-armor-' + armor.id">
                   <img :src="require(`@/assets/interface/icons/armor/${armor.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="armor.name" />
                 </div>
               </div>
@@ -30,7 +31,7 @@
             <div class="shop-section">
               <h4>Aid</h4>
               <div class="shop-items">
-                <div v-for="aid in availableAid" :key="aid.id" class="shop-item" @click="buyItem(aid, 'aid')" :ref="'item-aid-' + aid.id" v-tooltip="getTooltip(aid)">
+                <div v-for="aid in availableAid" :key="aid.id" class="shop-item" @click="buyItem(aid, 'aid')" :ref="'item-aid-' + aid.id">
                   <img :src="require(`@/assets/interface/icons/aid/${aid.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="aid.name" />
                 </div>
               </div>
@@ -44,6 +45,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex';
+
 
 export default {
   name: 'PlayerShop',
