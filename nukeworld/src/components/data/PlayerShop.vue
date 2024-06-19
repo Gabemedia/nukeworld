@@ -233,6 +233,7 @@ export default {
   max-width: 100%;
   max-height: 100%;
   scale: 0.8;
+  margin-top:25px;
 }
 
 .price-box {
