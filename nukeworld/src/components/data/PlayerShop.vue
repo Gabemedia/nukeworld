@@ -15,9 +15,7 @@
               <h4>Weapons</h4>
               <div class="shop-items">
                 <div v-for="weapon in availableWeapons" :key="weapon.id" class="shop-item" @click="buyItem(weapon, 'weapons')" :ref="'item-weapons-' + weapon.id">
-                  <Tooltip :content="getTooltip(weapon)">
                     <img :src="require(`@/assets/interface/icons/weapons/${weapon.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="weapon.name" />
-                  </Tooltip>
                 </div>
               </div>
             </div>
@@ -46,14 +44,10 @@
 
 <script>
 import { mapState, mapActions } from 'vuex';
-import { Tooltip } from '@programic/vue3-tooltip';
 
 export default {
   name: 'PlayerShop',
-  components: {
-    Tooltip,
-  },
-
+  
   data() {
     return {
       showModal: false,
