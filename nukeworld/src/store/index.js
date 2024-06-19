@@ -95,12 +95,18 @@ const mutations = {
   completeQuest(state, quest) {
     const index = state.quests.findIndex((q) => q.name === quest.name);
     if (index !== -1) {
+      state.quests[index] = { ...quest, state: 'ready-to-claim' };
+    }
+  },
+  claimQuest(state, quest) {
+    const index = state.quests.findIndex((q) => q.name === quest.name);
+    if (index !== -1) {
       state.quests[index] = { ...quest, state: 'completed' };
     }
   },
   resetQuest(state, quest) {
     const index = state.quests.findIndex((q) => q.name === quest.name);
-    if (index !== -1) {
+    if (index !== -1 && state.quests[index].state === 'completed') {
       state.quests[index] = {
         ...quest,
         disabled: false,
@@ -325,12 +331,14 @@ const actions = {
     dispatch('increaseExp', quest.exp);
     dispatch('increaseMoney', quest.money);
     commit('updateCharacterInArray', state.character);
-    commit('updateQuestState', { quest, newState: { claimed: true } });
+    commit('claimQuest', quest); // Opdater quest state til 'completed'
     return obtainedReward;
   },
   resetQuests({ state, commit }) {
     state.quests.forEach((quest) => {
-      commit('resetQuest', quest);
+      if (quest.state === 'completed') {
+        commit('resetQuest', quest);
+      }
     });
   },
 
@@ -378,6 +386,11 @@ const actions = {
   addItemToArmor({ commit }, itemId) {
     commit('addItemToArmor', itemId);
   },
+  autoResetQuests({ dispatch }) {
+    setInterval(() => {
+      dispatch('resetQuests');
+    }, 60000); // 60 sekunder
+  },
   
 };
 
@@ -389,6 +402,7 @@ const store = createStore({
 });
 
 store.commit('assignRandomCoordinates');
+store.dispatch('autoResetQuests'); 
 
 watch(
   () => state.characters,

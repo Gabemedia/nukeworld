@@ -24,11 +24,11 @@
           <div class="d-flex align-items-center justify-content-center">
             <div class="text-center">
               <button type="button" class="btn btn-success bg-gradient position-relative fw-bold" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)">
-                {{ getButtonText(quest) }}
-                <span v-if="quest.state !== 'completed'" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fst-italic" title="Quest Duration">
-                  <p class="card-text m-0">{{ getQuestDuration(quest) }}</p>
-                </span>
-              </button>
+              {{ getButtonText(quest) }}
+              <span v-if="quest.state !== 'completed'" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fst-italic" title="Quest Duration">
+                <p class="card-text m-0">{{ getQuestDuration(quest) }}</p>
+              </span>
+            </button>
             </div>
             <div class="d-flex justify-content-between flex-grow-1 mx-4 text-center">
               <div class="card-text d-block fw-bold">
@@ -95,8 +95,10 @@ export default {
         return this.character.level < quest.levelRequirement;
       } else if (quest.state === 'in-progress') {
         return true;
-      } else if (quest.state === 'completed') {
+      } else if (quest.state === 'ready-to-claim') {
         return quest.claimed;
+      } else if (quest.state === 'completed') {
+        return true;
       }
     },
     hasWeaponReward(quest) {
@@ -115,7 +117,7 @@ export default {
           bodyClassName: 'quest-toast-body',
           dangerouslyHTMLString: true,
         });
-      } else if (quest.state === 'completed' && !quest.claimed) {
+      } else if (quest.state === 'ready-to-claim' && !quest.claimed) {
         this.claimRewardsAction(quest);
       }
     },
@@ -124,7 +126,7 @@ export default {
         return 'Start Quest';
       } else if (quest.state === 'in-progress') {
         return 'Please Wait';
-      } else if (quest.state === 'completed' && !quest.claimed) {
+      } else if (quest.state === 'ready-to-claim' && !quest.claimed) {
         return 'Claim Rewards';
       } else {
         return 'Completed';
@@ -142,10 +144,9 @@ export default {
 
     async claimRewardsAction(quest) {
       const reactiveQuest = reactive(quest);
-      if (!reactiveQuest.claimed && reactiveQuest.state === 'completed') {
+      if (!reactiveQuest.claimed && reactiveQuest.state === 'ready-to-claim') {
         const obtainedReward = await this.claimRewards(reactiveQuest);
-        this.popupTitle = reactiveQuest.name;
-        this.popupDesc = 'Quest completed! You earned ' + reactiveQuest.exp + ' exp and ' + reactiveQuest.money + ' money.';
+        console.log('Obtained reward in component:', obtainedReward);
         confetti({
           particleCount: 100,
           spread: 70,
@@ -187,6 +188,7 @@ export default {
         });
 
         reactiveQuest.claimed = true;
+        reactiveQuest.state = 'completed'; // Update the quest state to 'completed'
         this.saveQuests();
       }
     },
@@ -216,16 +218,18 @@ export default {
           reactiveQuest.progress = progress;
         } else {
           clearInterval(reactiveQuest.intervalId);
-          reactiveQuest.state = 'completed';
-          reactiveQuest.progress = 100;
-          setTimeout(() => {
-            toast.success(`<strong>${reactiveQuest.name} completed!</strong> <br>Claim your rewards!`, {
-              autoClose: 5000,
-              toastClassName: 'quest-toast-container',
-              bodyClassName: 'quest-toast-body',
-              dangerouslyHTMLString: true,
-            });
-          }, 0);
+          if (reactiveQuest.state !== 'ready-to-claim') {
+            reactiveQuest.state = 'ready-to-claim';
+            reactiveQuest.progress = 100;
+            setTimeout(() => {
+              toast.success(`<strong>${reactiveQuest.name} completed!</strong> <br>Claim your rewards!`, {
+                autoClose: 5000,
+                toastClassName: 'quest-toast-container',
+                bodyClassName: 'quest-toast-body',
+                dangerouslyHTMLString: true,
+              });
+            }, 0);
+          }
         }
         this.saveQuests();
       }, 1000);
