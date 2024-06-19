@@ -2,13 +2,14 @@
   <div class="map-container">
     <l-map ref="map" :zoom="zoom" :center="center" :options="mapOptions" @click="onMapClick">
       <l-image-overlay :url="mapImageUrl" :bounds="mapBounds" :opacity="1"></l-image-overlay>
+
       <l-marker
         v-for="quest in filteredQuests"
         :key="quest.id"
         :lat-lng="[quest.lat, quest.lon]"
-        :icon="customIcon"
+        :icon="getQuestIcon(quest)"
         @click="openModal(quest)"
-        :class="{ 'bounce-marker': quest.state === 'completed' && !quest.claimed }"
+        :options="{ className: getBounceClass(quest) }"
       >
       </l-marker>
 
@@ -64,7 +65,7 @@ export default {
       selectedMarkerCoords: null,
       customIcon: L.icon({
         iconUrl: require('@/assets/interface/icons/marker.png'),
-        iconSize: [25, 36],
+        iconSize: [30, 40],
         iconAnchor: [12, 12],
       }),
       isMarkerPlacementEnabled: false,
@@ -161,6 +162,10 @@ export default {
       this.selectedQuest = null;
       this.selectedMarker = null;
     },
+    getBounceClass(quest) {
+    return quest.state === 'ready-to-claim' && !quest.claimed ? 'bounce-marker' : '';
+  },
+
   },
 };
 </script>
@@ -191,5 +196,17 @@ export default {
 }
 .modal-body{
   padding: 0!important;
+}
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.bounce-marker {
+  animation: bounce 1s infinite;
 }
 </style>
