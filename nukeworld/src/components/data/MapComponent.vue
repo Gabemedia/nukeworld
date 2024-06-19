@@ -13,10 +13,11 @@
       </l-marker>
 
       <l-marker
-        v-for="marker in markers"
-        :key="marker.id"
-        :lat-lng="[marker.lat, marker.lon]"
-        @click="openModal(marker)"
+        v-for="quest in filteredQuests"
+        :key="quest.id"
+        :lat-lng="[quest.lat, quest.lon]"
+        :icon="getQuestIcon(quest)"
+        @click="openModal(quest)"
       >
       </l-marker>
     </l-map>
@@ -75,7 +76,7 @@ export default {
   computed: {
     ...mapState(['quests', 'markers']),
     filteredQuests() {
-      return this.quests.filter(quest => !quest.userCreated && quest.lat && quest.lon && (quest.state === 'not-started' || quest.state === 'in-progress' || quest.state === 'completed'));
+      return this.quests.filter(quest => !quest.userCreated && quest.lat && quest.lon && (quest.state === 'not-started' || quest.state === 'ready-to-claim'));
     },
   },
   created() {
@@ -131,6 +132,21 @@ export default {
           userCreated: true,
         };
         this.$store.commit('addMarker', newMarker);
+      }
+    },
+    getQuestIcon(quest) {
+      if (quest.state === 'not-started') {
+        return L.icon({
+          iconUrl: require('@/assets/interface/icons/marker.png'),
+          iconSize: [30, 40],
+          iconAnchor: [12, 12],
+        });
+      } else if (quest.state === 'ready-to-claim') {
+        return L.icon({
+          iconUrl: require('@/assets/interface/icons/claim-quest.png'),
+          iconSize: [30, 40],
+          iconAnchor: [12, 12],
+        });
       }
     },
     openModal(item) {
