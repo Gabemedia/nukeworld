@@ -8,6 +8,9 @@
         backgroundRepeat: 'no-repeat'
       }"></div>
       <div class="quest-details">
+        <span v-if="quest.state !== 'completed'" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fst-italic" title="Quest Duration">
+          <p class="card-text m-0">{{ getQuestDuration(quest) }}</p>
+        </span>
         <div class="card">
           <div class="card-header p-0">
               <h5 class="card-text-header text-capitalize p-2 m-0">{{ quest.name }}</h5>
@@ -46,13 +49,10 @@
                 </span>
               </div>
             </div>
-            <div class="d-flex align-items-start justify-content-center mt-4">
+            <div class="mt-3 text-center">
               <div class="text-center">
-                <button type="button" class="btn btn-success bg-gradient position-relative fw-bold" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)">
+                <button type="button" class="btn btn-success bg-gradient w-100 no-margin no-border" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)">
                   {{ getButtonText(quest) }}
-                  <span v-if="quest.state !== 'completed'" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fst-italic" title="Quest Duration">
-                    <p class="card-text m-0">{{ getQuestDuration(quest) }}</p>
-                  </span>
                 </button>
               </div>
             </div>
@@ -168,9 +168,9 @@ export default {
       const duration = quest.duration / 1000;
       if (duration >= 60) {
         const minutes = Math.floor(duration / 60);
-        return `${minutes} min`;
+        return `${minutes}m`;
       } else {
-        return `${duration} sec`;
+        return `${duration}s`;
       }
     },
     formatTime(milliseconds) {
@@ -227,12 +227,12 @@ export default {
 .quest-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 25px;
 }
 
 @media (max-width: 576px) {
   .quest-card {
-    width: calc(50% - 10px); /* 5 quests per row with 10px gap */
+    width: calc(50% - 25px); /* 5 quests per row with 10px gap */
     display: flex;
     flex-direction: column;
     scale:1;
@@ -241,7 +241,7 @@ export default {
 
 @media (min-width: 576px) {
   .quest-card {
-    width: calc(25% - 10px); /* 5 quests per row with 10px gap */
+    width: calc(25% - 25px); /* 5 quests per row with 10px gap */
     display: flex;
     flex-direction: column;
     scale:1;
