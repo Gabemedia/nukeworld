@@ -102,7 +102,9 @@ export default {
   }
 
   .modal-dialog {
-    width:500px;
+    max-width: 500px;
+    width: 90%;
+    margin: 1.75rem auto;
   }
   
   .modal {

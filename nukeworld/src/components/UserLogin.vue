@@ -1,40 +1,28 @@
 <template>
   <div class="login-container">
-    <div class="login d-flex flex-column align-items-center mt-4 justify-content-start mx-auto w-75">
-      <div class="row justify-content-center w-100 mt-4 ">
-        <div class="col-12">
-          <input autocomplete="name" class="game-input mx-4 w-100" v-model="character.name" placeholder="Enter your character's name">
-        </div>
+    <div class="login d-flex flex-column align-items-center justify-content-center">
+      <h1 class="text-center mb-4">Login or Create Character</h1>
+      <div class="form-group">
+        <input autocomplete="name" class="form-control" v-model="character.name" placeholder="Character Name">
       </div>
-      <div class="row justify-content-center mt-4 w-100">
-        <div class="col-6">
-          <input autocomplete="email" class="game-input mx-4 w-100" v-model="character.email" placeholder="Enter your email">
-        </div>
-        <div class="col-6">
-          <input type="password" class="game-input mx-4 w-100" v-model="character.password" placeholder="Enter your password">
-        </div>
+      <div class="form-group">
+        <input autocomplete="email" class="form-control" v-model="character.email" placeholder="Email">
       </div>
-      <div class="row justify-content-center w-100">
-        <div class="col-6">
-          <button class="game-button mx-4" @click="login">Login</button>
-        </div>
-        <div class="col-6">
-          <button class="game-create mx-4" @click="createCharacter">Create Character</button>
-        </div>
+      <div class="form-group">
+        <input type="password" class="form-control" v-model="character.password" placeholder="Password">
       </div>
-      <div class="row justify-content-start ms-3 mt-4 w-100">
-        <div v-if="showSuccessMessage" class="alert alert-success mx-4" role="alert">
-          Character created successfully!
-        </div>
+      <div class="button-group">
+        <button class="btn btn-primary" @click="login">Login</button>
+        <button class="btn btn-success" @click="createCharacter">Create Character</button>
+      </div>
+      <div v-if="showSuccessMessage" class="alert alert-success mt-3" role="alert">
+        Character created successfully!
       </div>
     </div>
-    <div class="login d-flex flex-column align-items-center justify-content-start mx-auto w-75 vh-100">
-      <div class="row justify-content-center w-100">
-        <div class="col-12">
-          <CharacterList />
-          <button class="game-delete" @click="clearLocalStorage">Slet alt</button>
-        </div>
-      </div>
+    <div class="character-list">
+      <h1 class="text-center mb-3">Character List</h1>
+      <CharacterList />
+      <button class="btn btn-danger" @click="clearLocalStorage">Delete All</button>
     </div>
   </div>
 </template>
@@ -71,10 +59,7 @@ export default {
     async login() {
       if (this.character.email.trim() !== '' && this.character.password.trim() !== '') {
         try {
-          // Load existing characters array from Vuex store
           let characters = this.$store.state.characters;
-
-          // Check if the entered email and password match any character in the characters array
           let characterExists = characters.some(character => 
             character.email === this.character.email && character.password === this.character.password
           );
@@ -84,15 +69,11 @@ export default {
             return;
           }
 
-          // Find the character with the matching email and password
           let character = characters.find(character => 
             character.email === this.character.email && character.password === this.character.password
           );
 
-          // Commit updated character object to Vuex store
           await this.$store.commit('updateCharacter', character);
-
-          // Navigate to the game world if the character exists
           this.$router.push('/game-world');
         } catch (error) {
           alert('Invalid login credentials. Please enter valid email and password.');
@@ -104,9 +85,7 @@ export default {
     ...mapActions(['updateCharacter', 'createCharacter']),
     createCharacter() {
       if (this.character.name.trim() !== '') {
-        // Update the character object in the Vuex store with the input values from the form
         this.$store.commit('updateCharacter', this.character);
-        // Dispatch the createCharacter action
         this.$store.dispatch('createCharacter');
         this.showSuccessMessage = true;
       } else {
@@ -114,10 +93,9 @@ export default {
       }
     },
     clearLocalStorage() {
-      if (confirm('Er du sikker på, at du vil slette alt gemt data for dette spil?')) {
+      if (confirm('Are you sure you want to delete all saved data for this game?')) {
         localStorage.clear();
-        alert('Alt gemt data er blevet slettet.');
-        // Genindlæs siden for at nulstille spillet
+        alert('All saved data has been deleted.');
         location.reload();
       }
     },
@@ -127,76 +105,68 @@ export default {
 
 <style scoped>
 .login-container {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  min-height: 100vh;
   background-image: url('../assets/bg.jpg');
   background-size: cover;
   background-position: center;
-  position: absolute;
-  z-index: 999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
 }
-.game-input {
-  box-sizing: border-box;
-  border: none;
-  border-radius: 0;
+
+.login {
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 30px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 20px;
+}
+h1 {
+  color: #000;
+  font-weight: 800;
+  text-transform: uppercase;
+  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 1));
+}
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-control {
   background-color: #333;
   color: #fff;
+  border: none;
+  border-radius: 5px;
   padding: 10px;
-  margin-bottom: 10px;
+}
+
+.form-control::placeholder {
+  color: #ccc;
+}
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 0px;
   font-size: 1rem;
 }
 
-input::placeholder{
-  color: #fff;
-  text-transform: capitalize;
+.character-list {
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 30px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 400px;
 }
 
-.game-button {
-  background-color: #007bff;
-  border: none;
-  color: #fff;
-  padding: 5px 10px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 1rem;
-  margin: 10px 2px;
-  cursor: pointer;
-  border-radius: 3px;
-}
-
-.game-create {
-  background-color: #0acc7b;
-  border: none;
-  color: #fff;
-  padding: 5px 10px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 1.2em;
-  margin: 10px 2px;
-  cursor: pointer;
-  border-radius: 3px;
-}
-
-.game-delete {
-  background-color: #dc3545;
-  border: none;
-  color: #fff;
-  padding: 5px 10px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 0.888rem;
-  margin: 10px 2px;
-  cursor: pointer;
-  border-radius: 3px;
-}
-
-
-.game-link {
-  color: #007bff;
-  text-decoration: none;
-  font-size: 1.2em;
+.btn-danger {
+  margin-top: 20px;
 }
 </style>

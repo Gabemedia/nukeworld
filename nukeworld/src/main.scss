@@ -1,11 +1,19 @@
 @import '~bootstrap/scss/bootstrap.scss';
-
+@import url('https://fonts.googleapis.com/css?family=Roboto+Condensed');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
 /* Define your variables */
 $primary-color: rgb(0, 183, 6);
 $primary: rgb(0, 183, 6);
 $gray: #6c757d;
 
+#app {
+  font-family: "Noto Sans", sans-serif;
+  font-optical-sizing: auto;
+}
+
 html {
+  font-family: "Noto Sans", sans-serif;
+  font-optical-sizing: auto;
   overflow-x: hidden!important;
   overflow-y: scroll!important;
 }
@@ -18,12 +26,7 @@ body {
   overflow-y: scroll!important;
 }
 
-h1 {
-  color: #000;
-  font-weight: 800;
-  text-transform: uppercase;
-  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 1));
-}
+
 div.modal-content {
   //background-color: #f8f8f8!important;
   background: linear-gradient(180deg, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.65));

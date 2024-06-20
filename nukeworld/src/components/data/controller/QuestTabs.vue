@@ -112,16 +112,6 @@ export default {
   align-items: center;
 }
 
-.quick-bar-slot:hover {
-  margin: 0 5px;
-  border: 2px solid #9e2020;
-  border-radius: 5px;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
 .quick-bar-key {
     background-color: #000;
     color: #fff;
@@ -129,6 +119,18 @@ export default {
     border-radius: 6px;
     font-size: 0.7rem;
     color: #fff;
+    font-weight: 700;
+    box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, 0.1);
+    text-transform: uppercase;
+    border: 1px #fff solid;
+}
+
+.quick-bar-key:hover {
+    background-color: #fff;
+    color: #000;
+    padding: 3px 6px;
+    border-radius: 6px;
+    font-size: 0.7rem;
     font-weight: 700;
     box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, 0.1);
     text-transform: uppercase;

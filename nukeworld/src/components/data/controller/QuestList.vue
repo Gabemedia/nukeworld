@@ -228,32 +228,47 @@ export default {
   display: flex;
   flex-wrap: wrap;
   gap: 25px;
+  justify-content:center;
+
 }
 
-@media (max-width: 576px) {
+@media (max-width: 767px) {
   .quest-card {
     width: calc(100% - 25px); /* 5 quests per row with 10px gap */
     display: flex;
     flex-direction: column;
     scale:1;
-    margin: auto;
   }
   .quest-image {
     height: 125px;
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+  }
 }
 
-}
-
-@media (min-width: 576px) {
+@media (max-width: 1200px) and (min-width: 676px) {
   .quest-card {
-    width: calc(25% - 25px); /* 5 quests per row with 10px gap */
+    width: calc(50% - 25px); /* 5 quests per row with 10px gap */
     display: flex;
     flex-direction: column;
     scale:1;
-    margin: auto;
+  }
+  .quest-image {
+    height: 125px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+}
+
+
+@media (min-width: 1200px) {
+  .quest-card {
+    width: calc(33% - 25px); /* 5 quests per row with 10px gap */
+    display: flex;
+    flex-direction: column;
+    scale:1;
   }
   .quest-image {
     height: 170px;

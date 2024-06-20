@@ -1,9 +1,8 @@
 <!-- CharacterList.vue -->
 <template>
   <div>
-    <h1>Character List</h1>
     <div class="row mt-4">
-      <div class="col-md-4" v-for="(character, index) in characters" :key="index">
+      <div class="col-12" v-for="(character, index) in characters" :key="index">
         <div class="card mb-4" @click="selectCharacter(character)">
           <div class="card-body">
             <h5 class="card-title">{{ character.name }}</h5>
@@ -14,7 +13,7 @@
               Money: {{ character.money }}
             </p>
             <button @click.stop="selectCharacter(character)" class="btn btn-success">Continue</button>
-            <button @click.stop="confirmDelete(character)" class="btn btn-danger">Delete</button>
+            <button @click.stop="confirmDelete(character)" class="btn btn-danger ms-2">Delete</button>
           </div>
         </div>
       </div>
