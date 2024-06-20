@@ -87,15 +87,18 @@ export default {
   overflow: auto;
 }
 
-.modal-dialog {
-  max-width: 500px;
-  width: 90%;
-  margin: 1.75rem auto;
-}
 
 @media (max-width: 576px) {
   .modal-dialog {
-    width: 100%;
+    width: 100vw;
+    margin: 1.75rem auto;
+  }
+}
+
+@media (min-width: 576px) {
+  .modal-dialog {
+    max-width: 75vw;
+    width: 90%;
     margin: 1.75rem auto;
   }
 }

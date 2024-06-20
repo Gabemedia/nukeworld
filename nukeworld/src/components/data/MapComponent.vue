@@ -9,7 +9,6 @@
         :lat-lng="[quest.lat, quest.lon]"
         :icon="getQuestIcon(quest)"
         @click="openModal(quest)"
-        :options="{ className: getBounceClass(quest) }"
       >
       </l-marker>
 
@@ -19,7 +18,7 @@
         :lat-lng="[quest.lat, quest.lon]"
         :icon="getQuestIcon(quest)"
         @click="openModal(quest)"
-      >
+              >
       </l-marker>
     </l-map>
     <div v-if="showModal" class="modal" tabindex="-1" @click.self="closeModal">
@@ -141,12 +140,14 @@ export default {
           iconUrl: require('@/assets/interface/icons/marker.png'),
           iconSize: [30, 40],
           iconAnchor: [12, 12],
+          className: 'quest-marker',
         });
       } else if (quest.state === 'ready-to-claim') {
         return L.icon({
           iconUrl: require('@/assets/interface/icons/claim-quest.png'),
           iconSize: [30, 40],
           iconAnchor: [12, 12],
+          className: 'claim-marker',
         });
       }
     },
@@ -166,10 +167,6 @@ export default {
       this.selectedQuest = null;
       this.selectedMarker = null;
     },
-    getBounceClass(quest) {
-      return quest.state === 'ready-to-claim' && !quest.claimed ? 'bounce-marker' : '';
-    },
-
   },
 };
 </script>
