@@ -6,7 +6,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-body">
-          <QuestList />
+          <QuestTabs />
         </div>
         <div class="modal-footer card-text-header text-light bg-danger bg-gradient d-flex justify-content-between align-items-center" @click="confirmResetQuests" :src="require(`@/assets/interface/icons/reload.png`)" title="Reset Quests (Cost: 2500)">
           Reset Quests
@@ -19,12 +19,12 @@
 
 <script>
 import { mapActions } from 'vuex';
-import QuestList from './controller/QuestList.vue';
+import QuestTabs from './controller/QuestTabs.vue';
 import { toast } from 'vue3-toastify';
 
 export default {
   components: {
-    QuestList,
+    QuestTabs,
   },
   data() {
     return {
@@ -98,7 +98,7 @@ export default {
 @media (min-width: 576px) {
   .modal-dialog {
     max-width: 75vw;
-    width: 90%;
+    width: 90vw;
     margin: 1.75rem auto;
   }
 }
@@ -107,7 +107,7 @@ export default {
   position: relative;
   flex: 1 1 auto;
   padding: 1rem;
-  max-height: 300px;
+  max-height: 70vh;
   overflow-y: scroll;
 }
 .modal-content {
