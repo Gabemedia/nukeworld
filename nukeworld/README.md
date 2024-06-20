@@ -92,7 +92,14 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Tweaked UI.
 - Tweaked Mobile-friendly UI.
 
-### Version 0.1.1 (2024-06-18)
+### Version 0.1.1 (2024-06-20)
+- Fixed quest claiming logic in QuestList and QuestDetails components.
+- Added separators between items in the QuickBar dropdown menu.
+- Resolved conflicts between the HealthBar and QuestDetails progress bars.
+- Implemented dynamic marker updates based on quest state changes in MapComponent and MapComponent2.
+- Added bouncing animation to markers for quests in the "ready-to-claim" state.
+- Simplified the PlayerShop component's HTML structure for better maintainability.
+- Fixed ESLint errors related to unused variables in MapComponent and MapComponent2.
 
 ## Getting Started
 To get started with NukeWorld, follow these steps:

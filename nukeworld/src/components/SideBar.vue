@@ -1,21 +1,21 @@
 <template>
-  <div class="d-flex flex-column flex-shrink-0 sidebar" :class="{ 'show': sidebarOpen }">
+  <div class="d-flex flex-column flex-shrink-0 sidebar ms-2" :class="{ 'show': sidebarOpen }">
     <div class="d-block p-3 link-dark text-decoration-none" style="height:70px;"></div>
     <ul class="nav nav-pills nav-flush flex-column mb-auto text-center">
-      <li class="nav-item mb-4">
-        <div class="nav-item-name">Quests</div>
+      <li class="nav-item mb-1">
+        <div class="nav-item-name price-box">Quests</div>
         <QuestLog />
       </li>
-      <li class="nav-item mb-4">
-        <div class="nav-item-name">Inventory</div>
+      <li class="nav-item mb-1">
+        <div class="nav-item-name price-box">Inventory</div>
         <InventoryLog />
       </li>
-      <li class="nav-item mb-4">
-        <div class="nav-item-name">Enemies</div>
+      <li class="nav-item mb-1">
+        <div class="nav-item-name price-box">Enemies</div>
         <EnemyEncounters />
       </li>
-      <li class="nav-item mb-4">
-        <div class="nav-item-name">Shop</div>
+      <li class="nav-item mb-1">
+        <div class="nav-item-name price-box">Shop</div>
         <PlayerShop />
       </li>
     </ul>
@@ -65,9 +65,19 @@ export default {
 }
 
 .nav-item-name {
-  font-size: 0.888rem;
+  font-size: 0.7rem;
   color: #fff;
   font-weight: 700;
   box-shadow: 0px 0px 10px 10px rgba(0,0,0,0.1);
+  text-transform: uppercase;
+}
+
+.price-box {
+    transform: translateY(60%);
+    background-color: #000;
+    color: #fff;
+    border: 1px #fff solid;
+    padding: 2px 5px;
+    border-radius: 6px;
 }
 </style>

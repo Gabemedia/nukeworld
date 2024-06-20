@@ -215,10 +215,6 @@ div.modal-content {
   margin:0!important;
 }
 .battle-system {
-  background-color: #f0f0f0;
-  padding: 1rem;
-  border-radius: 5px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 .battle-system .icon{
   height: 20px;

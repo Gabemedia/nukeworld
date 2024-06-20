@@ -190,7 +190,7 @@ const mutations = {
     const itemIndex = state.character.aid.findIndex(item => item.uuid === itemUuid);
     if (itemIndex !== -1) {
       const usedItem = state.character.aid[itemIndex];
-      state.character.health = Math.min(state.character.health + usedItem.health, 100);
+      state.character.health = Math.min(state.character.health + usedItem.health, state.character.maxHealth);
       state.character.aid.splice(itemIndex, 1);
     }
   },  

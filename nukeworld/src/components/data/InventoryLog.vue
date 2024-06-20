@@ -5,10 +5,6 @@
   <div v-if="showModal" class="modal" tabindex="-1" @click.self="closeModal">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header card-text-header text-light bg-primary bg-gradient d-flex justify-content-between align-items-center">
-          <h5 class="flex-grow-1">Inventory Log</h5>
-          <button type="button" class="btn-close text-reset" @click="closeModal" aria-label="Close"></button>
-        </div>
         <div class="modal-body inventory-log-body">
           <InventoryStash />
           <EquippedWeaponInfo />

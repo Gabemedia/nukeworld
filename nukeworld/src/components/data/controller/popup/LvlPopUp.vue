@@ -4,13 +4,10 @@
         <div class="modal" tabindex="-1" style="display: block;">
         <div class="modal-dialog">
             <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">{{ title }}</h5>
-                <button type="button" class="btn-close" @click="closePopup"></button>
-            </div>
             <div class="modal-body">
+                <p>{{ title }}</p>
                 <p>{{ desc }}</p>
-                <p><b>Congratulations!</b><br/>You have reached level {{ character.level }}</p>
+                <p>You have reached level {{ character.level }}</p>
                 <p><b>You have gained the following rewards</b><br/>
                 <img style="width:20px;" :src="require(`@/assets/interface/icons/exp.png`)" title="Experience"> {{ expGained }}
                 <img style="width:20px;" :src="require(`@/assets/interface/icons/money.png`)" title="Money"> {{ moneyGained }}

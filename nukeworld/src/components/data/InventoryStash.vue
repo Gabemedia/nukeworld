@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="text-white">
     <h2>Weapons</h2>
     <ul class="list-unstyled px-2">
       <li v-for="item in weapons" :key="item.uuid" class="d-flex align-items-center justify-content-between position-relative mb-3">

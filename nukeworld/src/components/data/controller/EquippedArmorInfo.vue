@@ -1,5 +1,5 @@
 <template>
-    <div v-if="equippedArmor" class="equipped-armor-info">
+    <div v-if="equippedArmor" class="equipped-armor-info text-white">
       <h2>Equipped Armor</h2>
       <p><strong>Name:</strong> {{ equippedArmor.name }}</p>
       <p><strong>Description:</strong> {{ equippedArmor.desc }}</p>

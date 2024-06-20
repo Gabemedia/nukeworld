@@ -5,16 +5,13 @@
   <div v-if="showModal" class="modal" tabindex="-1" @click.self="closeModal">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header card-text-header text-light bg-primary bg-gradient d-flex justify-content-between align-items-center">
-          <h5 class="flex-grow-1">Quest Log</h5>
-          <div class="d-flex align-items-center">
-            <img class="icon-reload" @click="confirmResetQuests" :src="require(`@/assets/interface/icons/reload.png`)" title="Reset Quests (Cost: 2500)">
-            <button type="button" class="btn-close text-reset" @click="closeModal" aria-label="Close"></button>
-          </div>
-        </div>
         <div class="modal-body">
           <QuestList />
         </div>
+        <div class="modal-footer card-text-header text-light bg-danger bg-gradient d-flex justify-content-between align-items-center" @click="confirmResetQuests" :src="require(`@/assets/interface/icons/reload.png`)" title="Reset Quests (Cost: 2500)">
+          Reset Quests
+        </div>
+
       </div>
     </div>
   </div>
@@ -64,8 +61,9 @@ export default {
 <style scoped>
 .card-text-header {
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 0.777rem;
 }
+
 .icon-reload {
   width: 18px;
   transition: opacity 0.3 ease;

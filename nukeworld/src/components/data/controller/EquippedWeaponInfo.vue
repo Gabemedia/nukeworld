@@ -1,5 +1,5 @@
 <template>
-  <div v-if="equippedWeapons.length" class="equipped-weapon-info">
+  <div v-if="equippedWeapons.length" class="equipped-weapon-info text-white">
     <h2>Equipped Weapons</h2>
     <div v-for="weapon in equippedWeapons" :key="weapon.uuid">
         <p><strong>Name:</strong> {{ weapon.name }}</p>

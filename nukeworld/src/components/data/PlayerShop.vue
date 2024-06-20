@@ -5,14 +5,10 @@
   <div v-if="showModal" class="modal" tabindex="-1" @click.self="closeModal">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header card-text-header text-light bg-primary bg-gradient d-flex justify-content-between align-items-center">
-          <h5 class="flex-grow-1">Player Shop</h5>
-          <button type="button" class="btn-close text-reset" @click="closeModal" aria-label="Close"></button>
-        </div>
         <div class="modal-body shop-modal-body">
           <div class="shop">
             <div class="shop-section">
-              <h4>Weapons</h4>
+              <h6 class="mb-3 text-uppercase fw-bold">Big´n´Small Shop</h6>
               <div class="shop-items">
                 <div v-for="weapon in availableWeapons" :key="weapon.id" class="shop-item" @click="buyItem(weapon, 'weapons')" :ref="'item-weapons-' + weapon.id">
                   <img :src="require(`@/assets/interface/icons/weapons/${weapon.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="weapon.name" />
@@ -21,7 +17,6 @@
               </div>
             </div>
             <div class="shop-section">
-              <h4>Armor</h4>
               <div class="shop-items">
                 <div v-for="armor in availableArmor" :key="armor.id" class="shop-item" @click="buyItem(armor, 'armor')" :ref="'item-armor-' + armor.id">
                   <img :src="require(`@/assets/interface/icons/armor/${armor.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="armor.name" />
@@ -30,7 +25,6 @@
               </div>
             </div>
             <div class="shop-section">
-              <h4>Aid</h4>
               <div class="shop-items">
                 <div v-for="aid in availableAid" :key="aid.id" class="shop-item" @click="buyItem(aid, 'aid')" :ref="'item-aid-' + aid.id">
                   <img :src="require(`@/assets/interface/icons/aid/${aid.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="aid.name" />
@@ -133,7 +127,6 @@ export default {
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4);
 }
 
 .modal-dialog {
@@ -159,9 +152,8 @@ export default {
 
 .modal-content {
   position: relative;
-  background-color: #fff;
   background-clip: padding-box;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: 1px #fff solid;
   border-radius: 0.3rem;
   outline: 0;
 }
@@ -181,12 +173,15 @@ export default {
   line-height: 1.5;
 }
 
-.shop {
-  padding: 20px;
-}
-
 .shop-section {
   margin-bottom: 20px;
+}
+
+.shop-section h6{
+  color: #fff;;
+  margin-bottom: 0;
+  line-height: 1.5;
+  text-align: left;
 }
 
 @keyframes shake {
@@ -239,7 +234,7 @@ export default {
 .price-box {
   margin-top: 5px;
   padding: 2px 5px;
-  background-color: #f8f9fa;
+  background-color: #000;
   border: 1px solid #ccc;
   border-radius: 3px;
   font-size: 0.8rem;

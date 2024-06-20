@@ -11,7 +11,7 @@
         </span>
       </div>
       <div class="dropdown-menu-hotbar" v-show="showDropdown[index]">
-        <div v-for="item in getItems(index)" :key="item.uuid" @click="handleSelectItem(index, item)">
+        <div class="separator" v-for="item in getItems(index)" :key="item.uuid" @click="handleSelectItem(index, item)">
           <img v-if="index === 0" :src="require(`@/assets/interface/icons/weapons/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="item.name" />
           <img v-else-if="index === 1" :src="require(`@/assets/interface/icons/armor/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="item.name" />
           <img v-else-if="index === 2" :src="require(`@/assets/interface/icons/aid/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="item.name" />
@@ -145,13 +145,19 @@ export default {
 
 .dropdown-menu-hotbar {
   position: absolute;
-  bottom: 50px;
-  background-color: rgba(0, 0, 0, 0.8);
+  bottom: 55px;
+  background-color:rgba(255, 255, 255, 0.9);
+  margin: 5px 0px;
   padding: 5px;
   border-radius: 5px;
   display: flex;
   flex-direction: column;
   z-index: 9999;
+  border: 1px #000 solid;
+}
+.dropdown-menu-hotbar div{
+  border-bottom: 1px #000 solid;
+
 }
 
 .dropdown-menu-hotbar img {

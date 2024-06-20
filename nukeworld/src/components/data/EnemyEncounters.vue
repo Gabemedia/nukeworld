@@ -5,10 +5,6 @@
   <div v-if="showModal" class="modal" tabindex="-1" @click.self="closeModal">
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header card-text-header text-light bg-primary bg-gradient d-flex justify-content-between align-items-center">
-          <h5 class="flex-grow-1">Battle System</h5>
-          <button type="button" class="btn-close text-reset" @click="closeModal" aria-label="Close"></button>
-        </div>
         <div class="modal-body">
           <BattleSystem />
         </div>
@@ -54,7 +50,6 @@ export default {
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4);
 }
 
 .modal-dialog {
@@ -76,13 +71,13 @@ export default {
   padding: 1rem;
   max-height: 300px;
   overflow-y: scroll;
+  color: #fff;
 }
 
 .modal-content {
   position: relative;
-  background-color: #fff;
   background-clip: padding-box;
-  border: 1px solid rgba(0, 0, 0, 0.2);
+  border: 1px #fff solid;
   border-radius: 0.3rem;
   outline: 0;
 }
