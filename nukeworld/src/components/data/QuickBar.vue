@@ -131,7 +131,7 @@ export default {
   transform: translateX(-50%);
   background-color: #000;
   color: #fff;
-  padding: 2px 5px;
+  padding: 3px 6px;
   border-radius: 3px;
   font-size: 12px;
 }

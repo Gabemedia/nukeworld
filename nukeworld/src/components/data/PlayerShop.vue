@@ -233,7 +233,7 @@ export default {
 
 .price-box {
   margin-top: 5px;
-  padding: 2px 5px;
+  padding: 3px 6px;
   background-color: #000;
   border: 1px solid #ccc;
   border-radius: 3px;
