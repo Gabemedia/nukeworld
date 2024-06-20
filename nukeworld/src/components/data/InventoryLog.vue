@@ -7,8 +7,6 @@
       <div class="modal-content">
         <div class="modal-body inventory-log-body">
           <InventoryStash />
-          <EquippedWeaponInfo />
-          <EquippedArmorInfo /> 
         </div>
       </div>
     </div>
@@ -17,14 +15,10 @@
 
 <script>
 import InventoryStash from './InventoryStash.vue';
-import EquippedWeaponInfo from './controller/EquippedWeaponInfo.vue';
-import EquippedArmorInfo from './controller/EquippedArmorInfo.vue';
 
 export default {
   components: {
     InventoryStash,
-    EquippedWeaponInfo,
-    EquippedArmorInfo,
   },
   data() {
     return {
@@ -59,7 +53,6 @@ export default {
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4);
 }
 
 .modal-dialog {
@@ -84,9 +77,7 @@ export default {
 }
 .modal-content {
   position: relative;
-  background-color: #fff;
   background-clip: padding-box;
-  border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 0.3rem;
   outline: 0;
 }

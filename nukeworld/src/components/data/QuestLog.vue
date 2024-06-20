@@ -85,7 +85,6 @@ export default {
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0, 0, 0, 0.4);
 }
 
 .modal-dialog {
@@ -110,9 +109,7 @@ export default {
 }
 .modal-content {
   position: relative;
-  background-color: #fff;
   background-clip: padding-box;
-  border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 0.3rem;
   outline: 0;
 }

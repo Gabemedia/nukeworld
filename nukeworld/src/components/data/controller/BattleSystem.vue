@@ -1,6 +1,7 @@
 <template>
   <div class="battle-system">
     <div class="mb-1">
+      <h6 class="mb-3 text-uppercase fw-bold text-start">Enemy Encounters</h6>
       <div class="player-info d-flex justify-content-between align-items-center">
         <div class="player-name">{{ character.name }}</div>
         <div class="player-health">

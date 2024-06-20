@@ -101,6 +101,12 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Simplified the PlayerShop component's HTML structure for better maintainability.
 - Fixed ESLint errors related to unused variables in MapComponent and MapComponent2.
 
+### Version 0.1.2 (2024-06-20)
+- Added functionality to equip weapons and armor by clicking on the item image in InventoryStash.
+- Implemented item information hover feature in InventoryStash component.
+- Refactored InventoryStash component to display weapons, armor, and aid items in a grid layout.
+- Adjusted the positioning of the item information box to prevent it from being cut off inside the modal.
+
 ## Getting Started
 To get started with NukeWorld, follow these steps:
 

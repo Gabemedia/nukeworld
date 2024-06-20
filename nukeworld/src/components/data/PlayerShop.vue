@@ -10,7 +10,7 @@
             <div class="shop-section">
               <h6 class="mb-3 text-uppercase fw-bold">Big´n´Small Shop</h6>
               <div class="shop-items">
-                <div v-for="weapon in availableWeapons" :key="weapon.id" class="shop-item" @click="buyItem(weapon, 'weapons')" :ref="'item-weapons-' + weapon.id">
+                <div v-for="weapon in availableWeapons" :key="weapon.id" class="shop-item m-1" @click="buyItem(weapon, 'weapons')" :ref="'item-weapons-' + weapon.id">
                   <img :src="require(`@/assets/interface/icons/weapons/${weapon.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="weapon.name" />
                   <div class="price-box">{{ weapon.price }}</div>
                 </div>
@@ -18,7 +18,7 @@
             </div>
             <div class="shop-section">
               <div class="shop-items">
-                <div v-for="armor in availableArmor" :key="armor.id" class="shop-item" @click="buyItem(armor, 'armor')" :ref="'item-armor-' + armor.id">
+                <div v-for="armor in availableArmor" :key="armor.id" class="shop-item m-1" @click="buyItem(armor, 'armor')" :ref="'item-armor-' + armor.id">
                   <img :src="require(`@/assets/interface/icons/armor/${armor.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="armor.name" />
                   <div class="price-box">{{ armor.price }}</div>
                 </div>
@@ -26,7 +26,7 @@
             </div>
             <div class="shop-section">
               <div class="shop-items">
-                <div v-for="aid in availableAid" :key="aid.id" class="shop-item" @click="buyItem(aid, 'aid')" :ref="'item-aid-' + aid.id">
+                <div v-for="aid in availableAid" :key="aid.id" class="shop-item m-1" @click="buyItem(aid, 'aid')" :ref="'item-aid-' + aid.id">
                   <img :src="require(`@/assets/interface/icons/aid/${aid.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="aid.name" />
                   <div class="price-box">{{ aid.price }}</div>
                 </div>
