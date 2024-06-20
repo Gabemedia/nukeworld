@@ -2,7 +2,7 @@
   <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="openModal">
     <img class="sidebar-icon" :src="require(`@/assets/interface/icons/quests.png`)" title="Quest Log">
   </button>
-  <div v-if="showModal" class="modal" tabindex="-1" @click.self="closeModal">
+  <div v-if="showModal" class="modal mt-2" tabindex="-1" @click.self="closeModal">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-body">
@@ -85,12 +85,13 @@ export default {
   width: 100%;
   height: 100%;
   overflow: auto;
+  scale: 0.9;
 }
 
 
 @media (max-width: 576px) {
   .modal-dialog {
-    width: 100vw;
+    width: 100%;
     margin: 1.75rem auto;
   }
 }

@@ -232,11 +232,19 @@ export default {
 
 @media (max-width: 576px) {
   .quest-card {
-    width: calc(50% - 25px); /* 5 quests per row with 10px gap */
+    width: calc(100% - 25px); /* 5 quests per row with 10px gap */
     display: flex;
     flex-direction: column;
     scale:1;
+    margin: auto;
   }
+  .quest-image {
+    height: 125px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
 }
 
 @media (min-width: 576px) {
@@ -245,15 +253,14 @@ export default {
     display: flex;
     flex-direction: column;
     scale:1;
-
+    margin: auto;
   }
+  .quest-image {
+    height: 170px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
-
-.quest-image {
-  height: 170px;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
 }
 
 .quest-details {

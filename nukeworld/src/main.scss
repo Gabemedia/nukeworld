@@ -5,13 +5,17 @@ $primary-color: rgb(0, 183, 6);
 $primary: rgb(0, 183, 6);
 $gray: #6c757d;
 
-
+html {
+  overflow-x: hidden!important;
+  overflow-y: scroll!important;
+}
 /* Define global styles */
 body {
   color: #000;
   font-weight: 400;
   filter: drop-shadow(0 0 2px rgba(255, 255, 255, 1));
-
+  overflow-x: hidden!important;
+  overflow-y: scroll!important;
 }
 
 h1 {

@@ -2,12 +2,12 @@
   <div class="game-world bg-primary">
     <GameHeader class="game-header"/>
     <SideBar />
+    <QuickBar ref="quickBar" />
     <div class="container mt-4">
       <div class="row justify-content-center">
         <div class="col-12">
           <MapComponent v-if="character.level < 5" ref="mapComponent" class="flex-grow-1 "/> 
           <MapComponent2 v-else-if="character.level >= 5 && character.level <= 100" ref="mapComponent2" class="flex-grow-1 "/>
-          <QuickBar ref="quickBar" />
         </div>
       </div>
     </div>
@@ -84,13 +84,15 @@ export default {
 
 <style lang="scss">
 .game-world {
-  width: 100vw;
+  width: 100%;
   height: 100vh;
   background-image: url('../assets/bg.jpg');
   background-size: cover;
   background-position: center;
   position: absolute;
   z-index:999;
+  overflow-x: hidden!important;
+  overflow-y: scroll!important;
 }
 .game-header {
   position: absolute;

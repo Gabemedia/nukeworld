@@ -110,6 +110,7 @@ export default {
   padding: 10px;
   border-radius: 5px;
   z-index: 9999;
+  overflow-x: hidden;
 }
 
 .quick-bar-slot {
