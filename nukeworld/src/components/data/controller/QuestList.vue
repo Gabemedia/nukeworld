@@ -12,15 +12,15 @@
           <p class="card-text m-0">{{ getQuestDuration(quest) }}</p>
         </span>
         <div class="card">
-          <div class="card-header p-0">
+          <div class="card-header rounded-0 p-0">
               <h5 class="card-text-header text-capitalize p-2 m-0">{{ quest.name }}</h5>
               <p class="card-text card-text-desc px-2 pb-2">{{ quest.desc }}</p>
           </div>
-          <div class="progress rounded-0 p-0 m-0">
+          <!-- <div class="progress rounded-0 p-0 m-0">
             <div class="progress-bar p-0 m-0" :style="{ width: quest.progress + '%' }"></div>
-          </div>
+          </div> -->
           <div class="card-body bg-secondary bg-gradient px-2">
-            <div class="d-flex align-items-center justify-content-between py-1">
+            <div class="d-flex align-items-center justify-content-center">
               <p class="card-text" v-if="quest.state === 'in-progress'">Remaining Time: {{ formatTime(quest.remainingTime) }}</p>
             </div>
             <div class="d-flex justify-content-around flex-grow-1 text-center">
@@ -288,13 +288,12 @@ img {
 }
 
 .card-header {
-text-align: left;
-height: 80px;
-}
+  text-align: left;
+  height: 80px;
+  background-color: #ddd;}
 
 .card-body {
-  color: white;
-  text-shadow: rgba(0, 0, 0, 1) 0px 0px 2px;
+  color: #fff;
 }
 .card-text {
   font-size: 0.755rem;
@@ -308,13 +307,18 @@ height: 80px;
 }
 
 .card-text-header {
-  font-weight: 700;
+  font-weight: 500;
   font-size: 1rem;
+  color: #000;
+  text-shadow: rgba(255, 255, 255, 1) 0px 0px 2px;
 }
 .card-text-desc {
   font-size: 0.777rem;
   font-weight: 400;
+  color: #000;
+  text-shadow: rgba(255, 255, 255, 1) 0px 0px 2px;
 }
+
 .icon-reload {
   width: 18px;
   transition: opacity 0.3 ease;

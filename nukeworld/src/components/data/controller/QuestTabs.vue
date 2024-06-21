@@ -142,8 +142,4 @@ export default {
   color: #000 !important;
 }
 
-.tab-content {
-  border-radius: 5px;
-  border: 1px solid #000;
-}
 </style>

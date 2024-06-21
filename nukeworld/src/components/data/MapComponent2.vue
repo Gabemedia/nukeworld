@@ -176,12 +176,18 @@ export default {
   height: 100%;
   z-index: -999;
 }
+.leaflet-container{
+  background: linear-gradient(180deg, rgb(180, 141, 102) 0%, rgb(188, 140, 87) 100%);
+  margin-top: -15px;
+}
 .modal {
-  display: block;
-  position: absolute;
-  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  z-index: 1050;
   left: 0;
-  top: 50px;
+  top: 0;
   width: 100%;
   height: 100%;
   overflow: auto;
