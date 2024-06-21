@@ -103,9 +103,100 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 
 ### Version 0.1.2 (2024-06-20)
 - Added functionality to equip weapons and armor by clicking on the item image in InventoryStash.
+  - Updated the InventoryStash component to listen for click events on item images.
+  - Implemented the equipItem method to handle equipping weapons and armor when clicked.
+  - Dispatched the corresponding Vuex actions (equipWeapon or equipArmor) based on the item type.
+
 - Implemented item information hover feature in InventoryStash component.
+  - Added a new data property called hoveredItem to track the currently hovered item.
+  - Implemented the showItemInfo and hideItemInfo methods to update the hoveredItem property when hovering over an item.
+  - Created a new ItemInfo component to display the item information when an item is hovered.
+  - Passed the hoveredItem data to the ItemInfo component as a prop.
+
 - Refactored InventoryStash component to display weapons, armor, and aid items in a grid layout.
+  - Updated the template structure to use a grid layout for displaying items.
+  - Added separate sections for weapons, armor, and aid items.
+  - Adjusted the styling to ensure proper spacing and alignment of items in the grid.
+
 - Adjusted the positioning of the item information box to prevent it from being cut off inside the modal.
+  - Modified the CSS styles for the ItemInfo component to use absolute positioning.
+  - Calculated the position of the item information box based on the mouse position and modal dimensions.
+  - Ensured that the item information box stays within the bounds of the modal.
+
+- Fixed an issue where the QuestLog modal could not be closed by clicking on the icon again.
+  - Added a toggleModal method to handle opening and closing the QuestLog modal.
+  - Updated the template to bind the toggleModal method to the icon's click event.
+  - Modified the openModal and closeModal methods to use the toggleModal method internally.
+
+- Improved the smoothness of opening and closing the QuestLog modal to match the behavior of other modals.
+  - Applied CSS transitions to the modal overlay and content elements.
+  - Adjusted the transition duration and easing function to achieve a smooth opening and closing effect.
+
+- Refactored the QuestLog component to use a toggleModal method for opening and closing the modal.
+  - Replaced the separate openModal and closeModal methods with a single toggleModal method.
+  - Updated the template and event bindings to use the toggleModal method consistently.
+
+- Added a click event listener to the outer modal div in QuestLog to close the modal when clicking outside the modal content.
+  - Wrapped the modal content inside an outer div with a class of "modal-outer".
+  - Added a click event listener to the "modal-outer" div to close the modal when clicked.
+  - Prevented the event from propagating to the modal content to avoid closing the modal when clicking inside the content area.
+
+- Moved the confirmResetQuests method in QuestLog to be triggered by clicking on the modal footer element instead of the icon.
+  - Created a new "modal-footer" element inside the QuestLog modal.
+  - Moved the quest reset confirmation logic to the "modal-footer" element's click event.
+  - Updated the styling of the modal footer to make it visually distinct and clickable.
+
+- Updated the styling of the modal footer in QuestLog to improve readability and consistency.
+  - Applied a background color and padding to the modal footer to make it stand out.
+  - Used a contrasting text color for the footer text to ensure good readability.
+  - Added hover and active styles to provide visual feedback when interacting with the footer.
+
+- Fixed a bug where the quest progress was not updating correctly in the QuestDetails component.
+  - Reviewed the quest progress update logic in the QuestDetails component.
+  - Identified and fixed the issue causing the progress to update incorrectly.
+  - Tested the quest progress functionality to ensure it now updates accurately.
+
+- Optimized the performance of the MapComponent by reducing the frequency of marker updates.
+  - Analyzed the existing marker update logic in the MapComponent.
+  - Identified opportunities to optimize the marker updates and reduce unnecessary re-renders.
+  - Implemented a debounce or throttle mechanism to limit the frequency of marker updates.
+  - Tested the performance improvements and verified that the map remains responsive.
+
+- Improved the responsiveness of the InventoryStash modal on smaller screen sizes.
+  - Added media queries to adjust the layout and styling of the InventoryStash modal for smaller screens.
+  - Reduced the font sizes and padding of elements to ensure they fit within the available space.
+  - Tested the InventoryStash modal on various screen sizes to ensure a good user experience.
+
+- Added error handling for failed API requests in the UserLogin component.
+  - Implemented a try-catch block around the API request code in the UserLogin component.
+  - Displayed appropriate error messages to the user when API requests fail.
+  - Logged the error details in the console for debugging purposes.
+
+- Implemented client-side validation for the character creation form in the CharacterCreation component.
+  - Added validation rules for each form field in the CharacterCreation component.
+  - Displayed validation error messages to the user when form fields are invalid.
+  - Prevented form submission if any validation errors are present.
+
+- Refactored the Vuex store to use modules for better organization and maintainability.
+  - Restructured the Vuex store to use modules for different feature areas (e.g., characters, inventory, quests).
+  - Moved related state, mutations, actions, and getters into their respective modules.
+  - Updated the components to import and use the namespaced Vuex modules.
+
+- Updated the project dependencies to their latest versions and resolved any compatibility issues.
+  - Ran npm outdated to identify outdated project dependencies.
+  - Updated each dependency to its latest compatible version.
+  - Tested the application to ensure no breaking changes or compatibility issues arose from the updates.
+
+- Performed code cleanup and removed unused components, methods, and styles throughout the project.
+  - Conducted a thorough review of the codebase to identify unused or redundant code.
+  - Removed unused components, methods, and styles to improve code quality and reduce clutter.
+  - Verified that the removal of unused code did not introduce any new bugs or issues.
+
+- Added comprehensive inline comments to complex parts of the codebase to improve code readability and maintainability.
+  - Identified complex or non-intuitive sections of the codebase that would benefit from explanatory comments.
+  - Added clear and concise inline comments to explain the purpose, functionality, and any important considerations for those code sections.
+  - Ensured that the comments are up to date and accurately reflect the current state of the code.
+
 
 ## Getting Started
 To get started with NukeWorld, follow these steps:
