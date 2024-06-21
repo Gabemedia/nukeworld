@@ -1,20 +1,20 @@
 <template>
   <div>
     <div style="padding:8px 20px;" class="row" v-if="quest">
-      <div class="col-3" :style="{
+      <div class="col-4" :style="{
             backgroundImage: `url(${require(`@/assets/quests/bg/${quest.id}.jpg`)})`,
             backgroundSize: 'cover',
             backgroundPosition: 'center center',
             backgroundRepeat: 'no-repeat'
           }"></div>
-      <div class="card col-9 p-0">
+      <div class="card col-8 p-0">
         <div class="card-header p-0 d-flex">
-          <div class="bg-light">
-            <h5 class="card-text-header text-capitalize p-2">{{ quest.name }}</h5>
-            <p class="card-text card-text-desc p-2">{{ quest.desc }}</p>
+          <div class="card-header p-0">
+              <h5 class="card-text-header text-capitalize p-2 m-0">{{ quest.name }}</h5>
+              <p class="card-text card-text-desc px-2 pb-2">{{ quest.desc }}</p>
           </div>
         </div>
-        <div class="progress p-0 m-0">
+        <div class="progress rounded-0 p-0 m-0">
           <div class="progress-bar p-0 m-0" :style="{ width: quest.progress + '%' }"></div>
         </div>
         <div class="card-body bg-secondary bg-gradient p-2">
@@ -286,11 +286,11 @@ img {
 }
 
 .card-text-header {
-  font-weight: 600;
+  font-weight: 700;
   font-size: 1rem;
 }
 .card-text-desc {
-  font-size: 0.655rem;
+  font-size: 0.777rem;
   font-weight: 400;
 }
 .icon-reload {

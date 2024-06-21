@@ -16,7 +16,7 @@
               <h5 class="card-text-header text-capitalize p-2 m-0">{{ quest.name }}</h5>
               <p class="card-text card-text-desc px-2 pb-2">{{ quest.desc }}</p>
           </div>
-          <div class="progress p-0 m-0">
+          <div class="progress rounded-0 p-0 m-0">
             <div class="progress-bar p-0 m-0" :style="{ width: quest.progress + '%' }"></div>
           </div>
           <div class="card-body bg-secondary bg-gradient px-2">
@@ -309,7 +309,7 @@ height: 80px;
 
 .card-text-header {
   font-weight: 700;
-  font-size: 0.888rem;
+  font-size: 1rem;
 }
 .card-text-desc {
   font-size: 0.777rem;
