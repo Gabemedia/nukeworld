@@ -17,46 +17,47 @@
         <!-- <div class="progress rounded-0 p-0 m-0">
           <div class="progress-bar p-0 m-0" :style="{ width: quest.progress + '%' }"></div>
         </div> -->
-        <div class="card-body bg-secondary bg-gradient p-2">
-          <div class="d-flex align-items-center justify-content-center py-1">
-            <p class="card-text" v-if="quest.state === 'in-progress'">Remaining Time: {{ formatTime(quest.remainingTime) }}</p>
-          </div>
-          <div class="d-flex align-items-center justify-content-center">
-            <div class="text-center">
-              <button type="button" class="btn btn-success bg-gradient position-relative fw-bold" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)">
-              {{ getButtonText(quest) }}
-              <span v-if="quest.state !== 'completed'" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fst-italic" title="Quest Duration">
-                <p class="card-text m-0">{{ getQuestDuration(quest) }}</p>
-              </span>
-            </button>
+        <div class="card-body bg-secondary bg-gradient px-2">
+            <div class="d-flex align-items-center justify-content-center">
+              <p class="card-text" v-if="quest.state === 'in-progress'">Remaining Time: {{ formatTime(quest.remainingTime) }}</p>
             </div>
-            <div class="d-flex justify-content-between flex-grow-1 mx-4 text-center">
+            <div class="d-flex justify-content-around flex-grow-1 text-center">
               <div class="card-text d-block fw-bold">
-                <img style="width:20px;" :src="require(`@/assets/interface/icons/exp.png`)" title="Exp">
-                <span class="ps-1"> {{ quest.exp }} </span>
+                <img style="width:40px;" :src="require(`@/assets/interface/icons/exp.png`)" title="Exp"><br/>
+                <span class="position-absolute start-25 translate-middle badge rounded-pill bg-danger fst-italic">
+                  <p class="card-text m-0"> {{ quest.exp }} </p>
+                </span>
               </div>
               <div class="card-text d-block fw-bold">
-                <img style="width:20px;" :src="require(`@/assets/interface/icons/money.png`)" title="Money">
-                <span class="ps-1"> {{ quest.money }} </span>
+                <img style="width:40px;" :src="require(`@/assets/interface/icons/money.png`)" title="Money"><br/>
+                <span class="position-absolute start-25 translate-middle badge rounded-pill bg-danger fst-italic"> 
+                  <p class="card-text m-0">{{ quest.money }}</p>
+                </span>
               </div>
               <div v-if="hasWeaponReward(quest) || hasArmorReward(quest)" class="card-text d-block fw-bold">
-                <img v-if="hasWeaponReward(quest)" :src="require('@/assets/interface/icons/gun.png')" alt="Attack" :title="'Weapon Reward Chance: ' + (quest.rewardChance * 100) + '%'" style="width: 20px;" class="me-2">
+                <img v-if="hasWeaponReward(quest)" :src="require('@/assets/interface/icons/gun.png')" alt="Attack" :title="'Weapon Reward Chance: ' + (quest.rewardChance * 100) + '%'" style="width:40px;" class="me-2"><br/>
                 <span v-if="hasWeaponReward(quest)" class="position-absolute start-25 translate-middle badge rounded-pill bg-danger fst-italic" title="Reward Drop Chance">
                   <p class="card-text m-0">{{ quest.rewardChance * 100 }}%</p>
                 </span>
               </div>
               <div v-if="hasWeaponReward(quest) || hasArmorReward(quest)" class="card-text d-block fw-bold">
-                <img v-if="hasArmorReward(quest)" :src="require('@/assets/interface/icons/shield.png')" alt="Defence" :title="'Armor Reward Chance: ' + (quest.armorRewardChance * 100) + '%'" style="width: 20px;" class="me-2">
+                <img v-if="hasArmorReward(quest)" :src="require('@/assets/interface/icons/shield.png')" alt="Defence" :title="'Armor Reward Chance: ' + (quest.armorRewardChance * 100) + '%'" style="width: 40px;" class="me-2"><br/>
                 <span v-if="hasArmorReward(quest)" class="position-absolute start-75 translate-middle badge rounded-pill bg-danger fst-italic" title="Reward Drop Chance">
                   <p class="card-text m-0">{{ quest.armorRewardChance * 100 }}%</p>
                 </span>
               </div>
             </div>
+            <div class="mt-3 text-center">
+              <div class="text-center">
+                <button type="button" class="btn btn-success bg-gradient w-100 no-margin no-border" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)">
+                  {{ getButtonText(quest) }}
+                </button>
+              </div>
+            </div>
+            <div v-if="character.level < quest.levelRequirement" class="alert alert-warning mt-2 p-2 mb-2 alert-clear-text">
+              Level {{ quest.levelRequirement }} required to start this quest.
+            </div>
           </div>
-          <div v-if="character.level < quest.levelRequirement" class="alert alert-warning mt-2 p-2 mb-2 alert-clear-text">
-            Level {{ quest.levelRequirement }} required to start this quest.
-          </div>
-        </div>
       </div>
     </div>
     <div v-else>

@@ -126,10 +126,10 @@ export default {
   margin-bottom: 20px;
 }
 h1 {
-  color: #000;
+  color: #fff;
   font-weight: 800;
+  font-size:1.2rem;
   text-transform: uppercase;
-  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 1));
 }
 .form-group {
   margin-bottom: 20px;
