@@ -183,6 +183,7 @@ export default {
 }
 .leaflet-container{
   background: linear-gradient(180deg, rgb(180, 141, 102) 0%, rgb(188, 140, 87) 100%);
+  margin-top: -15px;
 }
 .modal {
   display: flex;

@@ -1,5 +1,5 @@
 <template>
-  <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="openModal">
+  <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="toggleModal">
     <img class="sidebar-icon" :src="require(`@/assets/interface/icons/quests.png`)" title="Quest Log">
   </button>
   <div v-if="showModal" class="modal mt-2" tabindex="-1" @click.self="closeModal">
@@ -8,10 +8,10 @@
         <div class="modal-body">
           <QuestTabs />
         </div>
-        <div class="modal-footer card-text-header text-light bg-danger bg-gradient d-flex justify-content-between align-items-center" @click="confirmResetQuests" :src="require(`@/assets/interface/icons/reload.png`)" title="Reset Quests (Cost: 2500)">
-          Reset Quests
+        <div class="modal-footer card-text-header text-light bg-danger bg-gradient d-flex justify-content-between align-items-center" @click="confirmResetQuests">
+          <span>Reset Quests</span>
+          <img class="icon-reload" :src="require(`@/assets/interface/icons/reload.png`)" title="Reset Quests (Cost: 2500)">
         </div>
-
       </div>
     </div>
   </div>
@@ -33,8 +33,8 @@ export default {
   },
   methods: {
     ...mapActions(['resetQuests', 'decreaseMoney']),
-    openModal() {
-      this.showModal = true;
+    toggleModal() {
+      this.showModal = !this.showModal;
     },
     closeModal() {
       this.showModal = false;
@@ -66,14 +66,15 @@ export default {
 
 .icon-reload {
   width: 18px;
-  transition: opacity 0.3 ease;
+  transition: opacity 0.3s ease;
   cursor: pointer;
-  filter:opacity(0.5);
+  filter: opacity(0.5);
 }
 
 .icon-reload:hover {
-  filter:opacity(0.8);
+  filter: opacity(0.8);
 }
+
 .modal {
   display: flex;
   align-items: center;
@@ -87,7 +88,6 @@ export default {
   overflow: auto;
   scale: 0.9;
 }
-
 
 @media (max-width: 576px) {
   .modal-dialog {
@@ -111,6 +111,7 @@ export default {
   max-height: 70vh;
   overflow-y: scroll;
 }
+
 .modal-content {
   position: relative;
   background-clip: padding-box;
@@ -132,5 +133,4 @@ export default {
   margin-bottom: 0;
   line-height: 1.5;
 }
-
 </style>

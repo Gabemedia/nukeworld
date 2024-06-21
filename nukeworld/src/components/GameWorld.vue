@@ -3,6 +3,10 @@
     <GameHeader class="game-header"/>
     <SideBar />
     <QuickBar ref="quickBar" />
+    <div class="d-none d-md-block">
+    <QuickBarLeft ref="quickBarLeft" />
+    <QuickBarRight ref="quickBarRight" />
+    </div>
     <div class="container mt-4">
       <div class="row justify-content-center">
         <div class="col-12">
@@ -21,6 +25,8 @@ import SideBar from './SideBar.vue';
 import MapComponent from './data/MapComponent.vue';
 import MapComponent2 from './data/MapComponent2.vue';
 import QuickBar from './data/QuickBar.vue';
+import QuickBarLeft from './data/QuickBarLeft.vue';
+import QuickBarRight from './data/QuickBarRight.vue';
 import GameOver from './data/GameOver.vue';
 import { mapState } from 'vuex';
 
@@ -33,6 +39,8 @@ export default {
     MapComponent2,
     GameOver,
     QuickBar,
+    QuickBarLeft,
+    QuickBarRight,
   },
   data() {
     return {

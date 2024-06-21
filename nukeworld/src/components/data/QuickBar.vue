@@ -146,7 +146,7 @@ export default {
 .dropdown-menu-hotbar {
   position: absolute;
   bottom: 55px;
-  background-color:rgba(255, 255, 255, 0.9);
+  background-color:rgba(255, 255, 255, 0.7);
   margin: 5px 0px;
   padding: 5px;
   border-radius: 5px;

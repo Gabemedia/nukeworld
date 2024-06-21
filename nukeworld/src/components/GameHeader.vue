@@ -1,15 +1,17 @@
 <template>
-  <div class="d-flex flex-sm-column flex-md-row justify-content-between header p-2">
-    <div class="col-md-4 text-capitalize d-flex justify-content-center text-light text-center my-sm-1">
-      <HealthBar />
+  <div class="d-sm-none col-12">
+    <div class="d-flex flex-row justify-content-between header p-2">
+      <div class="col-md-6 text-capitalize d-flex justify-content-center text-light text-center my-sm-1">
+        <HealthBar />
+      </div>
+      <div class="col-md-6 text-capitalize d-flex justify-content-end text-light text-center my-sm-1">
+        <img style="width:20px;" :src="require(`@/assets/interface/icons/money.png`)" title="Money" class="me-1">
+        <span class="mobile-text fw-bold fs-6">{{ character.money }}</span>
+      </div>
     </div>
-    <div class="col-md-4 text-capitalize d-flex justify-content-end text-light text-center my-sm-1">
-      <img style="width:20px;" :src="require(`@/assets/interface/icons/money.png`)" title="Money" class="me-1">
-      <span class="mobile-text">{{ character.money }}</span>
-    </div>
+    <ExpLvl />    
+    <CharacterInfo />
   </div>
-  <ExpLvl />    
-  <CharacterInfo />
 </template>
 
 
