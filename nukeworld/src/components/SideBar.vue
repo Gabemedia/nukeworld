@@ -1,6 +1,5 @@
 <template>
   <div class="d-flex flex-column flex-shrink-0 sidebar ms-2" :class="{ 'show': sidebarOpen }">
-    <div class="d-block p-3 link-dark text-decoration-none" style="height:70px;"></div>
     <ul class="nav nav-pills nav-flush flex-column mb-auto text-center">
       <li class="nav-item mb-1">
         <div class="nav-item-name price-box">Quests</div>
@@ -15,6 +14,10 @@
         <EnemyEncounters />
       </li>
       <li class="nav-item mb-1">
+        <div class="nav-item-name price-box">Story</div>
+        <StoryLog />
+      </li>
+      <li class="nav-item mb-1">
         <div class="nav-item-name price-box">Shop</div>
         <PlayerShop />
       </li>
@@ -26,6 +29,7 @@
 import QuestLog from './data/QuestLog.vue';
 import InventoryLog from './data/InventoryLog.vue';
 import EnemyEncounters from './data/EnemyEncounters.vue';
+import StoryLog from './data/StoryLog.vue';
 import PlayerShop from './data/PlayerShop.vue';
 
 export default {
@@ -34,6 +38,7 @@ export default {
     QuestLog,
     InventoryLog,
     EnemyEncounters,
+    StoryLog,
     PlayerShop,
   },
   data() {
