@@ -20,7 +20,7 @@
       </div>
     </div>
     <div class="character-list">
-      <h1 class="text-center mb-3">Character List</h1>
+      <h1 class="text-center mb-6">Character List</h1>
       <CharacterList />
       <button class="btn btn-danger" @click="clearLocalStorage">Delete All</button>
     </div>

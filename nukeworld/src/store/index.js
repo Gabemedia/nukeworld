@@ -34,6 +34,9 @@ const state = reactive({
 
 const getters = {
   characterInArray: (state) => (email) => state.characters.find((ch) => ch.email === email),
+  questsForCurrentLevel: (state) => {
+    return state.quests.filter(quest => quest.levelRequirement === state.character.level);
+  },
 };
 
 const mutations = {
@@ -423,9 +426,20 @@ watch(
 watch(
   () => state.quests,
   (newQuests) => {
-    localStorage.setItem('quests', JSON.stringify(newQuests));
+    if (Array.isArray(newQuests) && newQuests.length > 0) {
+      try {
+        const questsString = JSON.stringify(newQuests);
+        localStorage.setItem('quests', questsString);
+       //console.log('Quests gemt i localStorage:', questsString);
+      } catch (error) {
+       //console.error('Fejl ved gemning af quests i localStorage:', error);
+      }
+    } else {
+      //console.warn('Forsøg på at gemme tomme eller ugyldige quests forhindret');
+    }
   },
   { deep: true }
 );
+
 
 export default store;

@@ -3,7 +3,7 @@
   <div>
     <div class="row mt-4">
       <div class="col-12" v-for="(character, index) in characters" :key="index">
-        <div class="card mb-4" @click="selectCharacter(character)">
+        <div class="card bg-primary mb-4" @click="selectCharacter(character)">
           <div class="card-body">
             <h5 class="card-title">{{ character.name }}</h5>
             <p class="card-text d-flex">

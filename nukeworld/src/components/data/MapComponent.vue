@@ -74,9 +74,15 @@ export default {
     };
   },
   computed: {
-    ...mapState(['quests', 'markers']),
+    ...mapState(['quests', 'markers', 'character']),
     filteredQuests() {
-      return this.quests.filter(quest => !quest.userCreated && quest.lat && quest.lon && (quest.state === 'not-started' || quest.state === 'ready-to-claim'));
+      return this.quests.filter(quest => 
+        !quest.userCreated && 
+        quest.lat && 
+        quest.lon && 
+        (quest.state === 'not-started' || quest.state === 'ready-to-claim') &&
+        quest.levelRequirement <= this.character.level
+      );
     },
   },
   created() {
