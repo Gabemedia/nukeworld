@@ -2,15 +2,16 @@
   <LvlPopUp ref="lvlPopUp" title="Congratulations!" @popup-closed="onPopupClosed" />    
   <div class="quick-bar-left  text-white">
     <div class="d-flex justify-content-start text-white mb-2">
-      <img style="width:20px;" :src="require(`@/assets/interface/icons/aid/medkit.png`)" title="Health" class="me-1">
+      <img style="width:20px; height: 20px;" :src="require(`@/assets/interface/icons/aid/medkit.png`)" title="Health" class="me-1">
       <span class="mobile-text fw-bold fs-6">Health:</span>
     </div>
     <div class="health-bar">
       <div class="health-bar-fill" :style="{ width: healthPercentage + '%' }"></div>
       <div class="health-bar-text">{{ character.health }} / {{ character.maxHealth }}</div>
     </div>
-    <div class="d-flex justify-content-start text-white mb-2">
-      <img style="width:20px;" :src="require(`@/assets/interface/icons/exp.png`)" title="Experence" class="me-1">
+    <div class="separator"></div>
+    <div class="d-flex justify-content-start text-white my-2">
+      <img style="width:20px; height: 20px;"  :src="require(`@/assets/interface/icons/exp.png`)" title="Experence" class="me-1">
       <span class="mobile-text fw-bold fs-6">Experence:</span>
     </div>
     <div class="exp-bar">
@@ -69,12 +70,13 @@ position: absolute;
   bottom: 0px;
   left: 0px;
   background-color: rgba(0, 0, 0, 0.7);
-  padding: 20px;
+  padding: 10px;
   border-radius: 5px;
   z-index: 9999;
 }
 
-.health-bar {
+.health-bar, .exp-bar {
+  position: relative; /* Tilføj denne linje */
   width: 200px;
   height: 20px;
   background-color: #ccc;
@@ -82,44 +84,29 @@ position: absolute;
   overflow: hidden;
 }
 
-.health-bar-fill {
+.health-bar-fill, .exp-bar-fill {
   height: 100%;
   background-color: #4caf50;
   transition: width 0.3s ease;
 }
 
-.health-bar-text {
+.health-bar-text, .exp-bar-text {
   position: absolute;
-  top: 67%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   color: #fff;
   font-size: 12px;
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+  width: 100%; /* Tilføj denne linje */
+  text-align: center; /* Tilføj denne linje */
 }
 
-.exp-bar {
-  width: 200px;
-  height: 20px;
-  background-color: #ccc;
-  border-radius: 5px;
-  overflow: hidden;
-}
-
-.exp-bar-fill {
-  height: 100%;
-  background-color: #4caf50;
-  transition: width 0.3s ease;
-}
-
-.exp-bar-text {
-  position: absolute;
-  top: 67%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: #fff;
-  font-size: 12px;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+.separator {
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.3);
+  margin: 10px 0;
+  width: 100%;
 }
 
 @media screen and (max-width: 600px) {
@@ -128,12 +115,12 @@ position: absolute;
     left: 10px;
   }
 
-  .health-bar {
+  .health-bar, .exp-bar {
     width: 150px;
     height: 15px;
   }
 
-  .health-bar-text {
+  .health-bar-text, .exp-bar-text {
     font-size: 10px;
   }
 }

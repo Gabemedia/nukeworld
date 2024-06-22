@@ -1,76 +1,103 @@
 <template>
-  <div class="quick-bar-left">
+  <div class="quick-bar-right">
     <div class="d-flex justify-content-end text-white mb-2">
       <img style="width:20px;" :src="require(`@/assets/interface/icons/money.png`)" title="Money" class="me-1">
       <span class="mobile-text fw-bold fs-6">Coins: {{ character.money }}</span>
+    </div>
+    <div class="resources-container">
+      <div v-for="resource in stackedResources" :key="resource.id" class="resource-item position-relative">
+        <img :src="require(`@/assets/interface/icons/resources/${resource.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="resource.name" />
+        <div class="item-actions">
+          <button class="btn btn-success btn-sm position-absolute top-0 start-100 translate-middle py-0 px-1">
+            <p class="card-text m-0">{{ resource.quantity }}</p>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState } from 'vuex';
 
 export default {
   name: 'QuickBarRight',
 
   computed: {
     ...mapState(['character']),
-  },
-
-  methods: {
-    ...mapActions(['increaseMoney', 'decreaseMoney']),
+    stackedResources() {
+      const resourceMap = new Map();
+      this.character.resources.forEach(resource => {
+        if (resourceMap.has(resource.id)) {
+          resourceMap.get(resource.id).quantity += 1;
+        } else {
+          resourceMap.set(resource.id, { ...resource, quantity: 1 });
+        }
+      });
+      return Array.from(resourceMap.values());
+    },
   },
 };
 </script>
 
 <style lang="scss" scoped>
-.quick-bar-left {
+.quick-bar-right {
   position: absolute;
   bottom: 0px;
   right: 0px;
   background-color: rgba(0, 0, 0, 0.7);
-  padding: 20px;
+  padding: 10px;
   border-radius: 5px;
   z-index: 9999;
 }
 
-.health-bar {
-  width: 200px;
-  height: 20px;
-  background-color: #ccc;
+.resources-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.resource-item {
+  width: 50px;
+  height: 50px;
+  border: 1px solid #fff;
   border-radius: 5px;
-  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3px 6px;
+  margin: 6px 0 0 0;
 }
 
-.health-bar-fill {
-  height: 100%;
-  background-color: #4caf50;
-  transition: width 0.3s ease;
+.resource-item img {
+  max-width: 90%;
+  max-height: 90%;
+  scale: 1;
 }
 
-.health-bar-text {
+.item-actions {
   position: absolute;
-  top: 67%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: #fff;
-  font-size: 12px;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+  top: 0;
+  right: 0;
+}
+
+.card-text {
+  font-size: 0.666rem;
 }
 
 @media screen and (max-width: 600px) {
-  .quick-bar-left {
+  .quick-bar-right {
     bottom: 10px;
-    left: 10px;
+    right: 10px;
   }
 
-  .health-bar {
-    width: 150px;
-    height: 15px;
+  .resource-item {
+    width: 40px;
+    height: 40px;
   }
 
-  .health-bar-text {
-    font-size: 10px;
+  .card-text {
+    font-size: 0.5rem;
   }
 }
 </style>

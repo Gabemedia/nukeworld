@@ -52,25 +52,6 @@
           </div>
         </div>
       </div>
-      <div class="shop-section">
-        <div class="shop-items d-flex flex-row">
-          <div v-for="resource in stackedResources" :key="resource.id" class="shop-item position-relative">
-            <img :src="require(`@/assets/interface/icons/resources/${resource.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="resource.name" />
-
-            <div class="item-actions">
-              <button class="btn btn-success btn-sm position-absolute top-0 start-100 translate-middle py-0 px-1">
-                <p class="card-text m-0">{{ resource.quantity }}</p>
-              </button>
-            </div>
-            <div v-if="hoveredItem === resource" class="item-info">
-              <p class="mb-1 fw-bold small"><strong>Name:</strong> {{ resource.name }}</p>
-              <p class="mb-1 small"><strong>Description:</strong> {{ resource.desc }}</p>
-              <p class="mb-1 small"><strong>Quantity:</strong> {{ resource.quantity }}</p>
-              <p class="mb-1 small"><strong>Price:</strong> {{ resource.price }} coins</p>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -99,20 +80,6 @@ export default {
     },
     aid() {
       return this.character.aid;
-    },
-    resources() {
-      return this.character.resources;
-    },
-    stackedResources() {
-      const resourceMap = new Map();
-      this.character.resources.forEach(resource => {
-        if (resourceMap.has(resource.id)) {
-          resourceMap.get(resource.id).quantity += 1;
-        } else {
-          resourceMap.set(resource.id, { ...resource, quantity: 1 });
-        }
-      });
-      return Array.from(resourceMap.values());
     },
   },
   methods: {
