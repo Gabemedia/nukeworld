@@ -185,12 +185,35 @@ const mutations = {
       storyLine.playerChoices.push(choice);
     }
   },
+
   completeStoryLine(state, id) {
     const storyLine = state.storyLines.find(sl => sl.id === id);
     if (storyLine) {
       storyLine.completed = true;
       storyLine.currentStepIndex = 0;
     }
+  },
+
+  checkRequiredResources({ state }, requiredResources) {
+    if (!requiredResources || requiredResources.length === 0) return true;
+    
+    return requiredResources.every(required => {
+      const playerResourceCount = state.character.resources.filter(r => r.id === required.id).length;
+      return playerResourceCount >= required.amount;
+    });
+  },
+
+  useRequiredResources({ commit, state }, requiredResources) {
+    if (!requiredResources || requiredResources.length === 0) return;
+    
+    requiredResources.forEach(required => {
+      const playerResources = state.character.resources.filter(r => r.id === required.id);
+      for (let i = 0; i < required.amount; i++) {
+        if (playerResources && playerResources.length > 0) {
+          commit('removeResource', playerResources[i].uuid);
+        }
+      }
+    });
   },
 
   addItemToWeapons(state, itemId) {
@@ -268,6 +291,7 @@ const mutations = {
       state.character.resources.push({ ...resource, uuid: uuidv4() });
     }
   },
+
   removeResource(state, resourceUuid) {
     state.character.resources = state.character.resources.filter(r => r.uuid !== resourceUuid);
   },
@@ -502,18 +526,84 @@ const actions = {
       commit('setCurrentStoryLineId', storyLineId);
     }
   },
-  progressStory({ commit, state }, { nextId, choiceText }) {
+
+  completeStoryLine({ commit, dispatch, state }, storyLineId) {
+    const storyLine = state.storyLines.find(sl => sl.id === storyLineId);
+    if (storyLine && !storyLine.completed) {
+      // Giv belønninger
+      if (storyLine.reward) {
+        // Giv exp
+        if (storyLine.reward.exp) {
+          dispatch('increaseExp', storyLine.reward.exp);
+        }
+        
+        // Giv penge
+        if (storyLine.reward.money) {
+          dispatch('increaseMoney', storyLine.reward.money);
+        }
+        
+        // Giv ressourcer
+        if (storyLine.reward.resourceRewards && storyLine.reward.resourceRewards.length > 0) {
+          storyLine.reward.resourceRewards.forEach(reward => {
+            for (let i = 0; i < reward.amount; i++) {
+              dispatch('addResource', reward.id);
+            }
+          });
+        }
+      }
+      
+      // Marker historielinjen som fuldført
+      commit('completeStoryLine', storyLineId);
+      commit('setCurrentStoryLineId', null);
+    }
+  },
+
+  checkRequiredResources({ state }, requiredResources) {
+    if (!requiredResources || requiredResources.length === 0) return true;
+    
+    return requiredResources.every(required => {
+      const playerResourceCount = state.character.resources.filter(r => r.id === required.id).length;
+      return playerResourceCount >= required.amount;
+    });
+  },
+  
+  useRequiredResources({ dispatch }, requiredResources) {
+    if (!requiredResources || requiredResources.length === 0) return;
+    
+    requiredResources.forEach(required => {
+      for (let i = 0; i < required.amount; i++) {
+        dispatch('removeResource', required.id);
+      }
+    });
+  },
+
+  progressStory({ commit, dispatch, state }, { nextId, choiceText }) {
     if (state.currentStoryLineId !== null) {
+      const currentStoryLine = state.storyLines.find(sl => sl.id === state.currentStoryLineId);
+      const currentStep = currentStoryLine.steps[currentStoryLine.currentStepIndex || 0];
+      
+      if (currentStep) {
+        const selectedOption = currentStep.playerOptions.find(option => option.text === choiceText);
+        
+        if (selectedOption && selectedOption.requiredResources) {
+          const hasResources = dispatch('checkRequiredResources', selectedOption.requiredResources);
+          if (!hasResources) {
+            // Håndter manglende ressourcer (f.eks. vis en besked til spilleren)
+            return;
+          }
+          dispatch('useRequiredResources', selectedOption.requiredResources);
+        }
+      }
+      
       commit('addPlayerChoice', { storyLineId: state.currentStoryLineId, choice: choiceText });
+      
       if (nextId === null) {
-        commit('completeStoryLine', state.currentStoryLineId);
-        commit('setCurrentStoryLineId', null);
+        dispatch('completeStoryLine', state.currentStoryLineId);
       } else {
         commit('progressStoryStep');
       }
     }
   },
-
   equipWeapon({ commit }, itemId) {
     commit('equipWeapon', itemId);
   },

@@ -58,6 +58,12 @@
           <div v-for="resource in stackedResources" :key="resource.id" class="shop-item position-relative">
             <img :src="require(`@/assets/interface/icons/resources/${resource.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="resource.name" />
             <span class="position-absolute top-0 end-0 badge bg-primary">{{ resource.quantity }}</span>
+            <div v-if="hoveredItem === resource" class="item-info">
+              <p class="mb-1 fw-bold small"><strong>Name:</strong> {{ resource.name }}</p>
+              <p class="mb-1 small"><strong>Description:</strong> {{ resource.desc }}</p>
+              <p class="mb-1 small"><strong>Quantity:</strong> {{ resource.quantity }}</p>
+              <p class="mb-1 small"><strong>Price:</strong> {{ resource.price }} coins</p>
+            </div>
           </div>
         </div>
       </div>
