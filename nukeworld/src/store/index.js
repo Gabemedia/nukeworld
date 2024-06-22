@@ -341,15 +341,6 @@ const actions = {
     commit('increaseCharacterLevelInArray', state.character);
   },
   
-  resumeQuestProgress({ dispatch }, quest) {
-    const elapsedTime = Date.now() - quest.startTime;
-    const updatedQuest = {
-      ...quest,
-      progress: Math.min((elapsedTime / quest.duration) * 100, 100),
-      remainingTime: Math.max(0, quest.duration - elapsedTime)
-    };
-    dispatch('updateQuestProgress', updatedQuest);
-  },
   handleQuest({ dispatch, commit, state }, quest) {
     const stateQuest = state.quests.find(q => q.id === quest.id);
     if (!stateQuest) return;
@@ -369,7 +360,7 @@ const actions = {
     const updateProgress = () => {
       const stateQuest = state.quests.find(q => q.id === quest.id);
       if (!stateQuest || stateQuest.state !== 'in-progress') return;
-
+  
       const now = Date.now();
       const elapsedTime = now - stateQuest.startTime;
       const progress = Math.min((elapsedTime / stateQuest.duration) * 100, 100);
@@ -381,35 +372,57 @@ const actions = {
       }
       
       commit('updateQuest', updatedQuest);
-
+  
       if (updatedQuest.state === 'ready-to-claim') {
         clearInterval(stateQuest.intervalId);
       }
     };
-
+  
     const existingQuest = state.quests.find(q => q.id === quest.id);
     if (existingQuest && existingQuest.intervalId) {
       clearInterval(existingQuest.intervalId);
     }
-
+  
+    if (!quest.startTime) {
+      quest.startTime = Date.now();
+    }
+  
     const intervalId = setInterval(updateProgress, 1000);
     commit('updateQuest', { ...quest, intervalId });
     updateProgress(); // Kør første gang med det samme
   },
-
+  
+  
   initializeQuests({ commit, state, dispatch }) {
     const savedQuests = JSON.parse(localStorage.getItem('quests'));
     if (savedQuests && savedQuests.length > 0) {
       commit('setQuests', savedQuests);
       state.quests.forEach(quest => {
         if (quest.state === 'in-progress') {
-          dispatch('startQuestProgress', quest);
+          dispatch('resumeQuestProgress', quest);
         }
       });
     } else {
       commit('setQuests', defaultQuests);
     }
+  },  
+  
+  resumeQuestProgress({ dispatch, commit }, quest) {
+    const now = Date.now();
+    const elapsedTime = now - quest.startTime;
+    const remainingTime = Math.max(0, quest.duration - elapsedTime);
+    const progress = Math.min((elapsedTime / quest.duration) * 100, 100);
+  
+    if (remainingTime > 0) {
+      const updatedQuest = { ...quest, progress, remainingTime };
+      commit('updateQuest', updatedQuest);
+      dispatch('startQuestProgress', updatedQuest);
+    } else {
+      commit('updateQuest', { ...quest, state: 'ready-to-claim', progress: 100 });
+    }
   },
+  
+  
   
   
   claimRewards({ commit, dispatch, state }, quest) {

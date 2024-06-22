@@ -100,8 +100,7 @@ export default {
     },
     handleQuestAction(quest) {
       if (quest.state === 'not-started') {
-        this.handleQuest(quest);
-        this.startQuestProgress(quest);
+        this.$store.dispatch('handleQuest', quest);
         toast.success(`<strong>${quest.name} started!</strong>`, {
           autoClose: 5000,
           toastClassName: 'quest-toast-container',
@@ -213,6 +212,7 @@ export default {
             }, 0);
           }
         }
+        this.$store.dispatch('startQuestProgress', quest);
         this.saveQuests();
       }, 1000);
     },
