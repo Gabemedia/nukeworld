@@ -202,6 +202,10 @@ const mutations = {
     }
   },
 
+  setStoryLines(state, storyLines) {
+    state.storyLines = storyLines;
+  },
+  
   checkRequiredResources({ state }, requiredResources) {
     if (!requiredResources || requiredResources.length === 0) return true;
     
@@ -512,23 +516,27 @@ const actions = {
   },
   
 
-  resetCharacter({ commit, state }) {
+  resetCharacter({ commit, state, dispatch }) {
     commit('updateCharacter', {
       exp: 1,
       maxExp: 2500,
       level: 1,
       money: 0,
       health: 100,
+      maxHealth: 100,
       weapons: [state.items[0]],
       equippedWeapons: [state.items[0]],
       armor: [state.armor[0]],
       equippedArmor: state.armor[0],
+      resources: [],
       currentStoryLine: null,
       currentStoryStep: null,
     });
     commit('equipWeapon', state.items[0].uuid);
     commit('equipArmor', state.armor[0].uuid); 
     commit('setQuests', defaultQuests);
+    commit('setCurrentStoryLineId', null);
+    dispatch('resetStoryLines');
   },  
   clearQuests({ commit }) {
     commit('setQuests', []);
@@ -619,6 +627,16 @@ const actions = {
       }
     }
   },
+  resetStoryLines({ commit, state }) {
+    const resetStoryLines = state.storyLines.map(storyLine => ({
+      ...storyLine,
+      completed: false,
+      currentStepIndex: 0,
+      playerChoices: []
+    }));
+    commit('setStoryLines', resetStoryLines);
+  },
+  
   equipWeapon({ commit }, itemId) {
     commit('equipWeapon', itemId);
   },
