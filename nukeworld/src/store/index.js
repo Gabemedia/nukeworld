@@ -42,9 +42,7 @@ const getters = {
     const storyLine = getters.currentStoryLine;
     return storyLine ? storyLine.steps[storyLine.currentStepIndex || 0] : null;
   },
-  availableStoryLines: (state) => {
-    return state.storyLines.filter(sl => !sl.completed && state.character.level >= sl.levelRequirement);
-  },
+  availableStoryLines: (state) => state.storyLines.filter(sl => !sl.completed && state.character.level >= sl.levelRequirement),
   completedStoryLines: (state) => state.storyLines.filter(sl => sl.completed),
 };
 
@@ -98,17 +96,41 @@ const mutations = {
       state.quests[questIndex] = { ...state.quests[questIndex], ...newState };
     }
   },
+  updateQuest(state, updatedQuest) {
+    const index = state.quests.findIndex(q => q.id === updatedQuest.id);
+    if (index !== -1) {
+      state.quests[index] = updatedQuest;
+      localStorage.setItem('quests', JSON.stringify(state.quests));
+    }
+  },
   startQuest(state, quest) {
     const index = state.quests.findIndex((q) => q.name === quest.name);
     if (index !== -1) {
       state.quests[index] = { ...quest, disabled: true, state: 'in-progress', progress: 0, startTime: Date.now() };
     }
   },
-  completeQuest(state, quest) {
-    const index = state.quests.findIndex((q) => q.name === quest.name);
-    if (index !== -1) {
-      state.quests[index] = { ...quest, state: 'ready-to-claim' };
-    }
+  updateQuestProgress({ commit, dispatch }, quest) {
+    const intervalId = setInterval(() => {
+      const now = Date.now();
+      const elapsedTime = now - quest.startTime;
+      const progress = Math.min((elapsedTime / quest.duration) * 100, 100);
+      const remainingTime = Math.max(0, quest.duration - elapsedTime);
+      const updatedQuest = { ...quest, progress, remainingTime };
+      
+      if (remainingTime <= 0) {
+        clearInterval(intervalId);
+        updatedQuest.state = 'ready-to-claim';
+      }
+      
+      commit('updateQuest', updatedQuest);
+      
+      if (updatedQuest.state === 'ready-to-claim') {
+        dispatch('completeQuest', updatedQuest);
+      }
+    }, 1000);
+  },
+  completeQuest({ commit }, quest) {
+    commit('updateQuest', { ...quest, state: 'ready-to-claim' });
   },
   claimQuest(state, quest) {
     const index = state.quests.findIndex((q) => q.name === quest.name);
@@ -117,25 +139,20 @@ const mutations = {
     }
   },
   resetQuest(state, quest) {
-    const index = state.quests.findIndex((q) => q.name === quest.name);
+    const index = state.quests.findIndex((q) => q.id === quest.id);
     if (index !== -1 && state.quests[index].state === 'completed') {
       state.quests[index] = {
         ...quest,
-        disabled: false,
         state: 'not-started',
         progress: 0,
-        claimed: false,
         startTime: null,
         remainingTime: quest.duration,
       };
+      localStorage.setItem('quests', JSON.stringify(state.quests));
     }
   },
   setQuests(state, quests) {
     state.quests = quests;
-  },
-  updateQuestProgress(state, { questIndex, progress, remainingTime }) {
-    state.quests[questIndex].progress = progress;
-    state.quests[questIndex].remainingTime = remainingTime;
   },
 
   setCurrentStoryLineId(state, id) {
@@ -310,40 +327,68 @@ const actions = {
     commit('increaseCharacterLevelInArray', state.character);
   },
   
-  startQuestProgress({ commit, state }, quest) {
-    const startTime = quest.startTime || Date.now();
-    const questIndex = state.quests.findIndex((q) => q.name === quest.name);
-    state.quests[questIndex].startTime = startTime;
-
-    const intervalId = setInterval(() => {
-      const elapsedTime = Date.now() - startTime;
-      const progress = Math.min((elapsedTime / quest.duration) * 100, 100);
-      const remainingTime = Math.max(0, quest.duration - elapsedTime);
-      commit('updateQuestProgress', { questIndex, progress, remainingTime });
-      if (remainingTime <= 0) {
-        clearInterval(intervalId);
-        commit('completeQuest', quest);
-      }
-    }, 1000);
-
-    const elapsedTime = Date.now() - startTime;
-    const remainingTime = Math.max(0, quest.duration - elapsedTime);
-    if (remainingTime <= 0) {
-      clearInterval(intervalId);
-      commit('completeQuest', quest);
-    }
+  resumeQuestProgress({ dispatch }, quest) {
+    const elapsedTime = Date.now() - quest.startTime;
+    const updatedQuest = {
+      ...quest,
+      progress: Math.min((elapsedTime / quest.duration) * 100, 100),
+      remainingTime: Math.max(0, quest.duration - elapsedTime)
+    };
+    dispatch('updateQuestProgress', updatedQuest);
   },
   handleQuest({ dispatch, commit, state }, quest) {
-    if (quest.state === 'not-started') {
-      commit('startQuest', quest);
-      const startTime = Date.now();
-      state.quests[state.quests.findIndex((q) => q.name === quest.name)].startTime = startTime;
-      dispatch('startQuestProgress', { ...quest, startTime });
-    } else if (quest.state === 'in-progress') {
-      dispatch('startQuestProgress', quest);
+    const stateQuest = state.quests.find(q => q.id === quest.id);
+    if (!stateQuest) return;
+
+    if (stateQuest.state === 'not-started' || stateQuest.state === 'in-progress') {
+      const updatedQuest = { 
+        ...stateQuest, 
+        state: 'in-progress', 
+        progress: stateQuest.progress || 0,
+        startTime: stateQuest.startTime || Date.now()
+      };
+      commit('updateQuest', updatedQuest);
+      dispatch('startQuestProgress', updatedQuest);
     }
   },
+  startQuestProgress({ commit, state }, quest) {
+    const updateProgress = () => {
+      const stateQuest = state.quests.find(q => q.id === quest.id);
+      if (!stateQuest || stateQuest.state !== 'in-progress') return;
 
+      const now = Date.now();
+      const elapsedTime = now - stateQuest.startTime;
+      const progress = Math.min((elapsedTime / stateQuest.duration) * 100, 100);
+      const remainingTime = Math.max(0, stateQuest.duration - elapsedTime);
+      const updatedQuest = { ...stateQuest, progress, remainingTime };
+      
+      if (remainingTime <= 0) {
+        updatedQuest.state = 'ready-to-claim';
+      }
+      
+      commit('updateQuest', updatedQuest);
+
+      if (updatedQuest.state === 'ready-to-claim') {
+        clearInterval(stateQuest.intervalId);
+      }
+    };
+
+    const existingQuest = state.quests.find(q => q.id === quest.id);
+    if (existingQuest && existingQuest.intervalId) {
+      clearInterval(existingQuest.intervalId);
+    }
+
+    const intervalId = setInterval(updateProgress, 1000);
+    commit('updateQuest', { ...quest, intervalId });
+    updateProgress(); // Kør første gang med det samme
+  },
+  initializeQuests({ dispatch, state }) {
+    state.quests.forEach(quest => {
+      if (quest.state === 'in-progress') {
+        dispatch('startQuestProgress', quest);
+      }
+    });
+  },
   claimRewards({ commit, dispatch, state }, quest) {
     let obtainedReward = null;
   
@@ -471,6 +516,8 @@ const store = createStore({
 
 store.commit('assignRandomCoordinates');
 store.dispatch('autoResetQuests'); 
+store.dispatch('initializeQuests');
+
 
 
 watch(
@@ -503,6 +550,14 @@ watch(
     } else {
       //console.warn('Forsøg på at gemme tomme eller ugyldige quests forhindret');
     }
+  },
+  { deep: true }
+);
+
+watch(
+  () => state.quests,
+  (newQuests) => {
+    localStorage.setItem('quests', JSON.stringify(newQuests));
   },
   { deep: true }
 );

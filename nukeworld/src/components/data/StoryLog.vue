@@ -1,6 +1,10 @@
 <template>
+  <div class="story-log-container">
     <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="openModal">
-      <img class="sidebar-icon" :src="require(`@/assets/interface/icons/encounter.png`)" title="Enemy Encounter">
+      <div class="icon-wrapper">
+        <img class="sidebar-icon" :src="require(`@/assets/interface/icons/encounter.png`)" title="Enemy Encounter">
+        <div v-if="hasNewStory" class="new-story-indicator"></div>
+      </div>
     </button>
     <div v-if="showModal" class="modal" tabindex="-1" @click.self="closeModal">
       <div class="modal-dialog">
@@ -11,101 +15,121 @@
         </div>
       </div>
     </div>
-  </template>
+  </div>
+</template>
     
-  <script>
-  import QuestDialog from './controller/QuestDialog.vue';
-  
-  export default {
-    name: 'DiaLog',
-    components: {
-      QuestDialog,
+<script>
+import QuestDialog from './controller/QuestDialog.vue';
+import { mapGetters } from 'vuex';
+
+export default {
+  name: 'StoryLog',
+  components: {
+    QuestDialog,
+  },
+  data() {
+    return {
+      showModal: false,
+    };
+  },
+  computed: {
+    ...mapGetters(['availableStoryLines']),
+    hasNewStory() {
+      return this.availableStoryLines.length > 0;
+    }
+  },
+  methods: {
+    openModal() {
+      this.showModal = true;
     },
-    data() {
-      return {
-        showModal: false,
-      };
+    closeModal() {
+      this.showModal = false;
     },
-    methods: {
-      openModal() {
-        this.showModal = true;
-      },
-      closeModal() {
-        this.showModal = false;
-      },
-    },
-  };
-  </script>
+  },
+};
+</script>
     
-  <style scoped>
-  
-  .modal {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: fixed;
-    z-index: 1050;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-  }
-  
+<style scoped>
+.story-log-container {
+  position: relative;
+}
+
+.icon-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.new-story-indicator {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 10px;
+  height: 10px;
+  background-color: #00ff00;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+}
+
+.modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  z-index: 1050;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
+.modal-dialog {
+  max-width: 500px;
+  width: 90%;
+  margin: 1.75rem auto;
+}
+
+@media (max-width: 576px) {
   .modal-dialog {
-    max-width: 500px;
-    width: 90%;
+    width: 100%;
     margin: 1.75rem auto;
   }
-  
-  @media (max-width: 576px) {
-    .modal-dialog {
-      width: 100%;
-      margin: 1.75rem auto;
-    }
-  }
-  
-  .modal-body {
-    position: relative;
-    flex: 1 1 auto;
-    padding: 1rem;
-    max-height: 300px;
-    overflow-y: scroll;
-    color: #fff;
-  }
-  
-  .modal-content {
-    position: relative;
-    background-clip: padding-box;
-    border: 1px #fff solid;
-    border-radius: 0.3rem;
-    outline: 0;
-  }
-  
-  .modal-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    padding: 1rem;
-    border-bottom: 1px solid #dee2e6;
-    border-top-left-radius: calc(0.3rem - 1px);
-    border-top-right-radius: calc(0.3rem - 1px);
-  }
-  
-  .modal-title {
-    margin-bottom: 0;
-    line-height: 1.5;
-  }
-  
-  .modal-body {
-    position: relative;
-    flex: 1 1 auto;
-    padding: 1rem;
-  }
-  
-  .card-text-header {
-    font-weight: 600;
-    font-size: 1rem;
-  }
-  </style>
-  
+}
+
+.modal-body {
+  position: relative;
+  flex: 1 1 auto;
+  padding: 1rem;
+  max-height: 300px;
+  overflow-y: scroll;
+  color: #fff;
+}
+
+.modal-content {
+  position: relative;
+  background-clip: padding-box;
+  border: 1px #fff solid;
+  border-radius: 0.3rem;
+  outline: 0;
+}
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1rem;
+  border-bottom: 1px solid #dee2e6;
+  border-top-left-radius: calc(0.3rem - 1px);
+  border-top-right-radius: calc(0.3rem - 1px);
+}
+
+.modal-title {
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+
+.card-text-header {
+  font-weight: 600;
+  font-size: 1rem;
+}
+</style>

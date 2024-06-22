@@ -122,7 +122,20 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Performed code cleanup and removed unused components, methods, and styles throughout the project.
 - Added comprehensive inline comments to complex parts of the codebase to improve code readability and maintainability.
 
-### Version 0.1.3 (2024-06-23)
+### Version 0.1.3.5 (2024-06-22)
+- Added automatic initialization of quests at app startup
+- Added display of quests with levelRequirement equal to or below the player's current level
+- Improved quest system to preserve all quest states when reloading the page
+- Implemented `resetQuests` function to reset completed quests.
+- Implemented level-based quest filtering in MapComponent and MapComponent2
+- Optimized `handleQuest` and `startQuestProgress` actions for better handling of ongoing quests
+- Implemented periodic reset of completed quests
+- Improved state management for quests with better integration of localStorage
+- Optimized quest progress tracking for more accurate updates
+- Resolved issues with ESLint warnings related to unused state parameters
+- Updated filteredQuests computed property to display quests based on player's level
+- Optimized quest marker display on the map based on player's level and quest availability
+- Enhanced gameplay experience by providing players access to quests that match their level or are easier
 
 
 
