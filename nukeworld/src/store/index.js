@@ -1,6 +1,7 @@
 import { createStore } from 'vuex';
 import { reactive, watch } from 'vue';
 import defaultQuests from './quests';
+import defaultStoryLines from './story';
 import { v4 as uuidv4 } from 'uuid'; 
 import items from './items';
 import armor from './armor';
@@ -24,6 +25,8 @@ const state = reactive({
     equippedArmor: null,
   },
   quests: reactive(JSON.parse(localStorage.getItem('quests')) || defaultQuests),
+  storyLines: reactive(JSON.parse(localStorage.getItem('storyLines')) || defaultStoryLines),
+  currentStoryLineId: JSON.parse(localStorage.getItem('currentStoryLineId')) || null,
   items,
   armor,
   aid,
@@ -34,9 +37,15 @@ const state = reactive({
 
 const getters = {
   characterInArray: (state) => (email) => state.characters.find((ch) => ch.email === email),
-  questsForCurrentLevel: (state) => {
-    return state.quests.filter(quest => quest.levelRequirement === state.character.level);
+  currentStoryLine: (state) => state.storyLines.find(sl => sl.id === state.currentStoryLineId),
+  currentStoryStep: (state, getters) => {
+    const storyLine = getters.currentStoryLine;
+    return storyLine ? storyLine.steps[storyLine.currentStepIndex || 0] : null;
   },
+  availableStoryLines: (state) => {
+    return state.storyLines.filter(sl => !sl.completed && state.character.level >= sl.levelRequirement);
+  },
+  completedStoryLines: (state) => state.storyLines.filter(sl => sl.completed),
 };
 
 const mutations = {
@@ -128,6 +137,41 @@ const mutations = {
     state.quests[questIndex].progress = progress;
     state.quests[questIndex].remainingTime = remainingTime;
   },
+
+  setCurrentStoryLineId(state, id) {
+    state.currentStoryLineId = id;
+    if (id !== null) {
+      const storyLine = state.storyLines.find(sl => sl.id === id);
+      if (storyLine && !Object.prototype.hasOwnProperty.call(storyLine, 'currentStepIndex')) {
+        storyLine.currentStepIndex = 0;
+      }
+    }
+  },
+  progressStoryStep(state) {
+    if (state.currentStoryLineId !== null) {
+      const storyLine = state.storyLines.find(sl => sl.id === state.currentStoryLineId);
+      if (storyLine) {
+        storyLine.currentStepIndex = (storyLine.currentStepIndex || 0) + 1;
+      }
+    }
+  },
+  addPlayerChoice(state, { storyLineId, choice }) {
+    const storyLine = state.storyLines.find(sl => sl.id === storyLineId);
+    if (storyLine) {
+      if (!storyLine.playerChoices) {
+        storyLine.playerChoices = [];
+      }
+      storyLine.playerChoices.push(choice);
+    }
+  },
+  completeStoryLine(state, id) {
+    const storyLine = state.storyLines.find(sl => sl.id === id);
+    if (storyLine) {
+      storyLine.completed = true;
+      storyLine.currentStepIndex = 0;
+    }
+  },
+
   addItemToWeapons(state, itemId) {
     const item = state.items.find(i => i.id === itemId);
     if (item) {
@@ -355,7 +399,9 @@ const actions = {
       weapons: [state.items[0]],
       equippedWeapons: [state.items[0]],
       armor: [state.armor[0]],
-      equippedArmor: state.armor[0], 
+      equippedArmor: state.armor[0],
+      currentStoryLine: null,
+      currentStoryStep: null,
     });
     commit('equipWeapon', state.items[0].uuid);
     commit('equipArmor', state.armor[0].uuid); 
@@ -365,6 +411,25 @@ const actions = {
     commit('setQuests', []);
     commit('setQuests', defaultQuests);
   },
+
+  startStoryLine({ commit, state }, storyLineId) {
+    const storyLine = state.storyLines.find(sl => sl.id === storyLineId && !sl.completed && state.character.level >= sl.levelRequirement);
+    if (storyLine) {
+      commit('setCurrentStoryLineId', storyLineId);
+    }
+  },
+  progressStory({ commit, state }, { nextId, choiceText }) {
+    if (state.currentStoryLineId !== null) {
+      commit('addPlayerChoice', { storyLineId: state.currentStoryLineId, choice: choiceText });
+      if (nextId === null) {
+        commit('completeStoryLine', state.currentStoryLineId);
+        commit('setCurrentStoryLineId', null);
+      } else {
+        commit('progressStoryStep');
+      }
+    }
+  },
+
   equipWeapon({ commit }, itemId) {
     commit('equipWeapon', itemId);
   },
@@ -407,6 +472,7 @@ const store = createStore({
 store.commit('assignRandomCoordinates');
 store.dispatch('autoResetQuests'); 
 
+
 watch(
   () => state.characters,
   (newCharacters) => {
@@ -441,5 +507,12 @@ watch(
   { deep: true }
 );
 
+// Watches for localStorage
+watch(() => state.storyLines, (newStoryLines) => {
+  localStorage.setItem('storyLines', JSON.stringify(newStoryLines));
+}, { deep: true });
 
+watch(() => state.currentStoryLineId, (newId) => {
+  localStorage.setItem('currentStoryLineId', JSON.stringify(newId));
+});
 export default store;

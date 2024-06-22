@@ -1,4 +1,5 @@
 <template>
+  <LvlPopUp ref="lvlPopUp" title="Congratulations!" @popup-closed="onPopupClosed" />    
   <div class="quick-bar-left">
     <div class="d-flex justify-content-end text-white mb-2">
       <img style="width:20px;" :src="require(`@/assets/interface/icons/money.png`)" title="Money" class="me-1">
@@ -12,16 +13,41 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
+import LvlPopUp from './controller/popup/LvlPopUp.vue';
 
 export default {
   name: 'QuickBarRight',
+  components: {
+    LvlPopUp,
+  },
   computed: {
     ...mapState(['character']),
     healthPercentage() {
       return (this.character.exp / this.character.maxExp) * 100;
     },
   },
+  data() {
+    return {
+      isPopupOpen: false,
+      levelingUp: false, // add this flag
+    };
+  },
+  methods: {
+    ...mapActions(['increaseExp', 'decreaseExp', 'levelUp', 'increaseMoney', 'decreaseMoney']),
+    onPopupClosed() {
+      this.isPopupOpen = false;
+      this.levelingUp = false; // set the flag to false when the popup is closed
+    },
+  },
+  watch: {
+    'character.level': function(newLevel, oldLevel) {
+      if (newLevel > oldLevel && !this.isPopupOpen && !this.levelingUp) { // check the flag here
+        this.isPopupOpen = true;
+        this.$refs.lvlPopUp.openPopup();
+      }
+    },
+  }
 };
 </script>
 
