@@ -30,12 +30,13 @@ export default [
     ],
     reward: {
       exp: 500, // Give some exp for completing the first story
-      money: 0,
+      money: 500,
       resourceRewards: [
         { id: 1, amount: 5 }, // 5x Wood Scrap (assuming Wood Scrap has id 1)
         { id: 2, amount: 5 }  // 5x Steel Scrap (assuming Steel Scrap has id 2)
       ]
-    }
+    },
+    alwaysGiveReward: true
   },
   {
     id: 2,
@@ -55,9 +56,14 @@ export default [
           { 
             text: "I have them ready", 
             nextId: 3, 
-            requiredResources: [{ id: 2, amount: 2 }] // Assuming Steel Scrap has id 2
+            requiredResources: [{ id: 2, amount: 2 }],
+            giveReward: true
           },
-          { text: "I need to find them first", nextId: null }
+          { 
+            text: "I need to find them first", 
+            nextId: null,
+            giveReward: false
+          }
         ]
       },
       {
@@ -69,7 +75,8 @@ export default [
       exp: 2000,
       money: 0,
       resourceRewards: [] // If you want to give resources as a reward
-    }
+    },
+    alwaysGiveReward: false
   },
   {
     id: 3,

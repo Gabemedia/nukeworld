@@ -1,7 +1,7 @@
 <template>
     <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="openModal">
       <div class="icon-wrapper">
-        <img class="sidebar-icon" :src="require(`@/assets/interface/icons/encounter.png`)" title="Enemy Encounter">
+        <img class="sidebar-icon" :src="require(`@/assets/interface/icons/encounter.png`)" title="Storyline">
       </div>
     </button>
   <div class="story-log-container">

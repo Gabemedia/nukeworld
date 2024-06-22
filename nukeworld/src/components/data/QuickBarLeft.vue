@@ -12,7 +12,7 @@
     <div class="separator"></div>
     <div class="d-flex justify-content-start text-white my-2">
       <img style="width:20px; height: 20px;"  :src="require(`@/assets/interface/icons/exp.png`)" title="Experence" class="me-1">
-      <span class="mobile-text fw-bold fs-6">Experence:</span>
+      <span class="mobile-text fw-bold fs-6">Experience:</span>
     </div>
     <div class="exp-bar">
       <div class="exp-bar-fill" :style="{ width: expPercentage + '%' }"></div>

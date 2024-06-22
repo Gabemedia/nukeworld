@@ -4,7 +4,7 @@
       <li class="nav-item mx-2">
         <div class="nav-item-name price-box position-relative">
           Story
-          <div v-if="hasNewStory" class="new-story-indicator"></div>
+          <div v-if="hasNewStory" class="bg-success new-story-indicator"></div>
         </div>
         <StoryLog />
       </li>
@@ -104,8 +104,7 @@ export default {
   right: -5px;
   width: 10px;
   height: 10px;
-  background-color: #00ff00;
   border-radius: 50%;
-  border: 1px #000 solid;
+  border: 1px #fff solid;
 }
 </style>

@@ -21,7 +21,7 @@
       </div>
     </div>
     <div v-else-if="availableStoryLines.length > 0">
-      <h6 class="mb-3 text-uppercase fw-bold text-start">Tilgængelige Quests</h6>
+      <h6 class="mb-3 text-uppercase fw-bold text-start">Available Storylines</h6>
       <div v-for="storyLine in availableStoryLines" :key="storyLine.id">
         <button @click="startStoryLine(storyLine.id)" class="btn btn-sm btn-outline-light">
           {{ storyLine.name }} (Level {{ storyLine.levelRequirement }})
@@ -29,11 +29,10 @@
       </div>
     </div>
     <div v-else>
-      <h6 class="mb-3 text-uppercase fw-bold text-start">Ingen tilgængelige quests</h6>
-      <p>COME BACK LATER</p>
+      <h6 class="mb-3 text-uppercase fw-bold text-start">Come back later for more Storylines</h6>
     </div>
     <div class="mt-4">
-      <h6 class="mb-3 text-uppercase fw-bold text-start">Gennemførte Quests</h6>
+      <h6 class="mb-3 text-uppercase fw-bold text-start">Completed Storylines</h6>
       <ul>
         <li v-for="storyLine in completedStoryLines" :key="storyLine.id">
           <button @click="toggleStoryLineDetails(storyLine.id)" class="btn btn-link text-light">
@@ -94,7 +93,11 @@ export default {
           }
         });
       }
-      this.progressStory({ nextId: option.nextId, choiceText: option.text });
+      this.progressStory({ 
+        nextId: option.nextId, 
+        choiceText: option.text,
+        giveReward: option.giveReward !== undefined ? option.giveReward : true
+      });
     },
   },
   
@@ -120,7 +123,7 @@ export default {
   .conversation-box {
     display: flex;
     align-items: flex-start;
-    margin-bottom: 10px 0px;
+    margin: 10px 0px;
   }
   
   .npc-box {

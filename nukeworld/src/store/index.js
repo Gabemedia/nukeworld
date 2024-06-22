@@ -333,7 +333,18 @@ const actions = {
       armor: [state.armor[0]],
       equippedArmor: state.armor[0],
       aid: [state.aid[1], state.aid[1], state.aid[1]],
-      resources: [],
+      resources: [
+        state.resources[1],
+        state.resources[2],
+        state.resources[3],
+        state.resources[4],
+        state.resources[5],
+        state.resources[6],
+        state.resources[7],
+        state.resources[8],
+        state.resources[9],
+        state.resources[10],
+      ],
     };
     commit('addCharacter', newCharacter);
     commit('updateCharacter', newCharacter);
@@ -550,22 +561,16 @@ const actions = {
     }
   },
 
-  completeStoryLine({ commit, dispatch, state }, storyLineId) {
+  completeStoryLine({ commit, dispatch, state }, { storyLineId, giveReward }) {
     const storyLine = state.storyLines.find(sl => sl.id === storyLineId);
     if (storyLine && !storyLine.completed) {
-      // Giv belønninger
-      if (storyLine.reward) {
-        // Giv exp
+      if ((storyLine.alwaysGiveReward || giveReward) && storyLine.reward) {
         if (storyLine.reward.exp) {
           dispatch('increaseExp', storyLine.reward.exp);
         }
-        
-        // Giv penge
         if (storyLine.reward.money) {
           dispatch('increaseMoney', storyLine.reward.money);
         }
-        
-        // Giv ressourcer
         if (storyLine.reward.resourceRewards && storyLine.reward.resourceRewards.length > 0) {
           storyLine.reward.resourceRewards.forEach(reward => {
             for (let i = 0; i < reward.amount; i++) {
@@ -574,8 +579,6 @@ const actions = {
           });
         }
       }
-      
-      // Marker historielinjen som fuldført
       commit('completeStoryLine', storyLineId);
       commit('setCurrentStoryLineId', null);
     }
@@ -600,7 +603,7 @@ const actions = {
     });
   },
 
-  progressStory({ commit, dispatch, state }, { nextId, choiceText }) {
+  progressStory({ commit, dispatch, state }, { nextId, choiceText, giveReward }) {
     if (state.currentStoryLineId !== null) {
       const currentStoryLine = state.storyLines.find(sl => sl.id === state.currentStoryLineId);
       const currentStep = currentStoryLine.steps[currentStoryLine.currentStepIndex || 0];
@@ -611,7 +614,6 @@ const actions = {
         if (selectedOption && selectedOption.requiredResources) {
           const hasResources = dispatch('checkRequiredResources', selectedOption.requiredResources);
           if (!hasResources) {
-            // Håndter manglende ressourcer (f.eks. vis en besked til spilleren)
             return;
           }
           dispatch('useRequiredResources', selectedOption.requiredResources);
@@ -621,12 +623,13 @@ const actions = {
       commit('addPlayerChoice', { storyLineId: state.currentStoryLineId, choice: choiceText });
       
       if (nextId === null) {
-        dispatch('completeStoryLine', state.currentStoryLineId);
+        dispatch('completeStoryLine', { storyLineId: state.currentStoryLineId, giveReward });
       } else {
         commit('progressStoryStep');
       }
     }
   },
+  
   resetStoryLines({ commit, state }) {
     const resetStoryLines = state.storyLines.map(storyLine => ({
       ...storyLine,

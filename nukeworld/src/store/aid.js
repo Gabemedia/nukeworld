@@ -27,4 +27,13 @@ export default [
     state: 'none',
     price: '100',
   },
+  {
+    id: 3,
+    uuid: uuidv4(),
+    name: 'Big Medkit',
+    desc: 'Big medkit restores 050 health.',
+    health: 100,
+    state: 'none',
+    price: '100',
+  },
 ];

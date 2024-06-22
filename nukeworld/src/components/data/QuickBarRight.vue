@@ -1,6 +1,6 @@
 <template>
   <div class="quick-bar-right">
-    <div class="d-flex justify-content-end text-white mb-2">
+    <div class="d-flex justify-content-end text-white mb-3">
       <img style="width:20px;" :src="require(`@/assets/interface/icons/money.png`)" title="Money" class="me-1">
       <span class="mobile-text fw-bold fs-6">Coins: {{ character.money }}</span>
     </div>
@@ -52,9 +52,10 @@ export default {
 }
 
 .resources-container {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 10px;
+  width: 240px; /* Juster denne værdi efter behov */
 }
 
 .resource-item {
@@ -65,8 +66,8 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 3px 6px;
-  margin: 6px 0 0 0;
+  padding: 3px;
+  margin: 0;
 }
 
 .resource-item img {
@@ -89,6 +90,10 @@ export default {
   .quick-bar-right {
     bottom: 10px;
     right: 10px;
+  }
+
+  .resources-container {
+    width: 200px; /* Juster denne værdi for mobile enheder */
   }
 
   .resource-item {
