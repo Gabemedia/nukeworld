@@ -229,7 +229,6 @@ export default {
   flex-wrap: wrap;
   gap: 25px;
   justify-content:center;
-
 }
 
 @media (max-width: 767px) {

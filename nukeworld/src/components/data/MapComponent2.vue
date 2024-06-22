@@ -186,6 +186,19 @@ export default {
   background: linear-gradient(180deg, rgb(180, 141, 102) 0%, rgb(188, 140, 87) 100%);
   margin-top: -15px;
 }
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.bounce-marker {
+  animation: bounce 1s infinite;
+}
+
 .modal {
   display: flex;
   align-items: center;
@@ -199,22 +212,61 @@ export default {
   overflow: auto;
   background-color: rgba(0, 0, 0, 0.4);
 }
-.modal-content {
-  margin: 15% auto;
+
+.modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  z-index: 1050;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
 }
-.modal-body{
-  padding: 0!important;
+
+.modal-dialog {
+  max-width: 500px;
+  width: 90%;
+  margin: 1.75rem auto;
 }
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
+
+@media (max-width: 576px) {
+  .modal-dialog {
+    width: 100%;
+    margin: 1.75rem auto;
   }
 }
 
-.bounce-marker {
-  animation: bounce 1s infinite;
+.modal-body {
+  position: relative;
+  flex: 1 1 auto;
+  overflow-y: scroll;
+  padding: 0px;
 }
+.modal-content {
+  position: relative;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 0.3rem;
+  outline: 0;
+}
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-bottom: 1px solid #dee2e6;
+  border-top-left-radius: calc(0.3rem - 1px);
+  border-top-right-radius: calc(0.3rem - 1px);
+}
+
+.modal-title {
+  margin-bottom: 0;
+  line-height: 1.5;
+}
+
 </style>

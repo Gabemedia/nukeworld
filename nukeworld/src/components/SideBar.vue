@@ -14,7 +14,10 @@
         <EnemyEncounters />
       </li>
       <li class="nav-item mb-1">
-        <div class="nav-item-name price-box">Story</div>
+        <div class="nav-item-name price-box position-relative">
+          Story
+          <div v-if="hasNewStory" class="new-story-indicator"></div>
+        </div>
         <StoryLog />
       </li>
       <li class="nav-item mb-1">
@@ -40,6 +43,11 @@ export default {
     EnemyEncounters,
     StoryLog,
     PlayerShop,
+  },
+  computed: {
+    hasNewStory() {
+      return this.$store.getters.availableStoryLines.length > 0;
+    }
   },
   data() {
     return {
@@ -84,5 +92,19 @@ export default {
     border: 1px #fff solid;
     padding: 3px 6px;
     border-radius: 6px;
+}
+
+.position-relative {
+  position: relative;
+}
+
+.new-story-indicator {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 10px;
+  height: 10px;
+  background-color: #00ff00;
+  border-radius: 50%;
 }
 </style>

@@ -1,11 +1,10 @@
 <template>
-  <div class="story-log-container">
     <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="openModal">
       <div class="icon-wrapper">
         <img class="sidebar-icon" :src="require(`@/assets/interface/icons/encounter.png`)" title="Enemy Encounter">
-        <div v-if="hasNewStory" class="new-story-indicator"></div>
       </div>
     </button>
+  <div class="story-log-container">
     <div v-if="showModal" class="modal" tabindex="-1" @click.self="closeModal">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -17,7 +16,6 @@
     </div>
   </div>
 </template>
-    
 <script>
 import QuestDialog from './controller/QuestDialog.vue';
 import { mapGetters } from 'vuex';
@@ -59,16 +57,6 @@ export default {
   display: inline-block;
 }
 
-.new-story-indicator {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  width: 10px;
-  height: 10px;
-  background-color: #00ff00;
-  border-radius: 50%;
-  border: 2px solid #ffffff;
-}
 
 .modal {
   display: flex;
