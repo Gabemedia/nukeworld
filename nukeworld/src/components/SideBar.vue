@@ -1,26 +1,26 @@
 <template>
-  <div class="d-flex flex-column flex-shrink-0 sidebar ms-2" :class="{ 'show': sidebarOpen }">
-    <ul class="nav nav-pills nav-flush flex-column mb-auto text-center">
-      <li class="nav-item mb-1">
+  <div class="d-flex flex-row flex-shrink-0 sidebar" :class="{ 'show': sidebarOpen }">
+    <ul class="nav nav-pills nav-flush flex-row mb-auto text-center">
+      <li class="nav-item mx-2">
         <div class="nav-item-name price-box position-relative">
           Story
           <div v-if="hasNewStory" class="new-story-indicator"></div>
         </div>
         <StoryLog />
       </li>
-      <li class="nav-item mb-1">
+      <li class="nav-item mx-2">
         <div class="nav-item-name price-box">Quests</div>
         <QuestLog />
       </li>
-      <li class="nav-item mb-1">
+      <li class="nav-item mx-2">
         <div class="nav-item-name price-box">Inventory</div>
         <InventoryLog />
       </li>
-      <li class="nav-item mb-1">
+      <li class="nav-item mx-2">
         <div class="nav-item-name price-box">Enemies</div>
         <EnemyEncounters />
       </li>
-      <li class="nav-item mb-1">
+      <li class="nav-item mx-2">
         <div class="nav-item-name price-box">Shop</div>
         <PlayerShop />
       </li>
@@ -67,14 +67,14 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
-  height: 100%;
-  width: 4.5rem;
-  transition: width 0.3s ease-in-out;
-  z-index: -1;
+  height: 4.5rem;
+  width: 100%;
+  transition: height 0.3s ease-in-out;
+  z-index: 1000;
 }
 
 .sidebar.show {
-  width: 280px;
+  height: auto;
 }
 
 .nav-item-name {
@@ -86,12 +86,12 @@ export default {
 }
 
 .price-box {
-    transform: translateY(60%);
-    background-color: #000;
-    color: #fff;
-    border: 1px #fff solid;
-    padding: 3px 6px;
-    border-radius: 6px;
+  transform: translateY(60%);
+  background-color: #000;
+  color: #fff;
+  border: 1px #fff solid;
+  padding: 3px 6px;
+  border-radius: 6px;
 }
 
 .position-relative {
@@ -106,5 +106,6 @@ export default {
   height: 10px;
   background-color: #00ff00;
   border-radius: 50%;
+  border: 1px #000 solid;
 }
 </style>

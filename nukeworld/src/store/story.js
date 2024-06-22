@@ -8,32 +8,32 @@ export default [
     playerChoices: [],
     steps: [
       {
-        npcMessage: "Velkommen til NukeWorld, overlevende! Dette er en farlig verden fuld af udfordringer og muligheder.",
-        playerOptions: [{ text: "Fortæl mig mere", nextId: 2 }]
+        npcMessage: "Welcome to NukeWorld, survivor! This is a dangerous world full of challenges and opportunities.",
+        playerOptions: [{ text: "Tell me more", nextId: 2 }]
       },
       {
-        npcMessage: "Du vil finde quests markeret på dit kort. Udfør dem for at få erfaring og belønninger.",
-        playerOptions: [{ text: "Hvad med fjender?", nextId: 3 }]
+        npcMessage: "You will find quests marked on your map. Complete them to gain experience and rewards.",
+        playerOptions: [{ text: "What about enemies?", nextId: 3 }]
       },
       {
-        npcMessage: "Pas på fjendtlige møder! De kan være farlige, men også give værdifulde ressourcer.",
-        playerOptions: [{ text: "Forstået. Hvad med udstyr?", nextId: 4 }]
+        npcMessage: "Beware of hostile encounters! They can be dangerous, but also provide valuable resources.",
+        playerOptions: [{ text: "Understood. What about equipment?", nextId: 4 }]
       },
       {
-        npcMessage: "Besøg shoppen for at købe og sælge genstande. Godt udstyr er nøglen til overlevelse.",
-        playerOptions: [{ text: "Tak for informationen", nextId: 5 }]
+        npcMessage: "Visit the shop to buy and sell items. Good equipment is key to survival.",
+        playerOptions: [{ text: "Thanks for the information", nextId: 5 }]
       },
       {
-        npcMessage: "Held og lykke derude, overlevende. NukeWorld venter på dig!",
-        playerOptions: [{ text: "Afslut samtale", nextId: null }]
+        npcMessage: "Good luck out there, survivor. NukeWorld awaits you!",
+        playerOptions: [{ text: "End conversation", nextId: null }]
       }
     ],
     reward: {
-      exp: 500, // Giv lidt exp for at fuldføre den første story
+      exp: 500, // Give some exp for completing the first story
       money: 0,
       resourceRewards: [
-        { id: 1, amount: 5 }, // 5x Wood Scrap (antager at Wood Scrap har id 1)
-        { id: 2, amount: 5 }  // 5x Steel Scrap (antager at Steel Scrap har id 2)
+        { id: 1, amount: 5 }, // 5x Wood Scrap (assuming Wood Scrap has id 1)
+        { id: 2, amount: 5 }  // 5x Steel Scrap (assuming Steel Scrap has id 2)
       ]
     }
   },
@@ -46,29 +46,29 @@ export default [
     playerChoices: [],
     steps: [
       {
-        npcMessage: "Det er tid til at etablere en hjemmebase. Vi har brug for ressourcer til at komme i gang.",
-        playerOptions: [{ text: "Hvad har I brug for?", nextId: 2 }]
+        npcMessage: "It's time to establish a home base. We need resources to get started.",
+        playerOptions: [{ text: "What do you need?", nextId: 2 }]
       },
       {
-        npcMessage: "Vi mangler 2 Steel Scraps til vores vagter. Kan du skaffe dem?",
+        npcMessage: "We need 2 Steel Scraps for our guards. Can you get them?",
         playerOptions: [
           { 
-            text: "Jeg har dem klar", 
+            text: "I have them ready", 
             nextId: 3, 
-            requiredResources: [{ id: 2, amount: 2 }] // Antager at Steel Scrap har id 2
+            requiredResources: [{ id: 2, amount: 2 }] // Assuming Steel Scrap has id 2
           },
-          { text: "Jeg må først finde dem", nextId: null }
+          { text: "I need to find them first", nextId: null }
         ]
       },
       {
-        npcMessage: "Fantastisk! Din hjælp er uvurderlig. Her er din belønning: 20.000 erfaringspoint!",
-        playerOptions: [{ text: "Tak! Afslut samtale", nextId: null }]
+        npcMessage: "Fantastic! Your help is invaluable. Here's your reward: 20,000 experience points!",
+        playerOptions: [{ text: "Thanks! End conversation", nextId: null }]
       }
     ],
     reward: {
-      exp: 20000,
+      exp: 2000,
       money: 0,
-      resourceRewards: [] // Hvis du vil give ressourcer som belønning
+      resourceRewards: [] // If you want to give resources as a reward
     }
   },
   {
@@ -80,25 +80,25 @@ export default [
     playerChoices: [],
     steps: [
       {
-        npcMessage: "Vi har brug for hjælp med en vigtig opgave. Er du interesseret?",
-        playerOptions: [{ text: "Fortæl mig mere", nextId: 2 }]
+        npcMessage: "We need help with an important task. Are you interested?",
+        playerOptions: [{ text: "Tell me more", nextId: 2 }]
       },
       {
-        npcMessage: "Vi har brug for [RANDOM OBJECTIVE]. Kan du hjælpe os med det?",
+        npcMessage: "We need [RANDOM OBJECTIVE]. Can you help us with that?",
         playerOptions: [
-          { text: "Jeg er klar", nextId: 3 },
-          { text: "Ikke lige nu", nextId: null }
+          { text: "I'm ready", nextId: 3 },
+          { text: "Not right now", nextId: null }
         ]
       },
       {
-        npcMessage: "Godt klaret! Her er din belønning: [RANDOM REWARD]",
-        playerOptions: [{ text: "Tak! Afslut samtale", nextId: null }]
+        npcMessage: "Well done! Here's your reward: [RANDOM REWARD]",
+        playerOptions: [{ text: "Thanks! End conversation", nextId: null }]
       }
     ],
     reward: {
       exp: 0,
       money: 0,
-      resourceRewards: [] // Hvis du vil give ressourcer som belønning
+      resourceRewards: [] // If you want to give resources as a reward
     }
   },
   {
@@ -110,25 +110,25 @@ export default [
     playerChoices: [],
     steps: [
       {
-        npcMessage: "Der er en presserende situation, der kræver din ekspertise. Interesseret?",
-        playerOptions: [{ text: "Lad mig høre", nextId: 2 }]
+        npcMessage: "There's an urgent situation that requires your expertise. Interested?",
+        playerOptions: [{ text: "Let me hear", nextId: 2 }]
       },
       {
-        npcMessage: "Vi har brug for [RANDOM OBJECTIVE]. Tror du, at du kan klare det?",
+        npcMessage: "We need [RANDOM OBJECTIVE]. Do you think you can handle it?",
         playerOptions: [
-          { text: "Jeg tager udfordringen", nextId: 3 },
-          { text: "Måske senere", nextId: null }
+          { text: "I'll take the challenge", nextId: 3 },
+          { text: "Maybe later", nextId: null }
         ]
       },
       {
-        npcMessage: "Imponerende arbejde! Din belønning er: [RANDOM REWARD]",
-        playerOptions: [{ text: "Tak! Afslut samtale", nextId: null }]
+        npcMessage: "Impressive work! Your reward is: [RANDOM REWARD]",
+        playerOptions: [{ text: "Thanks! End conversation", nextId: null }]
       }
     ],
     reward: {
       exp: 0,
       money: 0,
-      resourceRewards: [] // Hvis du vil give ressourcer som belønning
+      resourceRewards: [] // If you want to give resources as a reward
     }
   }
 ];

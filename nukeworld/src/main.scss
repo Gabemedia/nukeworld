@@ -21,7 +21,6 @@ html {
 body {
   color: #000;
   font-weight: 400;
-  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 1));
   overflow-x: hidden!important;
   overflow-y: scroll!important;
 }
@@ -29,7 +28,7 @@ body {
 
 div.modal-content {
   //background-color: #f8f8f8!important;
-  background-color: rgba(0, 0, 0, 0.7)!important;
+  background-color: rgba(0, 0, 0, 0.8)!important;
 }
 
 .modal-body {

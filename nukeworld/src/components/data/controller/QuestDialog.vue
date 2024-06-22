@@ -12,11 +12,9 @@
         
         <div class="conversation-box player-box">
           <div class="message-box player-message">
-            <div v-for="option in currentStoryStep.playerOptions" :key="option.text">
-              <button @click="selectOption(option)" class="btn btn-sm btn-outline-light mb-2">
+              <button @click="selectOption(option)" class="btn btn-md btn-outline-light m-1" v-for="option in currentStoryStep.playerOptions" :key="option.text">
                 {{ option.text }}
               </button>
-            </div>
           </div>
           <img class="sidebar-icon" :src="require(`@/assets/interface/icons/encounter.png`)" title="Player">
         </div>
@@ -25,7 +23,7 @@
     <div v-else-if="availableStoryLines.length > 0">
       <h6 class="mb-3 text-uppercase fw-bold text-start">Tilgængelige Quests</h6>
       <div v-for="storyLine in availableStoryLines" :key="storyLine.id">
-        <button @click="startStoryLine(storyLine.id)" class="btn btn-sm btn-outline-light mb-2">
+        <button @click="startStoryLine(storyLine.id)" class="btn btn-sm btn-outline-light">
           {{ storyLine.name }} (Level {{ storyLine.levelRequirement }})
         </button>
       </div>
@@ -111,7 +109,7 @@ export default {
     border-radius: 5px;
     color: white;
     text-shadow: rgba(0, 0, 0, 1) 0px 0px 2px;
-    font-size: 0.8rem;
+    font-size: 1rem;
   }
   
   .dialog-log {
@@ -122,7 +120,7 @@ export default {
   .conversation-box {
     display: flex;
     align-items: flex-start;
-    margin-bottom: 10px;
+    margin-bottom: 10px 0px;
   }
   
   .npc-box {
@@ -150,10 +148,12 @@ export default {
   
   .npc-message {
     margin-right: 15px;
+    text-align: left;
   }
   
   .player-message {
     margin-left: 15px;
+    text-align: right;
   }
   </style>
     
