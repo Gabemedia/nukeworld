@@ -140,7 +140,7 @@ const mutations = {
   },
   resetQuest(state, quest) {
     const index = state.quests.findIndex((q) => q.id === quest.id);
-    if (index !== -1 && state.quests[index].state === 'completed') {
+    if (index !== -1) {
       state.quests[index] = {
         ...quest,
         state: 'not-started',
@@ -148,13 +148,11 @@ const mutations = {
         startTime: null,
         remainingTime: quest.duration,
       };
-      localStorage.setItem('quests', JSON.stringify(state.quests));
     }
   },
   setQuests(state, quests) {
     state.quests = quests;
   },
-
   setCurrentStoryLineId(state, id) {
     state.currentStoryLineId = id;
     if (id !== null) {
@@ -382,13 +380,22 @@ const actions = {
     commit('updateQuest', { ...quest, intervalId });
     updateProgress(); // Kør første gang med det samme
   },
-  initializeQuests({ dispatch, state }) {
-    state.quests.forEach(quest => {
-      if (quest.state === 'in-progress') {
-        dispatch('startQuestProgress', quest);
-      }
-    });
+
+  initializeQuests({ commit, state, dispatch }) {
+    const savedQuests = JSON.parse(localStorage.getItem('quests'));
+    if (savedQuests && savedQuests.length > 0) {
+      commit('setQuests', savedQuests);
+      state.quests.forEach(quest => {
+        if (quest.state === 'in-progress') {
+          dispatch('startQuestProgress', quest);
+        }
+      });
+    } else {
+      commit('setQuests', defaultQuests);
+    }
   },
+  
+  
   claimRewards({ commit, dispatch, state }, quest) {
     let obtainedReward = null;
   
@@ -426,13 +433,16 @@ const actions = {
     commit('claimQuest', quest); // Opdater quest state til 'completed'
     return obtainedReward;
   },
+
   resetQuests({ state, commit }) {
     state.quests.forEach((quest) => {
       if (quest.state === 'completed') {
         commit('resetQuest', quest);
       }
     });
+    localStorage.setItem('quests', JSON.stringify(state.quests));
   },
+  
 
   resetCharacter({ commit, state }) {
     commit('updateCharacter', {
@@ -515,8 +525,9 @@ const store = createStore({
 });
 
 store.commit('assignRandomCoordinates');
-store.dispatch('autoResetQuests'); 
 store.dispatch('initializeQuests');
+store.dispatch('autoResetQuests'); 
+
 
 
 
@@ -561,6 +572,7 @@ watch(
   },
   { deep: true }
 );
+
 
 // Watches for localStorage
 watch(() => state.storyLines, (newStoryLines) => {

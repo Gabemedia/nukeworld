@@ -90,7 +90,7 @@ export default {
   },
   methods: {
     ...mapActions(['increaseExp', 'increaseMoney', 'handleQuest', 'claimRewards', 'clearQuests']),
-    ...mapMutations(['completeQuest', 'setQuests', 'updateQuestState']),
+    ...mapMutations(['completeQuest', 'setQuests', 'updateQuest']),
     isButtonDisabled(quest) {
       if (quest.state === 'not-started') {
         return this.character.level < quest.levelRequirement;

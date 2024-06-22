@@ -2,6 +2,13 @@
   <div class="d-flex flex-column flex-shrink-0 sidebar ms-2" :class="{ 'show': sidebarOpen }">
     <ul class="nav nav-pills nav-flush flex-column mb-auto text-center">
       <li class="nav-item mb-1">
+        <div class="nav-item-name price-box position-relative">
+          Story
+          <div v-if="hasNewStory" class="new-story-indicator"></div>
+        </div>
+        <StoryLog />
+      </li>
+      <li class="nav-item mb-1">
         <div class="nav-item-name price-box">Quests</div>
         <QuestLog />
       </li>
@@ -12,13 +19,6 @@
       <li class="nav-item mb-1">
         <div class="nav-item-name price-box">Enemies</div>
         <EnemyEncounters />
-      </li>
-      <li class="nav-item mb-1">
-        <div class="nav-item-name price-box position-relative">
-          Story
-          <div v-if="hasNewStory" class="new-story-indicator"></div>
-        </div>
-        <StoryLog />
       </li>
       <li class="nav-item mb-1">
         <div class="nav-item-name price-box">Shop</div>
