@@ -4,6 +4,7 @@ export default [
     name: "Welcome to NukeWorld",
     levelRequirement: 1,
     completed: false,
+    requiredStoryLineId: null, 
     playerChoices: [],
     steps: [
       {
@@ -41,6 +42,7 @@ export default [
     name: "Setup HomeBase Settlement",
     levelRequirement: 2,
     completed: false,
+    requiredStoryLineId: 1,
     playerChoices: [],
     steps: [
       {
@@ -74,6 +76,7 @@ export default [
     name: "Random Quest 1",
     levelRequirement: 5,
     completed: false,
+    requiredStoryLineId: null,
     playerChoices: [],
     steps: [
       {
@@ -103,6 +106,7 @@ export default [
     name: "Random Quest 2",
     levelRequirement: 6,
     completed: false,
+    requiredStoryLineId: null,
     playerChoices: [],
     steps: [
       {
