@@ -631,8 +631,18 @@ const actions = {
   
   autoResetQuests({ dispatch }) {
     setInterval(() => {
-      dispatch('resetQuests');
+      dispatch('resetCompletedQuests');
     }, 60000); // 60 sekunder
+  },
+  
+  // Tilføj denne nye action
+  resetCompletedQuests({ state, commit }) {
+    state.quests.forEach((quest) => {
+      if (quest.state === 'completed') {
+        commit('resetQuest', quest);
+      }
+    });
+    localStorage.setItem('quests', JSON.stringify(state.quests));
   },
   
   addResource({ commit }, resourceId) {
