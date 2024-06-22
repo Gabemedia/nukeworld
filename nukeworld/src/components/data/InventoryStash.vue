@@ -53,11 +53,15 @@
         </div>
       </div>
       <div class="shop-section">
-        <h6 class="mb-3 text-uppercase fw-bold">Resources</h6>
         <div class="shop-items d-flex flex-row">
           <div v-for="resource in stackedResources" :key="resource.id" class="shop-item position-relative">
             <img :src="require(`@/assets/interface/icons/resources/${resource.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="resource.name" />
-            <span class="position-absolute top-0 end-0 badge bg-primary">{{ resource.quantity }}</span>
+
+            <div class="item-actions">
+              <button class="btn btn-success btn-sm position-absolute top-0 start-100 translate-middle py-0 px-1">
+                <p class="card-text m-0">{{ resource.quantity }}</p>
+              </button>
+            </div>
             <div v-if="hoveredItem === resource" class="item-info">
               <p class="mb-1 fw-bold small"><strong>Name:</strong> {{ resource.name }}</p>
               <p class="mb-1 small"><strong>Description:</strong> {{ resource.desc }}</p>
