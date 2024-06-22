@@ -235,6 +235,14 @@ export default {
         this.saveQuests();
       }, 1000);
     },
+    updateQuestData() {
+      if (this.quest) {
+        const updatedQuest = this.$store.state.quests.find(q => q.id === this.quest.id);
+        if (updatedQuest) {
+          Object.assign(this.quest, updatedQuest);
+        }
+      }
+    },
     saveQuests() {
       localStorage.setItem('quests', JSON.stringify(this.quests));
     },
@@ -258,6 +266,14 @@ export default {
     if (this.quest.state === 'in-progress') {
       this.startQuestProgress(this.quest);
     }
+  },
+  watch: {
+    '$store.state.quests': {
+      handler() {
+        this.updateQuestData();
+      },
+      deep: true,
+    },
   },
 };
 </script>

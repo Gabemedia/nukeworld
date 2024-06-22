@@ -111,6 +111,7 @@ export default {
         this.claimRewardsAction(quest);
       }
     },
+
     async claimRewardsAction(quest) {
       const obtainedReward = await this.claimRewards(quest);
       confetti({
@@ -216,8 +217,24 @@ export default {
         this.saveQuests();
       }, 1000);
     },
+    updateLocalQuests() {
+      this.quests.forEach((quest, index) => {
+        const updatedQuest = this.$store.state.quests.find(q => q.id === quest.id);
+        if (updatedQuest) {
+          Object.assign(this.quests[index], updatedQuest);
+        }
+      });
+    },
     saveQuests() {
       localStorage.setItem('quests', JSON.stringify(this.quests));
+    },
+  },
+  watch: {
+    '$store.state.quests': {
+      handler() {
+        this.updateLocalQuests();
+      },
+      deep: true,
     },
   },
 };

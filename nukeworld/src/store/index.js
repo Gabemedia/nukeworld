@@ -538,11 +538,13 @@ const actions = {
   addItemToArmor({ commit }, itemId) {
     commit('addItemToArmor', itemId);
   },
+  
   autoResetQuests({ dispatch }) {
     setInterval(() => {
       dispatch('resetQuests');
     }, 60000); // 60 sekunder
   },
+  
   addResource({ commit }, resourceId) {
     commit('addResource', resourceId);
   },
