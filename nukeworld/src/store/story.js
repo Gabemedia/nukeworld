@@ -26,7 +26,15 @@ export default [
         npcMessage: "Held og lykke derude, overlevende. NukeWorld venter på dig!",
         playerOptions: [{ text: "Afslut samtale", nextId: null }]
       }
-    ]
+    ],
+    reward: {
+      exp: 500, // Giv lidt exp for at fuldføre den første story
+      money: 0,
+      resourceRewards: [
+        { id: 1, amount: 5 }, // 5x Wood Scrap (antager at Wood Scrap har id 1)
+        { id: 2, amount: 5 }  // 5x Steel Scrap (antager at Steel Scrap har id 2)
+      ]
+    }
   },
   {
     id: 2,
@@ -40,9 +48,13 @@ export default [
         playerOptions: [{ text: "Hvad har I brug for?", nextId: 2 }]
       },
       {
-        npcMessage: "Vi mangler 2 læderrustninge til vores vagter. Kan du skaffe dem?",
+        npcMessage: "Vi mangler 2 Steel Scraps til vores vagter. Kan du skaffe dem?",
         playerOptions: [
-          { text: "Jeg har dem klar", nextId: 3 },
+          { 
+            text: "Jeg har dem klar", 
+            nextId: 3, 
+            requiredResources: [{ id: 2, amount: 2 }] // Antager at Steel Scrap har id 2
+          },
           { text: "Jeg må først finde dem", nextId: null }
         ]
       },
@@ -50,7 +62,12 @@ export default [
         npcMessage: "Fantastisk! Din hjælp er uvurderlig. Her er din belønning: 20.000 erfaringspoint!",
         playerOptions: [{ text: "Tak! Afslut samtale", nextId: null }]
       }
-    ]
+    ],
+    reward: {
+      exp: 20000,
+      money: 0,
+      resourceRewards: [] // Hvis du vil give ressourcer som belønning
+    }
   },
   {
     id: 3,
@@ -74,7 +91,12 @@ export default [
         npcMessage: "Godt klaret! Her er din belønning: [RANDOM REWARD]",
         playerOptions: [{ text: "Tak! Afslut samtale", nextId: null }]
       }
-    ]
+    ],
+    reward: {
+      exp: 0,
+      money: 0,
+      resourceRewards: [] // Hvis du vil give ressourcer som belønning
+    }
   },
   {
     id: 4,
@@ -98,6 +120,11 @@ export default [
         npcMessage: "Imponerende arbejde! Din belønning er: [RANDOM REWARD]",
         playerOptions: [{ text: "Tak! Afslut samtale", nextId: null }]
       }
-    ]
+    ],
+    reward: {
+      exp: 0,
+      money: 0,
+      resourceRewards: [] // Hvis du vil give ressourcer som belønning
+    }
   }
 ];

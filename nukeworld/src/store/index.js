@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import items from './items';
 import armor from './armor';
 import aid from './aid';
+import resources from './ressources';
 
 const state = reactive({
   characters: JSON.parse(localStorage.getItem('characters')) || [],
@@ -23,6 +24,7 @@ const state = reactive({
     equippedWeapons: [],
     armor: [], 
     equippedArmor: null,
+    resources: [],
   },
   quests: reactive(JSON.parse(localStorage.getItem('quests')) || defaultQuests),
   storyLines: reactive(JSON.parse(localStorage.getItem('storyLines')) || defaultStoryLines),
@@ -30,6 +32,7 @@ const state = reactive({
   items,
   armor,
   aid,
+  resources,
   mapBounds: null,
   markers: [],
 });
@@ -37,6 +40,9 @@ const state = reactive({
 
 const getters = {
   characterInArray: (state) => (email) => state.characters.find((ch) => ch.email === email),
+  getResource: (state) => (resourceId) => {
+    return state.character.resources.find(r => r.id === resourceId);
+  },
   currentStoryLine: (state) => state.storyLines.find(sl => sl.id === state.currentStoryLineId),
   currentStoryStep: (state, getters) => {
     const storyLine = getters.currentStoryLine;
@@ -255,7 +261,16 @@ const mutations = {
       state.character.health = Math.min(state.character.health + usedItem.health, state.character.maxHealth);
       state.character.aid.splice(itemIndex, 1);
     }
-  },  
+  },
+  addResource(state, resourceId) {
+    const resource = state.resources.find(r => r.id === resourceId);
+    if (resource) {
+      state.character.resources.push({ ...resource, uuid: uuidv4() });
+    }
+  },
+  removeResource(state, resourceUuid) {
+    state.character.resources = state.character.resources.filter(r => r.uuid !== resourceUuid);
+  },
 };
 
 const actions = {
@@ -275,6 +290,7 @@ const actions = {
       armor: [state.armor[0]],
       equippedArmor: state.armor[0],
       aid: [state.aid[1], state.aid[1], state.aid[1]],
+      resources: [],
     };
     commit('addCharacter', newCharacter);
     commit('updateCharacter', newCharacter);
@@ -514,7 +530,12 @@ const actions = {
       dispatch('resetQuests');
     }, 60000); // 60 sekunder
   },
-  
+  addResource({ commit }, resourceId) {
+    commit('addResource', resourceId);
+  },
+  removeResource({ commit }, resourceUuid) {
+    commit('removeResource', resourceUuid);
+  },
 };
 
 const store = createStore({

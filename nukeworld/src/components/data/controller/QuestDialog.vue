@@ -75,10 +75,31 @@ export default {
   },
   methods: {
     ...mapActions(['startStoryLine', 'progressStory']),
+    checkResources(requiredResources) {
+      return requiredResources.every(req => {
+        return this.$store.state.character.resources.filter(r => r.id === req.id).length >= req.amount;
+      });
+    },
     selectOption(option) {
+      if (option.requiredResources && !this.checkResources(option.requiredResources)) {
+        // Vis en besked om manglende ressourcer
+        return;
+      }
+      // Fjern ressourcer hvis nødvendigt
+      if (option.requiredResources) {
+        option.requiredResources.forEach(req => {
+          for (let i = 0; i < req.amount; i++) {
+            const resourceToRemove = this.$store.state.character.resources.find(r => r.id === req.id);
+            if (resourceToRemove) {
+              this.$store.dispatch('removeResource', resourceToRemove.uuid);
+            }
+          }
+        });
+      }
       this.progressStory({ nextId: option.nextId, choiceText: option.text });
     },
   },
+  
 };
 </script>
 

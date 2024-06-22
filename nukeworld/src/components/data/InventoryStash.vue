@@ -52,6 +52,15 @@
           </div>
         </div>
       </div>
+      <div class="shop-section">
+        <h6 class="mb-3 text-uppercase fw-bold">Resources</h6>
+        <div class="shop-items d-flex flex-row">
+          <div v-for="resource in stackedResources" :key="resource.id" class="shop-item position-relative">
+            <img :src="require(`@/assets/interface/icons/resources/${resource.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="resource.name" />
+            <span class="position-absolute top-0 end-0 badge bg-primary">{{ resource.quantity }}</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -80,6 +89,20 @@ export default {
     },
     aid() {
       return this.character.aid;
+    },
+    resources() {
+      return this.character.resources;
+    },
+    stackedResources() {
+      const resourceMap = new Map();
+      this.character.resources.forEach(resource => {
+        if (resourceMap.has(resource.id)) {
+          resourceMap.get(resource.id).quantity += 1;
+        } else {
+          resourceMap.set(resource.id, { ...resource, quantity: 1 });
+        }
+      });
+      return Array.from(resourceMap.values());
     },
   },
   methods: {
