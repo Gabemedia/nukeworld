@@ -6,7 +6,7 @@
         <div class="shop-items d-flex flex-row">
           <div v-for="item in weapons" :key="item.uuid" class="shop-item position-relative" @click="toggleEquipWeapon(item.uuid)" @mouseover="showItemInfo(item, 'weapon')" @mouseleave="hideItemInfo">
             <span v-if="isEquipped(item.uuid)" class="position-absolute active-equip translate-middle p-2 bg-success border border-light rounded-circle"></span>
-            <img :src="require(`@/assets/interface/icons/weapons/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="item.name" />
+            <img :src="require(`@/assets/interface/icons/weapons/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="item.name" />
             <div class="item-actions">
               <button v-if="item.price !== '-1'" class="btn btn-danger btn-sm position-absolute top-100 start-100 translate-middle py-0 px-1" @click.stop="sellWeapon(item.uuid)" :disabled="isEquipped(item.uuid)">
                 <p class="card-text m-0">{{ item.price }}</p>
@@ -25,7 +25,7 @@
         <div class="shop-items d-flex flex-row">
           <div v-for="item in armor" :key="item.uuid" class="shop-item position-relative" @click="toggleEquipArmor(item.uuid)" @mouseover="showItemInfo(item, 'armor')" @mouseleave="hideItemInfo">
             <span v-if="isArmorEquipped(item.uuid)" class="position-absolute active-equip translate-middle p-2 bg-success border border-light rounded-circle"></span>
-            <img :src="require(`@/assets/interface/icons/armor/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="item.name" />
+            <img :src="require(`@/assets/interface/icons/armor/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="item.name" />
             <div class="item-actions">
               <button v-if="item.price !== '-1'" class="btn btn-danger btn-sm position-absolute top-100 start-100 translate-middle py-0 px-1" @click.stop="sellArmor(item.uuid)" :disabled="isArmorEquipped(item.uuid)">
                 <p class="card-text m-0">{{ item.price }}</p>
@@ -43,7 +43,7 @@
       <div class="shop-section">
         <div class="shop-items d-flex flex-row">
           <div v-for="item in aid" :key="item.uuid" class="shop-item position-relative">
-            <img :src="require(`@/assets/interface/icons/aid/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="item.name" />
+            <img :src="require(`@/assets/interface/icons/aid/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="item.name" />
             <div class="item-actions">
               <button class="btn btn-success btn-sm position-absolute top-0 start-100 translate-middle py-0 px-1" @click="useAid(item.uuid)">
                 <p class="card-text m-0">+</p>
@@ -56,7 +56,7 @@
         <h6 class="mb-3 text-uppercase fw-bold">Resources</h6>
         <div class="shop-items d-flex flex-row">
           <div v-for="resource in stackedResources" :key="resource.id" class="shop-item position-relative">
-            <img :src="require(`@/assets/interface/icons/resources/${resource.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="resource.name" />
+            <img :src="require(`@/assets/interface/icons/resources/${resource.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="resource.name" />
             <span class="position-absolute top-0 end-0 badge bg-primary">{{ resource.quantity }}</span>
             <div v-if="hoveredItem === resource" class="item-info">
               <p class="mb-1 fw-bold small"><strong>Name:</strong> {{ resource.name }}</p>

@@ -3,18 +3,18 @@
     <div class="quick-bar-slot" v-for="(slot, index) in slots" :key="index">
       <div class="quick-bar-key">{{ index + 1 }}</div>
       <div class="quick-bar-item" v-if="getEquippedItem(index)" @click="toggleDropdown(index)">
-        <img v-if="index === 0" :src="require(`@/assets/interface/icons/weapons/${getEquippedItem(index).name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="getEquippedItem(index).name" />
-        <img v-else-if="index === 1" :src="require(`@/assets/interface/icons/armor/${getEquippedItem(index).name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="getEquippedItem(index).name" />
-        <img v-else-if="index === 2" :src="require(`@/assets/interface/icons/aid/${getEquippedItem(index).name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="getEquippedItem(index).name" />
+        <img v-if="index === 0" :src="require(`@/assets/interface/icons/weapons/${getEquippedItem(index).name.toLowerCase().replace(/ /g, '_')}.png`)" :title="getEquippedItem(index).name" />
+        <img v-else-if="index === 1" :src="require(`@/assets/interface/icons/armor/${getEquippedItem(index).name.toLowerCase().replace(/ /g, '_')}.png`)" :title="getEquippedItem(index).name" />
+        <img v-else-if="index === 2" :src="require(`@/assets/interface/icons/aid/${getEquippedItem(index).name.toLowerCase().replace(/ /g, '_')}.png`)" :title="getEquippedItem(index).name" />
         <span v-if="index === 2" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success  py-1" title="Use Aid Item" @click.stop="useEquippedAidItem">
           <p class="card-text m-0">+</p>
         </span>
       </div>
       <div class="dropdown-menu-hotbar" v-show="showDropdown[index]">
         <div class="separator" v-for="item in getItems(index)" :key="item.uuid" @click="handleSelectItem(index, item)">
-          <img v-if="index === 0" :src="require(`@/assets/interface/icons/weapons/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="item.name" />
-          <img v-else-if="index === 1" :src="require(`@/assets/interface/icons/armor/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="item.name" />
-          <img v-else-if="index === 2" :src="require(`@/assets/interface/icons/aid/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="item.name" />
+          <img v-if="index === 0" :src="require(`@/assets/interface/icons/weapons/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="item.name" />
+          <img v-else-if="index === 1" :src="require(`@/assets/interface/icons/armor/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="item.name" />
+          <img v-else-if="index === 2" :src="require(`@/assets/interface/icons/aid/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="item.name" />
         </div>
       </div>
     </div>
@@ -66,18 +66,23 @@ export default {
         this.equipWeapon(item.uuid);
       } else if (index === 1) {
         this.equipArmor(item.uuid);
+      } else if (index === 2) {
+        // Tilføj denne nye else if for hjælpemidler
+        this.$store.commit('setFirstAidItem', item);
       }
     },
+
     getEquippedItem(index) {
       if (index === 0) {
         return this.character.equippedWeapons[0];
       } else if (index === 1) {
         return this.character.equippedArmor;
       } else if (index === 2) {
-        return this.character.aid[0];
+        return this.character.aid.length > 0 ? this.character.aid[0] : null;
       }
       return null;
     },
+
     handleKeyDown(event) {
       const key = event.key;
       if (key >= '1' && key <= '9') {

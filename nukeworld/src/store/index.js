@@ -276,7 +276,14 @@ const mutations = {
       const newItem = { ...item, uuid: uuidv4() };
       state.character.aid.push(newItem);
     }
-  },  
+  },
+  setFirstAidItem(state, item) {
+    if (state.character.aid.length > 0) {
+      state.character.aid[0] = item;
+    } else {
+      state.character.aid.push(item);
+    }
+  },
   useAid(state, itemUuid) {
     const itemIndex = state.character.aid.findIndex(item => item.uuid === itemUuid);
     if (itemIndex !== -1) {

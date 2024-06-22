@@ -1,5 +1,6 @@
 <template>
   <div class="game-world bg-primary">
+    <QuickBarTop ref="quickBarTop" />
     <GameHeader class="game-header"/>
     <SideBar />
     <QuickBar ref="quickBar" />
@@ -25,6 +26,7 @@ import SideBar from './SideBar.vue';
 import MapComponent from './data/MapComponent.vue';
 import MapComponent2 from './data/MapComponent2.vue';
 import QuickBar from './data/QuickBar.vue';
+import QuickBarTop from './data/QuickBarTop.vue';
 import QuickBarLeft from './data/QuickBarLeft.vue';
 import QuickBarRight from './data/QuickBarRight.vue';
 import GameOver from './data/GameOver.vue';
@@ -39,6 +41,7 @@ export default {
     MapComponent2,
     GameOver,
     QuickBar,
+    QuickBarTop,
     QuickBarLeft,
     QuickBarRight,
   },
