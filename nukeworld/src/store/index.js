@@ -352,6 +352,9 @@ const mutations = {
   resetDefeatedEnemies(state) {
     state.defeatedEnemies = {};
   },
+  cancelStoryLine(state) {
+    state.currentStoryLineId = null;
+  },
 };
 
 const actions = {
@@ -803,6 +806,11 @@ const actions = {
   closeEnemyEncounter({ commit }) {
     commit('setEnemyEncounterOpen', false);
   },
+  
+  cancelCurrentStoryLine({ commit }) {
+    commit('cancelStoryLine');
+  },
+
 };
 
 const store = createStore({

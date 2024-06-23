@@ -13,7 +13,7 @@
         
         <div class="conversation-box player-box">
           <div class="message-box player-message">
-            <button @click="selectOption(option)" class="btn btn-md btn-outline-light m-1" v-for="option in currentStoryStep.playerOptions" :key="option.text">
+            <button @click="selectOption(option)" class="btn btn-md fw-bold btn-outline-light m-1" v-for="option in currentStoryStep.playerOptions" :key="option.text">
               <template v-if="option.requiredResources">
                 <span v-for="resource in option.requiredResources" :key="resource.id" class="me-1">
                   <img :src="getResourceIcon(resource.id)" :alt="getResourceName(resource.id)" class="resource-icon" />
@@ -22,10 +22,12 @@
               </template>
               {{ option.text }}
             </button>
-
           </div>
           <img class="sidebar-icon" :src="require(`@/assets/interface/icons/encounter.png`)" title="Player">
         </div>
+        <button @click="cancelStory" class="btn btn-sm btn-danger mt-2">
+        Annuller historie
+      </button>
       </div>
     </div>
     <div v-else-if="availableStoryLines.length > 0">
@@ -133,6 +135,10 @@ export default {
       if (result && result.rewards) {
         this.showRewardToast(result.storyLineName, result.rewards);
       }
+    },
+
+    cancelStory() {
+      this.$store.dispatch('cancelCurrentStoryLine');
     },
 
     showRewardToast(storyLineName, rewards) {
@@ -259,11 +265,13 @@ export default {
   .npc-message {
     margin-right: 15px;
     text-align: left;
+    font-weight: 600;
   }
   
   .player-message {
     margin-left: 15px;
     text-align: right;
+    font-weight: 600;
   }
 
   .resource-icon {
