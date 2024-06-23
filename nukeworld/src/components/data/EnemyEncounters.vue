@@ -3,7 +3,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-body">
-          <BattleSystem @battle-ended="closeModal" @battle-cancelled="closeModal" />
+          <BattleSystem @battle-ended="closeModal" @battle-cancelled="closeModal" @show-reward-toast="showRewardToast" />
         </div>
       </div>
     </div>
@@ -12,6 +12,7 @@
 
 <script>
 import BattleSystem from './controller/BattleSystem.vue';
+import { toast } from "vue3-toastify";
 
 export default {
   name: 'EnemyEncounters',
@@ -37,6 +38,78 @@ export default {
     closeModal() {
       this.$store.dispatch('closeEnemyEncounter');
       this.$store.commit('setCurrentEnemyId', null);
+    },
+    showRewardToast(storyLineName, rewards) {
+      let rewardMessage = `
+        <div class="d-flex flex-column align-items-start justify-content-start h-100">
+        <p class="text-left fw-bold mb-1">${storyLineName} completed!</p>
+        <p class="text-left fw-semi mb-2">You earned:</p>
+        <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
+      `;
+
+      rewards.forEach(reward => {
+        switch (reward.type) {
+          case 'exp':
+            rewardMessage += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require('@/assets/interface/icons/exp.png')}" title="Exp" style="width: 20px;" class="me-2">
+                <span>${reward.amount} exp</span>
+              </div>
+            `;
+            break;
+          case 'money':
+            rewardMessage += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
+                <span>${reward.amount} money</span>
+              </div>
+            `;
+            break;
+          case 'resource':
+            rewardMessage += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require(`@/assets/interface/icons/resources/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                <span>${reward.amount} x ${reward.item.name}</span>
+              </div>
+            `;
+            break;
+          case 'weapon':
+            rewardMessage += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require(`@/assets/interface/icons/weapons/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                <span>${reward.item.name}</span>
+              </div>
+            `;
+            break;
+          case 'armor':
+            rewardMessage += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require(`@/assets/interface/icons/armor/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                <span>${reward.item.name}</span>
+              </div>
+            `;
+            break;
+          case 'aid':
+            rewardMessage += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require(`@/assets/interface/icons/aid/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                <span>${reward.item.name}</span>
+              </div>
+            `;
+            break;
+        }
+      });
+
+      rewardMessage += '</div></div>';
+
+      toast.success(rewardMessage, {
+        dangerouslyHTMLString: true,
+        autoClose: 10000,
+        hideProgressBar: false,
+        icon: false,
+        toastClassName: 'quest-toast-container',
+        bodyClassName: 'quest-toast-body quest-toast',
+      });
     },
     claimRewards() {
       if (this.isBattleWon && this.currentEnemy) {

@@ -1,6 +1,5 @@
 import { createStore } from 'vuex';
 import { reactive, watch } from 'vue';
-import { toast } from "vue3-toastify";
 import defaultQuests from './quests';
 import defaultStoryLines from './story';
 import { v4 as uuidv4 } from 'uuid'; 
@@ -37,6 +36,8 @@ const state = reactive({
   resources,
   mapBounds: null,
   markers: [],
+  currentBattleStoryLineId: null,
+  currentBattleStepIndex: null,
   currentEnemyId: null,
   defeatedEnemies: {},
 });
@@ -326,6 +327,13 @@ const mutations = {
     }
   },
 
+  setCurrentBattleStoryLineId(state, id) {
+    state.currentBattleStoryLineId = id;
+  },
+  setCurrentBattleStepIndex(state, index) {
+    state.currentBattleStepIndex = index;
+  }, 
+
   removeResource(state, resourceUuid) {
     state.character.resources = state.character.resources.filter(r => r.uuid !== resourceUuid);
   },
@@ -583,31 +591,16 @@ const actions = {
   completeStoryLine({ commit, dispatch, state }, { storyLineId, giveReward }) {
     const storyLine = state.storyLines.find(sl => sl.id === storyLineId);
     if (storyLine && (!storyLine.completed || storyLine.repeatable)) {
-      let rewardMessage = `
-        <div class="d-flex flex-column align-items-start justify-content-start h-100">
-        <p class="text-left fw-bold mb-1">${storyLine.name} completed!</p>
-        <p class="text-left fw-semi mb-2">You earned:</p>
-        <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
-      `;
+      let rewards = [];
   
       if ((storyLine.alwaysGiveReward || giveReward) && storyLine.reward) {
         if (storyLine.reward.exp) {
           dispatch('increaseExp', storyLine.reward.exp);
-          rewardMessage += `
-            <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-              <img src="${require('@/assets/interface/icons/exp.png')}" title="Exp" style="width: 20px;" class="me-2">
-              <span>${storyLine.reward.exp} exp</span>
-            </div>
-          `;
+          rewards.push({ type: 'exp', amount: storyLine.reward.exp });
         }
         if (storyLine.reward.money) {
           dispatch('increaseMoney', storyLine.reward.money);
-          rewardMessage += `
-            <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-              <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
-              <span>${storyLine.reward.money} money</span>
-            </div>
-          `;
+          rewards.push({ type: 'money', amount: storyLine.reward.money });
         }
         if (storyLine.reward.resourceRewards && storyLine.reward.resourceRewards.length > 0) {
           storyLine.reward.resourceRewards.forEach(reward => {
@@ -615,62 +608,31 @@ const actions = {
             for (let i = 0; i < reward.amount; i++) {
               dispatch('addResource', reward.id);
             }
-            rewardMessage += `
-              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                <img src="${require(`@/assets/interface/icons/resources/${resource.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${resource.name}" style="width: 20px;" class="me-2">
-                <span>${reward.amount} x ${resource.name}</span>
-              </div>
-            `;
+            rewards.push({ type: 'resource', item: resource, amount: reward.amount });
           });
         }
         if (storyLine.reward.weaponRewards && storyLine.reward.weaponRewards.length > 0) {
           storyLine.reward.weaponRewards.forEach(reward => {
             const weapon = state.items.find(i => i.id === reward.id);
             dispatch('addItemToWeapons', reward.id);
-            rewardMessage += `
-              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                <img src="${require(`@/assets/interface/icons/weapons/${weapon.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${weapon.name}" style="width: 20px;" class="me-2">
-                <span>${weapon.name}</span>
-              </div>
-            `;
+            rewards.push({ type: 'weapon', item: weapon });
           });
         }
         if (storyLine.reward.armorRewards && storyLine.reward.armorRewards.length > 0) {
           storyLine.reward.armorRewards.forEach(reward => {
             const armorItem = state.armor.find(a => a.id === reward.id);
             dispatch('addItemToArmor', reward.id);
-            rewardMessage += `
-              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                <img src="${require(`@/assets/interface/icons/armor/${armorItem.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${armorItem.name}" style="width: 20px;" class="me-2">
-                <span>${armorItem.name}</span>
-              </div>
-            `;
+            rewards.push({ type: 'armor', item: armorItem });
           });
         }
         if (storyLine.reward.aidRewards && storyLine.reward.aidRewards.length > 0) {
           storyLine.reward.aidRewards.forEach(reward => {
             const aidItem = state.aid.find(a => a.id === reward.id);
             dispatch('addItemToAid', reward.id);
-            rewardMessage += `
-              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                <img src="${require(`@/assets/interface/icons/aid/${aidItem.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${aidItem.name}" style="width: 20px;" class="me-2">
-                <span>${aidItem.name}</span>
-              </div>
-            `;
+            rewards.push({ type: 'aid', item: aidItem });
           });
         }
       }
-  
-      rewardMessage += '</div></div>';
-  
-      toast.success(rewardMessage, {
-        dangerouslyHTMLString: true,
-        autoClose: 10000,
-        hideProgressBar: false,
-        icon: false,
-        toastClassName: 'quest-toast-container',
-        bodyClassName: 'quest-toast-body quest-toast',
-      });
   
       if (!storyLine.repeatable) {
         commit('completeStoryLine', storyLineId);
@@ -678,9 +640,12 @@ const actions = {
         commit('resetStoryLineProgress', storyLineId);
       }
       commit('setCurrentStoryLineId', null);
+  
+      return { storyLineName: storyLine.name, rewards };
     }
+    return null;
   },
-
+  
   
   checkRequiredResources({ state }, requiredResources) {
     if (!requiredResources || requiredResources.length === 0) return true;
@@ -701,7 +666,7 @@ const actions = {
     });
   },
 
-  progressStory({ commit, dispatch, state }, { nextId, choiceText, giveReward }) {
+  async progressStory({ commit, dispatch, state }, { nextId, choiceText, giveReward }) {
     if (state.currentStoryLineId !== null) {
       const currentStoryLine = state.storyLines.find(sl => sl.id === state.currentStoryLineId);
       const currentStep = currentStoryLine.steps[currentStoryLine.currentStepIndex || 0];
@@ -711,17 +676,7 @@ const actions = {
         
         if (selectedOption) {
           if (selectedOption.action) {
-            dispatch(selectedOption.action, selectedOption.actionParams);
-            // Hvis der er en action, skal vi ikke fortsætte historien endnu
-            return;
-          }
-          
-          if (selectedOption.requiredResources) {
-            const hasResources = dispatch('checkRequiredResources', selectedOption.requiredResources);
-            if (!hasResources) {
-              return;
-            }
-            dispatch('useRequiredResources', selectedOption.requiredResources);
+            await dispatch(selectedOption.action, selectedOption.actionParams);
           }
         }
       }
@@ -729,33 +684,47 @@ const actions = {
       commit('addPlayerChoice', { storyLineId: state.currentStoryLineId, choice: choiceText });
       
       if (nextId === null) {
-        dispatch('completeStoryLine', { storyLineId: state.currentStoryLineId, giveReward });
+        return dispatch('completeStoryLine', { storyLineId: state.currentStoryLineId, giveReward });
       } else {
         commit('progressStoryStep');
       }
     }
-  },  
+  },
+   
   
-  defeatEnemy({ commit, dispatch, state, getters }) {
+  async defeatEnemy({ commit, dispatch, state }) {
     const enemyId = state.currentEnemyId;
     commit('addDefeatedEnemy', enemyId);
     
-    const currentStoryLine = getters.currentStoryLine;
+    const currentStoryLine = state.storyLines.find(sl => sl.id === state.currentBattleStoryLineId);
     if (currentStoryLine && currentStoryLine.requiredEnemyDefeat) {
       const { id, count } = currentStoryLine.requiredEnemyDefeat;
       if (id === enemyId && state.defeatedEnemies[id] >= count) {
-        // Her fortsætter vi historien efter at have besejret fjenden
-        dispatch('progressStory', { 
-          nextId: getters.currentStoryStep.playerOptions[0].nextId, 
+        commit('setCurrentStoryLineId', state.currentBattleStoryLineId);
+        currentStoryLine.currentStepIndex = state.currentBattleStepIndex + 1;
+        const result = await dispatch('progressStory', { 
+          nextId: currentStoryLine.steps[currentStoryLine.currentStepIndex].playerOptions[0].nextId, 
           choiceText: 'I defeated the enemy', 
           giveReward: true 
         });
         commit('resetDefeatedEnemies');
+        
+        commit('setCurrentEnemyId', null);
+        commit('setCurrentBattleStoryLineId', null);
+        commit('setCurrentBattleStepIndex', null);
+        
+        return result;
       }
     }
     
     commit('setCurrentEnemyId', null);
+    commit('setCurrentBattleStoryLineId', null);
+    commit('setCurrentBattleStepIndex', null);
+    
+    return null;
   },
+  
+  
   
     
   resetStoryLines({ commit, state }) {
@@ -816,15 +785,18 @@ const actions = {
     commit('removeResource', resourceUuid);
   },
 
-  startEnemyBattle({ commit }, { enemyId }) {
+  startEnemyBattle({ commit, state }, { enemyId }) {
     const enemy = enemies.find(e => e.id === enemyId);
     if (enemy) {
       commit('setCurrentEnemyId', enemyId);
       commit('setEnemyEncounterOpen', true);
+      commit('setCurrentBattleStoryLineId', state.currentStoryLineId);
+      commit('setCurrentBattleStepIndex', state.storyLines.find(sl => sl.id === state.currentStoryLineId).currentStepIndex);
     } else {
       console.error(`Enemy with id ${enemyId} not found`);
     }
-  },  
+  },
+   
   openEnemyEncounter({ commit }) {
     commit('setEnemyEncounterOpen', true);
   },

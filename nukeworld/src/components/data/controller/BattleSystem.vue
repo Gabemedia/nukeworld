@@ -172,14 +172,13 @@ export default {
         if (this.enemy.enemyHealth <= 0) {
           this.addToLog(`You defeated the ${this.enemy.name}!`, 'player-action');
           this.checkBattleEnd();
-        } else {
-          this.enemyAttack();
         }
       } else {
         this.addToLog('You have no weapon equipped or no enemy to fight!', 'player-action');
         this.stopAutoAttack();
       }
     },
+
     enemyAttack() {
       const enemyDamage = this.calculateDamage(this.enemy.attack, this.equippedArmor ? this.equippedArmor.defence : 0);
       const dodgeChance = Math.random();
@@ -206,15 +205,25 @@ export default {
         this.showVictoryConfetti();
       }
     },
-    claimRewards() {
-      if (this.isBattleWon && this.currentEnemy) {
-        this.$store.dispatch('claimRewards', this.currentEnemy);
-        this.$store.dispatch('defeatEnemy');
+    
+    async claimRewards() {
+      if (this.isBattleWon && this.enemy) {
+        const result = await this.$store.dispatch('defeatEnemy');
         this.showRewardConfetti();
         this.resetBattleState();
         this.$emit('battle-ended');
+        
+        // Luk kampsystemet
+        this.$store.commit('setEnemyEncounterOpen', false);
+        
+        // Vis belønningstoast hvis der er nogen belønninger
+        if (result && result.rewards) {
+          this.$emit('show-reward-toast', result.storyLineName, result.rewards);
+        }
       }
     },
+
+
     resetBattleState() {
       this.isBattleWon = false;
       this.$store.commit('updateCharacter');
