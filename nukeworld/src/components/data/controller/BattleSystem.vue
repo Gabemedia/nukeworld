@@ -46,12 +46,16 @@
     </div>
     <div class="mb-0">
       <div class="battle-actions d-flex justify-content-center mb-3">
-        <button @click="startAutoAttack" :disabled="isAutoAttackActive || isBattleWon || character.health <= 0 || !enemy" class="btn btn-primary attack-button me-2">
-          <img :src="require('@/assets/interface/icons/gun.png')" alt="Attack" class="icon">
-          {{ isAutoAttackActive ? 'Attacking...' : 'Auto Attack' }}
+        <button @click="singleAttack" :disabled="isBattleWon || character.health <= 0 || !enemy" class="btn btn-primary attack-button me-2">
+          Attack
+        </button>
+        <button @click="toggleAutoAttack" :disabled="isBattleWon || character.health <= 0 || !enemy" :class="['btn', 'me-2', isAutoAttackActive ? 'btn-warning' : 'btn-primary']">
+          {{ isAutoAttackActive ? 'Stop Attack' : 'Auto Attack' }}
+        </button>
+        <button @click="cancelBattle" class="btn btn-danger cancel-button me-2">
+          Cancel
         </button>
         <button @click="claimRewards" :disabled="!isBattleWon" class="btn btn-info claim-rewards-button">
-          <img :src="require('@/assets/interface/icons/reload2.png')" alt="Claim Rewards" class="icon">
           Claim Rewards
         </button>
       </div>
@@ -117,6 +121,19 @@ export default {
         this.localEnemy = JSON.parse(JSON.stringify(enemies[randomIndex]));
       }
     },
+    singleAttack() {
+      this.attack();
+      if (this.enemy && this.enemy.enemyHealth > 0) {
+        this.enemyAttack();
+      }
+    },
+    toggleAutoAttack() {
+      if (this.isAutoAttackActive) {
+        this.stopAutoAttack();
+      } else {
+        this.startAutoAttack();
+      }
+    },
     startAutoAttack() {
       if (!this.isAutoAttackActive && this.enemy && this.character.health > 0) {
         this.isAutoAttackActive = true;
@@ -124,6 +141,8 @@ export default {
           this.attack();
           if (this.isBattleWon || this.character.health <= 0) {
             this.stopAutoAttack();
+          } else {
+            this.enemyAttack();
           }
         }, 1000);
       }
@@ -133,6 +152,10 @@ export default {
         this.isAutoAttackActive = false;
         clearInterval(this.autoAttackInterval);
       }
+    },
+    cancelBattle() {
+      this.stopAutoAttack();
+      this.$emit('battle-cancelled');
     },
     attack() {
       if (this.equippedWeapon && this.enemy) {
@@ -232,8 +255,9 @@ export default {
 }
 
 .attack-button {
-  background-color: #dc3545;
-  border-color: #dc3545;
+  background-color: #28a745;
+  border-color: #fff;
+  border: 0;
 }
 
 .use-item-button {
@@ -266,4 +290,14 @@ export default {
   background-color: #f8d7da;
   color: #721c24;
 }
+
+.stop-attack-button {
+  background-color: #ffc107;
+  border-color: #ffc107;
+}
+.cancel-button {
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
 </style>

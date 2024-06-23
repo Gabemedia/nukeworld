@@ -3,7 +3,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-body">
-          <BattleSystem @battle-ended="closeModal" />
+          <BattleSystem @battle-ended="closeModal" @battle-cancelled="closeModal" />
         </div>
       </div>
     </div>
@@ -35,7 +35,6 @@ export default {
       this.showModal = true;
     },
     closeModal() {
-      this.showModal = false;
       this.$store.dispatch('closeEnemyEncounter');
       this.$store.commit('setCurrentEnemyId', null);
     },

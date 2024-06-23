@@ -795,16 +795,14 @@ watch(
       try {
         const questsString = JSON.stringify(newQuests);
         localStorage.setItem('quests', questsString);
-       //console.log('Quests gemt i localStorage:', questsString);
       } catch (error) {
-       //console.error('Fejl ved gemning af quests i localStorage:', error);
+        console.error('Fejl ved gemning af quests i localStorage:', error);
       }
-    } else {
-      //console.warn('Forsøg på at gemme tomme eller ugyldige quests forhindret');
     }
   },
   { deep: true }
 );
+
 
 watch(
   () => state.quests,
