@@ -141,6 +141,7 @@ export default {
         this.$refs.settlementModal.attemptPlaceSettlement(event.latlng);
       }
     },
+
     async onMarkerDragEnd(event) {
       await this.updateSettlementMarker({
         ...this.$store.state.settlementMarker,

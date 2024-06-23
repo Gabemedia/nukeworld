@@ -1,6 +1,6 @@
 <template>
   <div>
-    <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="openModal">
+    <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="openPlacementModal">
       <img class="sidebar-icon" :src="require(`@/assets/interface/icons/settlement.png`)" title="Settlement">
     </button>
     <div v-if="isSettlementPlacementModalOpen" class="modal" tabindex="-1" @click.self="closePlacementModal">
@@ -15,7 +15,6 @@
         </div>
       </div>
     </div>
-
     <div v-if="isSettlementConfirmationModalOpen" class="modal" tabindex="-1" @click.self="closeConfirmationModal">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -35,9 +34,8 @@
   </div>
 </template>
 
-
 <script>
-import { mapState, mapMutations, mapActions } from 'vuex';
+import { mapActions } from 'vuex';
 
 export default {
   name: 'SettlementModal',
@@ -48,45 +46,21 @@ export default {
       pendingSettlementLocation: null,
     };
   },
-  computed: {
-    ...mapState(['isSettlementModalOpen', 'settlementMarker']),
-  },
   methods: {
-    ...mapMutations(['setSettlementModalOpen']),
     ...mapActions(['updateSettlementMarker', 'checkRequiredResources', 'useRequiredResources']),
-    openModal() {
-      this.setSettlementModalOpen(true);
-    },
-    closeModal() {
-      this.setSettlementModalOpen(false);
-      this.showSettlementConfirmation = false;
-      this.pendingSettlementLocation = null;
-    },
-
-    async confirmRemoveSettlement() {
-      if (confirm('Er du sikker på, at du vil fjerne din settlement?')) {
-        await this.updateSettlementMarker(null);
-        this.closeModal();
-      }
-    },
-
     openPlacementModal() {
       this.isSettlementPlacementModalOpen = true;
     },
-
     closePlacementModal() {
       this.isSettlementPlacementModalOpen = false;
     },
-
     openConfirmationModal() {
       this.isSettlementConfirmationModalOpen = true;
     },
-
     closeConfirmationModal() {
       this.isSettlementConfirmationModalOpen = false;
       this.pendingSettlementLocation = null;
     },
-
     async attemptPlaceSettlement(latlng) {
       const requiredResources = [{ id: 1, amount: 20 }];
       const hasEnoughResources = await this.checkRequiredResources(requiredResources);
@@ -97,7 +71,6 @@ export default {
         alert('Du har ikke nok Wood Scrap til at placere en settlement. Du skal bruge 20 Wood Scrap.');
       }
     },
-
     async confirmPlaceSettlement() {
       const requiredResources = [{ id: 1, amount: 20 }];
       await this.useRequiredResources(requiredResources);
@@ -105,14 +78,10 @@ export default {
         latlng: this.pendingSettlementLocation,
         name: ''
       });
-      this.showSettlementConfirmation = false;
-      this.pendingSettlementLocation = null;
-      this.closeModal();
+      this.closeConfirmationModal();
     },
     cancelPlaceSettlement() {
-      this.showSettlementConfirmation = false;
-      this.pendingSettlementLocation = null;
-      this.closeModal();
+      this.closeConfirmationModal();
     },
   },
 };

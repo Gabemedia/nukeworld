@@ -252,8 +252,13 @@ const mutations = {
   },
   setSettlementMarker(state, marker) {
     state.settlementMarker = marker;
-    localStorage.setItem('settlementMarker', JSON.stringify(marker));
+    if (marker) {
+      localStorage.setItem('settlementMarker', JSON.stringify(marker));
+    } else {
+      localStorage.removeItem('settlementMarker');
+    }
   },
+  
   setSettlementModalOpen(state, isOpen) {
     state.isSettlementModalOpen = isOpen;
   },
