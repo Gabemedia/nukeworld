@@ -18,7 +18,7 @@ export default [
     attack: 2,
     defence: 0,
     state: '0',
-    price: '799',
+    price: '499',
   },
   {
     id: 2,

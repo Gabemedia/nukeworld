@@ -1,5 +1,6 @@
 import { createStore } from 'vuex';
 import { reactive, watch } from 'vue';
+import { toast } from "vue3-toastify";
 import defaultQuests from './quests';
 import defaultStoryLines from './story';
 import { v4 as uuidv4 } from 'uuid'; 
@@ -582,30 +583,104 @@ const actions = {
   completeStoryLine({ commit, dispatch, state }, { storyLineId, giveReward }) {
     const storyLine = state.storyLines.find(sl => sl.id === storyLineId);
     if (storyLine && (!storyLine.completed || storyLine.repeatable)) {
+      let rewardMessage = `
+        <div class="d-flex flex-column align-items-start justify-content-start h-100">
+        <p class="text-left fw-bold mb-1">${storyLine.name} completed!</p>
+        <p class="text-left fw-semi mb-2">You earned:</p>
+        <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
+      `;
+  
       if ((storyLine.alwaysGiveReward || giveReward) && storyLine.reward) {
         if (storyLine.reward.exp) {
           dispatch('increaseExp', storyLine.reward.exp);
+          rewardMessage += `
+            <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+              <img src="${require('@/assets/interface/icons/exp.png')}" title="Exp" style="width: 20px;" class="me-2">
+              <span>${storyLine.reward.exp} exp</span>
+            </div>
+          `;
         }
         if (storyLine.reward.money) {
           dispatch('increaseMoney', storyLine.reward.money);
+          rewardMessage += `
+            <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+              <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
+              <span>${storyLine.reward.money} money</span>
+            </div>
+          `;
         }
         if (storyLine.reward.resourceRewards && storyLine.reward.resourceRewards.length > 0) {
           storyLine.reward.resourceRewards.forEach(reward => {
+            const resource = state.resources.find(r => r.id === reward.id);
             for (let i = 0; i < reward.amount; i++) {
               dispatch('addResource', reward.id);
             }
+            rewardMessage += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require(`@/assets/interface/icons/resources/${resource.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${resource.name}" style="width: 20px;" class="me-2">
+                <span>${reward.amount} x ${resource.name}</span>
+              </div>
+            `;
+          });
+        }
+        if (storyLine.reward.weaponRewards && storyLine.reward.weaponRewards.length > 0) {
+          storyLine.reward.weaponRewards.forEach(reward => {
+            const weapon = state.items.find(i => i.id === reward.id);
+            dispatch('addItemToWeapons', reward.id);
+            rewardMessage += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require(`@/assets/interface/icons/weapons/${weapon.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${weapon.name}" style="width: 20px;" class="me-2">
+                <span>${weapon.name}</span>
+              </div>
+            `;
+          });
+        }
+        if (storyLine.reward.armorRewards && storyLine.reward.armorRewards.length > 0) {
+          storyLine.reward.armorRewards.forEach(reward => {
+            const armorItem = state.armor.find(a => a.id === reward.id);
+            dispatch('addItemToArmor', reward.id);
+            rewardMessage += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require(`@/assets/interface/icons/armor/${armorItem.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${armorItem.name}" style="width: 20px;" class="me-2">
+                <span>${armorItem.name}</span>
+              </div>
+            `;
+          });
+        }
+        if (storyLine.reward.aidRewards && storyLine.reward.aidRewards.length > 0) {
+          storyLine.reward.aidRewards.forEach(reward => {
+            const aidItem = state.aid.find(a => a.id === reward.id);
+            dispatch('addItemToAid', reward.id);
+            rewardMessage += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require(`@/assets/interface/icons/aid/${aidItem.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${aidItem.name}" style="width: 20px;" class="me-2">
+                <span>${aidItem.name}</span>
+              </div>
+            `;
           });
         }
       }
+  
+      rewardMessage += '</div></div>';
+  
+      toast.success(rewardMessage, {
+        dangerouslyHTMLString: true,
+        autoClose: 10000,
+        hideProgressBar: false,
+        icon: false,
+        toastClassName: 'quest-toast-container',
+        bodyClassName: 'quest-toast-body quest-toast',
+      });
+  
       if (!storyLine.repeatable) {
         commit('completeStoryLine', storyLineId);
       } else {
-        // For repeatable storylines, reset the currentStepIndex
         commit('resetStoryLineProgress', storyLineId);
       }
       commit('setCurrentStoryLineId', null);
     }
   },
+
   
   checkRequiredResources({ state }, requiredResources) {
     if (!requiredResources || requiredResources.length === 0) return true;

@@ -34,12 +34,39 @@ export default [
       resourceRewards: [
         { id: 1, amount: 5 }, // 5x Wood Scrap (assuming Wood Scrap has id 1)
         { id: 2, amount: 5 }  // 5x Steel Scrap (assuming Steel Scrap has id 2)
-      ]
+      ],
+      weaponRewards: [],
+      armorRewards: [],
+      aidRewards: [],
     },
     alwaysGiveReward: true
   },
   {
     id: 2,
+    name: "Defeat your first enemy!",
+    levelRequirement: 1,
+    completed: false,
+    repeatable: true,
+    requiredStoryLineId: 1, 
+    playerChoices: [],
+    steps: [
+      {
+        npcMessage: "You've going to encounter your first enemy soon.",
+        playerOptions: [{ text: "Please accept this weapon", nextId: null }]
+      },
+    ],
+    reward: {
+      exp: 500, // Give some exp for completing the first story
+      money: 500,
+      resourceRewards: [],
+      weaponRewards: [{ id: 1}],
+      armorRewards: [{ id: 1}],
+      aidRewards: [{ id: 1}],
+    },
+    alwaysGiveReward: true
+  },
+  {
+    id: 3,
     name: "Setup HomeBase Settlement",
     levelRequirement: 2,
     completed: false,
@@ -74,12 +101,15 @@ export default [
     reward: {
       exp: 2000,
       money: 0,
-      resourceRewards: [] // If you want to give resources as a reward
+      resourceRewards: [],
+      weaponRewards: [],
+      armorRewards: [],
+      aidRewards: [],
     },
     alwaysGiveReward: false
   },
   {
-    id: 3,
+    id: 4,
     name: "Defeat the Goblin Raider",
     levelRequirement: 1,
     completed: false,
@@ -107,12 +137,15 @@ export default [
     reward: {
       exp: 5000,
       money: 1000,
-      resourceRewards: [{ id: 3, amount: 10 }]
+      resourceRewards: [{ id: 3, amount: 10 }],
+      weaponRewards: [],
+      armorRewards: [],
+      aidRewards: [],
     },
     alwaysGiveReward: false
   },  
     {
-    id: 4,
+    id: 5,
     name: "Random Quest 2",
     levelRequirement: 6,
     completed: false,
@@ -138,7 +171,10 @@ export default [
     reward: {
       exp: 0,
       money: 0,
-      resourceRewards: [] // If you want to give resources as a reward
+      resourceRewards: [],
+      weaponRewards: [],
+      armorRewards: [],
+      aidRewards: [],
     },
     alwaysGiveReward: false
   }

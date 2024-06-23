@@ -18,7 +18,7 @@
               </div>
             </div>
             <div class="shop-section">
-              <p class="mt-3 text-uppercase fw-bold text-left">Armor:</p>
+              <p class="mt-3 text-uppercase fw-bold text-left"><br/>Armor:</p>
               <div class="shop-items">
                 <div v-for="armor in availableArmor" :key="armor.id" class="shop-item" @click="buyItem(armor, 'armor')" :ref="'item-armor-' + armor.id">
                   <img :src="require(`@/assets/interface/icons/armor/${armor.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="armor.name" />
@@ -27,7 +27,7 @@
               </div>
             </div>
             <div class="shop-section">
-              <p class="mt-3 text-uppercase fw-bold text-left">Aid:</p>
+              <p class="mt-3 text-uppercase fw-bold text-left"><br/>Aid:</p>
               <div class="shop-items">
                 <div v-for="aid in availableAid" :key="aid.id" class="shop-item" @click="buyItem(aid, 'aid')" :ref="'item-aid-' + aid.id">
                   <img :src="require(`@/assets/interface/icons/aid/${aid.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="aid.name" />
@@ -164,7 +164,7 @@ export default {
 .modal-header {
   display: flex;
   align-items: flex-start;
-  justify-content: space-between;
+  justify-content:space-between;
   padding: 1rem;
   border-bottom: 1px solid #dee2e6;
   border-top-left-radius: calc(0.3rem - 1px);
@@ -221,7 +221,7 @@ export default {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  justify-content:space-between;
+  justify-content:start;
 }
 
 .shop-item {
