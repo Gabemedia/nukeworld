@@ -19,15 +19,23 @@
         <div class="nav-item-name price-box">Shop</div>
         <PlayerShop />
       </li>
+      <li v-if="hasSettlement" class="nav-item mx-2">
+        <div class="nav-item-name price-box bg-success">Settlement</div>
+        <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="openSettlementModal">
+          <img class="sidebar-icon" :src="require(`@/assets/interface/icons/settlement.png`)" title="Settlement">
+        </button>
+      </li>
     </ul>
   </div>
 </template>
+
 
 <script>
 import QuestLog from './data/QuestLog.vue';
 import InventoryLog from './data/InventoryLog.vue';
 import StoryLog from './data/StoryLog.vue';
 import PlayerShop from './data/PlayerShop.vue';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'SideBar',
@@ -38,6 +46,7 @@ export default {
     PlayerShop,
   },
   computed: {
+    ...mapGetters(['hasSettlement']),
     hasNewStory() {
       return this.$store.getters.availableStoryLines.length > 0;
     }
@@ -48,6 +57,7 @@ export default {
     };
   },
   methods: {
+    ...mapActions(['openSettlementModal']),
     toggleSidebar() {
       this.sidebarOpen = !this.sidebarOpen;
     },
@@ -67,6 +77,10 @@ export default {
   width: 100%;
   transition: height 0.3s ease-in-out;
   z-index: 1000;
+}
+
+.sidebar-btn {
+    background-color: rgba(0, 0, 0, 0.7);
 }
 
 .sidebar.show {
@@ -95,11 +109,20 @@ export default {
 }
 
 .nav-item-name.price-box {
-  border: 2px solid #fff; /* Standard grænsefarve */
-  transition: border-color 0.3s ease; /* Tilføjer en blød overgang for farveændringen */
+  border: 2px solid #fff;
+  transition: border-color 0.3s ease;
 }
 
 .nav-item-name.price-box.new-story {
-  border-color: #28a745; /* Success farve (grøn) når der er en ny historie */
+  border-color: #28a745;
+}
+
+.nav-item-name.price-box.settlement {
+  background-color: #4CAF50;
+  cursor: pointer;
+}
+
+.nav-item-name.price-box.settlement:hover {
+  background-color: #45a049;
 }
 </style>
