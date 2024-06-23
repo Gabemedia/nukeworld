@@ -33,39 +33,22 @@
         </div>
       </div>
     </div>
-    <!-- Settlement confirmation modal -->
-    <div v-if="showSettlementConfirmation" class="modal" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Placer Settlement</h5>
-            <button type="button" class="close" @click="cancelPlaceSettlement">&times;</button>
-          </div>
-          <div class="modal-body">
-            <p>Det koster 20 Wood Scrap at placere en settlement. Vil du fortsætte?</p>
-          </div>
-          <div class="modal-footer">
-            <button @click="confirmPlaceSettlement" class="btn btn-primary">Ja</button>
-            <button @click="cancelPlaceSettlement" class="btn btn-secondary">Nej</button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <SettlementModal ref="settlementModal" />
   </div>
 </template>
 
 <script>
 import { LMap, LMarker, LImageOverlay } from '@vue-leaflet/vue-leaflet';
-import { mapState, mapGetters, mapActions } from 'vuex';
-import QuestDetails from './controller/QuestDetails.vue';
+import { mapState, mapGetters, mapActions, mapMutations } from 'vuex';
+import SettlementModal from './SettlementModal.vue';
 import L from 'leaflet';
 
 export default {
   components: {
     LMap,
     LMarker,
-    QuestDetails,
     LImageOverlay,
+    SettlementModal,
   },
   data() {
     return {
@@ -81,17 +64,6 @@ export default {
         dragging: false,
         crs: L.CRS.Simple,
       },
-      selectedMarkerCoords: null,
-      customIcon: L.icon({
-        iconUrl: require('@/assets/interface/icons/marker.png'),
-        iconSize: [30, 40],
-        iconAnchor: [12, 12],
-      }),
-      showModal: false,
-      selectedQuest: null,
-      selectedMarker: null,
-      showSettlementConfirmation: false,
-      pendingSettlementLocation: null,
       settlementIcon: L.icon({
         iconUrl: require('@/assets/interface/icons/settlement_marker.png'),
         iconSize: [30, 45],
@@ -100,7 +72,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(['quests', 'markers', 'character']),
+    ...mapState(['quests', 'character']),
     ...mapGetters(['getResource']),
     filteredQuests() {
       return this.quests.filter(quest => 
@@ -136,7 +108,8 @@ export default {
     window.removeEventListener('resize', this.updateZoom);
   },
   methods: {
-    ...mapActions(['checkRequiredResources', 'useRequiredResources', 'updateSettlementMarker', 'openSettlementModal']),
+    ...mapActions(['updateSettlementMarker']),
+    ...mapMutations(['setSettlementModalOpen']),
     updateMapSize() {
       const map = this.$refs.map?.$mapObject;
       if (map) {
@@ -163,64 +136,20 @@ export default {
     updateDragging() {
       this.mapOptions.dragging = window.innerWidth >= 1600;
     },
-
     async onMapClick(event) {
       if (!this.$store.state.settlementMarker) {
-        const requiredResources = [{ id: 1, amount: 20 }];
-        const hasEnoughResources = await this.checkRequiredResources(requiredResources);
-        if (hasEnoughResources) {
-          this.pendingSettlementLocation = event.latlng;
-          this.showSettlementConfirmation = true;
-        } else {
-          alert('Du har ikke nok Wood Scrap til at placere en settlement. Du skal bruge 20 Wood Scrap.');
-        }
+        this.$refs.settlementModal.attemptPlaceSettlement(event.latlng);
       }
     },
-
-    async confirmPlaceSettlement() {
-      console.log('Confirming settlement placement');
-      const requiredResources = [{ id: 1, amount: 20 }];
-      console.log('Required resources:', requiredResources);
-      console.log('Current resources:', this.character.resources);
-      
-      const hasEnoughResources = await this.checkRequiredResources(requiredResources);
-      console.log('Has enough resources:', hasEnoughResources);
-
-      if (hasEnoughResources) {
-        console.log('Resources check passed');
-        this.useRequiredResources(requiredResources);
-        console.log('Resources after deduction:', this.character.resources);
-        
-        console.log('Updating settlement marker');
-        this.updateSettlementMarker({
-          latlng: this.pendingSettlementLocation,
-          name: ''
-        });
-        console.log('Settlement marker updated:', this.$store.state.settlementMarker);
-        
-        console.log('Opening settlement modal');
-        this.openSettlementModal();
-      } else {
-        console.log('Not enough resources');
-        alert('Du har ikke nok Wood Scrap til at placere en settlement. Du skal bruge 20 Wood Scrap.');
-      }
-      this.showSettlementConfirmation = false;
-      this.pendingSettlementLocation = null;
-    },
-
-
-    onMarkerDragEnd(event) {
-      this.updateSettlementMarker({
+    async onMarkerDragEnd(event) {
+      await this.updateSettlementMarker({
         ...this.$store.state.settlementMarker,
         latlng: event.target.getLatLng(),
       });
     },
-    removeSettlement() {
-      if (confirm('Er du sikker på, at du vil fjerne din settlement?')) {
-        this.updateSettlementMarker(null);
-      }
+    openSettlementModal() {
+      this.setSettlementModalOpen(true);
     },
-
     getQuestIcon(quest) {
       if (quest.state === 'not-started') {
         return L.icon({
@@ -237,22 +166,6 @@ export default {
           className: 'claim-marker',
         });
       }
-    },
-    openModal(item) {
-      if (Object.prototype.hasOwnProperty.call(item, 'name')) {
-        this.selectedQuest = item;
-        if (item.state === 'completed' && !item.claimed) {
-          this.selectedQuest.state = 'completed';
-        }
-      } else {
-        this.selectedMarker = item;
-      }
-      this.showModal = true;
-    },
-    closeModal() {
-      this.showModal = false;
-      this.selectedQuest = null;
-      this.selectedMarker = null;
     },
   },
 };

@@ -19,16 +19,13 @@
         <div class="nav-item-name price-box">Shop</div>
         <PlayerShop />
       </li>
-      <li v-if="hasSettlement" class="nav-item mx-2">
-        <div class="nav-item-name price-box bg-success">Settlement</div>
-        <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="openSettlementModal">
-          <img class="sidebar-icon" :src="require(`@/assets/interface/icons/settlement.png`)" title="Settlement">
-        </button>
+      <li class="nav-item mx-2">
+        <div class="nav-item-name price-box">Settlement</div>
+        <SettlementModal />
       </li>
     </ul>
   </div>
 </template>
-
 
 <script>
 import { mapState, mapActions } from 'vuex';
@@ -36,6 +33,7 @@ import QuestLog from './data/QuestLog.vue';
 import InventoryLog from './data/InventoryLog.vue';
 import StoryLog from './data/StoryLog.vue';
 import PlayerShop from './data/PlayerShop.vue';
+import SettlementModal from './data/SettlementModal.vue';
 
 export default {
   name: 'SideBar',
@@ -44,15 +42,13 @@ export default {
     InventoryLog,
     StoryLog,
     PlayerShop,
+    SettlementModal,
   },
   computed: {
     ...mapState(['settlementMarker']),
     hasNewStory() {
       return this.$store.getters.availableStoryLines.length > 0;
     },
-    hasSettlement() {
-      return !!this.settlementMarker;
-    }
   },
   data() {
     return {
@@ -60,17 +56,9 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['updateSettlementMarker', 'openSettlementModal']),
+    ...mapActions(['attemptPlaceSettlement']),
     toggleSidebar() {
       this.sidebarOpen = !this.sidebarOpen;
-    },
-    openEnemyEncounter() {
-      this.$refs.enemyEncounters.openModal();
-    },
-    removeSettlement() {
-      if (confirm('Er du sikker på, at du vil fjerne din settlement?')) {
-        this.updateSettlementMarker(null);
-      }
     },
   },
 };
@@ -124,13 +112,4 @@ export default {
 .nav-item-name.price-box.new-story {
   border-color: #28a745;
 }
-.nav-item-name.price-box.bg-success {
-  background-color: #28a745;
-  cursor: pointer;
-}
-
-.nav-item-name.price-box.bg-success:hover {
-  background-color: #218838;
-}
-
 </style>

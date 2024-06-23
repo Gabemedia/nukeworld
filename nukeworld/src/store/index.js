@@ -31,6 +31,7 @@ const state = reactive({
   storyLines: reactive(JSON.parse(localStorage.getItem('storyLines')) || defaultStoryLines),
   currentStoryLineId: JSON.parse(localStorage.getItem('currentStoryLineId')) || null,
   settlementMarker: JSON.parse(localStorage.getItem('settlementMarker')) || null,
+  isSettlementModalOpen: false,
   items,
   armor,
   aid,
@@ -254,7 +255,6 @@ const mutations = {
     localStorage.setItem('settlementMarker', JSON.stringify(marker));
   },
   setSettlementModalOpen(state, isOpen) {
-    console.log('Setting settlement modal open:', isOpen);
     state.isSettlementModalOpen = isOpen;
   },
 
@@ -689,10 +689,9 @@ const actions = {
     });
     console.log('Resources after deduction:', state.character.resources);
   },
-  updateSettlementMarker({ commit }, marker) {
-    console.log('Updating settlement marker:', marker);
+  async updateSettlementMarker({ commit }, marker) {
     commit('setSettlementMarker', marker);
-  },  
+  },
   openSettlementModal({ commit }) {
     console.log('Opening settlement modal');
     commit('setSettlementModalOpen', true);
