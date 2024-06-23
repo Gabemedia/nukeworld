@@ -30,8 +30,6 @@ const state = reactive({
   quests: reactive(JSON.parse(localStorage.getItem('quests')) || defaultQuests),
   storyLines: reactive(JSON.parse(localStorage.getItem('storyLines')) || defaultStoryLines),
   currentStoryLineId: JSON.parse(localStorage.getItem('currentStoryLineId')) || null,
-  settlementMarker: JSON.parse(localStorage.getItem('settlementMarker')) || null,
-  isSettlementModalOpen: false,
   items,
   armor,
   aid,
@@ -68,8 +66,6 @@ const getters = {
   currentEnemy: (state) => {
     return state.currentEnemyId ? enemies.find(e => e.id === state.currentEnemyId) : null;
   },
-  hasSettlement: (state) => !!state.settlementMarker,
-  isSettlementModalOpen: (state) => state.isSettlementModalOpen,
 };
 
 const mutations = {
@@ -358,17 +354,6 @@ const mutations = {
   },
   cancelStoryLine(state) {
     state.currentStoryLineId = null;
-  },
-  updateSettlementMarker(state, marker) {
-    state.settlementMarker = marker;
-    localStorage.setItem('settlementMarker', JSON.stringify(marker));
-  },
-  deleteSettlementMarker(state) {
-    state.settlementMarker = null;
-    localStorage.removeItem('settlementMarker');
-  },
-  setSettlementModalOpen(state, isOpen) {
-    state.isSettlementModalOpen = isOpen;
   },
 };
 
@@ -824,9 +809,6 @@ const actions = {
   cancelCurrentStoryLine({ commit }) {
     commit('cancelStoryLine');
   },
-  openSettlementModal({ commit }) {
-    commit('setSettlementModalOpen', true);
-  },
 };
 
 const store = createStore({
@@ -891,13 +873,5 @@ watch(() => state.storyLines, (newStoryLines) => {
 watch(() => state.currentStoryLineId, (newId) => {
   localStorage.setItem('currentStoryLineId', JSON.stringify(newId));
 });
-
-watch(
-  () => state.settlementMarker,
-  (newSettlementMarker) => {
-    localStorage.setItem('settlementMarker', JSON.stringify(newSettlementMarker));
-  },
-  { deep: true }
-);
 
 export default store;

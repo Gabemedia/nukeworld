@@ -12,15 +12,6 @@
       >
       </l-marker>
 
-      <l-marker
-        v-if="$store.state.settlementMarker"
-        :lat-lng="$store.state.settlementMarker.latlng"
-        :icon="settlementIcon"
-        draggable
-        @dragend="onMarkerDragEnd"
-        @click="openSettlementModal"
-      >
-      </l-marker>
     </l-map>
     <div v-if="showModal" class="modal" tabindex="-1" @click.self="closeModal">
       <div class="modal-dialog">
@@ -32,30 +23,12 @@
         </div>
       </div>
     </div>
-    <div v-if="$store.state.isSettlementModalOpen" class="modal" @click.self="closeSettlementModal">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">{{ $store.state.settlementMarker ? 'Place Settlement' : 'New Settlement' }}</h5>
-            <button type="button" class="close" @click="closeSettlementModal">&times;</button>
-          </div>
-          <div class="modal-body">
-            <input v-model="settlementName" placeholder="Settlement Navn" class="form-control">
-          </div>
-          <div class="modal-footer">
-            <button @click="saveSettlement" class="btn btn-primary">Gem</button>
-            <button v-if="$store.state.settlementMarker" @click="deleteSettlement" class="btn btn-danger">Slet</button>
-            <button @click="closeSettlementModal" class="btn btn-secondary">Annuller</button>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
 <script>
 import { LMap, LMarker, LImageOverlay } from '@vue-leaflet/vue-leaflet';
-import { mapState, mapGetters } from 'vuex';
+import { mapState } from 'vuex';
 import QuestDetails from './controller/QuestDetails.vue';
 import L from 'leaflet';
 
@@ -89,17 +62,10 @@ export default {
       showModal: false,
       selectedQuest: null,
       selectedMarker: null,
-      settlementName: '',
-      settlementIcon: L.icon({
-        iconUrl: require('@/assets/interface/icons/settlement_marker.png'),
-        iconSize: [30, 45],
-        iconAnchor: [12, 12],
-      }),
     };
   },
   computed: {
     ...mapState(['quests', 'markers', 'character']),
-    ...mapGetters(['isSettlementModalOpen']),
     filteredQuests() {
       return this.quests.filter(quest => 
         !quest.userCreated && 
@@ -152,15 +118,6 @@ export default {
     updateDragging() {
       this.mapOptions.dragging = window.innerWidth >= 1600;
     },
-    onMapClick(event) {
-      if (!this.$store.state.settlementMarker) {
-        this.$store.commit('updateSettlementMarker', {
-          latlng: event.latlng,
-          name: ''
-        });
-        this.openSettlementModal();
-      }
-    },
     getQuestIcon(quest) {
       if (quest.state === 'not-started') {
         return L.icon({
@@ -193,33 +150,6 @@ export default {
       this.showModal = false;
       this.selectedQuest = null;
       this.selectedMarker = null;
-    },
-    onMarkerDragEnd(event) {
-      this.$store.commit('updateSettlementMarker', {
-        ...this.$store.state.settlementMarker,
-        latlng: event.target.getLatLng(),
-      });
-    },
-    openSettlementModal() {
-      this.settlementName = this.$store.state.settlementMarker ? this.$store.state.settlementMarker.name : '';
-      this.$store.commit('setSettlementModalOpen', true);
-    },
-    closeSettlementModal() {
-      this.$store.commit('setSettlementModalOpen', false);
-      if (this.$store.state.settlementMarker && !this.$store.state.settlementMarker.name) {
-        this.$store.commit('deleteSettlementMarker');
-      }
-    },
-    saveSettlement() {
-      this.$store.commit('updateSettlementMarker', {
-        ...this.$store.state.settlementMarker,
-        name: this.settlementName,
-      });
-      this.$store.commit('setSettlementModalOpen', false);
-    },
-    deleteSettlement() {
-      this.$store.commit('deleteSettlementMarker');
-      this.$store.commit('setSettlementModalOpen', false);
     },
   },
 };

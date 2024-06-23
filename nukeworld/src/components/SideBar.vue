@@ -19,12 +19,6 @@
         <div class="nav-item-name price-box">Shop</div>
         <PlayerShop />
       </li>
-      <li v-if="hasSettlement" class="nav-item mx-2">
-        <div class="nav-item-name price-box bg-success">Settlement</div>
-        <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="openSettlementModal">
-          <img class="sidebar-icon" :src="require(`@/assets/interface/icons/settlement.png`)" title="Settlement">
-        </button>
-      </li>
     </ul>
   </div>
 </template>
@@ -35,7 +29,6 @@ import QuestLog from './data/QuestLog.vue';
 import InventoryLog from './data/InventoryLog.vue';
 import StoryLog from './data/StoryLog.vue';
 import PlayerShop from './data/PlayerShop.vue';
-import { mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'SideBar',
@@ -46,7 +39,6 @@ export default {
     PlayerShop,
   },
   computed: {
-    ...mapGetters(['hasSettlement']),
     hasNewStory() {
       return this.$store.getters.availableStoryLines.length > 0;
     }
@@ -57,7 +49,6 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['openSettlementModal']),
     toggleSidebar() {
       this.sidebarOpen = !this.sidebarOpen;
     },
@@ -117,12 +108,4 @@ export default {
   border-color: #28a745;
 }
 
-.nav-item-name.price-box.settlement {
-  background-color: #4CAF50;
-  cursor: pointer;
-}
-
-.nav-item-name.price-box.settlement:hover {
-  background-color: #45a049;
-}
 </style>
