@@ -121,6 +121,14 @@ export default {
       this.updateMapSize();
       window.addEventListener('resize', this.updateMapSize);
       window.addEventListener('resize', this.updateZoom);
+      if (this.$store.state.settlementMarker) {
+        this.$nextTick(() => {
+          const map = this.$refs.map.$mapObject;
+          if (map) {
+            map.setView(this.$store.state.settlementMarker.latlng, this.zoom);
+          }
+        });
+      }
     });
   },
   beforeUnmount() {
@@ -201,13 +209,18 @@ export default {
     },
 
 
-
     onMarkerDragEnd(event) {
       this.updateSettlementMarker({
         ...this.$store.state.settlementMarker,
         latlng: event.target.getLatLng(),
       });
     },
+    removeSettlement() {
+      if (confirm('Er du sikker på, at du vil fjerne din settlement?')) {
+        this.updateSettlementMarker(null);
+      }
+    },
+
     getQuestIcon(quest) {
       if (quest.state === 'not-started') {
         return L.icon({

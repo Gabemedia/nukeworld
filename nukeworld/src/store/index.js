@@ -30,6 +30,7 @@ const state = reactive({
   quests: reactive(JSON.parse(localStorage.getItem('quests')) || defaultQuests),
   storyLines: reactive(JSON.parse(localStorage.getItem('storyLines')) || defaultStoryLines),
   currentStoryLineId: JSON.parse(localStorage.getItem('currentStoryLineId')) || null,
+  settlementMarker: JSON.parse(localStorage.getItem('settlementMarker')) || null,
   items,
   armor,
   aid,
@@ -249,7 +250,6 @@ const mutations = {
     state.character.resources.splice(index, 1);
   },
   setSettlementMarker(state, marker) {
-    console.log('Setting settlement marker:', marker);
     state.settlementMarker = marker;
     localStorage.setItem('settlementMarker', JSON.stringify(marker));
   },
@@ -692,7 +692,7 @@ const actions = {
   updateSettlementMarker({ commit }, marker) {
     console.log('Updating settlement marker:', marker);
     commit('setSettlementMarker', marker);
-  },
+  },  
   openSettlementModal({ commit }) {
     console.log('Opening settlement modal');
     commit('setSettlementModalOpen', true);
