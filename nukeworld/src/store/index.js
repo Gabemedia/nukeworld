@@ -223,25 +223,39 @@ const mutations = {
   },
   
   checkRequiredResources({ state }, requiredResources) {
-    if (!requiredResources || requiredResources.length === 0) return true;
-    
     return requiredResources.every(required => {
-      const playerResourceCount = state.character.resources.filter(r => r.id === required.id).length;
-      return playerResourceCount >= required.amount;
+      const resourceCount = state.character.resources.filter(r => r.id === required.id).length;
+      return resourceCount >= required.amount;
     });
   },
-
-  useRequiredResources({ commit, state }, requiredResources) {
-    if (!requiredResources || requiredResources.length === 0) return;
-    
+  useRequiredResources({ state, commit }, requiredResources) {
     requiredResources.forEach(required => {
-      const playerResources = state.character.resources.filter(r => r.id === required.id);
       for (let i = 0; i < required.amount; i++) {
-        if (playerResources && playerResources.length > 0) {
-          commit('removeResource', playerResources[i].uuid);
+        const resourceIndex = state.character.resources.findIndex(r => r.id === required.id);
+        if (resourceIndex !== -1) {
+          commit('removeResourceAtIndex', resourceIndex);
         }
       }
     });
+  },
+  updateSettlementMarker({ commit }, marker) {
+    commit('setSettlementMarker', marker);
+  },
+  openSettlementModal({ commit }) {
+    commit('setSettlementModalOpen', true);
+  },
+  removeResourceAtIndex(state, index) {
+    console.log('Removing resource at index:', index);
+    state.character.resources.splice(index, 1);
+  },
+  setSettlementMarker(state, marker) {
+    console.log('Setting settlement marker:', marker);
+    state.settlementMarker = marker;
+    localStorage.setItem('settlementMarker', JSON.stringify(marker));
+  },
+  setSettlementModalOpen(state, isOpen) {
+    console.log('Setting settlement modal open:', isOpen);
+    state.isSettlementModalOpen = isOpen;
   },
 
   addItemToWeapons(state, itemId) {
@@ -651,22 +665,37 @@ const actions = {
   
   
   checkRequiredResources({ state }, requiredResources) {
-    if (!requiredResources || requiredResources.length === 0) return true;
-    
+    console.log('Checking required resources:', requiredResources);
+    console.log('Current resources:', state.character.resources);
     return requiredResources.every(required => {
-      const playerResourceCount = state.character.resources.filter(r => r.id === required.id).length;
-      return playerResourceCount >= required.amount;
+      const resourceCount = state.character.resources.filter(r => r.id === required.id).length;
+      console.log(`Resource ${required.id} count:`, resourceCount);
+      console.log(`Required amount:`, required.amount);
+      const hasEnough = resourceCount >= required.amount;
+      console.log(`Has enough:`, hasEnough);
+      return hasEnough;
     });
   },
   
-  useRequiredResources({ dispatch }, requiredResources) {
-    if (!requiredResources || requiredResources.length === 0) return;
-    
+  useRequiredResources({ state, commit }, requiredResources) {
+    console.log('Using required resources:', requiredResources);
     requiredResources.forEach(required => {
       for (let i = 0; i < required.amount; i++) {
-        dispatch('removeResource', required.id);
+        const resourceIndex = state.character.resources.findIndex(r => r.id === required.id);
+        if (resourceIndex !== -1) {
+          commit('removeResourceAtIndex', resourceIndex);
+        }
       }
     });
+    console.log('Resources after deduction:', state.character.resources);
+  },
+  updateSettlementMarker({ commit }, marker) {
+    console.log('Updating settlement marker:', marker);
+    commit('setSettlementMarker', marker);
+  },
+  openSettlementModal({ commit }) {
+    console.log('Opening settlement modal');
+    commit('setSettlementModalOpen', true);
   },
 
   async progressStory({ commit, dispatch, state }, { nextId, choiceText, giveReward }) {
