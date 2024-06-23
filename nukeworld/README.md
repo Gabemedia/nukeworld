@@ -127,6 +127,8 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Added display of quests with levelRequirement equal to or below the player's current level.
 - Added resources system for character and story.
 - Added resources to the player inventory.
+- Added new Item 20 diffrent weapons.
+- Added new Aid Big Medkid 
 - Improved quest system to preserve all quest states when reloading the page
 - Implemented `resetQuests` function to reset completed quests.
 - Implemented level-based quest filtering in MapComponent and MapComponent2

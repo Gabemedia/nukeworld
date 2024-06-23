@@ -2,9 +2,8 @@
   <div class="d-flex flex-row flex-shrink-0 sidebar" :class="{ 'show': sidebarOpen }">
     <ul class="nav nav-pills nav-flush flex-row mb-auto text-center">
       <li class="nav-item mx-2">
-        <div class="nav-item-name price-box position-relative">
+        <div class="nav-item-name price-box position-relative" :class="{ 'new-story': hasNewStory }">
           Story
-          <div v-if="hasNewStory" class="bg-success new-story-indicator"></div>
         </div>
         <StoryLog />
       </li>
@@ -98,13 +97,12 @@ export default {
   position: relative;
 }
 
-.new-story-indicator {
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  border: 1px #fff solid;
+.nav-item-name.price-box {
+  border: 2px solid #fff; /* Standard grænsefarve */
+  transition: border-color 0.3s ease; /* Tilføjer en blød overgang for farveændringen */
+}
+
+.nav-item-name.price-box.new-story {
+  border-color: #28a745; /* Success farve (grøn) når der er en ny historie */
 }
 </style>

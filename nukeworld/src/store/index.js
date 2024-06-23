@@ -251,7 +251,7 @@ const mutations = {
       const soldItem = state.character.weapons[itemIndex];
       if (soldItem.price !== '-1') {
         state.character.weapons.splice(itemIndex, 1);
-        state.character.money += parseInt(soldItem.price);
+        state.character.money += Math.floor(parseInt(soldItem.price) * 0.1);
         state.character.equippedWeapons = state.character.equippedWeapons.filter(item => item.uuid !== itemUuid);
       }
     }
@@ -275,7 +275,7 @@ const mutations = {
       const soldItem = state.character.armor[itemIndex];
       if (soldItem.price !== '-1') {
         state.character.armor.splice(itemIndex, 1);
-        state.character.money += parseInt(soldItem.price);
+        state.character.money += Math.floor(parseInt(soldItem.price) * 0.1);
         if (state.character.equippedArmor && state.character.equippedArmor.uuid === itemUuid) {
           state.character.equippedArmor = null;
         }
@@ -332,19 +332,8 @@ const actions = {
       equippedWeapons: [state.items[0]],
       armor: [state.armor[0]],
       equippedArmor: state.armor[0],
-      aid: [state.aid[1], state.aid[1], state.aid[1]],
-      resources: [
-        state.resources[1],
-        state.resources[2],
-        state.resources[3],
-        state.resources[4],
-        state.resources[5],
-        state.resources[6],
-        state.resources[7],
-        state.resources[8],
-        state.resources[9],
-        state.resources[10],
-      ],
+      aid: [],
+      resources: [],
     };
     commit('addCharacter', newCharacter);
     commit('updateCharacter', newCharacter);

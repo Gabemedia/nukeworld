@@ -9,25 +9,28 @@
           <div class="shop">
             <div class="shop-section">
               <h6 class="mb-3 text-uppercase fw-bold">Big´n´Small Shop</h6>
+              <p class="mt-3 text-uppercase fw-bold text-left">Weapon:</p>
               <div class="shop-items">
-                <div v-for="weapon in availableWeapons" :key="weapon.id" class="shop-item m-1" @click="buyItem(weapon, 'weapons')" :ref="'item-weapons-' + weapon.id">
-                  <img :src="require(`@/assets/interface/icons/weapons/${weapon.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="weapon.name" />
+                <div v-for="weapon in availableWeapons" :key="weapon.id" class="shop-item" @click="buyItem(weapon, 'weapons')" :ref="'item-weapons-' + weapon.id">
+                  <img :src="require(`@/assets/interface/icons/weapons/${weapon.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="weapon.name" />
                   <div class="price-box">{{ weapon.price }}</div>
                 </div>
               </div>
             </div>
             <div class="shop-section">
+              <p class="mt-3 text-uppercase fw-bold text-left">Armor:</p>
               <div class="shop-items">
-                <div v-for="armor in availableArmor" :key="armor.id" class="shop-item m-1" @click="buyItem(armor, 'armor')" :ref="'item-armor-' + armor.id">
-                  <img :src="require(`@/assets/interface/icons/armor/${armor.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="armor.name" />
+                <div v-for="armor in availableArmor" :key="armor.id" class="shop-item" @click="buyItem(armor, 'armor')" :ref="'item-armor-' + armor.id">
+                  <img :src="require(`@/assets/interface/icons/armor/${armor.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="armor.name" />
                   <div class="price-box">{{ armor.price }}</div>
                 </div>
               </div>
             </div>
             <div class="shop-section">
+              <p class="mt-3 text-uppercase fw-bold text-left">Aid:</p>
               <div class="shop-items">
-                <div v-for="aid in availableAid" :key="aid.id" class="shop-item m-1" @click="buyItem(aid, 'aid')" :ref="'item-aid-' + aid.id">
-                  <img :src="require(`@/assets/interface/icons/aid/${aid.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="aid.name" />
+                <div v-for="aid in availableAid" :key="aid.id" class="shop-item" @click="buyItem(aid, 'aid')" :ref="'item-aid-' + aid.id">
+                  <img :src="require(`@/assets/interface/icons/aid/${aid.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="aid.name" />
                   <div class="price-box">{{ aid.price }}</div>
                 </div>
               </div>
@@ -177,6 +180,14 @@ export default {
   margin-bottom: 20px;
 }
 
+.shop-section p{
+  color: #fff;;
+  margin-bottom: 0;
+  line-height: 1.5;
+  margin-top: 25px;
+  text-align: left;
+}
+
 .shop-section h6{
   color: #fff;;
   margin-bottom: 0;
@@ -209,30 +220,32 @@ export default {
 .shop-items {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
+  justify-content:space-between;
 }
 
 .shop-item {
-  width: 50px;
-  height: 70px;
-  border: 2px solid #ccc;
-  border-radius: 5px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
+    width: calc(25% - 12px);
+    height: 100px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin:12px 0;
 }
 
 .shop-item img {
   max-width: 100%;
   max-height: 100%;
   scale: 0.8;
-  margin-top:25px;
+  margin-top:20px;
 }
 
 .price-box {
-  margin-top: 5px;
+  margin-top: -5px;
   padding: 3px 6px;
   background-color: #000;
   border: 1px solid #ccc;

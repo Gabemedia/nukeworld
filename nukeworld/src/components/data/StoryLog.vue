@@ -1,9 +1,14 @@
 <template>
-    <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="openModal">
-      <div class="icon-wrapper">
-        <img class="sidebar-icon" :src="require(`@/assets/interface/icons/encounter.png`)" title="Storyline">
-      </div>
-    </button>
+  <button 
+    class="btn btn-main sidebar-btn border border-1 border-white m-2" 
+    :class="{ 'new-story': hasNewStory }" 
+    type="button" 
+    @click="openModal"
+  >
+    <div class="icon-wrapper">
+      <img class="sidebar-icon" :src="require(`@/assets/interface/icons/encounter.png`)" alt="Storyline">
+    </div>
+  </button>
   <div class="story-log-container">
     <div v-if="showModal" class="modal" tabindex="-1" @click.self="closeModal">
       <div class="modal-dialog">
@@ -55,6 +60,15 @@ export default {
 .icon-wrapper {
   position: relative;
   display: inline-block;
+}
+
+.sidebar-btn {
+  border: 1px solid #fff !important;
+  transition: border-color 0.3s ease !important;
+}
+
+.sidebar-btn.new-story {
+  border-color: #28a745 !important; /* Success farve (grøn) når der er en ny historie */
 }
 
 
@@ -120,4 +134,5 @@ export default {
   font-weight: 600;
   font-size: 1rem;
 }
+
 </style>

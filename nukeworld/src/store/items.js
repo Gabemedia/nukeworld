@@ -18,7 +18,7 @@ export default [
     attack: 2,
     defence: 0,
     state: '0',
-    price: '5',
+    price: '799',
   },
   {
     id: 2,
@@ -28,7 +28,7 @@ export default [
     attack: 2,
     defence: 0,
     state: 'none',
-    price: '7',
+    price: '799',
   },
   {
     id: 3,
@@ -38,7 +38,7 @@ export default [
     attack: 5,
     defence: 0,
     state: 'none',
-    price: '10',
+    price: '2499',
   },
   {
     id: 4,
@@ -48,7 +48,7 @@ export default [
     attack: 6,
     defence: 0,
     state: 'none',
-    price: '12',
+    price: '7999',
   },
   {
     id: 5,
@@ -58,7 +58,7 @@ export default [
     attack: 10,
     defence: 0,
     state: 'none',
-    price: '25',
+    price: '-1',
   },
   {
     id: 6,
@@ -68,7 +68,7 @@ export default [
     attack: 12,
     defence: 0,
     state: 'none',
-    price: '12',
+    price: '2999',
   },
   {
     id: 7,
@@ -78,7 +78,7 @@ export default [
     attack: 12,
     defence: 0,
     state: 'none',
-    price: '15',
+    price: '4999',
   },
   {
     id: 8,
@@ -88,7 +88,7 @@ export default [
     attack: 15,
     defence: 0,
     state: 'none',
-    price: '17',
+    price: '12999',
   },
   {
     id: 9,
@@ -98,7 +98,7 @@ export default [
     attack: 15,
     defence: 0,
     state: 'none',
-    price: '20',
+    price: '24999',
   },
   {
     id: 10,
@@ -108,7 +108,7 @@ export default [
     attack: 25,
     defence: 0,
     state: 'none',
-    price: '30',
+    price: '-1',
   },
   {
     id: 11,
@@ -118,7 +118,7 @@ export default [
     attack: 12,
     defence: 0,
     state: 'none',
-    price: '12',
+    price: '9999',
   },
   {
     id: 12,
@@ -128,7 +128,7 @@ export default [
     attack: 15,
     defence: 0,
     state: 'none',
-    price: '15',
+    price: '24999',
   },
   {
     id: 13,
@@ -138,7 +138,7 @@ export default [
     attack: 18,
     defence: 0,
     state: 'none',
-    price: '20',
+    price: '34999',
   },
   {
     id: 14,
@@ -148,7 +148,7 @@ export default [
     attack: 25,
     defence: 0,
     state: 'none',
-    price: '25',
+    price: '49999',
   },
   {
     id: 15,
@@ -158,37 +158,37 @@ export default [
     attack: 28,
     defence: 0,
     state: 'none',
-    price: '150',
+    price: '-1',
   },
   {
     id: 16,
     uuid: uuidv4(),
     name: 'LMG',
     desc: 'LMG is a powerful ranged weapon. It is used for short-range combat.',
-    attack: 30,
+    attack: 25,
     defence: 0,
     state: 'none',
-    price: '35',
+    price: '49999',
   },
   {
     id: 17,
     uuid: uuidv4(),
     name: 'Minigun',
     desc: 'Minigun is a powerful ranged weapon. It is used for short-range combat.',
-    attack: 34,
+    attack: 29,
     defence: 0,
     state: 'none',
-    price: '42',
+    price: '74999',
   },
   {
     id: 18,
     uuid: uuidv4(),
     name: 'Flamethrower',
     desc: 'Flamethrower is a powerful ranged weapon. It is used for short-range combat.',
-    attack: 40,
+    attack: 32,
     defence: 0,
     state: 'none',
-    price: '48',
+    price: '89999',
   },
   {
     id: 19,
@@ -198,7 +198,7 @@ export default [
     attack: 50,
     defence: 0,
     state: 'none',
-    price: '50',
+    price: '99999',
   },
   {
     id: 20,
@@ -208,6 +208,6 @@ export default [
     attack: 100,
     defence: 0,
     state: 'none',
-    price: '100000',
+    price: '-1',
   },
 ];

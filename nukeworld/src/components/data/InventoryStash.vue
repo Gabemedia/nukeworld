@@ -9,14 +9,13 @@
             <img :src="require(`@/assets/interface/icons/weapons/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="item.name" />
             <div class="item-actions">
               <button v-if="item.price !== '-1'" class="btn btn-danger btn-sm position-absolute top-100 start-100 translate-middle py-0 px-1" @click.stop="sellWeapon(item.uuid)" :disabled="isEquipped(item.uuid)">
-                <p class="card-text m-0">{{ item.price }}</p>
+                <p class="card-text m-0">{{ Math.floor(item.price * 0.1) }}</p>
               </button>
             </div>
             <div v-if="hoveredItem === item" class="item-info">
               <p class="mb-1 fw-bold small"><strong>Name:</strong> {{ item.name }}</p>
               <p class="mb-1 small"><strong>Attack:</strong> {{ item.attack }}</p>
               <p class="mb-1 small"><strong>Defence:</strong> {{ item.defence }}</p>
-              <p class="mb-1 small"><strong>Price:</strong> <span v-if="item.price === '-1'" class="badge bg-danger">Not for Sale</span><span v-else>{{ item.price }} coins</span></p>
             </div>
           </div>
         </div>
@@ -28,14 +27,13 @@
             <img :src="require(`@/assets/interface/icons/armor/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="item.name" />
             <div class="item-actions">
               <button v-if="item.price !== '-1'" class="btn btn-danger btn-sm position-absolute top-100 start-100 translate-middle py-0 px-1" @click.stop="sellArmor(item.uuid)" :disabled="isArmorEquipped(item.uuid)">
-                <p class="card-text m-0">{{ item.price }}</p>
+                <p class="card-text m-0">{{ Math.floor(item.price * 0.1) }}</p>
               </button>
             </div>
             <div v-if="hoveredItem === item" class="item-info">
-              <p class="mb-1 fw-bold small"><strong>Name:</strong> {{ item.name }}</p>
-              <p class="mb-1 small"><strong>Attack:</strong> {{ item.attack }}</p>
-              <p class="mb-1 small"><strong>Defence:</strong> {{ item.defence }}</p>
-              <p class="mb-1 small"><strong>Price:</strong> <span v-if="item.price === '-1'" class="badge bg-danger">Not for Sale</span><span v-else>{{ item.price }} coins</span></p>
+              <p class="fw-bold"><strong>Name:</strong> {{ item.name }}</p>
+              <p><strong>Attack:</strong> {{ item.attack }}</p>
+              <p><strong>Defence:</strong> {{ item.defence }}</p>
             </div>
           </div>
         </div>
@@ -108,9 +106,9 @@ export default {
 
 <style scoped>
 .active-equip {
-  top: 6px;
-  left: 6px;
-  scale: 0.5;
+  top: 0px;
+  right: -15px;
+  scale: 0.8;
 }
 
 .item-actions {
@@ -121,8 +119,8 @@ export default {
 }
 
 .shop-item {
-  width: 50px;
-  height: 50px;
+  width: 70px;
+  height: 70px;
   border: 1px solid #fff;
   border-radius: 5px;
   display: flex;
@@ -144,13 +142,16 @@ export default {
 }
 .item-info {
   position: absolute;
-  top: 0;
-  left: 100%;
+  top: -50%;
+  left: 150%;
   background-color: rgba(0, 0, 0, 0.8);
   padding: 10px;
   border-radius: 5px;
   z-index: 1;
   width: 200px;
   text-align: left;
+}
+.item-info p{
+  font-size: 0.8rem!important;
 }
 </style>
