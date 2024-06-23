@@ -31,7 +31,7 @@ export default [
     reward: {
       exp: 250,
       money: 50,
-      resourceRewards: [{ id: 1, amount: 20 }],
+      resourceRewards: [{ id: 1, amount: 20 }, { id: 2, amount: 20 }],
       weaponRewards: [],
       armorRewards: [],
       aidRewards: [],
