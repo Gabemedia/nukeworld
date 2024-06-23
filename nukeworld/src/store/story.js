@@ -31,10 +31,7 @@ export default [
     reward: {
       exp: 250,
       money: 50,
-      resourceRewards: [
-        { id: 1, amount: 5 },
-        { id: 2, amount: 5 }
-      ],
+      resourceRewards: [],
       weaponRewards: [],
       armorRewards: [],
       aidRewards: [],
@@ -44,18 +41,18 @@ export default [
   {
     id: 2,
     name: "Getting the basics!",
-    levelRequirement: 1,
+    levelRequirement: 2,
     completed: false,
     requiredStoryLineId: 1, 
     playerChoices: [],
     steps: [
       {
-        npcMessage: "Please accept this starter kit, and let´s try an Enemy Encounter",
-        playerOptions: [{ text: "Thank you so much!", nextId: null }]
+        npcMessage: "This should get you started. I'll give you a basic weapon, armor, and a medkit.",
+        playerOptions: [{ text: "Thank you very much!", nextId: null }]
       },
     ],
     reward: {
-      exp: 500,
+      exp: 50,
       money: 50,
       resourceRewards: [],
       weaponRewards: [{ id: 1}],
@@ -98,8 +95,8 @@ export default [
       }
     ],
     reward: {
-      exp: 200,
-      money: 50,
+      exp: 1000,
+      money: 250,
       resourceRewards: [],
       weaponRewards: [],
       armorRewards: [],
@@ -133,21 +130,21 @@ export default [
       }
     ],
     reward: {
-      exp: 100,
-      money: 10,
-      resourceRewards: [{ id: 1, amount: 2 }, { id: 2, amount: 2 }, { id: 3, amount: 2 }],
+      exp: 250,
+      money: 12,
+      resourceRewards: [{ id: 1, amount: 3 }, { id: 2, amount: 1 }],
       weaponRewards: [],
       armorRewards: [],
-      aidRewards: [],
+      aidRewards: [{ id: 1}],
     },
     alwaysGiveReward: false
   },  
   {
     id: 5,
     name: "The Scavenger's Dilemma",
-    levelRequirement: 3,
+    levelRequirement: 2,
     completed: false,
-    requiredStoryLineId: 3,
+    requiredStoryLineId: 0,
     playerChoices: [],
     requiredEnemyDefeat: { id: 2, count: 1 },
     steps: [
@@ -158,14 +155,8 @@ export default [
       {
         npcMessage: "I need someone to clear out the rats and retrieve the supplies. Are you up for it?",
         playerOptions: [
-          { text: "I'm ready for action", nextId: 3 },
+          { text: "Start the mission", nextId: null, action: 'startEnemyBattle', actionParams: { enemyId: 2,} },
           { text: "Sounds too dangerous", giveReward: false, nextId: null }
-        ]
-      },
-      {
-        npcMessage: "Great! Be careful out there. Those Mutated Rats are nasty.",
-        playerOptions: [
-          { text: "Start the mission", nextId: null, action: 'startEnemyBattle', actionParams: { enemyId: 2,} }
         ]
       },
       {
@@ -177,8 +168,9 @@ export default [
       exp: 1500,
       money: 750,
       resourceRewards: [
-        { id: 1, amount: 10 }, // 10x Wood Scrap
-        { id: 2, amount: 5 }   // 5x Steel Scrap
+        { id: 1, amount: 5 }, // 5x Wood Scrap
+        { id: 2, amount: 2 },  // 2x Steel Scrap
+        { id: 3, amount: 1 }   // 5x Plastic Scrap
       ],
       weaponRewards: [{ id: 2 }], // Baseball Bat
       armorRewards: [],

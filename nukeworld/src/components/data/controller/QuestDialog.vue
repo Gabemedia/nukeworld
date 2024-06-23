@@ -1,7 +1,8 @@
 <template>
   <EnemyEncounters ref="enemyEncounters" @show-reward-toast="showRewardToast"/>
   <div class="dialog-system">
-    <div v-if="currentStoryLine && currentStoryStep">
+    <!-- Samtalevindue - vises kun når en historie er valgt -->
+    <div v-if="currentStoryLine && currentStoryStep" class="mb-3">
       <h6 class="mb-3 text-uppercase fw-bold text-start">{{ currentStoryLine.name }}</h6>
       <div class="dialog-log border border-1 small">
         <div class="conversation-box npc-box">
@@ -10,7 +11,6 @@
             {{ currentStoryStep.npcMessage }}
           </div>
         </div>
-        
         <div class="conversation-box player-box">
           <div class="message-box player-message">
             <button @click="selectOption(option)" class="btn btn-md fw-bold btn-outline-light m-1" v-for="option in currentStoryStep.playerOptions" :key="option.text">
@@ -26,38 +26,29 @@
           <img class="sidebar-icon" :src="require(`@/assets/interface/icons/encounter.png`)" title="Player">
         </div>
         <button @click="cancelStory" class="btn btn-sm btn-danger mt-2">
-        Annuller historie
-      </button>
-      </div>
-    </div>
-    <div v-else-if="availableStoryLines.length > 0">
-      <h6 class="mb-3 text-uppercase fw-bold text-start">Available Storylines</h6>
-      <div v-for="storyLine in availableStoryLines" :key="storyLine.id">
-        <button @click="startStoryLine(storyLine.id)" class="btn btn-sm btn-outline-light">
-          {{ storyLine.name }} (Level {{ storyLine.levelRequirement }})
+          Cancel Storyline
         </button>
       </div>
     </div>
+
+    <!-- Liste over tilgængelige historier - vises kun når ingen historie er valgt -->
     <div v-else>
-      <h6 class="mb-3 text-uppercase fw-bold text-start">Come back later for more Storylines</h6>
-    </div>
-    <div class="mt-4">
-      <h6 class="mb-3 text-uppercase fw-bold text-start">Completed Storylines</h6>
-      <ul>
-        <li v-for="storyLine in completedStoryLines" :key="storyLine.id">
-          <button @click="toggleStoryLineDetails(storyLine.id)" class="btn btn-link text-light">
-            {{ storyLine.name }}
-          </button>
-          <ul v-if="expandedStoryLines[storyLine.id]">
-            <li v-for="(choice, index) in storyLine.playerChoices" :key="index">
-              {{ choice }}
-            </li>
-          </ul>
-        </li>
-      </ul>
+      <div v-if="availableStoryLines.length > 0">
+        <h6 class="mb-3 text-uppercase fw-bold text-start">Available Storylines</h6>
+        <div class="storyline-grid">
+          <div v-for="storyLine in availableStoryLines" :key="storyLine.id" class="storyline-card" @click="startStoryLine(storyLine.id)">
+            <div class="storyline-title">{{ storyLine.name }}</div>
+            <div class="storyline-level">Level Req: {{ storyLine.levelRequirement }}</div>
+          </div>
+        </div>
+      </div>
+      <div v-else>
+        <h6 class="m-0 text-uppercase fw-bold text-start">Come back later for more Storylines</h6>
+      </div>
     </div>
   </div>
 </template>
+
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
@@ -280,5 +271,38 @@ export default {
     vertical-align: middle;
     margin-right: 2px;
   }
+
+  .storyline-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.storyline-card {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+}
+
+.storyline-title {
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.storyline-level {
+  font-size: 0.6rem;
+  font-weight: bold;
+  color: #aaa;
+}
+
   </style>
     
