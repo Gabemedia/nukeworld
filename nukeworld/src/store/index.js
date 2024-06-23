@@ -7,6 +7,7 @@ import items from './items';
 import armor from './armor';
 import aid from './aid';
 import resources from './ressources';
+import enemies from './enemy';
 
 const state = reactive({
   characters: JSON.parse(localStorage.getItem('characters')) || [],
@@ -35,6 +36,8 @@ const state = reactive({
   resources,
   mapBounds: null,
   markers: [],
+  currentEnemyId: null,
+  defeatedEnemies: {},
 });
 
 
@@ -58,6 +61,9 @@ const getters = {
     return true;
   }),  
   completedStoryLines: (state) => state.storyLines.filter(sl => sl.completed),
+  currentEnemy: (state) => {
+    return state.currentEnemyId ? enemies.find(e => e.id === state.currentEnemyId) : null;
+  },
 };
 
 const mutations = {
@@ -202,6 +208,14 @@ const mutations = {
     }
   },
 
+  resetStoryLineProgress(state, storyLineId) {
+    const storyLine = state.storyLines.find(sl => sl.id === storyLineId);
+    if (storyLine) {
+      storyLine.currentStepIndex = 0;
+      storyLine.playerChoices = [];
+    }
+  },
+
   setStoryLines(state, storyLines) {
     state.storyLines = storyLines;
   },
@@ -313,6 +327,21 @@ const mutations = {
 
   removeResource(state, resourceUuid) {
     state.character.resources = state.character.resources.filter(r => r.uuid !== resourceUuid);
+  },
+  setEnemyEncounterOpen(state, isOpen) {
+    state.isEnemyEncounterOpen = isOpen;
+  },
+  setCurrentEnemyId(state, enemyId) {
+    state.currentEnemyId = enemyId;
+  },
+  addDefeatedEnemy(state, enemyId) {
+    if (!state.defeatedEnemies[enemyId]) {
+      state.defeatedEnemies[enemyId] = 0;
+    }
+    state.defeatedEnemies[enemyId]++;
+  },
+  resetDefeatedEnemies(state) {
+    state.defeatedEnemies = {};
   },
 };
 
@@ -552,7 +581,7 @@ const actions = {
 
   completeStoryLine({ commit, dispatch, state }, { storyLineId, giveReward }) {
     const storyLine = state.storyLines.find(sl => sl.id === storyLineId);
-    if (storyLine && !storyLine.completed) {
+    if (storyLine && (!storyLine.completed || storyLine.repeatable)) {
       if ((storyLine.alwaysGiveReward || giveReward) && storyLine.reward) {
         if (storyLine.reward.exp) {
           dispatch('increaseExp', storyLine.reward.exp);
@@ -568,11 +597,16 @@ const actions = {
           });
         }
       }
-      commit('completeStoryLine', storyLineId);
+      if (!storyLine.repeatable) {
+        commit('completeStoryLine', storyLineId);
+      } else {
+        // For repeatable storylines, reset the currentStepIndex
+        commit('resetStoryLineProgress', storyLineId);
+      }
       commit('setCurrentStoryLineId', null);
     }
   },
-
+  
   checkRequiredResources({ state }, requiredResources) {
     if (!requiredResources || requiredResources.length === 0) return true;
     
@@ -600,12 +634,20 @@ const actions = {
       if (currentStep) {
         const selectedOption = currentStep.playerOptions.find(option => option.text === choiceText);
         
-        if (selectedOption && selectedOption.requiredResources) {
-          const hasResources = dispatch('checkRequiredResources', selectedOption.requiredResources);
-          if (!hasResources) {
+        if (selectedOption) {
+          if (selectedOption.action) {
+            dispatch(selectedOption.action, selectedOption.actionParams);
+            // Hvis der er en action, skal vi ikke fortsætte historien endnu
             return;
           }
-          dispatch('useRequiredResources', selectedOption.requiredResources);
+          
+          if (selectedOption.requiredResources) {
+            const hasResources = dispatch('checkRequiredResources', selectedOption.requiredResources);
+            if (!hasResources) {
+              return;
+            }
+            dispatch('useRequiredResources', selectedOption.requiredResources);
+          }
         }
       }
       
@@ -617,8 +659,30 @@ const actions = {
         commit('progressStoryStep');
       }
     }
+  },  
+  
+  defeatEnemy({ commit, dispatch, state, getters }) {
+    const enemyId = state.currentEnemyId;
+    commit('addDefeatedEnemy', enemyId);
+    
+    const currentStoryLine = getters.currentStoryLine;
+    if (currentStoryLine && currentStoryLine.requiredEnemyDefeat) {
+      const { id, count } = currentStoryLine.requiredEnemyDefeat;
+      if (id === enemyId && state.defeatedEnemies[id] >= count) {
+        // Her fortsætter vi historien efter at have besejret fjenden
+        dispatch('progressStory', { 
+          nextId: getters.currentStoryStep.playerOptions[0].nextId, 
+          choiceText: 'I defeated the enemy', 
+          giveReward: true 
+        });
+        commit('resetDefeatedEnemies');
+      }
+    }
+    
+    commit('setCurrentEnemyId', null);
   },
   
+    
   resetStoryLines({ commit, state }) {
     const resetStoryLines = state.storyLines.map(storyLine => ({
       ...storyLine,
@@ -675,6 +739,22 @@ const actions = {
   },
   removeResource({ commit }, resourceUuid) {
     commit('removeResource', resourceUuid);
+  },
+
+  startEnemyBattle({ commit }, { enemyId }) {
+    const enemy = enemies.find(e => e.id === enemyId);
+    if (enemy) {
+      commit('setCurrentEnemyId', enemyId);
+      commit('setEnemyEncounterOpen', true);
+    } else {
+      console.error(`Enemy with id ${enemyId} not found`);
+    }
+  },  
+  openEnemyEncounter({ commit }) {
+    commit('setEnemyEncounterOpen', true);
+  },
+  closeEnemyEncounter({ commit }) {
+    commit('setEnemyEncounterOpen', false);
   },
 };
 

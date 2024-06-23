@@ -1,4 +1,5 @@
 <template>
+  <EnemyEncounters ref="enemyEncounters" />
   <div class="dialog-system">
     <div v-if="currentStoryLine && currentStoryStep">
       <h6 class="mb-3 text-uppercase fw-bold text-start">{{ currentStoryLine.name }}</h6>
@@ -51,10 +52,14 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import EnemyEncounters from '../EnemyEncounters.vue';
 import { ref } from 'vue';
 
 export default {
   name: 'QuestDialog',
+  components: {
+    EnemyEncounters,
+  },
   setup() {
     const expandedStoryLines = ref({});
 
@@ -93,14 +98,16 @@ export default {
           }
         });
       }
-      this.progressStory({ 
+      if (option.action) {
+        this.$store.dispatch(option.action, option.actionParams);
+      }
+      this.$store.dispatch('progressStory', { 
         nextId: option.nextId, 
         choiceText: option.text,
         giveReward: option.giveReward !== undefined ? option.giveReward : true
       });
     },
   },
-  
 };
 </script>
 

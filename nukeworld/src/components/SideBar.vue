@@ -16,10 +16,6 @@
         <InventoryLog />
       </li>
       <li class="nav-item mx-2">
-        <div class="nav-item-name price-box">Enemies</div>
-        <EnemyEncounters />
-      </li>
-      <li class="nav-item mx-2">
         <div class="nav-item-name price-box">Shop</div>
         <PlayerShop />
       </li>
@@ -30,7 +26,6 @@
 <script>
 import QuestLog from './data/QuestLog.vue';
 import InventoryLog from './data/InventoryLog.vue';
-import EnemyEncounters from './data/EnemyEncounters.vue';
 import StoryLog from './data/StoryLog.vue';
 import PlayerShop from './data/PlayerShop.vue';
 
@@ -39,7 +34,6 @@ export default {
   components: {
     QuestLog,
     InventoryLog,
-    EnemyEncounters,
     StoryLog,
     PlayerShop,
   },
@@ -56,6 +50,9 @@ export default {
   methods: {
     toggleSidebar() {
       this.sidebarOpen = !this.sidebarOpen;
+    },
+    openEnemyEncounter() {
+      this.$refs.enemyEncounters.openModal();
     },
   },
 };

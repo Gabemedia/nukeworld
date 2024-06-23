@@ -46,7 +46,7 @@
     </div>
     <div class="mb-0">
       <div class="battle-actions d-flex justify-content-center mb-3">
-        <button @click="startAutoAttack" :disabled="isAutoAttackActive || isBattleWon || character.health === 0" class="btn btn-primary attack-button me-2">
+        <button @click="startAutoAttack" :disabled="isAutoAttackActive || isBattleWon || character.health <= 0 || !enemy" class="btn btn-primary attack-button me-2">
           <img :src="require('@/assets/interface/icons/gun.png')" alt="Attack" class="icon">
           {{ isAutoAttackActive ? 'Attacking...' : 'Auto Attack' }}
         </button>
@@ -65,42 +65,77 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
-import confetti from 'canvas-confetti';
+import { mapState, mapGetters } from 'vuex';
 import enemies from '@/store/enemy';
+import confetti from 'canvas-confetti';
 
 export default {
   name: 'BattleSystem',
   data() {
     return {
       battleLog: [],
-      enemy: null,
       isBattleWon: false,
       isAutoAttackActive: false,
       autoAttackInterval: null,
+      localEnemy: null,
     };
   },
   computed: {
     ...mapState(['character']),
+    ...mapGetters(['currentEnemy']),
     equippedWeapon() {
       return this.character.equippedWeapons[0];
     },
     equippedArmor() {
       return this.character.equippedArmor;
     },
+    enemy() {
+      return this.localEnemy || this.currentEnemy;
+    },
+  },
+  watch: {
+    currentEnemy: {
+      immediate: true,
+      handler(newEnemy) {
+        if (newEnemy) {
+          this.localEnemy = JSON.parse(JSON.stringify(newEnemy));
+        } else {
+          this.getRandomEnemy();
+        }
+      },
+    },
   },
   created() {
-    this.getRandomEnemy();
+    if (!this.currentEnemy) {
+      this.getRandomEnemy();
+    }
   },
   methods: {
     getRandomEnemy() {
       if (enemies && enemies.length > 0) {
         const randomIndex = Math.floor(Math.random() * enemies.length);
-        this.enemy = { ...enemies[randomIndex] };
+        this.localEnemy = JSON.parse(JSON.stringify(enemies[randomIndex]));
+      }
+    },
+    startAutoAttack() {
+      if (!this.isAutoAttackActive && this.enemy && this.character.health > 0) {
+        this.isAutoAttackActive = true;
+        this.autoAttackInterval = setInterval(() => {
+          this.attack();
+          if (this.isBattleWon || this.character.health <= 0) {
+            this.stopAutoAttack();
+          }
+        }, 1000);
+      }
+    },
+    stopAutoAttack() {
+      if (this.isAutoAttackActive) {
+        this.isAutoAttackActive = false;
+        clearInterval(this.autoAttackInterval);
       }
     },
     attack() {
-      if (this.equippedWeapon) {
+      if (this.equippedWeapon && this.enemy) {
         const playerDamage = this.calculateDamage(this.equippedWeapon.attack, this.enemy.defense);
         const dodgeChance = Math.random();
         
@@ -110,15 +145,16 @@ export default {
           this.enemy.enemyHealth = Math.max(this.enemy.enemyHealth - playerDamage, 0);
           this.addToLog(`You attacked the ${this.enemy.name} with your ${this.equippedWeapon.name} for ${playerDamage} damage.`, 'player-action');
         }
-      } else {
-        this.addToLog('You have no weapon equipped!', 'player-action');
-      }
 
-      if (this.enemy.enemyHealth <= 0) {
-        this.addToLog(`You defeated the ${this.enemy.name}!`, 'player-action');
-        this.checkBattleEnd();
+        if (this.enemy.enemyHealth <= 0) {
+          this.addToLog(`You defeated the ${this.enemy.name}!`, 'player-action');
+          this.checkBattleEnd();
+        } else {
+          this.enemyAttack();
+        }
       } else {
-        this.enemyAttack();
+        this.addToLog('You have no weapon equipped or no enemy to fight!', 'player-action');
+        this.stopAutoAttack();
       }
     },
     enemyAttack() {
@@ -133,7 +169,7 @@ export default {
       }
       if (this.character.health <= 0) {
         this.addToLog('You were defeated!', 'enemy-action');
-        this.stopAutoAttack(); // Tilføj denne linje for at stoppe auto-angreb
+        this.stopAutoAttack();
         this.$emit('game-over');
       }
     },
@@ -148,43 +184,23 @@ export default {
       }
     },
     claimRewards() {
-      if (this.isBattleWon) {
-        this.$store.dispatch('claimRewards', this.enemy);
+      if (this.isBattleWon && this.currentEnemy) {
+        this.$store.dispatch('claimRewards', this.currentEnemy);
+        this.$store.dispatch('defeatEnemy');
         this.showRewardConfetti();
         this.resetBattleState();
+        this.$emit('battle-ended');
       }
     },
     resetBattleState() {
       this.isBattleWon = false;
       this.$store.commit('updateCharacter');
+      this.localEnemy = null;
       this.getRandomEnemy();
       this.battleLog = [];
     },
     addToLog(message, type) {
       this.battleLog.unshift({ message, type });
-    },
-    startAutoAttack() {
-      if (!this.isAutoAttackActive) {
-        if (this.character.health < 50) {
-          if (confirm('Your health is low. Are you sure you want to auto-attack?')) {
-            this.isAutoAttackActive = true;
-            this.autoAttackInterval = setInterval(() => {
-              this.attack();
-            }, 500);
-          }
-        } else {
-          this.isAutoAttackActive = true;
-          this.autoAttackInterval = setInterval(() => {
-            this.attack();
-          }, 500);
-        }
-      }
-    },
-    stopAutoAttack() {
-      if (this.isAutoAttackActive) {
-        this.isAutoAttackActive = false;
-        clearInterval(this.autoAttackInterval);
-      }
     },
     showVictoryConfetti() {
       confetti({
@@ -207,16 +223,9 @@ export default {
 </script>
 
 <style scoped>
-div.modal-body {
-  margin:0!important;
-  padding:0!important;
-}
-div.modal-content {
-  background-color: #f0f0f0!important;
-  margin:0!important;
-}
 .battle-system {
 }
+
 .battle-system .icon{
   height: 20px;
   width: auto;

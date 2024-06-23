@@ -1,18 +1,15 @@
 <template>
-  <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="openModal">
-    <img class="sidebar-icon" :src="require(`@/assets/interface/icons/encounter.png`)" title="Enemy Encounter">
-  </button>
-  <div v-if="showModal" class="modal" tabindex="-1" @click.self="closeModal">
+  <div v-if="$store.state.isEnemyEncounterOpen" class="modal" tabindex="-1" @click.self="closeModal">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-body">
-          <BattleSystem />
+          <BattleSystem @battle-ended="closeModal" />
         </div>
       </div>
     </div>
   </div>
 </template>
-  
+
 <script>
 import BattleSystem from './controller/BattleSystem.vue';
 
@@ -26,12 +23,30 @@ export default {
       showModal: false,
     };
   },
+  watch: {
+    '$store.state.isEnemyEncounterOpen'(newValue) {
+      if (newValue) {
+        this.openModal();
+      }
+    }
+  },
   methods: {
     openModal() {
       this.showModal = true;
     },
     closeModal() {
       this.showModal = false;
+      this.$store.dispatch('closeEnemyEncounter');
+      this.$store.commit('setCurrentEnemyId', null);
+    },
+    claimRewards() {
+      if (this.isBattleWon && this.currentEnemy) {
+        this.$store.dispatch('claimRewards', this.currentEnemy);
+        this.$store.dispatch('defeatEnemy');
+        this.showRewardConfetti();
+        this.resetBattleState();
+        this.$emit('battle-ended');
+      }
     },
   },
 };

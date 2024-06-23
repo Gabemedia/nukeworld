@@ -141,7 +141,18 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Optimized quest marker display on the map based on player's level and quest availability
 - Enhanced gameplay experience by providing players access to quests that match their level or are easier
 - Refactored Game Over to include resources and story.
+- Fixed an issue that made shop items cost 1.65% more.
 
+### Version 0.1.4.0 (2024-06-23)
+- Forbedret kampsystem implementering
+- Tilføjet automatisk angrebsfunktion i kampe
+- Fikset bug hvor tilfældige fjender blev vist i stedet for specifikke fjender fra historier
+- Implementeret korrekt åbning af kampsystem fra historielinjer
+- Forbedret logik for gentagelige historier
+- Tilføjet visuel feedback for sejr og belønninger med konfetti-effekt
+- Optimeret state management for fjender og kampe
+- Forbedret brugergrænsefladen for kamp-modalen
+- Tilføjet fejlhåndtering for manglende fjender eller våben
 
 
 ## Getting Started

@@ -74,7 +74,7 @@ export default {
       this.showModal = false;
     },
     buyItem(item, category) {
-      const price = Math.round(parseInt(item.price) * 1.65);
+      const price = parseInt(item.price);
       if (this.character.money >= price) {
         if (category === 'weapons' && this.character.weapons.length < 6) {
           this.addItemToWeapons(item.id);
@@ -106,7 +106,7 @@ export default {
       }
     },
     getTooltip(item) {
-      const price = Math.round(parseInt(item.price) * 1.65);
+      const price = parseInt(item.price); 
       return `Price: ${price}`;
     },
   },

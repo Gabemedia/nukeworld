@@ -80,35 +80,38 @@ export default [
   },
   {
     id: 3,
-    name: "Random Quest 1",
-    levelRequirement: 5,
+    name: "Defeat the Goblin Raider",
+    levelRequirement: 1,
     completed: false,
+    repeatable: true,
     requiredStoryLineId: null,
     playerChoices: [],
+    requiredEnemyDefeat: { id: 1, count: 1 },
     steps: [
       {
-        npcMessage: "We need help with an important task. Are you interested?",
-        playerOptions: [{ text: "Tell me more", nextId: 2 }]
+        npcMessage: "A dangerous Goblin Raider is terrorizing our settlement. Can you help us?",
+        playerOptions: [{ text: "I'll take care of it", nextId: 2 }]
       },
       {
-        npcMessage: "We need [RANDOM OBJECTIVE]. Can you help us with that?",
+        npcMessage: "Great! You need to defeat the Goblin Raider in battle. Are you ready?",
         playerOptions: [
-          { text: "I'm ready", nextId: 3 },
-          { text: "Not right now", nextId: null }
+          { text: "I'm ready to fight", nextId: 3, action: 'startEnemyBattle', actionParams: { enemyId: 1 } },
+          { text: "I need to prepare first", giveReward: false, nextId: null }
         ]
       },
       {
-        npcMessage: "Well done! Here's your reward: [RANDOM REWARD]",
-        playerOptions: [{ text: "Thanks! End conversation", nextId: null }]
+        npcMessage: "You've defeated the Goblin Raider! Our settlement is safe now. Here's your reward.",
+        playerOptions: [{ text: "Thank you", giveReward: true, nextId: null }]
       }
     ],
     reward: {
-      exp: 0,
-      money: 0,
-      resourceRewards: [] // If you want to give resources as a reward
-    }
-  },
-  {
+      exp: 5000,
+      money: 1000,
+      resourceRewards: [{ id: 3, amount: 10 }]
+    },
+    alwaysGiveReward: false
+  },  
+    {
     id: 4,
     name: "Random Quest 2",
     levelRequirement: 6,
@@ -136,6 +139,7 @@ export default [
       exp: 0,
       money: 0,
       resourceRewards: [] // If you want to give resources as a reward
-    }
+    },
+    alwaysGiveReward: false
   }
 ];
