@@ -18,7 +18,6 @@
         :icon="settlementIcon"
         draggable
         @dragend="onMarkerDragEnd"
-        @click="openSettlementModal"
       >
       </l-marker>
 
@@ -37,9 +36,11 @@
   </div>
 </template>
 
+
 <script>
 import { LMap, LMarker, LImageOverlay } from '@vue-leaflet/vue-leaflet';
 import { mapState, mapGetters, mapActions, mapMutations } from 'vuex';
+import QuestDetails from './controller/QuestDetails.vue';
 import SettlementModal from './SettlementModal.vue';
 import L from 'leaflet';
 
@@ -48,6 +49,7 @@ export default {
     LMap,
     LMarker,
     LImageOverlay,
+    QuestDetails,
     SettlementModal,
   },
   data() {
@@ -69,6 +71,9 @@ export default {
         iconSize: [30, 45],
         iconAnchor: [15, 45],
       }),
+      showModal: false,
+      selectedQuest: null,
+      selectedMarker: null,
     };
   },
   computed: {
@@ -167,6 +172,22 @@ export default {
           className: 'claim-marker',
         });
       }
+    },
+    openModal(item) {
+      if (Object.prototype.hasOwnProperty.call(item, 'name')) {
+        this.selectedQuest = item;
+        if (item.state === 'completed' && !item.claimed) {
+          this.selectedQuest.state = 'completed';
+        }
+      } else {
+        this.selectedMarker = item;
+      }
+      this.showModal = true;
+    },
+    closeModal() {
+      this.showModal = false;
+      this.selectedQuest = null;
+      this.selectedMarker = null;
     },
   },
 };

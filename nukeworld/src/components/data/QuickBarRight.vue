@@ -2,7 +2,7 @@
   <div class="quick-bar-right">
     <div class="d-flex justify-content-end text-white mb-3">
       <img style="width:20px;" :src="require(`@/assets/interface/icons/money.png`)" title="Money" class="me-1">
-      <span class="mobile-text fw-bold fs-6">Coins: {{ character.money }}</span>
+      <span class="mobile-text fw-bold fs-6">NukaCoin: {{ character.money }}</span>
     </div>
     <div class="resources-container">
       <div v-for="resource in stackedResources" :key="resource.id" class="resource-item position-relative">

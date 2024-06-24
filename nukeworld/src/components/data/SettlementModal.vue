@@ -1,16 +1,22 @@
 <template>
   <div>
-    <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="openPlacementModal">
+    <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="openSettlementModal">
       <img class="sidebar-icon" :src="require(`@/assets/interface/icons/settlement.png`)" title="Settlement">
     </button>
-    <div v-if="isSettlementPlacementModalOpen" class="modal" tabindex="-1" @click.self="closePlacementModal">
+    <div v-if="isSettlementModalOpen" class="modal" tabindex="-1" @click.self="closeSettlementModal">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Settlement</h5>
           </div>
           <div class="modal-body">
-            <p>Du har ikke placeret en settlement endnu. Klik på kortet for at placere en.</p>
+            <template v-if="settlementMarker">
+              <p>Din settlement er placeret på: {{ settlementMarker.latlng.lat.toFixed(2) }}, {{ settlementMarker.latlng.lng.toFixed(2) }}</p>
+              <button @click="confirmRemoveSettlement" class="btn btn-danger">Fjern Settlement</button>
+            </template>
+            <template v-else>
+              <p>Du har ikke placeret en settlement endnu. Klik på kortet for at placere en.</p>
+            </template>
           </div>
         </div>
       </div>
@@ -35,24 +41,27 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 
 export default {
   name: 'SettlementModal',
   data() {
     return {
-      isSettlementPlacementModalOpen: false,
+      isSettlementModalOpen: false,
       isSettlementConfirmationModalOpen: false,
       pendingSettlementLocation: null,
     };
   },
+  computed: {
+    ...mapState(['settlementMarker']),
+  },
   methods: {
     ...mapActions(['updateSettlementMarker', 'checkRequiredResources', 'useRequiredResources']),
-    openPlacementModal() {
-      this.isSettlementPlacementModalOpen = true;
+    openSettlementModal() {
+      this.isSettlementModalOpen = true;
     },
-    closePlacementModal() {
-      this.isSettlementPlacementModalOpen = false;
+    closeSettlementModal() {
+      this.isSettlementModalOpen = false;
     },
     openConfirmationModal() {
       this.isSettlementConfirmationModalOpen = true;
@@ -60,6 +69,12 @@ export default {
     closeConfirmationModal() {
       this.isSettlementConfirmationModalOpen = false;
       this.pendingSettlementLocation = null;
+    },
+    async confirmRemoveSettlement() {
+      if (confirm('Er du sikker på, at du vil fjerne din settlement?')) {
+        await this.updateSettlementMarker(null);
+        this.closeSettlementModal();
+      }
     },
     async attemptPlaceSettlement(latlng) {
       const requiredResources = [{ id: 1, amount: 20 }];

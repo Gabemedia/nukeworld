@@ -122,6 +122,50 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Performed code cleanup and removed unused components, methods, and styles throughout the project.
 - Added comprehensive inline comments to complex parts of the codebase to improve code readability and maintainability.
 
+### Version 0.1.3.5 (2024-06-22)
+- Added automatic initialization of quests at app startup
+- Added display of quests with levelRequirement equal to or below the player's current level.
+- Added resources system for character and story.
+- Added resources to the player inventory.
+- Added new Item 20 diffrent weapons.
+- Added new Aid Big Medkid 
+- Improved quest system to preserve all quest states when reloading the page
+- Implemented `resetQuests` function to reset completed quests.
+- Implemented level-based quest filtering in MapComponent and MapComponent2
+- Optimized `handleQuest` and `startQuestProgress` actions for better handling of ongoing quests
+- Implemented periodic reset of completed quests
+- Improved state management for quests with better integration of localStorage
+- Optimized quest progress tracking for more accurate updates
+- Resolved issues with ESLint warnings related to unused state parameters
+- Updated filteredQuests computed property to display quests based on player's level
+- Optimized quest marker display on the map based on player's level and quest availability
+- Enhanced gameplay experience by providing players access to quests that match their level or are easier
+- Refactored Game Over to include resources and story.
+- Fixed an issue that made shop items cost 1.65% more.
+
+### Version 0.1.4.0 (2024-06-23)
+- Improved combat system implementation
+- Added automatic attack function in battles
+- Fixed a bug where random enemies were shown instead of specific enemies from stories
+- Implemented correct opening of the combat system from storylines
+- Improved logic for repeatable stories
+- Added visual feedback for victory and rewards with confetti effect
+- Optimized state management for enemies and battles
+- Improved user interface for the battle modal
+- Added error handling for missing enemies or weapons
+- Fixed an issue where multiple settlement modals were appearing on top of each other.
+- Refactored `SettlementModal.vue` to use separate modals for placement and confirmation.
+- Updated `MapComponent.vue` and `MapComponent2.vue` to use the `openPlacementModal` method from `SettlementModal.vue`.
+- Added settlement data display, deletion, and movement functionality to the settlement modal.
+- Fixed a bug where quest markers were not clickable in `MapComponent2.vue`.
+- Restored the `openModal` method in `MapComponent2.vue` to handle quest marker clicks.
+- Refactored SettlementModal.vue to remove duplicate modals and improve user interface.
+- Updated SideBar.vue to integrate SettlementModal more efficiently.
+- Improved consistency in styling and layout of SettlementModal with other components like InventoryLog and PlayerShop.
+- Optimized logic for placing and removing settlements.
+- Fixed issues with overlapping modals in SettlementModal.
+- Enhanced responsiveness and user experience when interacting with settlement functionality.
+
 
 ## Getting Started
 To get started with NukeWorld, follow these steps:

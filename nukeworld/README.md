@@ -144,15 +144,27 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Fixed an issue that made shop items cost 1.65% more.
 
 ### Version 0.1.4.0 (2024-06-23)
-- Forbedret kampsystem implementering
-- Tilføjet automatisk angrebsfunktion i kampe
-- Fikset bug hvor tilfældige fjender blev vist i stedet for specifikke fjender fra historier
-- Implementeret korrekt åbning af kampsystem fra historielinjer
-- Forbedret logik for gentagelige historier
-- Tilføjet visuel feedback for sejr og belønninger med konfetti-effekt
-- Optimeret state management for fjender og kampe
-- Forbedret brugergrænsefladen for kamp-modalen
-- Tilføjet fejlhåndtering for manglende fjender eller våben
+- Improved combat system implementation
+- Added automatic attack function in battles
+- Fixed a bug where random enemies were shown instead of specific enemies from stories
+- Implemented correct opening of the combat system from storylines
+- Improved logic for repeatable stories
+- Added visual feedback for victory and rewards with confetti effect
+- Optimized state management for enemies and battles
+- Improved user interface for the battle modal
+- Added error handling for missing enemies or weapons
+- Fixed an issue where multiple settlement modals were appearing on top of each other.
+- Refactored `SettlementModal.vue` to use separate modals for placement and confirmation.
+- Updated `MapComponent.vue` and `MapComponent2.vue` to use the `openPlacementModal` method from `SettlementModal.vue`.
+- Added settlement data display, deletion, and movement functionality to the settlement modal.
+- Fixed a bug where quest markers were not clickable in `MapComponent2.vue`.
+- Restored the `openModal` method in `MapComponent2.vue` to handle quest marker clicks.
+- Refactored SettlementModal.vue to remove duplicate modals and improve user interface.
+- Updated SideBar.vue to integrate SettlementModal more efficiently.
+- Improved consistency in styling and layout of SettlementModal with other components like InventoryLog and PlayerShop.
+- Optimized logic for placing and removing settlements.
+- Fixed issues with overlapping modals in SettlementModal.
+- Enhanced responsiveness and user experience when interacting with settlement functionality.
 
 
 ## Getting Started
