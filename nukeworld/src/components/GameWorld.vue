@@ -100,7 +100,8 @@ export default {
   position: absolute;
   z-index:999;
   overflow-x: hidden!important;
-  overflow-y: scroll!important;
+  overflow-y: hidden!important;
+  
 }
 .game-header {
   position: absolute;

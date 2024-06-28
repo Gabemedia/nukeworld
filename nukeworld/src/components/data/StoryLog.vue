@@ -7,7 +7,6 @@
   >
     <div class="icon-wrapper">
       <img class="sidebar-icon" :src="require(`@/assets/interface/icons/encounter.png`)" alt="Storyline">
-      <span v-if="hasNewStory" class="new-story-badge">New</span>
     </div>
   </button>
   <div class="story-log-container">

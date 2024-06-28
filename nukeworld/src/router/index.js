@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import store from '../store';
 import UserLogin from '../components/UserLogin.vue';
 import GameWorld from '../components/GameWorld.vue';
+import GameSettings from '../components/GameSettings.vue';
 
 const routes = [
   {
@@ -14,6 +15,11 @@ const routes = [
     path: '/game-world',
     name: 'GameWorld',
     component: GameWorld,
+  },
+  {
+    path: '/game-settings',
+    name: 'GameSettings',
+    component: GameSettings,
   },
 ];
 

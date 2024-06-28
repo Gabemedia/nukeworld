@@ -1,9 +1,10 @@
 <template>
     <div id="app">
-        <!-- <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <nav class="navbar navbar-expand-lg m-0 p-0 navbar-dark bg-dark">
             <div class="container-fluid">
                 <router-link class="navbar-brand" to="/">Admin Panel</router-link>
                 <div class="menu-icon" @click="navOpen = !navOpen">
+                    <div :class="{ 'change': navOpen }" class="bar"></div>
                     <div :class="{ 'change': navOpen }" class="bar"></div>
                     <div :class="{ 'change': navOpen }" class="bar"></div>
                     <div :class="{ 'change': navOpen }" class="bar"></div>
@@ -16,10 +17,13 @@
                         <li class="nav-item">
                             <router-link class="nav-link" :to="{ name: 'GameWorld' }">Game World</router-link>
                         </li>
+                        <li class="nav-item">
+                            <router-link class="nav-link" :to="{ name: 'GameSettings' }">Game Settings</router-link>
+                        </li>
                     </ul>
                 </div>
             </div>
-        </nav> -->
+        </nav>
         <router-view/>
     </div>
 </template>
@@ -46,6 +50,10 @@ export default {
   // overflow: hidden;
 }
 
+.navbar-brand, .nav-link{
+  font-size: 0.6rem!important;
+}
+
 .menu-icon {
   display: none;
   cursor: pointer;
@@ -55,7 +63,7 @@ export default {
   width: 30px;
   height: 4px;
   background-color: #fff;
-  margin: 5px 0;
+  margin: 1px 0;
   transition: 0.4s;
 }
 
