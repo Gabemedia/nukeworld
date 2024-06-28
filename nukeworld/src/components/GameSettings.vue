@@ -17,6 +17,7 @@
       <button type="button" class="btn btn-primary btn-sm" @click="saveChanges">Save Changes</button>
       <button type="button" class="btn btn-danger btn-sm" @click="deleteItem">Delete</button>
       <button type="button" class="btn btn-info btn-sm" @click="exportChanges">Export {{ activeSection }}</button>
+      <button type="button" class="btn btn-warning btn-sm" @click="resetData">Reset Data</button>
     </div>
     <div class="data-container">
       <div class="data-display">
@@ -76,7 +77,11 @@
                 <div v-for="(rewardType, rewardKey) in ['resourceRewards', 'weaponRewards', 'armorRewards', 'aidRewards']" :key="rewardKey">
                   <h6>{{ rewardKey }}</h6>
                   <div v-for="(reward, index) in currentItem[key][rewardKey]" :key="index" class="mb-1">
-                    <input v-model.number="reward.id" class="form-control form-control-sm mb-1" placeholder="ID">
+                    <select v-model="reward.id" class="form-control form-control-sm mb-1">
+                      <option v-for="option in getRewardOptions(rewardKey)" :key="option.id" :value="option.id">
+                        {{ option.name }}
+                      </option>
+                    </select>
                     <input v-model.number="reward.amount" class="form-control form-control-sm mb-1" placeholder="Amount">
                     <button @click="removeRewardItem(rewardKey, index)" class="btn btn-danger btn-sm">Remove</button>
                   </div>
@@ -96,12 +101,12 @@
 
 <script>
 import { v4 as uuidv4 } from 'uuid';
-import quests from '@/store/quests.js';
-import items from '@/store/items.js';
-import story from '@/store/story.js';
-import armor from '@/store/armor.js';
-import aid from '@/store/aid.js';
-import resources from '@/store/ressources.js';
+import questsData from '@/store/quests.js';
+import itemsData from '@/store/items.js';
+import storyData from '@/store/story.js';
+import armorData from '@/store/armor.js';
+import aidData from '@/store/aid.js';
+import resourcesData from '@/store/ressources.js';
 
 export default {
   name: 'GameSettings',
@@ -109,12 +114,12 @@ export default {
     return {
       activeSection: 'quests',
       sections: ['quests', 'items', 'story', 'armor', 'aid', 'resources'],
-      quests,
-      items,
-      story,
-      armor,
-      aid,
-      resources,
+      quests: [],
+      items: [],
+      story: [],
+      armor: [],
+      aid: [],
+      resources: [],
       currentIndex: 0,
       selectedReward: {
         reward: '',
@@ -299,6 +304,8 @@ export default {
         const savedData = localStorage.getItem(section);
         if (savedData) {
           this[section] = JSON.parse(savedData);
+        } else {
+          this.resetSectionData(section);
         }
       }
     },
@@ -332,6 +339,52 @@ export default {
     },
     removeRewardItem(rewardKey, index) {
       this.currentItem.reward[rewardKey].splice(index, 1);
+    },
+    getRewardOptions(rewardKey) {
+      switch (rewardKey) {
+        case 'resourceRewards':
+          return this.resources;
+        case 'weaponRewards':
+          return this.items;
+        case 'armorRewards':
+          return this.armor;
+        case 'aidRewards':
+          return this.aid;
+        default:
+          return [];
+      }
+    },
+    resetData() {
+      if (confirm('Are you sure you want to reset all data? This will remove all local changes.')) {
+        for (const section of this.sections) {
+          this.resetSectionData(section);
+        }
+        this.currentIndex = 0;
+        alert('All data has been reset to original values.');
+      }
+    },
+    resetSectionData(section) {
+      switch (section) {
+        case 'quests':
+          this.quests = JSON.parse(JSON.stringify(questsData));
+          break;
+        case 'items':
+          this.items = JSON.parse(JSON.stringify(itemsData));
+          break;
+        case 'story':
+          this.story = JSON.parse(JSON.stringify(storyData));
+          break;
+        case 'armor':
+          this.armor = JSON.parse(JSON.stringify(armorData));
+          break;
+        case 'aid':
+          this.aid = JSON.parse(JSON.stringify(aidData));
+          break;
+        case 'resources':
+          this.resources = JSON.parse(JSON.stringify(resourcesData));
+          break;
+      }
+      localStorage.removeItem(section);
     }
   },
   mounted() {
@@ -439,5 +492,18 @@ pre {
 
 .add-step-btn, .add-option-btn {
   margin-top: 5px;
+}
+
+/* New style for the reset button */
+.btn-warning {
+  background-color: #ffc107;
+  border-color: #ffc107;
+  color: #212529;
+}
+
+.btn-warning:hover {
+  background-color: #e0a800;
+  border-color: #d39e00;
+  color: #212529;
 }
 </style>
