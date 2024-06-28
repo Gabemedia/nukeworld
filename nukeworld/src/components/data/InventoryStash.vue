@@ -188,8 +188,8 @@ export default {
 
 .item-info {
   position: absolute;
-  top: 100%;
-  left: 182%;
+  top: 0%;
+  left: 325%;
   transform: translateX(-50%);
   background-color: rgba(0, 0, 0, 0.8);
   padding: 10px;
