@@ -11,9 +11,19 @@
               <h6 class="mb-3 text-uppercase fw-bold">Big´n´Small Shop</h6>
               <p class="mt-3 text-uppercase fw-bold text-left">Weapon:</p>
               <div class="shop-items">
-                <div v-for="weapon in availableWeapons" :key="weapon.id" class="shop-item" @click="buyItem(weapon, 'weapons')" :ref="'item-weapons-' + weapon.id">
+                <div v-for="weapon in availableWeapons" :key="weapon.id" 
+                    class="shop-item" 
+                    @click="buyItem(weapon, 'weapons')" 
+                    @mouseover="showItemInfo(weapon)"
+                    @mouseleave="hideItemInfo"
+                    :ref="'item-weapons-' + weapon.id">
                   <img :src="require(`@/assets/interface/icons/weapons/${weapon.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="weapon.name" />
                   <div class="price-box">{{ weapon.price }}</div>
+                  <div v-if="hoveredItem === weapon" class="item-info">
+                    <p class="m-0 pb-1 fw-bold small"><strong>Name:</strong> {{ weapon.name }}</p>
+                    <p class="m-0 pb-1 small"><strong>Attack:</strong> {{ weapon.attack }}</p>
+                    <p class="m-0 pb-1 small"><strong>Defence:</strong> {{ weapon.defence }}</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -51,6 +61,7 @@ export default {
   data() {
     return {
       showModal: false,
+      hoveredItem: null,
     };
   },
   computed: {
@@ -108,6 +119,12 @@ export default {
     getTooltip(item) {
       const price = parseInt(item.price); 
       return `Price: ${price}`;
+    },
+    showItemInfo(item) {
+      this.hoveredItem = item;
+    },
+    hideItemInfo() {
+      this.hoveredItem = null;
     },
   },
 };
@@ -251,5 +268,26 @@ export default {
   border: 1px solid #ccc;
   border-radius: 3px;
   font-size: 0.8rem;
+}
+.shop-item {
+  position: relative;
+}
+
+.item-info {
+  position: absolute;
+  top: 80%;
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 10px;
+  border-radius: 5px;
+  z-index: 1;
+  width: auto;
+  text-align: left;
+  color: white;
+}
+
+.item-info p {
+  font-size: 0.8rem !important;
+  margin-bottom: 0;
+  padding: 0;
 }
 </style>

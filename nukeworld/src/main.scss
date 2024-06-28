@@ -2,9 +2,10 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto+Condensed');
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap');
 /* Define your variables */
-$primary-color: rgb(0, 183, 6);
-$primary: rgb(0, 183, 6);
-$gray: #6c757d;
+$primary-color: #00ff00;
+$success: #00ff00;
+$primary: #00ff00;
+$nuke-green: #00ff00;
 
 #app {
   font-family: "Noto Sans", sans-serif;
@@ -15,16 +16,34 @@ html {
   font-family: "Noto Sans", sans-serif;
   font-optical-sizing: auto;
   overflow-x: hidden!important;
-  overflow-y: scroll!important;
+  overflow-y: hidden!important;
 }
 /* Define global styles */
 body {
   color: #000;
   font-weight: 400;
   overflow-x: hidden!important;
-  overflow-y: scroll!important;
+  overflow-y: hidden!important;
 }
 
+.game-world {
+  color: $nuke-green;
+}
+
+.info-panel {
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: $nuke-green;
+    border-radius: 4px;
+  }
+}
 
 div.modal-content {
   //background-color: #f8f8f8!important;
@@ -158,7 +177,43 @@ width: 100%;
   filter:   drop-shadow(0px 5px 2px rgba(0, 255, 6, 1));
 }
 
+.nav-item-name.price-box.new-story {
+  border-color: #00ff00;
+  box-shadow: 0 0 10px #00ff00;
+  animation: pulse 2s infinite;
+}
 
+@keyframes pulse {
+  0% {
+    transform: translateY(60%) scale(1);
+  }
+  50% {
+    transform: translateY(60%) scale(1.05);
+  }
+  100% {
+    transform: translateY(60%) scale(1);
+  }
+}
 
+.new-story-icon {
+  animation: blink 1s infinite;
+}
 
-// Import Bootstrap's styles
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.nav-item-name.price-box.new-story {
+  border-color: $nuke-green;
+  box-shadow: 0 0 10px $nuke-green;
+  animation: pulse 2s infinite;
+  color: $nuke-green;
+  text-shadow: 0 0 5px $nuke-green;
+}
+
+.new-story-icon {
+  color: $nuke-green;
+  animation: blink 1s infinite;
+}

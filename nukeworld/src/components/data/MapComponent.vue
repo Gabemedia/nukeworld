@@ -32,7 +32,6 @@
         </div>
       </div>
     </div>
-    <SettlementModal ref="settlementModal" />
   </div>
 </template>
 
@@ -41,7 +40,6 @@
 import { LMap, LMarker, LImageOverlay } from '@vue-leaflet/vue-leaflet';
 import { mapState, mapGetters, mapActions, mapMutations } from 'vuex';
 import QuestDetails from './controller/QuestDetails.vue';
-import SettlementModal from './SettlementModal.vue';
 import L from 'leaflet';
 
 export default {
@@ -50,13 +48,12 @@ export default {
     LMarker,
     LImageOverlay,
     QuestDetails,
-    SettlementModal,
   },
   data() {
     return {
       zoom: 0,
       center: [600, 960],
-      mapImageUrl: require('@/assets/maps/nukemap2.webp'),
+      mapImageUrl: require('@/assets/maps/nukemap1.webp'),
       mapBounds: [[230, 230], [930, 1700]],
       mapOptions: {
         zoomControl: false,

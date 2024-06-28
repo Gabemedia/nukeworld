@@ -32,7 +32,6 @@
         </div>
       </div>
     </div>
-    <SettlementModal ref="settlementModal" />
   </div>
 </template>
 
@@ -41,7 +40,6 @@
 import { LMap, LMarker, LImageOverlay } from '@vue-leaflet/vue-leaflet';
 import { mapState, mapGetters, mapActions, mapMutations } from 'vuex';
 import QuestDetails from './controller/QuestDetails.vue';
-import SettlementModal from './SettlementModal.vue';
 import L from 'leaflet';
 
 export default {
@@ -50,7 +48,6 @@ export default {
     LMarker,
     LImageOverlay,
     QuestDetails,
-    SettlementModal,
   },
   data() {
     return {

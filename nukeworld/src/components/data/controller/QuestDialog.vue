@@ -6,7 +6,7 @@
       <h6 class="mb-3 text-uppercase fw-bold text-start">{{ currentStoryLine.name }}</h6>
       <div class="dialog-log border border-1 small">
         <div class="conversation-box npc-box">
-          <img class="sidebar-icon" :src="require(`@/assets/interface/icons/encounter.png`)" title="NPC">
+          <img class="sidebar-icon" :src="require(`@/assets/interface/icons/encounter.png`)" title="Todd Wimsey">
           <div class="message-box npc-message">
             {{ currentStoryStep.npcMessage }}
           </div>
@@ -22,12 +22,12 @@
               </template>
               {{ option.text }}
             </button>
+            <button @click="cancelStory" class="btn btn-md btn-danger fw-bold btn-outline-light m-1">
+              Go back
+            </button>
           </div>
-          <img class="sidebar-icon" :src="require(`@/assets/interface/icons/encounter.png`)" title="Player">
+          <img class="sidebar-icon" :src="require(`@/assets/interface/icons/player.png`)" title="Hail to the King Baby!">
         </div>
-        <button @click="cancelStory" class="btn btn-sm btn-danger mt-2">
-          Cancel Storyline
-        </button>
       </div>
     </div>
 
