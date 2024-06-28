@@ -67,6 +67,23 @@
               </div>
               <button @click="addStep" class="btn btn-primary btn-sm">Add Step</button>
             </template>
+            <template v-else-if="activeSection === 'story' && key === 'reward'">
+              <div class="mb-2">
+                <label>Experience:</label>
+                <input v-model.number="currentItem[key].exp" class="form-control form-control-sm mb-1" placeholder="Experience">
+                <label>Money:</label>
+                <input v-model.number="currentItem[key].money" class="form-control form-control-sm mb-1" placeholder="Money">
+                <div v-for="(rewardType, rewardKey) in ['resourceRewards', 'weaponRewards', 'armorRewards', 'aidRewards']" :key="rewardKey">
+                  <h6>{{ rewardKey }}</h6>
+                  <div v-for="(reward, index) in currentItem[key][rewardKey]" :key="index" class="mb-1">
+                    <input v-model.number="reward.id" class="form-control form-control-sm mb-1" placeholder="ID">
+                    <input v-model.number="reward.amount" class="form-control form-control-sm mb-1" placeholder="Amount">
+                    <button @click="removeRewardItem(rewardKey, index)" class="btn btn-danger btn-sm">Remove</button>
+                  </div>
+                  <button @click="addRewardItem(rewardKey)" class="btn btn-primary btn-sm mb-2">Add {{ rewardKey }}</button>
+                </div>
+              </div>
+            </template>
             <input v-else-if="typeof value !== 'object' && typeof value !== 'boolean'" :id="key" v-model="currentItem[key]" class="form-control form-control-sm">
             <textarea v-else-if="typeof value === 'object' && key !== 'reward' && key !== 'armorReward' && key !== 'requiredEnemyDefeat' && key !== 'steps'" :id="key" v-model.lazy="currentItem[key]" class="form-control form-control-sm" rows="3"></textarea>
             <input v-else-if="typeof value === 'boolean'" type="checkbox" :id="key" v-model="currentItem[key]" class="form-check-input">
@@ -306,6 +323,15 @@ export default {
       link.download = fileName;
       link.click();
       URL.revokeObjectURL(link.href);
+    },
+    addRewardItem(rewardKey) {
+      if (!this.currentItem.reward[rewardKey]) {
+        this.currentItem.reward[rewardKey] = [];
+      }
+      this.currentItem.reward[rewardKey].push({ id: null, amount: 1 });
+    },
+    removeRewardItem(rewardKey, index) {
+      this.currentItem.reward[rewardKey].splice(index, 1);
     }
   },
   mounted() {
