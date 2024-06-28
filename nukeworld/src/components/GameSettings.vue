@@ -74,7 +74,7 @@
                 <input v-model.number="currentItem[key].exp" class="form-control form-control-sm mb-1" placeholder="Experience">
                 <label>Money:</label>
                 <input v-model.number="currentItem[key].money" class="form-control form-control-sm mb-1" placeholder="Money">
-                <div v-for="(rewardType, rewardKey) in ['resourceRewards', 'weaponRewards', 'armorRewards', 'aidRewards']" :key="rewardKey">
+                <div v-for="rewardKey in ['resourceRewards', 'weaponRewards', 'armorRewards', 'aidRewards']" :key="rewardKey">
                   <h6>{{ rewardKey }}</h6>
                   <div v-for="(reward, index) in currentItem[key][rewardKey]" :key="index" class="mb-1">
                     <select v-model="reward.id" class="form-control form-control-sm mb-1">
@@ -82,7 +82,7 @@
                         {{ option.name }}
                       </option>
                     </select>
-                    <input v-model.number="reward.amount" class="form-control form-control-sm mb-1" placeholder="Amount">
+                    <input v-if="rewardKey !== 'weaponRewards' && rewardKey !== 'armorRewards' && rewardKey !== 'aidRewards'" v-model.number="reward.amount" class="form-control form-control-sm mb-1" placeholder="Amount">
                     <button @click="removeRewardItem(rewardKey, index)" class="btn btn-danger btn-sm">Remove</button>
                   </div>
                   <button @click="addRewardItem(rewardKey)" class="btn btn-primary btn-sm mb-2">Add {{ rewardKey }}</button>
@@ -335,7 +335,11 @@ export default {
       if (!this.currentItem.reward[rewardKey]) {
         this.currentItem.reward[rewardKey] = [];
       }
-      this.currentItem.reward[rewardKey].push({ id: null, amount: 1 });
+      const newReward = { id: null };
+      if (rewardKey !== 'weaponRewards' && rewardKey !== 'armorRewards' && rewardKey !== 'aidRewards') {
+        newReward.amount = 1;
+      }
+      this.currentItem.reward[rewardKey].push(newReward);
     },
     removeRewardItem(rewardKey, index) {
       this.currentItem.reward[rewardKey].splice(index, 1);
@@ -505,5 +509,28 @@ pre {
   background-color: #e0a800;
   border-color: #d39e00;
   color: #212529;
+}
+
+/* New styles for reward editing */
+.reward-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.reward-item select, .reward-item input {
+  margin-right: 5px;
+}
+
+.reward-item button {
+  margin-left: auto;
+}
+
+.reward-section {
+  margin-bottom: 15px;
+}
+
+.reward-section h6 {
+  margin-bottom: 10px;
 }
 </style>
