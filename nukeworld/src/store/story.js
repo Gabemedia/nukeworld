@@ -1,6 +1,6 @@
 export default [
   {
-    "id": 1,
+    "id": 0,
     "name": "Welcome to NukeWorld",
     "levelRequirement": 1,
     "completed": false,
@@ -73,11 +73,11 @@ export default [
     "alwaysGiveReward": true
   },
   {
-    "id": 2,
+    "id": 1,
     "name": "Getting the basics!",
     "levelRequirement": 2,
     "completed": false,
-    "requiredStoryLineId": 1,
+    "requiredStoryLineId": 0,
     "playerChoices": [],
     "steps": [
       {
@@ -113,7 +113,7 @@ export default [
     "alwaysGiveReward": true
   },
   {
-    "id": 3,
+    "id": 2,
     "name": "Setup HomeBase Settlement",
     "levelRequirement": 2,
     "completed": false,
@@ -171,7 +171,7 @@ export default [
     "alwaysGiveReward": false
   },
   {
-    "id": 4,
+    "id": 3,
     "name": "Defeat your first enemy encounter",
     "levelRequirement": 1,
     "completed": false,
@@ -244,7 +244,7 @@ export default [
     "alwaysGiveReward": false
   },
   {
-    "id": 5,
+    "id": 4,
     "name": "The Scavenger's Dilemma",
     "levelRequirement": 2,
     "completed": false,
@@ -325,7 +325,7 @@ export default [
     "alwaysGiveReward": false
   },
   {
-    "id": 6,
+    "id": 5,
     "name": "Simple Tasks",
     "levelRequirement": 1,
     "completed": false,
@@ -400,6 +400,67 @@ export default [
           "id": 2
         }
       ]
+    },
+    "alwaysGiveReward": false
+  },
+  {
+    "id": 6,
+    "name": "THE GIANT RADBETTLE!",
+    "levelRequirement": 2,
+    "completed": false,
+    "requiredStoryLineId": 1,
+    "playerChoices": [],
+    "steps": [
+      {
+        "npcMessage": "THE GIANT RADBETTLE IS BACK!",
+        "playerOptions": [
+          {
+            "text": "OMG ITS... HUGE!!! KILL IT EVERYONE",
+            "nextId": null,
+            "requiredResources": [],
+            "giveReward": false,
+            "action": "startEnemyBattle",
+            "actionParams": {
+              "enemyId": 8
+            }
+          },
+          {
+            "text": "I am just gonna go over here annnd...",
+            "nextId": null,
+            "requiredResources": [],
+            "giveReward": false,
+            "action": null
+          }
+        ]
+      },
+      {
+        "npcMessage": "Thank you Survivor!",
+        "playerOptions": [
+          {
+            "text": "We just learn to help eachother!",
+            "nextId": null,
+            "requiredResources": [],
+            "giveReward": true,
+            "action": null
+          }
+        ]
+      }
+    ],
+    "requiredEnemyDefeat": {
+      "id": 8,
+      "count": 1
+    },
+    "reward": {
+      "exp": 550,
+      "money": 100,
+      "resourceRewards": [],
+      "weaponRewards": [],
+      "armorRewards": [
+        {
+          "id": 2
+        }
+      ],
+      "aidRewards": []
     },
     "alwaysGiveReward": false
   }

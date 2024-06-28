@@ -53,19 +53,36 @@
             </template>
             <template v-else-if="activeSection === 'story' && key === 'requiredEnemyDefeat'">
               <div class="mb-2">
-                <input v-model.number="currentItem[key].id" class="form-control form-control-sm mb-1" placeholder="Enemy ID">
+                <select v-model.number="currentItem[key].id" class="form-control form-control-sm mb-1">
+                  <option value="">Select an enemy</option>
+                  <option v-for="enemy in enemies" :key="enemy.id" :value="enemy.id">
+                    {{ enemy.name }}
+                  </option>
+                </select>
                 <input v-model.number="currentItem[key].count" class="form-control form-control-sm" placeholder="Count">
               </div>
             </template>
             <template v-else-if="activeSection === 'story' && key === 'steps'">
-              <div v-for="(step, stepIndex) in currentItem[key]" :key="stepIndex" class="mb-2">
+              <div v-for="(step, stepIndex) in currentItem[key]" :key="stepIndex" class="mb-2 story-step">
                 <textarea v-model="step.npcMessage" class="form-control form-control-sm mb-1" rows="2" placeholder="NPC Message"></textarea>
-                <div v-for="(option, optionIndex) in step.playerOptions" :key="optionIndex" class="mb-1">
+                <div v-for="(option, optionIndex) in step.playerOptions" :key="optionIndex" class="mb-1 player-option">
                   <input v-model="option.text" class="form-control form-control-sm mb-1" placeholder="Option Text">
                   <input v-model.number="option.nextId" class="form-control form-control-sm mb-1" placeholder="Next ID">
                   <div class="form-check mb-1">
                     <input type="checkbox" class="form-check-input" v-model="option.giveReward" :id="'giveReward-' + stepIndex + '-' + optionIndex">
                     <label class="form-check-label" :for="'giveReward-' + stepIndex + '-' + optionIndex">Give Reward</label>
+                  </div>
+                  <div class="form-check mb-1">
+                    <input type="checkbox" class="form-check-input" v-model="option.action" :true-value="'startEnemyBattle'" :false-value="null" :id="'action-' + stepIndex + '-' + optionIndex">
+                    <label class="form-check-label" :for="'action-' + stepIndex + '-' + optionIndex">Start Enemy Battle</label>
+                  </div>
+                  <div v-if="option.action === 'startEnemyBattle'" class="mb-1">
+                    <select v-model.number="option.actionParams.enemyId" class="form-control form-control-sm">
+                      <option value="">Select an enemy</option>
+                      <option v-for="enemy in enemies" :key="enemy.id" :value="enemy.id">
+                        {{ enemy.name }}
+                      </option>
+                    </select>
                   </div>
                   <div class="required-resources mb-1">
                     <h6>Required Resources</h6>
@@ -127,25 +144,27 @@ import storyData from '@/store/story.js';
 import armorData from '@/store/armor.js';
 import aidData from '@/store/aid.js';
 import resourcesData from '@/store/ressources.js';
+import enemyData from '@/store/enemy.js';
 
 export default {
   name: 'GameSettings',
   data() {
     return {
       activeSection: 'quests',
-      sections: ['quests', 'items', 'story', 'armor', 'aid', 'resources'],
+      sections: ['quests', 'items', 'story', 'armor', 'aid', 'resources', 'enemies'],
       quests: [],
       items: [],
       story: [],
       armor: [],
       aid: [],
       resources: [],
+      enemies: [],
       currentIndex: 0,
       selectedReward: {
         reward: '',
         armorReward: ''
       },
-      numericFields: ['id', 'exp', 'money', 'duration', 'progress', 'rewardChance', 'armorRewardChance', 'levelRequirement', 'attack', 'defence', 'health', 'price', 'quantity', 'requiredStoryLineId']
+      numericFields: ['id', 'exp', 'money', 'duration', 'progress', 'rewardChance', 'armorRewardChance', 'levelRequirement', 'attack', 'defence', 'health', 'price', 'quantity', 'requiredStoryLineId', 'enemyHealth', 'defense']
     };
   },
   computed: {
@@ -201,6 +220,13 @@ export default {
                 option.nextId = null;
               } else if (option.nextId !== null) {
                 option.nextId = parseInt(option.nextId);
+              }
+              if (option.action === 'startEnemyBattle') {
+                if (!option.actionParams) {
+                  option.actionParams = { enemyId: null };
+                }
+              } else {
+                delete option.actionParams;
               }
             });
           }
@@ -278,7 +304,9 @@ export default {
                     text: 'New player option', 
                     nextId: null,
                     requiredResources: [],
-                    giveReward: false
+                    giveReward: false,
+                    action: null,
+                    actionParams: {}
                   }
                 ]
               }
@@ -311,6 +339,16 @@ export default {
             state: 'none',
             price: 0,
             quantity: 0,
+          };
+        case 'enemies':
+          return {
+            id: newId,
+            name: 'New Enemy',
+            enemyHealth: 100,
+            attack: 10,
+            defense: 5,
+            exp: 50,
+            money: 10,
           };
         default:
           return baseItem;
@@ -358,7 +396,9 @@ export default {
             text: 'New player option', 
             nextId: null,
             requiredResources: [],
-            giveReward: false
+            giveReward: false,
+            action: null,
+            actionParams: {}
           }
         ]
       });
@@ -368,7 +408,9 @@ export default {
         text: 'New player option',
         nextId: null,
         requiredResources: [],
-        giveReward: false
+        giveReward: false,
+        action: null,
+        actionParams: {}
       });
     },
     addRequiredResource(option) {
@@ -407,7 +449,7 @@ export default {
           return itemWithoutUuid;
         });
         content = 'export default ' + JSON.stringify(processedData, null, 2) + ';';
-      } else if (section === 'quests') {
+      } else if (section === 'quests' || section === 'enemies') {
         content = 'export default ' + JSON.stringify(data, null, 2) + ';';
       } else if (section === 'items' || section === 'armor' || section === 'aid') {
         content = `import { v4 as uuidv4 } from 'uuid';\n\nexport default ${JSON.stringify(data.map(item => ({
@@ -483,6 +525,9 @@ export default {
           break;
         case 'resources':
           this.resources = JSON.parse(JSON.stringify(resourcesData)).map(item => this.convertToNumbers(item));
+          break;
+        case 'enemies':
+          this.enemies = JSON.parse(JSON.stringify(enemyData)).map(item => this.convertToNumbers(item));
           break;
       }
       localStorage.removeItem(section);
@@ -589,6 +634,9 @@ pre {
 .player-option {
   margin-left: 20px;
   margin-bottom: 5px;
+  padding: 10px;
+  border: 1px solid #eee;
+  border-radius: 5px;
 }
 
 .add-step-btn, .add-option-btn {
