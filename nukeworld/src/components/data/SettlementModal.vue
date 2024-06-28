@@ -1,22 +1,24 @@
 <template>
   <div>
-    <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="openSettlementModal">
-      <img class="sidebar-icon" :src="require(`@/assets/interface/icons/settlement.png`)" title="Settlement">
-    </button>
     <div v-if="isSettlementModalOpen" class="modal" tabindex="-1" @click.self="closeSettlementModal">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Settlement</h5>
+            <button type="button" class="btn-close" @click="closeSettlementModal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <template v-if="settlementMarker">
-              <p>Din settlement er placeret på: {{ settlementMarker.latlng.lat.toFixed(2) }}, {{ settlementMarker.latlng.lng.toFixed(2) }}</p>
-              <button @click="confirmRemoveSettlement" class="btn btn-danger">Fjern Settlement</button>
+              <p>Your settlement is located at: {{ settlementMarker.latlng.lat.toFixed(2) }}, {{ settlementMarker.latlng.lng.toFixed(2) }}</p>
+              <button @click="confirmRemoveSettlement" class="btn btn-danger">Remove Settlement</button>
             </template>
             <template v-else>
-              <p>Du har ikke placeret en settlement endnu. Klik på kortet for at placere en.</p>
+              <p>You haven't placed a settlement yet.</p>
+              <p>[Not available at the moment]</p>
             </template>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="closeSettlementModal">Close</button>
           </div>
         </div>
       </div>
@@ -25,13 +27,14 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Settlement</h5>
+            <h5 class="modal-title">Confirm Settlement Placement</h5>
+            <button type="button" class="btn-close" @click="closeConfirmationModal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <p>Det koster 20 Wood Scrap at placere en settlement. Vil du fortsætte?</p>
+            <p>It costs 20 Wood Scrap to place a settlement. Do you want to continue?</p>
             <div class="button-group">
-              <button @click="confirmPlaceSettlement" class="btn btn-primary">Ja</button>
-              <button @click="cancelPlaceSettlement" class="btn btn-secondary">Nej</button>
+              <button @click="confirmPlaceSettlement" class="btn btn-primary">Yes</button>
+              <button @click="cancelPlaceSettlement" class="btn btn-secondary">No</button>
             </div>
           </div>
         </div>
@@ -41,27 +44,27 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapMutations } from 'vuex';
 
 export default {
   name: 'SettlementModal',
+  computed: {
+    ...mapState(['settlementMarker', 'isSettlementModalOpen']),
+  },
   data() {
     return {
-      isSettlementModalOpen: false,
       isSettlementConfirmationModalOpen: false,
       pendingSettlementLocation: null,
     };
   },
-  computed: {
-    ...mapState(['settlementMarker']),
-  },
   methods: {
     ...mapActions(['updateSettlementMarker', 'checkRequiredResources', 'useRequiredResources']),
+    ...mapMutations(['setSettlementModalOpen']),
     openSettlementModal() {
-      this.isSettlementModalOpen = true;
+      this.setSettlementModalOpen(true);
     },
     closeSettlementModal() {
-      this.isSettlementModalOpen = false;
+      this.setSettlementModalOpen(false);
     },
     openConfirmationModal() {
       this.isSettlementConfirmationModalOpen = true;
@@ -71,7 +74,7 @@ export default {
       this.pendingSettlementLocation = null;
     },
     async confirmRemoveSettlement() {
-      if (confirm('Er du sikker på, at du vil fjerne din settlement?')) {
+      if (confirm('Are you sure you want to remove your settlement?')) {
         await this.updateSettlementMarker(null);
         this.closeSettlementModal();
       }
@@ -83,7 +86,7 @@ export default {
         this.pendingSettlementLocation = latlng;
         this.openConfirmationModal();
       } else {
-        alert('Du har ikke nok Wood Scrap til at placere en settlement. Du skal bruge 20 Wood Scrap.');
+        alert('You don\'t have enough Wood Scrap to place a settlement. You need 20 Wood Scrap.');
       }
     },
     async confirmPlaceSettlement() {
@@ -94,6 +97,7 @@ export default {
         name: ''
       });
       this.closeConfirmationModal();
+      this.closeSettlementModal();
     },
     cancelPlaceSettlement() {
       this.closeConfirmationModal();
@@ -114,6 +118,7 @@ export default {
   width: 100%;
   height: 100%;
   overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
 .modal-dialog {
@@ -122,11 +127,24 @@ export default {
   margin: 1.75rem auto;
 }
 
-@media (max-width: 576px) {
-  .modal-dialog {
-    width: 100%;
-    margin: 1.75rem auto;
-  }
+.modal-content {
+  background-color: #1a1a1a;
+  border: 2px solid #00ff00;
+  border-radius: 10px;
+  color: #fff;
+}
+
+.modal-header {
+  border-bottom: 1px solid #00ff00;
+  padding: 0.75rem 1rem;
+}
+
+.modal-title {
+  color: #00ff00;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px #00ff00;
+  font-size: 1rem;
 }
 
 .modal-body {
@@ -137,27 +155,49 @@ export default {
   overflow-y: auto;
 }
 
-.modal-content {
-  position: relative;
-  background-clip: padding-box;
-  border: 1px #fff solid;
-  border-radius: 0.3rem;
-  outline: 0;
+.modal-footer {
+  border-top: 1px solid #00ff00;
+  padding: 0.75rem;
 }
 
-.modal-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: 1rem;
-  border-bottom: 1px solid #dee2e6;
-  border-top-left-radius: calc(0.3rem - 1px);
-  border-top-right-radius: calc(0.3rem - 1px);
+.btn {
+  padding: 0.375rem 0.75rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.modal-title {
-  margin-bottom: 0;
-  line-height: 1.5;
+.btn-primary {
+  background-color: #00ff00;
+  color: #000000;
+}
+
+.btn-primary:hover {
+  background-color: #00cc00;
+}
+
+.btn-secondary {
+  background-color: #333;
+  color: #fff;
+  border: 1px solid #00ff00;
+}
+
+.btn-secondary:hover {
+  background-color: #00ff00;
+  color: #000;
+}
+
+.btn-danger {
+  background-color: #ff0000;
+  color: #ffffff;
+}
+
+.btn-danger:hover {
+  background-color: #cc0000;
 }
 
 .button-group {
@@ -166,29 +206,22 @@ export default {
   margin-top: 1rem;
 }
 
-.btn {
-  padding: 0.375rem 0.75rem;
-  font-size: 1rem;
-  line-height: 1.5;
-  border-radius: 0.25rem;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+.btn-close {
+  background: transparent;
+  border: none;
+  color: #00ff00;
+  font-size: 1.5rem;
+  cursor: pointer;
 }
 
-.btn-primary {
-  color: #fff;
-  background-color: #007bff;
-  border-color: #007bff;
+.btn-close:hover {
+  color: #00cc00;
 }
 
-.btn-secondary {
-  color: #fff;
-  background-color: #6c757d;
-  border-color: #6c757d;
-}
-
-.btn-danger {
-  color: #fff;
-  background-color: #dc3545;
-  border-color: #dc3545;
+@media (max-width: 576px) {
+  .modal-dialog {
+    width: 95%;
+    margin: 1rem auto;
+  }
 }
 </style>

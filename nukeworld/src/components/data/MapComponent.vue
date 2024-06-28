@@ -18,6 +18,7 @@
         :icon="settlementIcon"
         draggable
         @dragend="onMarkerDragEnd"
+        @click="openSettlementModal"
       >
       </l-marker>
 
@@ -32,14 +33,15 @@
         </div>
       </div>
     </div>
+    <SettlementModal ref="settlementModal" />
   </div>
 </template>
-
 
 <script>
 import { LMap, LMarker, LImageOverlay } from '@vue-leaflet/vue-leaflet';
 import { mapState, mapGetters, mapActions, mapMutations } from 'vuex';
 import QuestDetails from './controller/QuestDetails.vue';
+import SettlementModal from './SettlementModal.vue';
 import L from 'leaflet';
 
 export default {
@@ -48,6 +50,7 @@ export default {
     LMarker,
     LImageOverlay,
     QuestDetails,
+    SettlementModal,
   },
   data() {
     return {
@@ -143,7 +146,6 @@ export default {
         this.$refs.settlementModal.attemptPlaceSettlement(event.latlng);
       }
     },
-
     async onMarkerDragEnd(event) {
       await this.updateSettlementMarker({
         ...this.$store.state.settlementMarker,
@@ -151,7 +153,9 @@ export default {
       });
     },
     openSettlementModal() {
-      this.setSettlementModalOpen(true);
+      if (this.$refs.settlementModal) {
+        this.$refs.settlementModal.openSettlementModal();
+      }
     },
     getQuestIcon(quest) {
       if (quest.state === 'not-started') {

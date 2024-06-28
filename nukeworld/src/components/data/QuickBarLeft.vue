@@ -1,22 +1,49 @@
 <template>
   <LvlPopUp ref="lvlPopUp" title="Congratulations!" @popup-closed="onPopupClosed" />    
-  <div class="quick-bar-left  text-white">
-    <div class="d-flex justify-content-start text-white mb-2">
-      <img style="width:20px; height: 20px;" :src="require(`@/assets/interface/icons/aid/medkit.png`)" title="Health" class="me-1">
-      <span class="mobile-text fw-bold fs-6">Health:</span>
+  <div class="quick-bar-left">
+    <div class="character-info" @mouseover="showItemInfo('character')" @mouseleave="hideItemInfo">
+      <div class="character-avatar">
+        <img :src="require(`@/assets/interface/icons/player.png`)" alt="Character Avatar">
+      </div>
+      <div class="character-level">
+        <span class="level-number">{{ character.level }}</span>
+      </div>
+      <div v-if="hoveredItem === 'character'" class="item-info">
+        <p class="mb-1 fw-bold small">Character Info</p>
+        <p class="mb-1 small">Name: {{ character.name }}</p>
+        <p class="mb-1 small">Level: {{ character.level }}</p>
+        <p class="mb-1 small">Class: {{ character.class }}</p>
+      </div>
     </div>
-    <div class="health-bar">
-      <div class="health-bar-fill" :style="{ width: healthPercentage + '%' }"></div>
-      <div class="health-bar-text">{{ character.health }} / {{ character.maxHealth }}</div>
-    </div>
-    <div class="separator"></div>
-    <div class="d-flex justify-content-start text-white my-2">
-      <img style="width:20px; height: 20px;"  :src="require(`@/assets/interface/icons/exp.png`)" title="Experence" class="me-1">
-      <span class="mobile-text fw-bold fs-6">Experience | Level {{ character.level }}:</span>
-    </div>
-    <div class="exp-bar">
-      <div class="exp-bar-fill" :style="{ width: expPercentage + '%' }"></div>
-      <div class="exp-bar-text">{{ character.exp }} / {{ character.maxExp }}</div>
+    <div class="stats-container">
+      <div class="stat-bar health-bar" @mouseover="showItemInfo('health')" @mouseleave="hideItemInfo">
+        <div class="stat-icon">
+          <img :src="require(`@/assets/interface/icons/aid/medkit.png`)" alt="Health">
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" :style="{ width: healthPercentage + '%' }"></div>
+          <span class="progress-text">{{ character.health }} / {{ character.maxHealth }}</span>
+        </div>
+        <div v-if="hoveredItem === 'health'" class="item-info">
+          <p class="mb-1 fw-bold small">Health</p>
+          <p class="mb-1 small">Current: {{ character.health }}</p>
+          <p class="mb-1 small">Max: {{ character.maxHealth }}</p>
+        </div>
+      </div>
+      <div class="stat-bar exp-bar" @mouseover="showItemInfo('exp')" @mouseleave="hideItemInfo">
+        <div class="stat-icon">
+          <img :src="require(`@/assets/interface/icons/exp.png`)" alt="Experience">
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" :style="{ width: expPercentage + '%' }"></div>
+          <span class="progress-text">{{ character.exp }} / {{ character.maxExp }}</span>
+        </div>
+        <div v-if="hoveredItem === 'exp'" class="item-info">
+          <p class="mb-1 fw-bold small">Experience</p>
+          <p class="mb-1 small">Current: {{ character.exp }}</p>
+          <p class="mb-1 small">Next Level: {{ character.maxExp }}</p>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -25,11 +52,17 @@
 import { mapState, mapActions } from 'vuex';
 import LvlPopUp from './controller/popup/LvlPopUp.vue';
 
-
 export default {
   name: 'QuickBarLeft',  
   components: {
     LvlPopUp,
+  },
+  data() {
+    return {
+      isPopupOpen: false,
+      levelingUp: false,
+      hoveredItem: null,
+    };
   },
   computed: {
     ...mapState(['character']),
@@ -40,22 +73,22 @@ export default {
       return (this.character.exp / this.character.maxExp) * 100;
     },
   },
-  data() {
-    return {
-      isPopupOpen: false,
-      levelingUp: false, // add this flag
-    };
-  },
   methods: {
     ...mapActions(['increaseExp', 'decreaseExp', 'levelUp']),
     onPopupClosed() {
       this.isPopupOpen = false;
-      this.levelingUp = false; // set the flag to false when the popup is closed
+      this.levelingUp = false;
+    },
+    showItemInfo(item) {
+      this.hoveredItem = item;
+    },
+    hideItemInfo() {
+      this.hoveredItem = null;
     },
   },
   watch: {
     'character.level': function(newLevel, oldLevel) {
-      if (newLevel > oldLevel && !this.isPopupOpen && !this.levelingUp) { // check the flag here
+      if (newLevel > oldLevel && !this.isPopupOpen && !this.levelingUp) {
         this.isPopupOpen = true;
         this.$refs.lvlPopUp.openPopup();
       }
@@ -66,62 +99,155 @@ export default {
 
 <style lang="scss" scoped>
 .quick-bar-left {
-position: absolute;
-  bottom: 0px;
-  left: 0px;
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
   background-color: rgba(0, 0, 0, 0.7);
+  border: 2px solid #00ff00;
+  border-radius: 15px;
   padding: 10px;
-  border-radius: 5px;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+  display: flex;
+  align-items: center;
   z-index: 9999;
 }
 
-.health-bar, .exp-bar {
-  position: relative; /* Tilføj denne linje */
-  width: 200px;
-  height: 20px;
-  background-color: #ccc;
-  border-radius: 5px;
-  overflow: hidden;
+.character-info {
+  position: relative;
+  margin-right: 15px;
+  cursor: pointer;
 }
 
-.health-bar-fill, .exp-bar-fill {
+.character-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #00ff00;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.character-level {
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  background-color: #00ff00;
+  color: #000;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 0.8rem;
+  box-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+}
+
+.stats-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stat-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: relative;
+  cursor: pointer;
+}
+
+.stat-icon {
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+    filter: drop-shadow(0 0 2px rgba(0, 255, 0, 0.7));
+  }
+}
+
+.progress-bar {
+  width: 150px;
+  height: 15px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill {
   height: 100%;
-  background-color: #4caf50;
   transition: width 0.3s ease;
 }
 
-.health-bar-text, .exp-bar-text {
+.health-bar .progress-fill {
+  background: linear-gradient(to right, #ff3e3e, #ff7f7f);
+}
+
+.exp-bar .progress-fill {
+  background: linear-gradient(to right, #3e84ff, #7fa8ff);
+}
+
+.progress-text {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   color: #fff;
-  font-size: 12px;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
-  width: 100%; /* Tilføj denne linje */
-  text-align: center; /* Tilføj denne linje */
+  font-size: 0.7rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  white-space: nowrap;
 }
 
-.separator {
-  height: 1px;
-  background-color: rgba(255, 255, 255, 0.3);
-  margin: 10px 0;
-  width: 100%;
+.item-info {
+  position: absolute;
+  top:-192%;
+  left:150%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 10px;
+  border-radius: 5px;
+  z-index: 1;
+  width: 200px;
+  text-align: left;
+  color: #fff;
+  font-size: 0.8rem;
+  border: 1px solid #00ff00;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 768px) {
   .quick-bar-left {
-    bottom: 10px;
+    top: 10px;
     left: 10px;
+    flex-direction: column;
+    align-items: flex-start;
   }
 
-  .health-bar, .exp-bar {
-    width: 150px;
-    height: 15px;
+  .character-info {
+    margin-right: 0;
+    margin-bottom: 10px;
   }
 
-  .health-bar-text, .exp-bar-text {
-    font-size: 10px;
+  .character-avatar {
+    width: 50px;
+    height: 50px;
+  }
+
+  .progress-bar {
+    width: 120px;
   }
 }
 </style>

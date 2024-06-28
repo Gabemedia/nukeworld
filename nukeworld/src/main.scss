@@ -30,6 +30,10 @@ body {
   color: $nuke-green;
 }
 
+.text-success{
+  color: #00ff00!important;
+}
+
 .info-panel {
   &::-webkit-scrollbar {
     width: 8px;
@@ -151,22 +155,6 @@ width: 100%;
 
 .inventory-log-container{
   background-color: #f0f0f0;
-}
-
-.inventory-log-body{
-  font-size: 14px;
-  text-align: left;
-  color: #333;
-}
-
-.inventory-log-body h2{
-  font-size: 1.2rem;
-  font-weight: 800;
-}
-
-.inventory-log-body p{
-  font-size: 0.888rem;
-  margin-bottom: 0rem;
 }
 
 .quest-marker {

@@ -8,58 +8,48 @@
         backgroundRepeat: 'no-repeat'
       }"></div>
       <div class="quest-details">
-        <span v-if="quest.state !== 'completed'" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger fst-italic" title="Quest Duration">
-          <p class="card-text m-0">{{ getQuestDuration(quest) }}</p>
+        <span v-if="quest.state !== 'completed'" class="quest-duration" title="Quest Duration">
+          {{ getQuestDuration(quest) }}
         </span>
-        <div class="card">
-          <div class="card-header rounded-0 p-0">
-              <h5 class="card-text-header text-capitalize p-2 m-0">{{ quest.name }}</h5>
-              <p class="card-text card-text-desc px-2 pb-2">{{ quest.desc }}</p>
+        <div class="quest-info">
+          <h5 class="quest-title">{{ quest.name }}</h5>
+          <p class="quest-description">{{ quest.desc }}</p>
+        </div>
+        <div class="quest-progress" v-if="quest.state === 'in-progress'">
+          <div class="progress-bar" :style="{ width: quest.progress + '%' }"></div>
+        </div>
+        <div class="quest-status">
+          <p v-if="quest.state === 'in-progress'">Remaining Time: {{ formatTime(quest.remainingTime) }}</p>
+        </div>
+        <div class="quest-rewards">
+          <div class="reward">
+            <img :src="require(`@/assets/interface/icons/exp.png`)" title="Exp">
+            <span>{{ quest.exp }}</span>
           </div>
-          <!-- <div class="progress rounded-0 p-0 m-0">
-            <div class="progress-bar p-0 m-0" :style="{ width: quest.progress + '%' }"></div>
-          </div> -->
-          <div class="card-body bg-secondary bg-gradient px-2">
-            <div class="d-flex align-items-center justify-content-center">
-              <p class="card-text" v-if="quest.state === 'in-progress'">Remaining Time: {{ formatTime(quest.remainingTime) }}</p>
-            </div>
-            <div class="d-flex justify-content-around flex-grow-1 text-center">
-              <div class="card-text d-block fw-bold">
-                <img style="width:40px;" :src="require(`@/assets/interface/icons/exp.png`)" title="Exp"><br/>
-                <span class="position-absolute start-25 translate-middle badge rounded-pill bg-danger fst-italic">
-                  <p class="card-text m-0"> {{ quest.exp }} </p>
-                </span>
-              </div>
-              <div class="card-text d-block fw-bold">
-                <img style="width:40px;" :src="require(`@/assets/interface/icons/money.png`)" title="Money"><br/>
-                <span class="position-absolute start-25 translate-middle badge rounded-pill bg-danger fst-italic"> 
-                  <p class="card-text m-0">{{ quest.money }}</p>
-                </span>
-              </div>
-              <div v-if="hasWeaponReward(quest) || hasArmorReward(quest)" class="card-text d-block fw-bold">
-                <img v-if="hasWeaponReward(quest)" :src="require('@/assets/interface/icons/gun.png')" alt="Attack" :title="'Weapon Reward Chance: ' + (quest.rewardChance * 100) + '%'" style="width:40px;" class="me-2"><br/>
-                <span v-if="hasWeaponReward(quest)" class="position-absolute start-25 translate-middle badge rounded-pill bg-danger fst-italic" title="Reward Drop Chance">
-                  <p class="card-text m-0">{{ quest.rewardChance * 100 }}%</p>
-                </span>
-              </div>
-              <div v-if="hasWeaponReward(quest) || hasArmorReward(quest)" class="card-text d-block fw-bold">
-                <img v-if="hasArmorReward(quest)" :src="require('@/assets/interface/icons/shield.png')" alt="Defence" :title="'Armor Reward Chance: ' + (quest.armorRewardChance * 100) + '%'" style="width: 40px;" class="me-2"><br/>
-                <span v-if="hasArmorReward(quest)" class="position-absolute start-75 translate-middle badge rounded-pill bg-danger fst-italic" title="Reward Drop Chance">
-                  <p class="card-text m-0">{{ quest.armorRewardChance * 100 }}%</p>
-                </span>
-              </div>
-            </div>
-            <div class="mt-3 text-center">
-              <div class="text-center">
-                <button type="button" class="btn btn-success bg-gradient w-100 no-margin no-border" :disabled="isButtonDisabled(quest)" @click="handleQuestAction(quest)">
-                  {{ getButtonText(quest) }}
-                </button>
-              </div>
-            </div>
-            <div v-if="character.level < quest.levelRequirement" class="alert alert-warning mt-2 p-2 mb-2 alert-clear-text">
-              Level {{ quest.levelRequirement }} required to start this quest.
-            </div>
+          <div class="reward">
+            <img :src="require(`@/assets/interface/icons/money.png`)" title="Money">
+            <span>{{ quest.money }}</span>
           </div>
+          <div v-if="hasWeaponReward(quest)" class="reward">
+            <img :src="require('@/assets/interface/icons/gun.png')" :title="'Weapon Reward Chance: ' + (quest.rewardChance * 100) + '%'">
+            <span>{{ quest.rewardChance * 100 }}%</span>
+          </div>
+          <div v-if="hasArmorReward(quest)" class="reward">
+            <img :src="require('@/assets/interface/icons/shield.png')" :title="'Armor Reward Chance: ' + (quest.armorRewardChance * 100) + '%'">
+            <span>{{ quest.armorRewardChance * 100 }}%</span>
+          </div>
+        </div>
+        <div class="quest-action">
+          <button 
+            class="btn btn-action" 
+            :disabled="isButtonDisabled(quest)" 
+            @click="handleQuestAction(quest)"
+          >
+            {{ getButtonText(quest) }}
+          </button>
+        </div>
+        <div v-if="character.level < quest.levelRequirement" class="quest-level-requirement">
+          Level {{ quest.levelRequirement }} required to start this quest.
         </div>
       </div>
     </div>
@@ -111,7 +101,6 @@ export default {
         this.claimRewardsAction(quest);
       }
     },
-
     async claimRewardsAction(quest) {
       const obtainedReward = await this.claimRewards(quest);
       confetti({
@@ -157,7 +146,7 @@ export default {
       if (quest.state === 'not-started') {
         return 'Start Quest';
       } else if (quest.state === 'in-progress') {
-        return 'Please Wait';
+        return 'In Progress';
       } else if (quest.state === 'ready-to-claim' && !quest.claimed) {
         return 'Claim Rewards';
       } else {
@@ -240,116 +229,140 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .quest-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 25px;
-  justify-content:center;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
 }
 
-@media (max-width: 767px) {
-  .quest-card {
-    width: calc(100% - 25px); /* 5 quests per row with 10px gap */
-    display: flex;
-    flex-direction: column;
-    scale:1;
-  }
-  .quest-image {
-    height: 125px;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+.quest-card {
+  background-color: #1a1a1a;
+  border: 1px solid #00ff00;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
   }
 }
 
-@media (max-width: 1200px) and (min-width: 676px) {
-  .quest-card {
-    width: calc(50% - 25px); /* 5 quests per row with 10px gap */
-    display: flex;
-    flex-direction: column;
-    scale:1;
-  }
-  .quest-image {
-    height: 125px;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-  }
-}
-
-
-@media (min-width: 1200px) {
-  .quest-card {
-    width: calc(33% - 25px); /* 5 quests per row with 10px gap */
-    display: flex;
-    flex-direction: column;
-    scale:1;
-  }
-  .quest-image {
-    height: 170px;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
+.quest-image {
+  height: 150px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .quest-details {
-  flex-grow: 1;
+  padding: 15px;
+  position: relative;
 }
 
-img {
-  text-decoration: none;
-  pointer-events: none;
+.quest-duration {
+  position: absolute;
+  top: -30px;
+  right: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  color: #00ff00;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 0.8rem;
 }
 
-.card-header {
-  text-align: left;
-  height: 80px;
-  background-color: #ddd;}
+.quest-title {
+  color: #00ff00;
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+}
 
-.card-body {
+.quest-description {
   color: #fff;
-}
-.card-text {
-  font-size: 0.755rem;
-  font-weight: 400;
-  text-decoration: none;
-  pointer-events: none;
-}
-.card-text img {
-  text-decoration: initial;
-  pointer-events: auto;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
 }
 
-.card-text-header {
-  font-weight: 500;
-  font-size: 1rem;
-  color: #000;
-  text-shadow: rgba(255, 255, 255, 1) 0px 0px 2px;
-}
-.card-text-desc {
-  font-size: 0.777rem;
-  font-weight: 400;
-  color: #000;
-  text-shadow: rgba(255, 255, 255, 1) 0px 0px 2px;
+.quest-progress {
+  height: 5px;
+  background-color: #333;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  overflow: hidden;
 }
 
-.icon-reload {
-  width: 18px;
-  transition: opacity 0.3 ease;
+.progress-bar {
+  height: 100%;
+  background-color: #00ff00;
+  transition: width 0.3s ease;
+}
+
+.quest-status {
+  color: #00ff00;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+.quest-rewards {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 15px;
+}
+
+.reward {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+  font-size: 0.8rem;
+
+  img {
+    width: 30px;
+    height: 30px;
+    margin-bottom: 5px;
+  }
+}
+
+.quest-action {
+  text-align: center;
+}
+
+.btn-action {
+  background-color: #00ff00;
+  color: #000;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
   cursor: pointer;
-  filter: opacity(0.5);
+  transition: background-color 0.3s ease;
+
+  &:hover:not(:disabled) {
+    background-color: #00cc00;
+  }
+
+  &:disabled {
+    background-color: #333;
+    color: #666;
+    cursor: not-allowed;
+  }
 }
 
-.icon-reload:hover {
-  filter: opacity(0.8);
+.quest-level-requirement {
+  color: #ff6b6b;
+  font-size: 0.8rem;
+  margin-top: 10px;
+  text-align: center;
 }
-.alert-clear-text {
-  text-shadow: none; /* Remove any text shadow */
-  color: #000; /* Ensure text color is set to black for clarity */
+
+@media (max-width: 768px) {
+  .quest-list {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
 }
-.alert-clear-text{
-  font-size: 0.888rem!important;
+
+@media (max-width: 576px) {
+  .quest-list {
+    grid-template-columns: 1fr;
+  }
 }
 </style>

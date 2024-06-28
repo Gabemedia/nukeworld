@@ -3,14 +3,21 @@
     <img class="sidebar-icon" :src="require(`@/assets/interface/icons/quests.png`)" title="Quest Log">
   </button>
   <div v-if="showModal" class="modal mt-2" tabindex="-1" @click.self="closeModal">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
       <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Quest Log</h5>
+          <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
+        </div>
         <div class="modal-body">
           <QuestTabs />
         </div>
-        <div class="modal-footer card-text-header text-light bg-danger bg-gradient d-flex justify-content-between align-items-center" @click="confirmResetQuests">
-          <span>Reset Quests</span>
-          <img class="icon-reload" :src="require(`@/assets/interface/icons/reload.png`)" title="Reset Quests (Cost: 2500)">
+        <div class="modal-footer">
+          <div class="reset-quests" @click="confirmResetQuests">
+            <span>Reset Quests</span>
+            <img class="icon-reload" :src="require(`@/assets/interface/icons/reload.png`)" title="Reset Quests (Cost: 2500)">
+          </div>
+          <button type="button" class="btn btn-secondary" @click="closeModal">Close</button>
         </div>
       </div>
     </div>
@@ -58,23 +65,7 @@ export default {
 };
 </script>
 
-<style scoped>
-.card-text-header {
-  font-weight: 600;
-  font-size: 0.777rem;
-}
-
-.icon-reload {
-  width: 18px;
-  transition: opacity 0.3s ease;
-  cursor: pointer;
-  filter: opacity(0.5);
-}
-
-.icon-reload:hover {
-  filter: opacity(0.8);
-}
-
+<style scoped lang="scss">
 .modal {
   display: flex;
   align-items: center;
@@ -86,22 +77,32 @@ export default {
   width: 100%;
   height: 100%;
   overflow: auto;
-  scale: 0.9;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
-@media (max-width: 576px) {
-  .modal-dialog {
-    width: 100%;
-    margin: 1.75rem auto;
-  }
+.modal-dialog {
+  max-width: 800px;
+  width: 90%;
+  margin: 1.75rem auto;
 }
 
-@media (min-width: 576px) {
-  .modal-dialog {
-    max-width: 75vw;
-    width: 90vw;
-    margin: 1.75rem auto;
-  }
+.modal-content {
+  background-color: #1a1a1a;
+  border: 2px solid #00ff00;
+  border-radius: 10px;
+}
+
+.modal-header {
+  border-bottom: 1px solid #00ff00;
+  padding: 1rem;
+}
+
+.modal-title {
+  color: #00ff00;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px #00ff00;
+  font-size: 1rem;
 }
 
 .modal-body {
@@ -109,28 +110,58 @@ export default {
   flex: 1 1 auto;
   padding: 1rem;
   max-height: 70vh;
-  overflow-y: scroll;
+  overflow-y: auto;
+  color: #fff;
 }
 
-.modal-content {
-  position: relative;
-  background-clip: padding-box;
-  border-radius: 0.3rem;
-  outline: 0;
-}
-
-.modal-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+.modal-footer {
+  border-top: 1px solid #00ff00;
   padding: 1rem;
-  border-bottom: 1px solid #dee2e6;
-  border-top-left-radius: calc(0.3rem - 1px);
-  border-top-right-radius: calc(0.3rem - 1px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.modal-title {
-  margin-bottom: 0;
-  line-height: 1.5;
+.btn-secondary {
+  background-color: #333;
+  color: #fff;
+  border: 1px solid #00ff00;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #00ff00;
+    color: #000;
+  }
+}
+
+.reset-quests {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: #00ff00;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    color: #fff;
+  }
+}
+
+.icon-reload {
+  width: 18px;
+  margin-left: 5px;
+  transition: opacity 0.3s ease;
+  filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%);
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+@media (max-width: 576px) {
+  .modal-dialog {
+    width: 95%;
+    margin: 1rem auto;
+  }
 }
 </style>

@@ -1,62 +1,17 @@
 <template>
-  <div>
-    <ul class="nav-tabs mx-2 quick-bar" id="questTabs" role="tablist">
-      <li class="nav-item quick-bar-slot" role="presentation">
-        <button
-          :class="{'active quick-bar-key': activeTab === 'availableQuests', 'quick-bar-key': activeTab !== 'availableQuests'}"
-          id="availableQuests-tab"
-          data-bs-toggle="tab"
-          data-bs-target="#availableQuests"
-          type="button"
-          role="tab"
-          aria-controls="availableQuests"
-          aria-selected="true"
-          @click="setActiveTab('availableQuests')"
-        >
-          Available Quests
-        </button>
-      </li>
-      <li class="nav-item quick-bar-slot" role="presentation">
-        <button
-          :class="{'active quick-bar-key': activeTab === 'highLevelQuests', 'quick-bar-key': activeTab !== 'highLevelQuests'}"
-          id="highLevelQuests-tab"
-          data-bs-toggle="tab"
-          data-bs-target="#highLevelQuests"
-          type="button"
-          role="tab"
-          aria-controls="highLevelQuests"
-          aria-selected="false"
-          @click="setActiveTab('highLevelQuests')"
-        >
-          Active Quests
-        </button>
-      </li>
-      <li class="nav-item quick-bar-slot" role="presentation">
-        <button
-          :class="{'active quick-bar-key': activeTab === 'readyQuests', 'quick-bar-key': activeTab !== 'readyQuests'}"
-          id="readyQuests-tab"
-          data-bs-toggle="tab"
-          data-bs-target="#readyQuests"
-          type="button"
-          role="tab"
-          aria-controls="readyQuests"
-          aria-selected="false"
-          @click="setActiveTab('readyQuests')"
-        >
-          Ready to Claim
-        </button>
-      </li>
-    </ul>
-    <div class="tab-content m-2" id="questTabsContent">
-      <div class="tab-pane fade" :class="{ 'show active': activeTab === 'availableQuests' }" id="availableQuests" role="tabpanel" aria-labelledby="availableQuests-tab">
-        <quest-list :quests="availableQuests"></quest-list>
-      </div>
-      <div class="tab-pane fade" :class="{ 'show active': activeTab === 'highLevelQuests' }" id="highLevelQuests" role="tabpanel" aria-labelledby="highLevelQuests-tab">
-        <quest-list :quests="highLevelQuests"></quest-list>
-      </div>
-      <div class="tab-pane fade" :class="{ 'show active': activeTab === 'readyQuests' }" id="readyQuests" role="tabpanel" aria-labelledby="readyQuests-tab">
-        <quest-list :quests="claimQuests"></quest-list>
-      </div>
+  <div class="quest-tabs">
+    <div class="tab-buttons">
+      <button
+        v-for="tab in tabs"
+        :key="tab.id"
+        :class="['tab-button', { active: activeTab === tab.id }]"
+        @click="setActiveTab(tab.id)"
+      >
+        {{ tab.label }}
+      </button>
+    </div>
+    <div class="tab-content">
+      <quest-list :quests="activeQuests"></quest-list>
     </div>
   </div>
 </template>
@@ -71,19 +26,27 @@ export default {
   },
   data() {
     return {
-      activeTab: 'availableQuests',
+      activeTab: 'available',
+      tabs: [
+        { id: 'available', label: 'Available' },
+        { id: 'active', label: 'Active' },
+        { id: 'ready', label: 'Ready' },
+      ],
     };
   },
   computed: {
     ...mapState(['quests', 'character']),
-    availableQuests() {
-      return this.quests.filter(quest => quest.state === 'not-started' && this.character.level >= quest.levelRequirement);
-    },
-    highLevelQuests() {
-      return this.quests.filter(quest => quest.state === 'in-progress');
-    },
-    claimQuests() {
-      return this.quests.filter(quest => quest.state === 'ready-to-claim');
+    activeQuests() {
+      switch (this.activeTab) {
+        case 'available':
+          return this.quests.filter(quest => quest.state === 'not-started' && this.character.level >= quest.levelRequirement);
+        case 'active':
+          return this.quests.filter(quest => quest.state === 'in-progress');
+        case 'ready':
+          return this.quests.filter(quest => quest.state === 'ready-to-claim');
+        default:
+          return [];
+      }
     },
   },
   methods: {
@@ -95,51 +58,62 @@ export default {
 </script>
 
 <style scoped>
-.quick-bar {
-  display: flex;
-  justify-content: center;
-  padding: 0px 15px 15px 15px;
-  border-radius: 5px;
-  z-index: 9999;
+.quest-tabs {
+  background-color: rgba(0, 0, 0, 0.8);
+  border: 2px solid #00ff00;
+  border-radius: 10px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
 }
 
-.quick-bar-slot {
+.tab-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.tab-button {
+  background-color: rgba(0, 0, 0, 0.6);
+  color: #00ff00;
+  border: 1px solid #00ff00;
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  flex-grow: 1;
   margin: 0 5px;
+}
+
+.tab-button:hover {
+  background-color: rgba(0, 255, 0, 0.2);
+}
+
+.tab-button.active {
+  background-color: #00ff00;
+  color: #000;
+  font-weight: bold;
+  box-shadow: 0 0 10px #00ff00;
+}
+
+.tab-content {
+  background-color: rgba(0, 255, 0, 0.1);
+  border: 1px solid #00ff00;
   border-radius: 5px;
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  padding: 10px;
 }
 
-.quick-bar-key {
-    background-color: #000;
-    color: #fff;
-    padding: 3px 6px;
-    border-radius: 6px;
+@media screen and (max-width: 768px) {
+  .quest-tabs {
+    padding: 10px;
+  }
+
+  .tab-button {
     font-size: 0.7rem;
-    color: #fff;
-    font-weight: 700;
-    box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, 0.1);
-    text-transform: uppercase;
-    border: 1px #fff solid;
+    padding: 4px 8px;
+  }
 }
-
-.quick-bar-key:hover {
-    background-color: #fff;
-    color: #000;
-    padding: 3px 6px;
-    border-radius: 6px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    box-shadow: 0px 0px 10px 10px rgba(0, 0, 0, 0.1);
-    text-transform: uppercase;
-    border: 1px #fff solid;
-}
-
-.quick-bar-key.active {
-  background-color: #fff !important;
-  color: #000 !important;
-}
-
 </style>

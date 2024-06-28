@@ -409,6 +409,9 @@ const actions = {
   deleteCharacter({ commit }, character) {
     commit('deleteCharacter', character);
   },
+  setSettlementModalOpen(state, isOpen) {
+    state.isSettlementModalOpen = isOpen;
+  },
   async quitGame({ commit, state }) {
     const updatedCharacter = { ...state.character, health: 0 };
     commit('updateCharacter', updatedCharacter);

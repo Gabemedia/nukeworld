@@ -6,12 +6,12 @@
         <img v-if="index === 0" :src="require(`@/assets/interface/icons/weapons/${getEquippedItem(index).name.toLowerCase().replace(/ /g, '_')}.png`)" :title="getEquippedItem(index).name" />
         <img v-else-if="index === 1" :src="require(`@/assets/interface/icons/armor/${getEquippedItem(index).name.toLowerCase().replace(/ /g, '_')}.png`)" :title="getEquippedItem(index).name" />
         <img v-else-if="index === 2" :src="require(`@/assets/interface/icons/aid/${getEquippedItem(index).name.toLowerCase().replace(/ /g, '_')}.png`)" :title="getEquippedItem(index).name" />
-        <span v-if="index === 2" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success  py-1" title="Use Aid Item" @click.stop="useEquippedAidItem">
-          <p class="card-text m-0">+</p>
+        <span v-if="index === 2" class="use-aid-button" title="Use Aid Item" @click.stop="useEquippedAidItem">
+          +
         </span>
       </div>
       <div class="dropdown-menu-hotbar" v-show="showDropdown[index]">
-        <div class="separator" v-for="item in getItems(index)" :key="item.uuid" @click="handleSelectItem(index, item)">
+        <div class="dropdown-item" v-for="item in getItems(index)" :key="item.uuid" @click="handleSelectItem(index, item)">
           <img v-if="index === 0" :src="require(`@/assets/interface/icons/weapons/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="item.name" />
           <img v-else-if="index === 1" :src="require(`@/assets/interface/icons/armor/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="item.name" />
           <img v-else-if="index === 2" :src="require(`@/assets/interface/icons/aid/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="item.name" />
@@ -67,11 +67,9 @@ export default {
       } else if (index === 1) {
         this.equipArmor(item.uuid);
       } else if (index === 2) {
-        // Tilføj denne nye else if for hjælpemidler
         this.$store.commit('setFirstAidItem', item);
       }
     },
-
     getEquippedItem(index) {
       if (index === 0) {
         return this.character.equippedWeapons[0];
@@ -82,7 +80,6 @@ export default {
       }
       return null;
     },
-
     handleKeyDown(event) {
       const key = event.key;
       if (key >= '1' && key <= '9') {
@@ -107,13 +104,15 @@ export default {
 <style lang="scss" scoped>
 .quick-bar {
   position: absolute;
-  bottom: 0px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   background-color: rgba(0, 0, 0, 0.7);
   padding: 10px;
-  border-radius: 5px;
+  border-radius: 10px;
+  border: 1px solid #00ff00;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
   z-index: 9999;
 }
 
@@ -121,12 +120,18 @@ export default {
   width: 50px;
   height: 50px;
   margin: 0 5px;
-  border: 2px solid #ccc;
+  border: 1px solid #00ff00;
   border-radius: 5px;
   position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: rgba(0, 255, 0, 0.1);
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: rgba(0, 255, 0, 0.2);
+  }
 }
 
 .quick-bar-key {
@@ -135,74 +140,103 @@ export default {
   left: 50%;
   transform: translateX(-50%);
   background-color: #000;
-  color: #fff;
-  padding: 3px 6px;
+  color: #00ff00;
+  padding: 2px 6px;
   border-radius: 3px;
   font-size: 12px;
+  border: 1px solid #00ff00;
 }
 
-.quick-bar-item img {
-  max-width: 100%;
-  max-height: 100%;
-  scale: 0.8;
-  margin-top:2px;
+.quick-bar-item {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+
+  img {
+    max-width: 80%;
+    max-height: 80%;
+    object-fit: contain;
+  }
+}
+
+.use-aid-button {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #00ff00;
+  color: #000;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #00cc00;
+  }
 }
 
 .dropdown-menu-hotbar {
   position: absolute;
   bottom: 55px;
-  background-color:rgba(255, 255, 255, 0.7);
-  margin: 5px 0px;
-  padding: 5px;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.9);
+  border: 1px solid #00ff00;
   border-radius: 5px;
+  padding: 5px;
   display: flex;
   flex-direction: column;
-  z-index: 9999;
-  border: 1px #000 solid;
-}
-.dropdown-menu-hotbar div{
-  border-bottom: 1px #000 solid;
-
+  z-index: 10000;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
 }
 
-.dropdown-menu-hotbar img {
+.dropdown-item {
   width: 40px;
   height: 40px;
-  margin: 5px;
+  margin: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: #00ff00;
+    background-color: rgba(0, 255, 0, 0.1);
+  }
+
+  img {
+    max-width: 80%;
+    max-height: 80%;
+    object-fit: contain;
+  }
 }
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 768px) {
   .quick-bar {
-    justify-content: flex-start;
-    padding: 10px 20px;
-    width: 100%;
+    width: 90%;
+    justify-content: space-around;
   }
 
   .quick-bar-slot {
-    flex-basis: 20%;
-    max-width: 20%;
+    width: 40px;
+    height: 40px;
   }
 
   .quick-bar-slot:nth-child(n+6) {
     display: none;
-  }
-
-  .quick-bar-slot:nth-child(5) {
-    margin-right: 20px;
-  }
-
-  .quick-bar-item img {
-    max-width: 100%;
-    max-height: 100%;
-    scale: 0.5;
-    margin-top:2px;
-  }
-  
-  .dropdown-menu-hotbar img {
-    width: 40px;
-    height: 40px;
-    margin: 5px;
   }
 }
 </style>

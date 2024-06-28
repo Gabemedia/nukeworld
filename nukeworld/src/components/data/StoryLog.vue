@@ -20,10 +20,10 @@
           </div>
           <div class="modal-body">
             <div v-if="!currentStoryLine" class="story-intro">
-              <p>Welcome to your story log, survivor. Here you can track your progress and embark on new adventures in the wasteland.</p>
+              <p>Welcome to your story log, survivor. Here you can track your progress and embark on new adventures in the wasteland. Beware in this development phase the story expands from Level <strong>[1-5]</strong></p>
             </div>
             <div v-if="currentStoryLine" class="active-story">
-              <h6 class="mb-3 text-uppercase fw-bold text-start">Active Story</h6>
+              <h6 class="mb-3 text-uppercase fw-bold text-start text-success">Active Story</h6>
               <div class="story-item">
                 <div class="story-title">{{ currentStoryLine.name }}</div>
                 <div class="story-progress">Progress: {{ currentStoryLine.currentStepIndex + 1 }} / {{ currentStoryLine.steps.length }}</div>
@@ -31,7 +31,7 @@
             </div>
             <div v-if="!currentStoryLine">
               <div v-if="availableStoryLines.length > 0">
-                <h6 class="mb-3 text-uppercase fw-bold text-start">Available Storylines</h6>
+                <h6 class="mb-3 text-uppercase fw-bold text-start text-success">Available Storylines</h6>
                 <div class="storyline-grid">
                   <div v-for="storyLine in sortedAvailableStoryLines" :key="storyLine.id" class="story-item" @click="startStoryLine(storyLine.id)">
                     <div class="story-title">{{ storyLine.name }}</div>
@@ -167,6 +167,8 @@ export default {
   color: #00ff00;
   font-weight: bold;
   text-transform: uppercase;
+  text-shadow: 0 0 10px #00ff00;
+  font-size: 1rem;
 }
 
 .modal-body {
@@ -181,6 +183,7 @@ export default {
 .story-intro {
   background-color: rgba(0, 255, 0, 0.1);
   border-left: 4px solid #00ff00;
+  text-shadow: 0 0 10px #00ff00;
   padding: 10px;
   margin-bottom: 20px;
 }

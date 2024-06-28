@@ -166,6 +166,26 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Fixed issues with overlapping modals in SettlementModal.
 - Enhanced responsiveness and user experience when interacting with settlement functionality.
 
+### Version 0.1.5 (2024-06-28)
+- Added new maps
+- Refactored Userlogin Component
+- Refactored New Story Styling
+- Refactored MapComponent
+- Refactored MapComponent2
+- Refactored SettlementModal
+- Refactored InfomationBox
+- Restyled Userlogin Process
+- Restyled New Story Process
+- Restyled MapComponent
+- Restyled MapComponent2
+- Restyled InfomationBox
+- Reworked Settlement System
+- Minor Bug Fixes
+- Major Design overhaul
+- Improved stability
+- Fixed Settlement button issue
+
+
 
 ## Getting Started
 To get started with NukeWorld, follow these steps:

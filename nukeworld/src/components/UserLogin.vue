@@ -47,7 +47,7 @@ export default {
       },
       showSuccessMessage: false,
       showCharacterList: false,
-      version: '0.1.4.0', // Current version number
+      version: '0.1.5.0', // Current version number
     };
   },
   computed: {

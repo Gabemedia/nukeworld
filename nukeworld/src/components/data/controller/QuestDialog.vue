@@ -3,7 +3,7 @@
   <div class="dialog-system">
     <!-- Samtalevindue - vises kun når en historie er valgt -->
     <div v-if="currentStoryLine && currentStoryStep" class="mb-3">
-      <h6 class="mb-3 text-uppercase fw-bold text-start">{{ currentStoryLine.name }}</h6>
+      <h6 class="mb-3 text-uppercase fw-bold text-start text-success">{{ currentStoryLine.name }}</h6>
       <div class="dialog-log border border-1 small">
         <div class="conversation-box npc-box">
           <img class="sidebar-icon" :src="require(`@/assets/interface/icons/encounter.png`)" title="Todd Wimsey">
@@ -34,7 +34,7 @@
     <!-- Liste over tilgængelige historier - vises kun når ingen historie er valgt -->
     <div v-else>
       <div v-if="availableStoryLines.length > 0">
-        <h6 class="mb-3 text-uppercase fw-bold text-start">Available Storylines</h6>
+        <h6 class="mb-3 text-uppercase fw-bold text-start text-success">Available Storylines</h6>
         <div class="storyline-grid">
           <div v-for="storyLine in availableStoryLines" :key="storyLine.id" class="storyline-card" @click="startStoryLine(storyLine.id)">
             <div class="storyline-title">{{ storyLine.name }}</div>
