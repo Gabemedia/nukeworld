@@ -233,7 +233,14 @@ export default [
           "amount": 2
         }
       ],
-      "weaponRewards": [],
+      "weaponRewards": [
+        {
+          "id": 17
+        },
+        {
+          "id": null
+        }
+      ],
       "armorRewards": [],
       "aidRewards": [
         {

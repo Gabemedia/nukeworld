@@ -6,7 +6,7 @@ export default [
     "attack": 2,
     "defense": 1,
     "exp": 10,
-    "money": 0
+    "money": 10
   },
   {
     "id": 2,
