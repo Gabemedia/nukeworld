@@ -98,7 +98,7 @@ const mutations = {
 
   assignRandomCoordinates(state) {
     const playableArea = [
-      [270, 270], [850, 1650]
+      [350, 300], [800, 1600]
     ];
     state.quests.forEach((quest) => {
       const lat = Math.random() * (playableArea[1][0] - playableArea[0][0]) + playableArea[0][0];
