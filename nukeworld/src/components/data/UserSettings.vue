@@ -28,7 +28,7 @@
                   v-for="size in screenSizes" 
                   :key="size.name"
                   @click="setScreenSize(size.width, size.height)"
-                  class="btn btn-secondary"
+                  :class="['btn btn-secondary', { active: isCurrentScreenSize(size.width, size.height) }]"
                 >
                   {{ size.name }}
                 </button>
@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 
 export default {
   name: 'UserSettings',
@@ -72,10 +72,10 @@ export default {
     };
   },
   computed: {
-    ...mapState(['character']),
+    ...mapState(['settings']),
   },
   methods: {
-    ...mapMutations(['updateCharacter']),
+    ...mapActions(['updateScreenSize']),
     openModal() {
       this.showModal = true;
     },
@@ -83,13 +83,11 @@ export default {
       this.showModal = false;
     },
     setScreenSize(width, height) {
-      // This is a placeholder. In a real application, you'd need to implement
-      // the actual screen size change logic here.
-      console.log(`Setting screen size to ${width}x${height}`);
-      // You might want to dispatch an action or commit a mutation here
-      // to update the application state with the new screen size.
+      this.updateScreenSize({ width, height });
     },
-    // You can add more methods for handling audio and gameplay settings here
+    isCurrentScreenSize(width, height) {
+      return this.settings.screenWidth === width && this.settings.screenHeight === height;
+    },
   },
 };
 </script>
@@ -106,7 +104,7 @@ export default {
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0)!important;
 }
 
 .modal-dialog {
@@ -157,7 +155,7 @@ export default {
   margin: 0.25rem;
 }
 
-.btn-secondary:hover {
+.btn-secondary:hover, .btn-secondary.active {
   background-color: #00ff00;
   color: #000;
 }

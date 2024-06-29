@@ -27,6 +27,10 @@ const state = reactive({
     equippedArmor: null,
     resources: [],
   },
+  settings: {
+    screenWidth: 1920,
+    screenHeight: 1080,
+  },
   quests: reactive(JSON.parse(localStorage.getItem('quests')) || defaultQuests),
   storyLines: reactive(JSON.parse(localStorage.getItem('storyLines')) || defaultStoryLines),
   currentStoryLineId: JSON.parse(localStorage.getItem('currentStoryLineId')) || null,
@@ -94,6 +98,11 @@ const mutations = {
   },
   deleteCharacter(state, character) {
     state.characters = state.characters.filter(ch => ch.email !== character.email);
+  },
+
+  updateScreenSize(state, { width, height }) {
+    state.settings.screenWidth = width;
+    state.settings.screenHeight = height;
   },
 
   assignRandomCoordinates(state) {
@@ -409,6 +418,9 @@ const actions = {
   },
   deleteCharacter({ commit }, character) {
     commit('deleteCharacter', character);
+  },
+  updateScreenSize({ commit }, { width, height }) {
+    commit('updateScreenSize', { width, height });
   },
   setSettlementModalOpen(state, isOpen) {
     state.isSettlementModalOpen = isOpen;
