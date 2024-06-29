@@ -1,8 +1,8 @@
 <template>
   <div class="map-container">
-    <l-map ref="map" :zoom="zoom" :center="center" :options="mapOptions" @click="onMapClick">
+    <l-map ref="map" :zoom="currentZoom" :center="center" :options="mapOptions" @click="onMapClick">
       <l-image-overlay :url="mapImageUrl" :bounds="mapBounds" :opacity="1"></l-image-overlay>
-
+      <l-rectangle :bounds="playableArea" :color="'transperant'" :weight="2" :fill="false" />
       <l-marker
         v-for="quest in filteredQuests"
         :key="quest.id"
@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import { LMap, LMarker, LImageOverlay } from '@vue-leaflet/vue-leaflet';
+import { LMap, LMarker, LImageOverlay, LRectangle } from '@vue-leaflet/vue-leaflet';
 import { mapState, mapGetters, mapActions, mapMutations } from 'vuex';
 import QuestDetails from './controller/QuestDetails.vue';
 import SettlementModal from './SettlementModal.vue';
@@ -51,11 +51,14 @@ export default {
     LImageOverlay,
     QuestDetails,
     SettlementModal,
+    LRectangle,
   },
   data() {
     return {
-      zoom: 0,
       center: [600, 960],
+      playableArea: [
+        [350, 300], [800, 1600]
+      ],
       mapImageUrl: require('@/assets/maps/nukemap2.webp'),
       mapBounds: [[230, 230], [930, 1700]],
       mapOptions: {
@@ -76,11 +79,20 @@ export default {
       showModal: false,
       selectedQuest: null,
       selectedMarker: null,
+      windowWidth: window.innerWidth,
+      windowHeight: window.innerHeight,
     };
   },
   computed: {
     ...mapState(['quests', 'character']),
     ...mapGetters(['getResource']),
+    currentZoom() {
+      if (this.windowWidth <= 1440) return 0;
+      if (this.windowWidth <= 1920) return 1;
+      if (this.windowWidth <= 2880) return 2;
+      if (this.windowWidth <= 3840) return 2;
+      return 3;
+    },
     filteredQuests() {
       return this.quests.filter(quest => 
         !quest.userCreated && 
@@ -91,25 +103,37 @@ export default {
       );
     },
   },
+  watch: {
+    windowWidth() {
+      this.$nextTick(() => {
+        this.updateMapSize();
+      });
+    },
+    windowHeight() {
+      this.$nextTick(() => {
+        this.updateMapSize();
+      });
+    },
+  },
   created() {
     this.updateDragging();
+    window.addEventListener('resize', this.handleResize);
   },
   mounted() {
     this.$nextTick(() => {
       this.updateMapSize();
-      window.addEventListener('resize', this.updateMapSize);
       if (this.$store.state.settlementMarker) {
         this.$nextTick(() => {
           const map = this.$refs.map.$mapObject;
           if (map) {
-            map.setView(this.$store.state.settlementMarker.latlng, this.zoom);
+            map.setView(this.$store.state.settlementMarker.latlng, this.currentZoom);
           }
         });
       }
     });
   },
   beforeUnmount() {
-    window.removeEventListener('resize', this.updateMapSize);
+    window.removeEventListener('resize', this.handleResize);
   },
   methods: {
     ...mapActions(['updateSettlementMarker']),
@@ -117,20 +141,21 @@ export default {
     updateMapSize() {
       const map = this.$refs.map?.$mapObject;
       if (map) {
+        map.invalidateSize();
         map.fitBounds(this.mapBounds);
-        map.invalidateSize(true);
+        map.setView(this.center, this.currentZoom);
       }
+    },
+    handleResize() {
+      this.windowWidth = window.innerWidth;
+      this.windowHeight = window.innerHeight;
     },
     updateDragging() {
       this.mapOptions.dragging = true;
     },
     async onMapClick(event) {
       if (!this.$store.state.settlementMarker) {
-        if (this.$refs.settlementModal) {
-          this.$refs.settlementModal.attemptPlaceSettlement(event.latlng);
-        } else {
-          console.error('SettlementModal reference is undefined');
-        }
+        this.$refs.settlementModal.attemptPlaceSettlement(event.latlng);
       }
     },
     async onMarkerDragEnd(event) {
@@ -181,6 +206,7 @@ export default {
 };
 </script>
 
+
 <style scoped>
 @import url(../../assets/MapPopup.css);
 .map-container {
@@ -188,7 +214,7 @@ export default {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
+  height: 105%;
   z-index: -999;
 }
 .leaflet-container{
@@ -249,5 +275,136 @@ export default {
 .modal-title {
   margin-bottom: 0;
   line-height: 1.5;
+}
+
+/* Tilføjet nye styles for at forbedre læsbarheden på større skærme */
+.quest-marker, .claim-marker {
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+}
+
+.leaflet-popup-content {
+  font-size: 1rem;
+}
+
+.leaflet-control-zoom {
+  font-size: 1rem;
+}
+
+/* Tilføjet ekstra styles for bedre læsbarhed på større skærme */
+.leaflet-popup-content-wrapper {
+  padding: 1rem;
+}
+
+.leaflet-popup-tip-container {
+  width: 20px;
+  height: 10px;
+}
+
+.leaflet-popup-tip {
+  width: 10px;
+  height: 10px;
+}
+
+.leaflet-control-zoom a {
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+}
+
+/* Responsive styles */
+@media (min-width: 1441px) {
+  .quest-marker, .claim-marker {
+    filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5));
+  }
+  
+  .leaflet-popup-content {
+    font-size: 1.1rem;
+  }
+  
+  .leaflet-control-zoom {
+    font-size: 1.1rem;
+  }
+  
+  .leaflet-popup-content-wrapper {
+    padding: 1.1rem;
+  }
+  
+  .leaflet-control-zoom a {
+    width: 33px;
+    height: 33px;
+    line-height: 33px;
+  }
+}
+
+@media (min-width: 1921px) {
+  .quest-marker, .claim-marker {
+    filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.5));
+  }
+  
+  .leaflet-popup-content {
+    font-size: 1.2rem;
+  }
+  
+  .leaflet-control-zoom {
+    font-size: 1.2rem;
+  }
+  
+  .leaflet-popup-content-wrapper {
+    padding: 1.2rem;
+  }
+  
+  .leaflet-control-zoom a {
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+  }
+}
+
+@media (min-width: 2561px) {
+  .quest-marker, .claim-marker {
+    filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+  }
+  
+  .leaflet-popup-content {
+    font-size: 1.3rem;
+  }
+  
+  .leaflet-control-zoom {
+    font-size: 1.3rem;
+  }
+  
+  .leaflet-popup-content-wrapper {
+    padding: 1.3rem;
+  }
+  
+  .leaflet-control-zoom a {
+    width: 39px;
+    height: 39px;
+    line-height: 39px;
+  }
+}
+
+@media (min-width: 3841px) {
+  .quest-marker, .claim-marker {
+    filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.5));
+  }
+  
+  .leaflet-popup-content {
+    font-size: 1.4rem;
+  }
+  
+  .leaflet-control-zoom {
+    font-size: 1.4rem;
+  }
+  
+  .leaflet-popup-content-wrapper {
+    padding: 1.4rem;
+  }
+  
+  .leaflet-control-zoom a {
+    width: 42px;
+    height: 42px;
+    line-height: 42px;
+  }
 }
 </style>

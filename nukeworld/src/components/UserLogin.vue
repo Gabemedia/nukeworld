@@ -28,7 +28,7 @@
         <button @click="clearLocalStorage" class="btn btn-danger">Delete All</button>
       </div>
     </div>
-    <div class="version-number">v{{ version }}</div>
+    <div class="version-number">v{{ version }} - For testing purpose only</div>
   </div>
 </template>
 
@@ -47,7 +47,7 @@ export default {
       },
       showSuccessMessage: false,
       showCharacterList: false,
-      version: '0.1.5.0', // Current version number
+      version: '0.1.5.5', // Current version number
     };
   },
   computed: {

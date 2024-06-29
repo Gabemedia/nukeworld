@@ -2,7 +2,7 @@
   <div class="map-container">
     <l-map ref="map" :zoom="currentZoom" :center="center" :options="mapOptions" @click="onMapClick">
       <l-image-overlay :url="mapImageUrl" :bounds="mapBounds" :opacity="1"></l-image-overlay>
-      <l-rectangle :bounds="playableArea" :color="'red'" :weight="2" :fill="false" />
+      <l-rectangle :bounds="playableArea" :color="'transperant'" :weight="2" :fill="false" />
       <l-marker
         v-for="quest in filteredQuests"
         :key="quest.id"

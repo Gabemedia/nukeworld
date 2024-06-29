@@ -1,20 +1,18 @@
 <template>
   <div class="game-world bg-primary">
-    <GameHeader class="game-header"/>
-      <div class="d-flex row">
-        <div class="d-none d-md-block d-flex row scaled-ui-top-left" :style="{ transform: `scale(${uiScale})` }">
-          <SideBar />
-        </div>
-      </div>
-      <div class="d-none d-md-block scaled-ui-bottom-center" :style="{ transform: `scale(${uiScale})` }">
-        <QuickBar ref="quickBar" />
-      </div>
-      <div class="d-none d-md-block scaled-ui-bottom-left" :style="{ transform: `scale(${uiScale})` }">
+      <GameHeader class="game-header"/>
+      <SideBar />
+    <div class="scaled-ui-bottom-center" :style="{ transform: `scale(${uiScale})` }">
+      <QuickBar ref="quickBar" />
+    </div>
+    <div class="d-none d-md-block">
+      <div class="scaled-ui-bottom-left" :style="{ transform: `scale(${uiScale})` }">
         <QuickBarLeft ref="quickBarLeft" />
       </div>
-      <div class="d-none d-md-block scaled-ui-bottom-right" :style="{ transform: `scale(${uiScale})` }">
+      <div class="scaled-ui-bottom-right" :style="{ transform: `scale(${uiScale})` }">
         <QuickBarRight ref="quickBarRight" />
       </div>
+    </div>
     <div class="container mt-4">
       <div class="row justify-content-center">
         <div class="col-12">
@@ -59,7 +57,7 @@ export default {
   computed: {
     ...mapState(['character']),
     uiScale() {
-      if (this.windowWidth <= 1200) return 0.8;
+      if (this.windowWidth <= 1280) return 0.8;
       if (this.windowWidth <= 1440) return 1;
       if (this.windowWidth <= 1920) return 1.2;
       if (this.windowWidth <= 2880) return 1.5;
@@ -115,35 +113,7 @@ export default {
       this.windowWidth = window.innerWidth;
     },
     updateUIScale() {
-      const scaleClasses = [
-        'scaled-ui-top-left',
-        'scaled-ui-bottom-center',
-        'scaled-ui-bottom-left',
-        'scaled-ui-bottom-right'
-      ];
-      
-      scaleClasses.forEach(className => {
-        const element = document.querySelector(`.${className}`);
-        if (element) {
-          const scale = this.uiScale;
-          element.style.transform = `scale(${scale})`;
-          
-          switch (className) {
-            case 'scaled-ui-top-left':
-              element.style.transformOrigin = 'top left';
-              break;
-            case 'scaled-ui-bottom-center':
-              element.style.transformOrigin = 'bottom center';
-              break;
-            case 'scaled-ui-bottom-left':
-              element.style.transformOrigin = 'bottom left';
-              break;
-            case 'scaled-ui-bottom-right':
-              element.style.transformOrigin = 'bottom right';
-              break;
-          }
-        }
-      });
+      // Vi behøver ikke at gøre noget her, da skaleringen håndteres i template
     },
   },
 };
@@ -152,7 +122,7 @@ export default {
 <style lang="scss">
 .game-world {
   width: 100%;
-  height: 100%;
+  height: 100vh;
   background-image: url('../assets/bg.jpg');
   background-size: cover;
   background-position: center;
