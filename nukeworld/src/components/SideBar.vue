@@ -25,10 +25,6 @@
           <img class="sidebar-icon" :src="require(`@/assets/interface/icons/settlement.png`)" title="Settlement">
         </button>
       </li>
-      <li class="nav-item mx-2">
-        <div class="nav-item-name price-box">Settings</div>
-        <UserSettings />
-      </li>
     </ul>
   </div>
 </template>
@@ -38,7 +34,6 @@ import { mapState, mapActions } from 'vuex';
 import QuestLog from './data/QuestLog.vue';
 import InventoryLog from './data/InventoryLog.vue';
 import StoryLog from './data/StoryLog.vue';
-import UserSettings from './data/UserSettings.vue';
 import PlayerShop from './data/PlayerShop.vue';
 
 export default {
@@ -48,7 +43,6 @@ export default {
     InventoryLog,
     StoryLog,
     PlayerShop,
-    UserSettings,
   },
   computed: {
     ...mapState(['settlementMarker']),
