@@ -1,5 +1,5 @@
 <template>
-  <div class="sidebar" :style="{ transform: `scale(${uiScale})`, transformOrigin: 'top left' }">
+  <div class="d-flex flex-row flex-shrink-0 sidebar" :class="{ 'show': sidebarOpen }">
     <ul class="nav nav-pills nav-flush flex-row mb-auto text-center">
       <li class="nav-item mx-2">
         <div class="nav-item-name price-box position-relative" :class="{ 'new-story': hasNewStory }">
@@ -48,15 +48,6 @@ export default {
     ...mapState(['settlementMarker']),
     hasNewStory() {
       return this.$store.getters.availableStoryLines.length > 0;
-    },
-    uiScale() {
-      const width = window.innerWidth;
-      if (width <= 1280) return 0.8;
-      if (width <= 1440) return 1;
-      if (width <= 1920) return 1.2;
-      if (width <= 2880) return 1.5;
-      if (width <= 3840) return 1.8;
-      return 1;
     },
   },
   data() {
@@ -123,15 +114,5 @@ export default {
 
 .nav-item-name.price-box.new-story {
   border-color: #28a745;
-}
-
-.nav-item {
-  position: relative;
-  z-index: 1001;
-}
-
-.sidebar-btn,
-.nav-item > * {
-  pointer-events: auto;
 }
 </style>
