@@ -450,11 +450,7 @@ export default {
         });
         content = 'export default ' + JSON.stringify(processedData, null, 2) + ';';
       } else if (section === 'quests') {
-        const processedData = data.map(item => {
-          const { lat, lon, ...itemWithoutCoords } = item;
-          return itemWithoutCoords;
-        });
-        content = 'export default ' + JSON.stringify(processedData, null, 2) + ';';
+        content = 'export default ' + JSON.stringify(data, null, 2) + ';';
       } else if (section === 'enemies') {
         content = 'export default ' + JSON.stringify(data, null, 2) + ';';
       } else if (section === 'items' || section === 'armor' || section === 'aid') {

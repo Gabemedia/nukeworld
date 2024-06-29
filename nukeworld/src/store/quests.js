@@ -27,7 +27,9 @@ export default [
       2
     ],
     "armorRewardChance": 0.25,
-    "levelRequirement": 1
+    "levelRequirement": 1,
+    "lat": 621.4083837854918,
+    "lon": 1546.6388595925184
   },
   {
     "id": 2,
@@ -55,7 +57,9 @@ export default [
       3
     ],
     "armorRewardChance": 0.1,
-    "levelRequirement": 1
+    "levelRequirement": 1,
+    "lat": 284.54495876488113,
+    "lon": 749.7999583284939
   },
   {
     "id": 3,
@@ -82,7 +86,9 @@ export default [
       3
     ],
     "armorRewardChance": 0.01,
-    "levelRequirement": 2
+    "levelRequirement": 2,
+    "lat": 811.3704088184622,
+    "lon": 1315.5199213176106
   },
   {
     "id": 4,
@@ -112,7 +118,9 @@ export default [
       4
     ],
     "armorRewardChance": 0.15,
-    "levelRequirement": 3
+    "levelRequirement": 3,
+    "lat": 580.9701438757107,
+    "lon": 677.4348827612637
   },
   {
     "id": 5,
@@ -141,7 +149,9 @@ export default [
       1
     ],
     "armorRewardChance": 0.01,
-    "levelRequirement": 5
+    "levelRequirement": 5,
+    "lat": 651.7521025743564,
+    "lon": 1434.2654705843868
   },
   {
     "id": 6,
@@ -175,7 +185,9 @@ export default [
       1
     ],
     "armorRewardChance": 0.02,
-    "levelRequirement": 7
+    "levelRequirement": 7,
+    "lat": 610.1448547094533,
+    "lon": 320.55755519878653
   },
   {
     "id": 7,
@@ -205,7 +217,9 @@ export default [
       2
     ],
     "armorRewardChance": 0.03,
-    "levelRequirement": 7
+    "levelRequirement": 7,
+    "lat": 841.9677334764386,
+    "lon": 1157.7649880151066
   },
   {
     "id": 8,
@@ -240,7 +254,9 @@ export default [
       2
     ],
     "armorRewardChance": 0.1,
-    "levelRequirement": 9
+    "levelRequirement": 9,
+    "lat": 302.26104937633147,
+    "lon": 1036.0338612708651
   },
   {
     "id": 9,
@@ -268,7 +284,9 @@ export default [
       1
     ],
     "armorRewardChance": 0.02,
-    "levelRequirement": 10
+    "levelRequirement": 10,
+    "lat": 759.9079656150325,
+    "lon": 348.90210595037513
   },
   {
     "id": 10,
@@ -302,7 +320,9 @@ export default [
       1
     ],
     "armorRewardChance": 0.45,
-    "levelRequirement": 12
+    "levelRequirement": 12,
+    "lat": 615.6852503799198,
+    "lon": 1101.3581591832776
   },
   {
     "id": 11,
@@ -336,7 +356,9 @@ export default [
       1
     ],
     "armorRewardChance": 0.75,
-    "levelRequirement": 15
+    "levelRequirement": 15,
+    "lat": 462.3837918606729,
+    "lon": 1189.3916560480095
   },
   {
     "id": 12,
@@ -366,7 +388,9 @@ export default [
       10
     ],
     "armorRewardChance": 0.05,
-    "levelRequirement": 15
+    "levelRequirement": 15,
+    "lat": 653.8638826847668,
+    "lon": 1149.4427021313627
   },
   {
     "id": 13,
@@ -394,6 +418,8 @@ export default [
       3
     ],
     "armorRewardChance": 0.2,
-    "levelRequirement": 17
+    "levelRequirement": 17,
+    "lat": 352.2672705982508,
+    "lon": 1597.241929902993
   }
 ];

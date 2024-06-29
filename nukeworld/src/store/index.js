@@ -97,10 +97,8 @@ const mutations = {
   },
 
   assignRandomCoordinates(state) {
-    const playableArea = state.character.level < 5 ? [
-      [270, 270], [850, 1650],
-    ] : [
-      [270, 270], [850, 1650],
+    const playableArea = [
+      [270, 270], [850, 1650]
     ];
     state.quests.forEach((quest) => {
       const lat = Math.random() * (playableArea[1][0] - playableArea[0][0]) + playableArea[0][0];
@@ -575,10 +573,8 @@ const actions = {
   resetQuests({ state, commit }) {
     state.quests.forEach((quest) => {
       if (quest.state === 'completed') {
-        const playableArea = state.character.level < 5 ? [
-          [270, 270], [850, 1650],
-        ] : [
-          [270, 270], [850, 1650],
+        const playableArea = [
+          [270, 270], [850, 1650]
         ];
         const lat = Math.random() * (playableArea[1][0] - playableArea[0][0]) + playableArea[0][0];
         const lon = Math.random() * (playableArea[1][1] - playableArea[0][1]) + playableArea[0][1];

@@ -10,8 +10,8 @@
     <div class="container mt-4">
       <div class="row justify-content-center">
         <div class="col-12">
-          <MapComponent v-if="character.level < 5" ref="mapComponent" class="flex-grow-1 "/> 
-          <MapComponent2 v-else-if="character.level >= 5 && character.level <= 100" ref="mapComponent2" class="flex-grow-1 "/>
+          <MapComponent v-if="character.level < 2" ref="mapComponent" class="flex-grow-1 "/> 
+          <MapComponent2 v-else-if="character.level >= 2 && character.level <= 100" ref="mapComponent2" class="flex-grow-1 "/>
         </div>
       </div>
     </div>

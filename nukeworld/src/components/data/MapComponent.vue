@@ -63,8 +63,10 @@ export default {
         attributionControl: false,
         scrollWheelZoom: false,
         doubleClickZoom: false,
-        dragging: false,
+        dragging: true,
         crs: L.CRS.Simple,
+        maxBounds: [[230, 230], [930, 1700]],
+        maxBoundsViscosity: 1.0
       },
       settlementIcon: L.icon({
         iconUrl: require('@/assets/interface/icons/settlement_marker.png'),
@@ -90,14 +92,12 @@ export default {
     },
   },
   created() {
-    this.forceUpdateZoom();
     this.updateDragging();
   },
   mounted() {
     this.$nextTick(() => {
       this.updateMapSize();
       window.addEventListener('resize', this.updateMapSize);
-      window.addEventListener('resize', this.updateZoom);
       if (this.$store.state.settlementMarker) {
         this.$nextTick(() => {
           const map = this.$refs.map.$mapObject;
@@ -110,7 +110,6 @@ export default {
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.updateMapSize);
-    window.removeEventListener('resize', this.updateZoom);
   },
   methods: {
     ...mapActions(['updateSettlementMarker']),
@@ -122,24 +121,8 @@ export default {
         map.invalidateSize(true);
       }
     },
-    forceUpdateZoom() {
-      this.zoom = window.innerWidth >= 1600 ? 1 : 0;
-      this.$nextTick(() => {
-        const map = this.$refs.map?.$mapObject;
-        if (map) {
-          map.setZoom(this.zoom);
-          map.invalidateSize(true);
-          map.fitBounds(this.mapBounds);
-        }
-        this.updateDragging();
-      });
-    },
-    updateZoom() {
-      this.zoom = window.innerWidth >= 1600 ? 1 : 0;
-      this.updateDragging();
-    },
     updateDragging() {
-      this.mapOptions.dragging = window.innerWidth >= 1600;
+      this.mapOptions.dragging = true;
     },
     async onMapClick(event) {
       if (!this.$store.state.settlementMarker) {
