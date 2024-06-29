@@ -5,7 +5,7 @@ export default [
     "desc": "We need to gain Access to the Tunnels to get to the other side.",
     "exp": 1200,
     "money": 250,
-    "duration": 2500,
+    "duration": 25000,
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -26,10 +26,8 @@ export default [
       1,
       2
     ],
-    "armorRewardChance": 0.025,
-    "levelRequirement": 1,
-    "lat": 660.756191945627,
-    "lon": 1630.825749388125
+    "armorRewardChance": 0.25,
+    "levelRequirement": 1
   },
   {
     "id": 2,
@@ -37,7 +35,7 @@ export default [
     "desc": "We need to find a way to get in the City.",
     "exp": 1500,
     "money": 250,
-    "duration": 5200,
+    "duration": 52000,
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -47,7 +45,7 @@ export default [
       1,
       1
     ],
-    "rewardChance": 0.001,
+    "rewardChance": 0.1,
     "armorReward": [
       1,
       1,
@@ -56,10 +54,8 @@ export default [
       2,
       3
     ],
-    "armorRewardChance": 0.001,
-    "levelRequirement": 1,
-    "lat": 797.090639877089,
-    "lon": 1638.67338861073
+    "armorRewardChance": 0.1,
+    "levelRequirement": 1
   },
   {
     "id": 3,
@@ -67,7 +63,7 @@ export default [
     "desc": "Seek shelter for the night in the Clock Tower.",
     "exp": 2200,
     "money": 750,
-    "duration": 7000,
+    "duration": 70000,
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -78,17 +74,15 @@ export default [
       2,
       3
     ],
-    "rewardChance": 0.001,
+    "rewardChance": 0.01,
     "armorReward": [
       1,
       2,
       2,
       3
     ],
-    "armorRewardChance": 0.001,
-    "levelRequirement": 2,
-    "lat": 504.94792943165385,
-    "lon": 1004.2370914333302
+    "armorRewardChance": 0.01,
+    "levelRequirement": 2
   },
   {
     "id": 4,
@@ -96,7 +90,7 @@ export default [
     "desc": "We need to Settle the Dunvick Castle.",
     "exp": 3000,
     "money": 1500,
-    "duration": 12000,
+    "duration": 120000,
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -108,7 +102,7 @@ export default [
       3,
       4
     ],
-    "rewardChance": 0.1,
+    "rewardChance": 0.15,
     "armorReward": [
       1,
       1,
@@ -117,10 +111,8 @@ export default [
       3,
       4
     ],
-    "armorRewardChance": 0.1,
-    "levelRequirement": 2,
-    "lat": 328.78483514603386,
-    "lon": 1180.493839738314
+    "armorRewardChance": 0.15,
+    "levelRequirement": 3
   },
   {
     "id": 5,
@@ -128,7 +120,7 @@ export default [
     "desc": "Search the Abandoned Warehouse for supplies and weapons.",
     "exp": 4500,
     "money": 750,
-    "duration": 33000,
+    "duration": 330000,
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -149,9 +141,7 @@ export default [
       1
     ],
     "armorRewardChance": 0.01,
-    "levelRequirement": 3,
-    "lat": 634.309504084456,
-    "lon": 1572.8290730778406
+    "levelRequirement": 5
   },
   {
     "id": 6,
@@ -159,7 +149,7 @@ export default [
     "desc": "Infiltrate the Mutant Hideout and eliminate the mutant leader.",
     "exp": 5000,
     "money": 1500,
-    "duration": 39000,
+    "duration": 390000,
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -185,9 +175,7 @@ export default [
       1
     ],
     "armorRewardChance": 0.02,
-    "levelRequirement": 4,
-    "lat": 588.9682963144642,
-    "lon": 1442.6309810970233
+    "levelRequirement": 7
   },
   {
     "id": 7,
@@ -195,7 +183,7 @@ export default [
     "desc": "Explore the Forgotten Bunker and recover the lost artifacts.",
     "exp": 6200,
     "money": 2000,
-    "duration": 60000,
+    "duration": 600000,
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -217,9 +205,7 @@ export default [
       2
     ],
     "armorRewardChance": 0.03,
-    "levelRequirement": 5,
-    "lat": 500.22997984017934,
-    "lon": 1386.7742826001347
+    "levelRequirement": 7
   },
   {
     "id": 8,
@@ -227,7 +213,7 @@ export default [
     "desc": "Venture into the Radioactive Wasteland and collect rare resources.",
     "exp": 8000,
     "money": 2500,
-    "duration": 160000,
+    "duration": 1600000,
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -254,9 +240,7 @@ export default [
       2
     ],
     "armorRewardChance": 0.1,
-    "levelRequirement": 8,
-    "lat": 438.934181669796,
-    "lon": 1583.3988448061505
+    "levelRequirement": 9
   },
   {
     "id": 9,
@@ -264,7 +248,7 @@ export default [
     "desc": "Explore the Overgrown Village and recover the lost artifacts.",
     "exp": 12000,
     "money": 150,
-    "duration": 120000,
+    "duration": 1200000,
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -284,9 +268,7 @@ export default [
       1
     ],
     "armorRewardChance": 0.02,
-    "levelRequirement": 10,
-    "lat": 429.7977089176951,
-    "lon": 1393.9832148653973
+    "levelRequirement": 10
   },
   {
     "id": 10,
@@ -294,7 +276,7 @@ export default [
     "desc": "Search the Shipment of Supplies for supplies and weapons.",
     "exp": 14000,
     "money": 5000,
-    "duration": 128000,
+    "duration": 1280000,
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -320,9 +302,7 @@ export default [
       1
     ],
     "armorRewardChance": 0.45,
-    "levelRequirement": 15,
-    "lat": 463.5458806382817,
-    "lon": 875.7400565693841
+    "levelRequirement": 12
   },
   {
     "id": 11,
@@ -330,7 +310,7 @@ export default [
     "desc": "We found a signal that leads to Alantic City.",
     "exp": 9000,
     "money": 2000,
-    "duration": 125000,
+    "duration": 1250000,
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -356,9 +336,7 @@ export default [
       1
     ],
     "armorRewardChance": 0.75,
-    "levelRequirement": 20,
-    "lat": 649.9535340945922,
-    "lon": 1428.9210398028204
+    "levelRequirement": 15
   },
   {
     "id": 12,
@@ -367,31 +345,37 @@ export default [
     "desc": "We are looking for supplies in old dock, with a lot of warehouses around.",
     "exp": 3500,
     "money": 450,
-    "duration": 45000,
+    "duration": 450000,
     "progress": 0,
     "state": "not-started",
     "claimed": false,
     "disabled": false,
     "reward": [
-      21
+      21,
+      21,
+      21,
+      21,
+      20
     ],
-    "rewardChance": 0.95,
+    "rewardChance": 0.05,
     "armorReward": [
-      11
+      11,
+      11,
+      11,
+      11,
+      10
     ],
-    "armorRewardChance": 0.95,
-    "levelRequirement": 4,
-    "lat": 798.4151036022249,
-    "lon": 1437.4205359299901
+    "armorRewardChance": 0.05,
+    "levelRequirement": 15
   },
   {
     "id": 13,
     "uuid": "63e6d98b-4770-421d-82d0-42007c988b48",
     "name": "Into the Acid Rain",
     "desc": "The Acid Rain is destroying everything! We need find shelther and wait it out! ",
-    "exp": 2000,
-    "money": 50,
-    "duration": 120000,
+    "exp": 12000,
+    "money": 800,
+    "duration": 1200000,
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -410,8 +394,6 @@ export default [
       3
     ],
     "armorRewardChance": 0.2,
-    "levelRequirement": 7,
-    "lat": 452.35898514578315,
-    "lon": 1433.726073786386
+    "levelRequirement": 17
   }
 ];

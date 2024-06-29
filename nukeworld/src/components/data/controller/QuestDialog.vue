@@ -49,7 +49,6 @@
   </div>
 </template>
 
-
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import EnemyEncounters from '../EnemyEncounters.vue';
@@ -208,9 +207,6 @@ export default {
 };
 </script>
 
-
-
-
 <style lang="scss" scoped>
   .dialog-system {
     border-radius: 5px;
@@ -304,5 +300,4 @@ export default {
   color: #aaa;
 }
 
-  </style>
-    
+</style>

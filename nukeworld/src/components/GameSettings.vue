@@ -449,7 +449,13 @@ export default {
           return itemWithoutUuid;
         });
         content = 'export default ' + JSON.stringify(processedData, null, 2) + ';';
-      } else if (section === 'quests' || section === 'enemies') {
+      } else if (section === 'quests') {
+        const processedData = data.map(item => {
+          const { lat, lon, ...itemWithoutCoords } = item;
+          return itemWithoutCoords;
+        });
+        content = 'export default ' + JSON.stringify(processedData, null, 2) + ';';
+      } else if (section === 'enemies') {
         content = 'export default ' + JSON.stringify(data, null, 2) + ';';
       } else if (section === 'items' || section === 'armor' || section === 'aid') {
         content = `import { v4 as uuidv4 } from 'uuid';\n\nexport default ${JSON.stringify(data.map(item => ({

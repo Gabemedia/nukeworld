@@ -223,7 +223,6 @@ export default {
       }
     },
 
-
     resetBattleState() {
       this.isBattleWon = false;
       this.$store.commit('updateCharacter');
@@ -308,5 +307,4 @@ export default {
   background-color: #dc3545;
   border-color: #dc3545;
 }
-
 </style>

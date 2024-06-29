@@ -8,7 +8,7 @@ export default [
     "playerChoices": [],
     "steps": [
       {
-        "npcMessage": "Welcome to NukeWorld, survivor! This is a dangerous world full of challenges and opportunities.",
+        "npcMessage": "Welcome to NukeWorld, survivor! This is a dangerous world full of challenges and opportunities. ",
         "playerOptions": [
           {
             "text": "Tell me more",
@@ -75,7 +75,7 @@ export default [
   {
     "id": 1,
     "name": "Getting the basics!",
-    "levelRequirement": 2,
+    "levelRequirement": 1,
     "completed": false,
     "requiredStoryLineId": 0,
     "playerChoices": [],
@@ -130,7 +130,7 @@ export default [
         ]
       },
       {
-        "npcMessage": "We need 2 Steel Scraps for our guards. Can you get them?",
+        "npcMessage": "We need 5 Steel Scraps for our guards. Can you get them?",
         "playerOptions": [
           {
             "text": "I have them ready right here.",
@@ -138,7 +138,7 @@ export default [
             "requiredResources": [
               {
                 "id": 2,
-                "amount": 2
+                "amount": 5
               }
             ],
             "giveReward": true
@@ -210,7 +210,7 @@ export default [
         ]
       },
       {
-        "npcMessage": "You've defeated the Goblin Raider! Our settlement is safe now. Here's your reward.",
+        "npcMessage": "You've defeated the Fly! Our settlement is safe now. Here's your reward.",
         "playerOptions": [
           {
             "text": "Thank you",
@@ -230,7 +230,7 @@ export default [
         },
         {
           "id": 2,
-          "amount": 1
+          "amount": 2
         }
       ],
       "weaponRewards": [],
@@ -246,7 +246,7 @@ export default [
   {
     "id": 4,
     "name": "The Scavenger's Dilemma",
-    "levelRequirement": 2,
+    "levelRequirement": 5,
     "completed": false,
     "requiredStoryLineId": 0,
     "playerChoices": [],
@@ -326,14 +326,14 @@ export default [
   },
   {
     "id": 5,
-    "name": "Simple Tasks",
-    "levelRequirement": 1,
+    "name": "Simple Delivery",
+    "levelRequirement": 3,
     "completed": false,
     "requiredStoryLineId": 1,
     "playerChoices": [],
     "steps": [
       {
-        "npcMessage": "Hey survivor! I've got a few simple tasks for you to do. Can you help me out?",
+        "npcMessage": "Hey survivor! I've got a simple delivery for you to do. Can you help me out?",
         "playerOptions": [
           {
             "text": "Sure, what do you need?",
@@ -392,7 +392,7 @@ export default [
       ],
       "armorRewards": [
         {
-          "id": 3
+          "id": 1
         }
       ],
       "aidRewards": [
@@ -406,9 +406,9 @@ export default [
   {
     "id": 6,
     "name": "THE GIANT RADBETTLE!",
-    "levelRequirement": 2,
+    "levelRequirement": 5,
     "completed": false,
-    "requiredStoryLineId": 1,
+    "requiredStoryLineId": 4,
     "playerChoices": [],
     "steps": [
       {
@@ -451,16 +451,33 @@ export default [
       "count": 1
     },
     "reward": {
-      "exp": 550,
-      "money": 100,
-      "resourceRewards": [],
+      "exp": 5500,
+      "money": 1000,
+      "resourceRewards": [
+        {
+          "id": 1,
+          "amount": 10
+        },
+        {
+          "id": 2,
+          "amount": 2
+        },
+        {
+          "id": 5,
+          "amount": 5
+        }
+      ],
       "weaponRewards": [],
       "armorRewards": [
         {
-          "id": 2
+          "id": 11
         }
       ],
-      "aidRewards": []
+      "aidRewards": [
+        {
+          "id": 2
+        }
+      ]
     },
     "alwaysGiveReward": false
   }

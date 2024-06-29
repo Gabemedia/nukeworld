@@ -52,7 +52,6 @@
     </div>
   </div>
 </template>
-
 <script>
 import QuestDialog from './controller/QuestDialog.vue';
 import { mapGetters, mapState, mapActions } from 'vuex';
@@ -91,8 +90,6 @@ export default {
   },
 };
 </script>
-
-
 <style scoped lang="scss">
 .story-log-container {
   position: relative;

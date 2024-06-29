@@ -123,9 +123,8 @@ export default {
   },
 };
 </script>
-  
-<style scoped>
 
+<style scoped>
 .modal {
   display: flex;
   align-items: center;

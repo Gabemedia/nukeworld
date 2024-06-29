@@ -97,13 +97,13 @@ export default {
   computed: {
     ...mapState(['character', 'items', 'armor', 'aid']),
     availableWeapons() {
-      return this.items.filter(item => item.price !== '-1');
+      return this.items.filter(item => item.price !== -1);
     },
     availableArmor() {
-      return this.armor.filter(item => item.price !== '-1');
+      return this.armor.filter(item => item.price !== -1);
     },
     availableAid() {
-      return this.aid.filter(item => item.price !== '-1');
+      return this.aid.filter(item => item.price !== -1);
     },
   },
   methods: {

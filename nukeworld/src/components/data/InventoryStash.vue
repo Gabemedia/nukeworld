@@ -8,7 +8,7 @@
             <span v-if="isEquipped(item.uuid)" class="active-equip"></span>
             <img :src="require(`@/assets/interface/icons/weapons/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="item.name" />
             <div class="item-actions">
-              <button v-if="item.price !== '-1'" class="btn btn-danger btn-sm position-absolute top-100 start-100 translate-middle py-0 px-1" @click.stop="sellWeapon(item.uuid)" :disabled="isEquipped(item.uuid)">
+              <button v-if="item.price !== -1" class="btn btn-danger btn-sm position-absolute top-100 start-100 translate-middle py-0 px-1" @click.stop="sellWeapon(item.uuid)" :disabled="isEquipped(item.uuid)">
                 <p class="card-text m-0">{{ Math.floor(item.price * 0.1) }}</p>
               </button>
             </div>
@@ -29,7 +29,7 @@
             <span v-if="isArmorEquipped(item.uuid)" class="active-equip"></span>
             <img :src="require(`@/assets/interface/icons/armor/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="item.name" />
             <div class="item-actions">
-              <button v-if="item.price !== '-1'" class="btn btn-danger btn-sm position-absolute top-100 start-100 translate-middle py-0 px-1" @click.stop="sellArmor(item.uuid)" :disabled="isArmorEquipped(item.uuid)">
+              <button v-if="item.price !== -1" class="btn btn-danger btn-sm position-absolute top-100 start-100 translate-middle py-0 px-1" @click.stop="sellArmor(item.uuid)" :disabled="isArmorEquipped(item.uuid)">
                 <p class="card-text m-0">{{ Math.floor(item.price * 0.1) }}</p>
               </button>
             </div>
@@ -109,6 +109,9 @@ export default {
     },
     hideItemInfo() {
       this.hoveredItem = null;
+    },
+    canSellItem(item) {
+      return item.price !== -1;
     },
   },
 };
