@@ -98,7 +98,7 @@ export default {
   background-size: cover;
   background-position: center;
   position: absolute;
-  z-index:999;
+  z-index:1;
   overflow-x: hidden!important;
   overflow-y: hidden!important;
   
