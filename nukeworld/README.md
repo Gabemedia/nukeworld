@@ -170,6 +170,7 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Added new maps
 - Added Backend to control all items, quests, story etc.
 - Added Game Security to Backend changes cant happen without new game build
+- Added Screen Resolution Support 1024 - 1280 - 1366 - 1440 - 1600 - 1920 - 2K - 4K 
 - Refactored Userlogin Component
 - Refactored New Story Styling
 - Refactored MapComponent

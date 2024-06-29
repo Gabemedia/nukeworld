@@ -1,12 +1,20 @@
 <template>
   <div class="game-world bg-primary">
     <GameHeader class="game-header"/>
-    <SideBar />
-    <QuickBar ref="quickBar" />
-    <div class="d-none d-md-block">
-    <QuickBarLeft ref="quickBarLeft" />
-    <QuickBarRight ref="quickBarRight" />
-    </div>
+      <div class="d-flex row">
+        <div class="d-none d-md-block d-flex row scaled-ui-top-left" :style="{ transform: `scale(${uiScale})` }">
+          <SideBar />
+        </div>
+      </div>
+      <div class="d-none d-md-block scaled-ui-bottom-center" :style="{ transform: `scale(${uiScale})` }">
+        <QuickBar ref="quickBar" />
+      </div>
+      <div class="d-none d-md-block scaled-ui-bottom-left" :style="{ transform: `scale(${uiScale})` }">
+        <QuickBarLeft ref="quickBarLeft" />
+      </div>
+      <div class="d-none d-md-block scaled-ui-bottom-right" :style="{ transform: `scale(${uiScale})` }">
+        <QuickBarRight ref="quickBarRight" />
+      </div>
     <div class="container mt-4">
       <div class="row justify-content-center">
         <div class="col-12">
@@ -45,10 +53,19 @@ export default {
   data() {
     return {
       showModal: false,
+      windowWidth: window.innerWidth,
     };
   },
   computed: {
     ...mapState(['character']),
+    uiScale() {
+      if (this.windowWidth <= 1200) return 0.8;
+      if (this.windowWidth <= 1440) return 1;
+      if (this.windowWidth <= 1920) return 1.2;
+      if (this.windowWidth <= 2880) return 1.5;
+      if (this.windowWidth <= 3840) return 1.8;
+      return 2;
+    },
   },
   watch: {
     'character.level': function (newLevel) {
@@ -59,11 +76,19 @@ export default {
         this.openModal();
       }
     },
+    windowWidth() {
+      this.updateUIScale();
+    },
   },
   mounted() {
     console.log('Logged in user:', this.character.name);
     this.updateMapVisibility(this.character.level);
-    this.checkCharacterHealth(); // Tilføj denne linje for at kontrollere spillerens health ved montering
+    this.checkCharacterHealth();
+    window.addEventListener('resize', this.handleResize);
+    this.updateUIScale();
+  },
+  beforeUnmount() {
+    window.removeEventListener('resize', this.handleResize);
   },
   methods: {
     updateMapVisibility(level) {
@@ -83,8 +108,42 @@ export default {
     },
     checkCharacterHealth() {
       if (this.character.health === 0) {
-        this.openModal(); // Vis "Game Over"-modalen, hvis spillerens health er 0
+        this.openModal();
       }
+    },
+    handleResize() {
+      this.windowWidth = window.innerWidth;
+    },
+    updateUIScale() {
+      const scaleClasses = [
+        'scaled-ui-top-left',
+        'scaled-ui-bottom-center',
+        'scaled-ui-bottom-left',
+        'scaled-ui-bottom-right'
+      ];
+      
+      scaleClasses.forEach(className => {
+        const element = document.querySelector(`.${className}`);
+        if (element) {
+          const scale = this.uiScale;
+          element.style.transform = `scale(${scale})`;
+          
+          switch (className) {
+            case 'scaled-ui-top-left':
+              element.style.transformOrigin = 'top left';
+              break;
+            case 'scaled-ui-bottom-center':
+              element.style.transformOrigin = 'bottom center';
+              break;
+            case 'scaled-ui-bottom-left':
+              element.style.transformOrigin = 'bottom left';
+              break;
+            case 'scaled-ui-bottom-right':
+              element.style.transformOrigin = 'bottom right';
+              break;
+          }
+        }
+      });
     },
   },
 };
@@ -93,18 +152,80 @@ export default {
 <style lang="scss">
 .game-world {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   background-image: url('../assets/bg.jpg');
   background-size: cover;
   background-position: center;
   position: absolute;
-  z-index:1;
-  overflow-x: hidden!important;
-  overflow-y: hidden!important;
-  
+  z-index: 1;
+  overflow-x: hidden !important;
+  overflow-y: hidden !important;
 }
+
 .game-header {
   position: absolute;
-  z-index:999;
+  z-index: 999;
+}
+
+.scaled-ui-top-left,
+.scaled-ui-bottom-center,
+.scaled-ui-bottom-left,
+.scaled-ui-bottom-right {
+  position: absolute;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.scaled-ui-top-left {
+  top: 0;
+  left: 0;
+}
+
+.scaled-ui-bottom-center {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.scaled-ui-bottom-left {
+  bottom: 0;
+  left: 0;
+}
+
+.scaled-ui-bottom-right {
+  bottom: 0;
+  right: 0;
+}
+
+.scaled-ui-top-left > *,
+.scaled-ui-bottom-center > *,
+.scaled-ui-bottom-left > *,
+.scaled-ui-bottom-right > * {
+  pointer-events: auto;
+}
+
+/* Responsive styles */
+@media (min-width: 1441px) {
+  .game-world {
+    font-size: 1.1rem;
+  }
+}
+
+@media (min-width: 1921px) {
+  .game-world {
+    font-size: 1.2rem;
+  }
+}
+
+@media (min-width: 2561px) {
+  .game-world {
+    font-size: 1.3rem;
+  }
+}
+
+@media (min-width: 3841px) {
+  .game-world {
+    font-size: 1.4rem;
+  }
 }
 </style>
