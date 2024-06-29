@@ -2,7 +2,7 @@
   <div class="map-container">
     <l-map ref="map" :zoom="zoom" :center="center" :options="mapOptions" @click="onMapClick">
       <l-image-overlay :url="mapImageUrl" :bounds="mapBounds" :opacity="1"></l-image-overlay>
-
+      <l-rectangle :bounds="playableArea" :color="'red'" :weight="2" :fill="false" />
       <l-marker
         v-for="quest in filteredQuests"
         :key="quest.id"
@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import { LMap, LMarker, LImageOverlay } from '@vue-leaflet/vue-leaflet';
+import { LMap, LMarker, LImageOverlay, LRectangle } from '@vue-leaflet/vue-leaflet';
 import { mapState, mapGetters, mapActions, mapMutations } from 'vuex';
 import QuestDetails from './controller/QuestDetails.vue';
 import SettlementModal from './SettlementModal.vue';
@@ -51,11 +51,15 @@ export default {
     LImageOverlay,
     QuestDetails,
     SettlementModal,
+    LRectangle,
   },
   data() {
     return {
       zoom: 0,
       center: [600, 960],
+      playableArea: [
+      [350, 300], [800, 1600]
+      ],
       mapImageUrl: require('@/assets/maps/nukemap1.webp'),
       mapBounds: [[230, 230], [930, 1700]],
       mapOptions: {
