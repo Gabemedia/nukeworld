@@ -59,7 +59,7 @@ export default [
       "resourceRewards": [
         {
           "id": 1,
-          "amount": 5
+          "amount": 25
         },
         {
           "id": 2,
@@ -130,7 +130,7 @@ export default [
         ]
       },
       {
-        "npcMessage": "We need 5 Steel Scraps for our guards. Can you get them?",
+        "npcMessage": "We need 50 Steel Scraps for our guards. Can you get them?",
         "playerOptions": [
           {
             "text": "I have them ready right here.",
@@ -138,7 +138,7 @@ export default [
             "requiredResources": [
               {
                 "id": 2,
-                "amount": 5
+                "amount": 50
               }
             ],
             "giveReward": true

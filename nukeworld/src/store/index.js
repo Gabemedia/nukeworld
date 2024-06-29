@@ -171,9 +171,12 @@ const mutations = {
         progress: 0,
         startTime: null,
         remainingTime: quest.duration,
+        lat: quest.lat,
+        lon: quest.lon
       };
     }
-  },
+  },  
+  
   setQuests(state, quests) {
     state.quests = quests;
   },
@@ -572,12 +575,20 @@ const actions = {
   resetQuests({ state, commit }) {
     state.quests.forEach((quest) => {
       if (quest.state === 'completed') {
-        commit('resetQuest', quest);
+        const playableArea = state.character.level < 5 ? [
+          [270, 270], [850, 1650],
+        ] : [
+          [270, 270], [850, 1650],
+        ];
+        const lat = Math.random() * (playableArea[1][0] - playableArea[0][0]) + playableArea[0][0];
+        const lon = Math.random() * (playableArea[1][1] - playableArea[0][1]) + playableArea[0][1];
+        
+        commit('resetQuest', { ...quest, lat, lon });
       }
     });
     localStorage.setItem('quests', JSON.stringify(state.quests));
   },
-  
+    
 
   resetCharacter({ commit, state, dispatch }) {
     commit('updateCharacter', {
