@@ -1,7 +1,7 @@
 <template>
   <div class="game-world bg-primary">
-      <GameHeader class="game-header"/>
-      <SideBar />
+    <GameHeader class="game-header"/>
+    <SideBar />
     <div class="scaled-ui-bottom-center" :style="{ transform: `scale(${uiScale})` }">
       <QuickBar ref="quickBar" />
     </div>
@@ -16,8 +16,7 @@
     <div class="container mt-4">
       <div class="row justify-content-center">
         <div class="col-12">
-          <MapComponent v-if="character.level < 2" ref="mapComponent" class="flex-grow-1 "/> 
-          <MapComponent2 v-else-if="character.level >= 2 && character.level <= 100" ref="mapComponent2" class="flex-grow-1 "/>
+          <MapComponent ref="mapComponent" class="flex-grow-1" :mapImageUrl="mapImageUrl"/> 
         </div>
       </div>
     </div>
@@ -29,7 +28,6 @@
 import GameHeader from './GameHeader.vue';
 import SideBar from './SideBar.vue';
 import MapComponent from './data/MapComponent.vue';
-import MapComponent2 from './data/MapComponent2.vue';
 import QuickBar from './data/QuickBar.vue';
 import QuickBarLeft from './data/QuickBarLeft.vue';
 import QuickBarRight from './data/QuickBarRight.vue';
@@ -42,7 +40,6 @@ export default {
     GameHeader,
     SideBar,
     MapComponent,
-    MapComponent2,
     GameOver,
     QuickBar,
     QuickBarLeft,
@@ -64,11 +61,13 @@ export default {
       if (this.windowWidth <= 3840) return 1.8;
       return 2;
     },
+    mapImageUrl() {
+      return this.character.level >= 5 
+        ? require('@/assets/maps/nukemap2.webp')
+        : require('@/assets/maps/nukemap1.webp');
+    },
   },
   watch: {
-    'character.level': function (newLevel) {
-      this.updateMapVisibility(newLevel);
-    },
     'character.health': function (newHealth) {
       if (newHealth === 0) {
         this.openModal();
@@ -80,7 +79,6 @@ export default {
   },
   mounted() {
     console.log('Logged in user:', this.character.name);
-    this.updateMapVisibility(this.character.level);
     this.checkCharacterHealth();
     window.addEventListener('resize', this.handleResize);
     this.updateUIScale();
@@ -89,15 +87,6 @@ export default {
     window.removeEventListener('resize', this.handleResize);
   },
   methods: {
-    updateMapVisibility(level) {
-      this.$nextTick(() => {
-        if (level < 5 && this.$refs.mapComponent) {
-          this.$refs.mapComponent.updateMapSize();
-        } else if (level >= 5 && level <= 100 && this.$refs.mapComponent2) {
-          this.$refs.mapComponent2.updateMapSize();
-        }
-      });
-    },
     openModal() {
       this.showModal = true;
     },

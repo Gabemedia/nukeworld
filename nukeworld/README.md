@@ -189,6 +189,35 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Fixed Settlement button issue
 
 
+### Version 0.1.5.5 (2024-06-30)
+- Added fullscreen mode to the GameWorld component
+- Added methods to handle switching between normal view and fullscreen
+- Updated CSS to support fullscreen display
+- Improved responsiveness for different screen sizes in fullscreen mode
+- Optimized scaling of UI elements in fullscreen mode
+- Added event listeners to handle changes in fullscreen state
+- Enhanced user experience by providing the option to maximize the game area
+- Increased the size of map markers in MapComponent.vue for better visibility
+- Adjusted quest markers to 36x48 pixels (20% larger than original)
+- Updated settlement marker to 36x54 pixels to maintain proportions
+- Fine-tuned marker anchor points to ensure correct placement on the map
+- Removed MapComponent2.vue and consolidated map functionality into a single MapComponent
+- Updated GameWorld.vue to use a single MapComponent with dynamic mapImageUrl based on player level
+- Optimized codebase by removing unused methods and watches in GameWorld.vue
+- Improved handling of map switching based on player level through computed properties
+- Ensured preservation of all existing functionality and responsive design
+- Simplified logic for displaying different maps based on player level
+- Updated MapComponent.vue to display and handle quests in "in-progress" state
+- Added new custom icon for "in-progress" quests on the map
+- Modified filteredQuests computed property to include "in-progress" quests
+- Updated getQuestIcon method to return the correct icon for "in-progress" quests
+- Adjusted CSS to ensure consistent styling of all quest markers, including the new "in-progress" marker
+- Improved responsiveness and scalability of quest markers across different screen sizes
+
+
+
+
+
 
 ## Getting Started
 To get started with NukeWorld, follow these steps:

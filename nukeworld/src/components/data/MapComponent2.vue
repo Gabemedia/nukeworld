@@ -73,8 +73,8 @@ export default {
       },
       settlementIcon: L.icon({
         iconUrl: require('@/assets/interface/icons/settlement_marker.png'),
-        iconSize: [30, 45],
-        iconAnchor: [15, 45],
+        iconSize: [40, 55],
+        iconAnchor: [40, 55],
       }),
       showModal: false,
       selectedQuest: null,
@@ -98,7 +98,7 @@ export default {
         !quest.userCreated && 
         quest.lat && 
         quest.lon && 
-        (quest.state === 'not-started' || quest.state === 'ready-to-claim') &&
+        (quest.state === 'not-started' || quest.state === 'ready-to-claim' || quest.state === 'in-progress') &&
         quest.levelRequirement <= this.character.level
       );
     },
@@ -184,6 +184,13 @@ export default {
           iconAnchor: [12, 12],
           className: 'claim-marker',
         });
+      } else if (quest.state === 'in-progress') {
+        return L.icon({
+          iconUrl: require('@/assets/interface/icons/in-progress-quest.png'),
+          iconSize: [30, 40],
+          iconAnchor: [12, 12],
+          className: 'in-progress-marker',
+        });
       }
     },
     openModal(item) {
@@ -205,7 +212,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped>
 @import url(../../assets/MapPopup.css);
@@ -277,8 +283,7 @@ export default {
   line-height: 1.5;
 }
 
-/* Tilføjet nye styles for at forbedre læsbarheden på større skærme */
-.quest-marker, .claim-marker {
+.quest-marker, .claim-marker, .in-progress-marker {
   filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
 }
 
@@ -290,7 +295,6 @@ export default {
   font-size: 1rem;
 }
 
-/* Tilføjet ekstra styles for bedre læsbarhed på større skærme */
 .leaflet-popup-content-wrapper {
   padding: 1rem;
 }
@@ -313,7 +317,7 @@ export default {
 
 /* Responsive styles */
 @media (min-width: 1441px) {
-  .quest-marker, .claim-marker {
+  .quest-marker, .claim-marker, .in-progress-marker {
     filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5));
   }
   
@@ -337,7 +341,7 @@ export default {
 }
 
 @media (min-width: 1921px) {
-  .quest-marker, .claim-marker {
+  .quest-marker, .claim-marker, .in-progress-marker {
     filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.5));
   }
   
@@ -361,7 +365,7 @@ export default {
 }
 
 @media (min-width: 2561px) {
-  .quest-marker, .claim-marker {
+  .quest-marker, .claim-marker, .in-progress-marker {
     filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
   }
   
@@ -385,7 +389,7 @@ export default {
 }
 
 @media (min-width: 3841px) {
-  .quest-marker, .claim-marker {
+  .quest-marker, .claim-marker, .in-progress-marker {
     filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.5));
   }
   

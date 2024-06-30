@@ -53,13 +53,18 @@ export default {
     SettlementModal,
     LRectangle,
   },
+  props: {
+    mapImageUrl: {
+      type: String,
+      required: true
+    }
+  },
   data() {
     return {
       center: [600, 960],
       playableArea: [
         [350, 300], [800, 1600]
       ],
-      mapImageUrl: require('@/assets/maps/nukemap1.webp'),
       mapBounds: [[230, 230], [930, 1700]],
       mapOptions: {
         zoomControl: false,
@@ -73,8 +78,8 @@ export default {
       },
       settlementIcon: L.icon({
         iconUrl: require('@/assets/interface/icons/settlement_marker.png'),
-        iconSize: [30, 45],
-        iconAnchor: [15, 45],
+        iconSize: [36, 54],
+        iconAnchor: [18, 54],
       }),
       showModal: false,
       selectedQuest: null,
@@ -98,7 +103,7 @@ export default {
         !quest.userCreated && 
         quest.lat && 
         quest.lon && 
-        (quest.state === 'not-started' || quest.state === 'ready-to-claim') &&
+        (quest.state === 'not-started' || quest.state === 'ready-to-claim' || quest.state === 'in-progress') &&
         quest.levelRequirement <= this.character.level
       );
     },
@@ -110,6 +115,11 @@ export default {
       });
     },
     windowHeight() {
+      this.$nextTick(() => {
+        this.updateMapSize();
+      });
+    },
+    mapImageUrl() {
       this.$nextTick(() => {
         this.updateMapSize();
       });
@@ -173,16 +183,23 @@ export default {
       if (quest.state === 'not-started') {
         return L.icon({
           iconUrl: require('@/assets/interface/icons/marker.png'),
-          iconSize: [30, 40],
-          iconAnchor: [12, 12],
+          iconSize: [36, 48],
+          iconAnchor: [18, 48],
           className: 'quest-marker',
         });
       } else if (quest.state === 'ready-to-claim') {
         return L.icon({
           iconUrl: require('@/assets/interface/icons/claim-quest.png'),
-          iconSize: [30, 40],
-          iconAnchor: [12, 12],
+          iconSize: [36, 48],
+          iconAnchor: [18, 48],
           className: 'claim-marker',
+        });
+      } else if (quest.state === 'in-progress') {
+        return L.icon({
+          iconUrl: require('@/assets/interface/icons/in-progress-quest.png'),
+          iconSize: [36, 48],
+          iconAnchor: [18, 48],
+          className: 'in-progress-marker',
         });
       }
     },
@@ -205,7 +222,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped>
 @import url(../../assets/MapPopup.css);
@@ -277,8 +293,7 @@ export default {
   line-height: 1.5;
 }
 
-/* Tilføjet nye styles for at forbedre læsbarheden på større skærme */
-.quest-marker, .claim-marker {
+.quest-marker, .claim-marker, .in-progress-marker {
   filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
 }
 
@@ -290,7 +305,6 @@ export default {
   font-size: 1rem;
 }
 
-/* Tilføjet ekstra styles for bedre læsbarhed på større skærme */
 .leaflet-popup-content-wrapper {
   padding: 1rem;
 }
@@ -313,7 +327,7 @@ export default {
 
 /* Responsive styles */
 @media (min-width: 1441px) {
-  .quest-marker, .claim-marker {
+  .quest-marker, .claim-marker, .in-progress-marker {
     filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5));
   }
   
@@ -337,7 +351,7 @@ export default {
 }
 
 @media (min-width: 1921px) {
-  .quest-marker, .claim-marker {
+  .quest-marker, .claim-marker, .in-progress-marker {
     filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.5));
   }
   
@@ -361,7 +375,7 @@ export default {
 }
 
 @media (min-width: 2561px) {
-  .quest-marker, .claim-marker {
+  .quest-marker, .claim-marker, .in-progress-marker {
     filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
   }
   
@@ -385,7 +399,7 @@ export default {
 }
 
 @media (min-width: 3841px) {
-  .quest-marker, .claim-marker {
+  .quest-marker, .claim-marker, .in-progress-marker {
     filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.5));
   }
   

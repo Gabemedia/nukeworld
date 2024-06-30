@@ -1,6 +1,6 @@
 <template>
   <div id="app" class="fullscreen">
-    <nav class="d-none navbar navbar-expand-lg m-0 p-0 navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg m-0 p-0 navbar-dark bg-dark">
       <div class="container-fluid">
         <router-link class="navbar-brand" to="/">Admin Panel</router-link>
         <div class="menu-icon" @click="navOpen = !navOpen">
