@@ -62,9 +62,15 @@ export default {
       return 2;
     },
     mapImageUrl() {
-      return this.character.level >= 5 
-        ? require('@/assets/maps/nukemap2.webp')
-        : require('@/assets/maps/nukemap1.webp');
+      if (this.character.level < 5) {
+        return require('@/assets/maps/nukemap1.webp');
+      } else if (this.character.level >= 5 && this.character.level < 10) {
+        return require('@/assets/maps/nukemap2.webp');
+      } else if (this.character.level >= 10 && this.character.level < 20) {
+        return require('@/assets/maps/nukemap3.webp');
+      } else {
+        return require('@/assets/maps/nukemap4.webp');
+      }
     },
   },
   watch: {
