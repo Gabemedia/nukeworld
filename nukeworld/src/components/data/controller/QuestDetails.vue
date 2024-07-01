@@ -1,53 +1,53 @@
 <template>
-  <div class="quest-details" v-if="quest">
+  <div class="quest-details" v-if="localQuest">
     <div class="quest-header" :style="{
-      backgroundImage: `url(${require(`@/assets/quests/bg/${quest.id}.jpg`)})`,
+      backgroundImage: `url(${require(`@/assets/quests/bg/${localQuest.id}.jpg`)})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center center',
       backgroundRepeat: 'no-repeat'
     }">
-      <h2 class="quest-title">{{ quest.name }}</h2>
+      <h2 class="quest-title">{{ localQuest.name }}</h2>
     </div>
     <div class="quest-content">
-      <p class="quest-description">{{ quest.desc }}</p>
+      <p class="quest-description">{{ localQuest.desc }}</p>
       <div class="quest-info">
         <div class="quest-rewards">
           <div class="reward">
             <img :src="require(`@/assets/interface/icons/exp.png`)" title="Exp">
-            <span>{{ quest.exp }}</span>
+            <span>{{ localQuest.exp }}</span>
           </div>
           <div class="reward">
             <img :src="require(`@/assets/interface/icons/money.png`)" title="Money">
-            <span>{{ quest.money }}</span>
+            <span>{{ localQuest.money }}</span>
           </div>
-          <div v-if="hasWeaponReward(quest)" class="reward">
-            <img :src="require('@/assets/interface/icons/gun.png')" :title="'Weapon Reward Chance: ' + (quest.rewardChance * 100) + '%'">
-            <span>{{ quest.rewardChance * 100 }}%</span>
+          <div v-if="hasWeaponReward(localQuest)" class="reward">
+            <img :src="require('@/assets/interface/icons/gun.png')" :title="'Weapon Reward Chance: ' + (localQuest.rewardChance * 100) + '%'">
+            <span>{{ localQuest.rewardChance * 100 }}%</span>
           </div>
-          <div v-if="hasArmorReward(quest)" class="reward">
-            <img :src="require('@/assets/interface/icons/shield.png')" :title="'Armor Reward Chance: ' + (quest.armorRewardChance * 100) + '%'">
-            <span>{{ quest.armorRewardChance * 100 }}%</span>
+          <div v-if="hasArmorReward(localQuest)" class="reward">
+            <img :src="require('@/assets/interface/icons/shield.png')" :title="'Armor Reward Chance: ' + (localQuest.armorRewardChance * 100) + '%'">
+            <span>{{ localQuest.armorRewardChance * 100 }}%</span>
           </div>
         </div>
         <div class="quest-duration">
-          <span>Duration: {{ getQuestDuration(quest) }}</span>
+          <span>Duration: {{ getQuestDuration(localQuest) }}</span>
         </div>
       </div>
-      <div v-if="quest.state === 'in-progress'" class="quest-progress">
-        <div class="progress-bar" :style="{ width: quest.progress + '%' }"></div>
-        <span class="progress-text">{{ formatTime(quest.remainingTime) }}</span>
+      <div v-if="localQuest.state === 'in-progress'" class="quest-progress">
+        <div class="progress-bar" :style="{ width: localQuest.progress + '%' }"></div>
+        <span class="progress-text">{{ formatTime(localQuest.remainingTime) }}</span>
       </div>
       <div class="quest-action">
         <button 
-          class="btn-action" 
-          :disabled="isButtonDisabled(quest)" 
-          @click="handleQuestAction(quest)"
-        >
-          {{ getButtonText(quest) }}
-        </button>
+            class="btn btn-action" 
+            :disabled="isButtonDisabled(localQuest)" 
+            @click="handleQuestAction(localQuest)"
+          >
+            {{ getButtonText(localQuest) }}
+          </button>
       </div>
-      <div v-if="character.level < quest.levelRequirement" class="quest-level-requirement">
-        Level {{ quest.levelRequirement }} required to start this quest.
+      <div v-if="character.level < localQuest.levelRequirement" class="quest-level-requirement">
+        Level {{ localQuest.levelRequirement }} required to start this quest.
       </div>
     </div>
   </div>
@@ -57,8 +57,7 @@
 </template>
 
 <script>
-import { reactive } from 'vue';
-import { mapState, mapActions, mapMutations } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 import { toast } from "vue3-toastify";
 import confetti from 'canvas-confetti';
 
@@ -71,16 +70,22 @@ export default {
   },
   data() {
     return {
-      popupTitle: '',
-      popupDesc: '',
+      localQuest: null,
     };
   },
   computed: {
-    ...mapState(['quests', 'character']),
+    ...mapState(['character']),
+  },
+  watch: {
+    quest: {
+      immediate: true,
+      handler(newQuest) {
+        this.localQuest = { ...newQuest };
+      },
+    },
   },
   methods: {
-    ...mapActions(['increaseExp', 'increaseMoney', 'handleQuest', 'claimRewards', 'clearQuests']),
-    ...mapMutations(['completeQuest', 'setQuests', 'updateQuest']),
+    ...mapActions(['handleQuest', 'claimRewards']),
     isButtonDisabled(quest) {
       if (quest.state === 'not-started') {
         return this.character.level < quest.levelRequirement;
@@ -98,10 +103,10 @@ export default {
     hasArmorReward(quest) {
       return quest.armorReward && quest.armorReward.length > 0;
     },
-    handleQuestAction(quest) {
+    async handleQuestAction(quest) {
       if (quest.state === 'not-started') {
-        this.handleQuest(quest);
-        this.startQuestProgress(quest);
+        await this.handleQuest(quest);
+        this.localQuest = { ...quest, state: 'in-progress' };
         toast.success(`<strong>${quest.name} started!</strong>`, {
           autoClose: 5000,
           toastClassName: 'quest-toast-container',
@@ -109,8 +114,48 @@ export default {
           dangerouslyHTMLString: true,
         });
       } else if (quest.state === 'ready-to-claim' && !quest.claimed) {
-        this.claimRewardsAction(quest);
+        await this.claimRewardsAction(quest);
       }
+      this.$emit('quest-updated', this.localQuest);
+    },
+    async claimRewardsAction(quest) {
+      const obtainedReward = await this.claimRewards(quest);
+      this.localQuest = { ...quest, state: 'completed', claimed: true };
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 },
+        zIndex: 9999,
+      });
+      let rewardMessage = `
+        <div class="d-flex flex-column align-items-start justify-content-start h-100">
+        <p class="text-left fw-bold  mb-1">${quest.name} completed!</p>
+        <p class="text-left fw-semi mb-2">You earned:</p>
+        <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
+          <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+            <img src="${require('@/assets/interface/icons/exp.png')}" title="Exp" style="width: 20px;" class="me-2">
+            <span>${quest.exp} exp</span>
+          </div>
+          <div class="d-flex align-items-start justify-content-start reward-info mb-1">
+            <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
+            <span>${quest.money} money</span>
+          </div>
+        </div>
+        `;
+      if (obtainedReward) {
+        rewardMessage += '<div class="d-flex align-items-start justify-content-start reward-info mb-1"><img src="' + require('@/assets/interface/icons/reward.png') + '" title="Reward" style="width: 20px;" class="me-2">';
+        rewardMessage += `<span>${obtainedReward.name}</span>`;
+        rewardMessage += '</div>';
+      }
+      rewardMessage += '</div></div>';
+      toast.success(rewardMessage, {
+        dangerouslyHTMLString: true,
+        autoClose: 10000,
+        hideProgressBar: false,
+        icon: false,
+        toastClassName: 'quest-toast-container',
+        bodyClassName: 'quest-toast-body quest-toast',
+      });
     },
     getButtonText(quest) {
       if (quest.state === 'not-started') {
@@ -127,59 +172,9 @@ export default {
       const duration = quest.duration / 1000;
       if (duration >= 60) {
         const minutes = Math.floor(duration / 60);
-        return `${minutes} min`;
+        return `${minutes}m`;
       } else {
-        return `${duration} sec`;
-      }
-    },
-    async claimRewardsAction(quest) {
-      const reactiveQuest = reactive(quest);
-      if (!reactiveQuest.claimed && reactiveQuest.state === 'ready-to-claim') {
-        const obtainedReward = await this.claimRewards(reactiveQuest);
-        console.log('Obtained reward in component:', obtainedReward);
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 },
-          zIndex: 9999,
-        });
-
-        let rewardMessage = `
-        <div class="d-flex flex-column align-items-start justify-content-start h-100">
-          <p class="text-left fw-bold mb-1">${reactiveQuest.name} completed!</p>
-          <p class="text-left fw-semi mb-2">You earned:</p>
-          <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
-            <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-              <img src="${require('@/assets/interface/icons/exp.png')}" title="Exp" style="width: 20px;" class="me-2">
-              <span>${reactiveQuest.exp} exp</span>
-            </div>
-            <div class="d-flex align-items-start justify-content-start reward-info mb-1">
-              <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
-              <span>${reactiveQuest.money} money</span>
-            </div>
-          </div>
-        `;
-
-        if (obtainedReward) {
-          rewardMessage += '<div class="d-flex align-items-start justify-content-start reward-info mb-1"><img src="' + require('@/assets/interface/icons/reward.png') + '" title="Reward" style="width: 20px;" class="me-2">';
-          rewardMessage += `<span>${obtainedReward.name}</span>`;
-          rewardMessage += '</div>';
-        }
-
-        rewardMessage += '</div></div>';
-
-        toast.success(rewardMessage, {
-          dangerouslyHTMLString: true,
-          autoClose: 10000,
-          hideProgressBar: false,
-          icon: false,
-          toastClassName: 'quest-toast-container',
-          bodyClassName: 'quest-toast-body quest-toast',
-        });
-
-        reactiveQuest.claimed = true;
-        reactiveQuest.state = 'completed';
-        this.saveQuests();
+        return `${duration}s`;
       }
     },
     formatTime(milliseconds) {
@@ -191,80 +186,11 @@ export default {
       const seconds = totalSeconds % 60;
       return `${minutes} min ${seconds} sec`;
     },
-    startQuestProgress(quest) {
-      const reactiveQuest = reactive(quest);
-      reactiveQuest.state = 'in-progress';
-      reactiveQuest.claimed = false;
-      reactiveQuest.startTime = Date.now();
-      reactiveQuest.remainingTime = reactiveQuest.duration;
-      reactiveQuest.progress = 0;
-
-      reactiveQuest.intervalId = setInterval(() => {
-        if (reactiveQuest.remainingTime > 0) {
-          reactiveQuest.remainingTime -= 1000;
-          const elapsedTime = Date.now() - reactiveQuest.startTime;
-          const progress = Math.min((elapsedTime / reactiveQuest.duration) * 100, 100);
-          reactiveQuest.progress = progress;
-        } else {
-          clearInterval(reactiveQuest.intervalId);
-          if (reactiveQuest.state !== 'ready-to-claim') {
-            reactiveQuest.state = 'ready-to-claim';
-            reactiveQuest.progress = 100;
-            setTimeout(() => {
-              toast.success(`<strong>${reactiveQuest.name} completed!</strong> <br>Claim your rewards!`, {
-                autoClose: 5000,
-                toastClassName: 'quest-toast-container',
-                bodyClassName: 'quest-toast-body',
-                dangerouslyHTMLString: true,
-              });
-            }, 0);
-          }
-        }
-        this.saveQuests();
-      }, 1000);
-    },
-    updateQuestData() {
-      if (this.quest) {
-        const updatedQuest = this.$store.state.quests.find(q => q.id === this.quest.id);
-        if (updatedQuest) {
-          Object.assign(this.quest, updatedQuest);
-        }
-      }
-    },
-    saveQuests() {
-      localStorage.setItem('quests', JSON.stringify(this.quests));
-    },
-    getRewardItemName(rewardId) {
-      const rewardItem = this.$store.state.items.find(item => item.id === rewardId);
-      return rewardItem ? rewardItem.name : '';
-    },
-  },
-  mounted() {
-    window.addEventListener('beforeunload', this.saveQuests);
-  },
-  beforeUnmount() {
-    this.quests.forEach(quest => {
-      if (quest.intervalId) {
-        clearInterval(quest.intervalId);
-      }
-    });
-    window.removeEventListener('beforeunload', this.saveQuests);
-  },
-  created() {
-    if (this.quest.state === 'in-progress') {
-      this.startQuestProgress(this.quest);
-    }
-  },
-  watch: {
-    '$store.state.quests': {
-      handler() {
-        this.updateQuestData();
-      },
-      deep: true,
-    },
   },
 };
 </script>
+
+
 
 <style scoped lang="scss">
 .quest-details {

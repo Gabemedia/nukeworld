@@ -27,7 +27,12 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-body">
-            <QuestDetails v-if="selectedQuest" :quest="selectedQuest"></QuestDetails>
+            <QuestDetails 
+              v-if="selectedQuest" 
+              :quest="selectedQuest" 
+              @quest-updated="onQuestUpdated"
+              :key="selectedQuest.id + selectedQuest.state"
+            ></QuestDetails>
             <div v-if="selectedMarker">{{ selectedMarker.label }}</div>
           </div>
         </div>
@@ -36,6 +41,7 @@
     <SettlementModal ref="settlementModal" />
   </div>
 </template>
+
 
 <script>
 import { LMap, LMarker, LImageOverlay, LRectangle } from '@vue-leaflet/vue-leaflet';
@@ -124,6 +130,18 @@ export default {
         this.updateMapSize();
       });
     },
+    quests: {
+      handler(newQuests) {
+        if (this.selectedQuest) {
+          const updatedQuest = newQuests.find(q => q.id === this.selectedQuest.id);
+          if (updatedQuest) {
+            this.selectedQuest = { ...updatedQuest };
+          }
+        }
+        this.$forceUpdate();
+      },
+      deep: true
+    }
   },
   created() {
     this.updateDragging();
@@ -146,7 +164,7 @@ export default {
     window.removeEventListener('resize', this.handleResize);
   },
   methods: {
-    ...mapActions(['updateSettlementMarker']),
+    ...mapActions(['updateSettlementMarker', 'updateQuest']),
     ...mapMutations(['setSettlementModalOpen']),
     updateMapSize() {
       const map = this.$refs.map?.$mapObject;
@@ -205,7 +223,7 @@ export default {
     },
     openModal(item) {
       if (Object.prototype.hasOwnProperty.call(item, 'name')) {
-        this.selectedQuest = item;
+        this.selectedQuest = { ...item };
         if (item.state === 'completed' && !item.claimed) {
           this.selectedQuest.state = 'completed';
         }
@@ -219,9 +237,14 @@ export default {
       this.selectedQuest = null;
       this.selectedMarker = null;
     },
+    onQuestUpdated(updatedQuest) {
+      this.updateQuest(updatedQuest);
+      this.selectedQuest = { ...updatedQuest };
+    },
   },
 };
 </script>
+
 
 <style scoped>
 @import url(../../assets/MapPopup.css);
