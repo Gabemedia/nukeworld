@@ -70,7 +70,7 @@ export default {
   },
   methods: {
     ...mapActions(['handleQuest', 'claimRewards']),
-    ...mapMutations(['updateQuest']),
+    ...mapMutations(['completeQuest', 'updateQuest']),
     isButtonDisabled(quest) {
       if (quest.state === 'not-started') {
         return this.character.level < quest.levelRequirement;
@@ -90,7 +90,7 @@ export default {
     },
     handleQuestAction(quest) {
       if (quest.state === 'not-started') {
-        this.handleQuest(quest);
+        this.$store.dispatch('handleQuest', quest);
         toast.success(`<strong>${quest.name} started!</strong>`, {
           autoClose: 5000,
           toastClassName: 'quest-toast-container',
@@ -138,7 +138,9 @@ export default {
         toastClassName: 'quest-toast-container',
         bodyClassName: 'quest-toast-body quest-toast',
       });
-      this.updateQuest({ ...quest, claimed: true, state: 'completed' });
+      quest.claimed = true;
+      quest.state = 'completed';
+      this.saveQuests();
     },
     getButtonText(quest) {
       if (quest.state === 'not-started') {
@@ -169,14 +171,60 @@ export default {
       const seconds = totalSeconds % 60;
       return `${minutes} min ${seconds} sec`;
     },
+    startQuestProgress(quest) {
+      quest.state = 'in-progress';
+      quest.claimed = false;
+      quest.startTime = Date.now();
+      quest.remainingTime = quest.duration;
+      quest.progress = 0;
+      quest.intervalId = setInterval(() => {
+        if (quest.remainingTime > 0) {
+          quest.remainingTime -= 1000;
+          const elapsedTime = Date.now() - quest.startTime;
+          const progress = Math.min((elapsedTime / quest.duration) * 100, 100);
+          const questIndex = this.quests.findIndex(q => q.id === quest.id);
+          if (questIndex !== -1) {
+            this.$store.commit('updateQuestProgress', { questIndex, progress, remainingTime: quest.remainingTime });
+            quest.progress = progress;
+          }
+        } else {
+          clearInterval(quest.intervalId);
+          if (quest.state !== 'ready-to-claim') {
+            quest.state = 'ready-to-claim';
+            quest.progress = 100;
+            setTimeout(() => {
+              toast.success(`<strong>${quest.name} completed!</strong> <br>Claim your rewards!`, {
+                autoClose: 5000,
+                toastClassName: 'quest-toast-container',
+                bodyClassName: 'quest-toast-body',
+                dangerouslyHTMLString: true,
+              });
+            }, 0);
+          }
+        }
+        this.$store.dispatch('startQuestProgress', quest);
+        this.saveQuests();
+      }, 1000);
+    },
+    updateLocalQuests() {
+      this.quests.forEach((quest, index) => {
+        const updatedQuest = this.$store.state.quests.find(q => q.id === quest.id);
+        if (updatedQuest) {
+          Object.assign(this.quests[index], updatedQuest);
+        }
+      });
+    },
+    saveQuests() {
+      localStorage.setItem('quests', JSON.stringify(this.quests));
+    },
   },
   watch: {
-    quests: {
+    '$store.state.quests': {
       handler() {
-        this.$forceUpdate();
+        this.updateLocalQuests();
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
 };
 </script>
