@@ -8,12 +8,12 @@
         <div class="conversation-box npc-box">
           <img class="sidebar-icon" :src="require(`@/assets/interface/icons/encounter.png`)" title="Todd Wimsey">
           <div class="message-box npc-message">
-            {{ currentStoryStep.npcMessage }}
+            {{ currentStoryStep.npcMessage.replace(/{PlayerName}/g, $store.state.character.name) }}
           </div>
         </div>
         <div class="conversation-box player-box">
           <div class="message-box player-message">
-            <button @click="selectOption(option)" class="btn btn-md fw-bold btn-outline-light m-1" v-for="option in currentStoryStep.playerOptions" :key="option.text">
+            <button @click="selectOption(option)" class="btn btn-lg fw-bold btn-outline-light m-1" v-for="option in currentStoryStep.playerOptions" :key="option.text">
               <template v-if="option.requiredResources">
                 <span v-for="resource in option.requiredResources" :key="resource.id" class="me-1">
                   <img :src="getResourceIcon(resource.id)" :alt="getResourceName(resource.id)" class="resource-icon" />
@@ -22,7 +22,7 @@
               </template>
               {{ option.text }}
             </button>
-            <button @click="cancelStory" class="btn btn-md btn-danger fw-bold btn-outline-light m-1">
+            <button @click="cancelStory" class="btn btn-lg btn-danger fw-bold btn-outline-light m-1">
               Go back
             </button>
           </div>
@@ -237,8 +237,8 @@ export default {
 
   
   .sidebar-icon {
-    width: 35px;
-    height: 35px;
+    width: 50px;
+    height: 50px;
     margin: 0 10px;
   }
   
@@ -252,13 +252,19 @@ export default {
   .npc-message {
     margin-right: 15px;
     text-align: left;
+    font-size: 1rem;
     font-weight: 600;
   }
   
   .player-message {
     margin-left: 15px;
     text-align: right;
+    font-size: 1rem;
     font-weight: 600;
+  }
+
+  .player-message .btn{
+    font-size: 0.7rem;
   }
 
   .resource-icon {
@@ -269,23 +275,23 @@ export default {
   }
 
   .storyline-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1rem;
-}
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
 
-.storyline-card {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 5px;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+  .storyline-card {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 
-  &:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.2);
   }
 }
 

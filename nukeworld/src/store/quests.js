@@ -1,11 +1,11 @@
 export default [
   {
     "id": 1,
-    "name": "Tunnel Access",
-    "desc": "We need to gain Access to the Tunnels to get to the other side.",
+    "name": "Settlement Supplies",
+    "desc": "Help moving the Settlement Supplies from the old underground tunnels.",
     "exp": 1200,
     "money": 250,
-    "duration": 25000,
+    "duration": 30000,
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -19,25 +19,25 @@ export default [
       2,
       3
     ],
-    "rewardChance": 0.25,
+    "rewardChance": 0.2,
     "armorReward": [
       1,
       1,
       1,
       2
     ],
-    "armorRewardChance": 0.25,
-    "levelRequirement": 1,
-    "lat": 621.4083837854918,
-    "lon": 1546.6388595925184
+    "armorRewardChance": 0.2,
+    "levelRequirement": 2,
+    "lat": 640.9052378575283,
+    "lon": 1284.1204383065283
   },
   {
     "id": 2,
-    "name": "Gateway to the City",
-    "desc": "We need to find a way to get in the City.",
+    "name": "Search for Settlement Location",
+    "desc": "This looks like a fine area to place our Settlement, Lets search the area first.",
     "exp": 1500,
     "money": 250,
-    "duration": 52000,
+    "duration": 120000,
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -45,7 +45,8 @@ export default [
     "reward": [
       3,
       1,
-      1
+      1,
+      2
     ],
     "rewardChance": 0.1,
     "armorReward": [
@@ -57,17 +58,17 @@ export default [
       3
     ],
     "armorRewardChance": 0.1,
-    "levelRequirement": 1,
-    "lat": 284.54495876488113,
-    "lon": 749.7999583284939
+    "levelRequirement": 3,
+    "lat": 783.8325867020155,
+    "lon": 1582.5651447616115
   },
   {
     "id": 3,
     "name": "Clock Tower",
-    "desc": "Seek shelter for the night in the Clock Tower.",
-    "exp": 2200,
-    "money": 750,
-    "duration": 70000,
+    "desc": "Seek shelter for the night near Clock Tower.",
+    "exp": 2000,
+    "money": 250,
+    "duration": 300000,
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -76,27 +77,30 @@ export default [
       2,
       2,
       2,
-      3
+      3,
+      4,
+      1
     ],
-    "rewardChance": 0.01,
+    "rewardChance": 0.05,
     "armorReward": [
       1,
       2,
       2,
-      3
+      3,
+      1
     ],
     "armorRewardChance": 0.01,
-    "levelRequirement": 2,
-    "lat": 811.3704088184622,
-    "lon": 1315.5199213176106
+    "levelRequirement": 3,
+    "lat": 390.48247952546984,
+    "lon": 1390.1625765492392
   },
   {
     "id": 4,
-    "name": "Dunvick Castle",
-    "desc": "We need to Settle the Dunvick Castle.",
-    "exp": 3000,
-    "money": 1500,
-    "duration": 120000,
+    "name": "Strange Noises!",
+    "desc": "Jack heard something that sounded like a *Grum Ahh Grup* Not sure what to think about that...",
+    "exp": 4000,
+    "money": 1000,
+    "duration": 620000,
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -106,29 +110,35 @@ export default [
       2,
       2,
       3,
-      4
+      4,
+      3,
+      3,
+      1,
+      6,
+      7
     ],
-    "rewardChance": 0.15,
+    "rewardChance": 0.7,
     "armorReward": [
       1,
       1,
       2,
       2,
       3,
-      4
+      4,
+      6
     ],
-    "armorRewardChance": 0.15,
-    "levelRequirement": 3,
-    "lat": 580.9701438757107,
-    "lon": 677.4348827612637
+    "armorRewardChance": 0.02,
+    "levelRequirement": 4,
+    "lat": 629.8752267737331,
+    "lon": 795.177805856551
   },
   {
     "id": 5,
-    "name": "Abandoned Warehouse",
-    "desc": "Search the Abandoned Warehouse for supplies and weapons.",
-    "exp": 4500,
-    "money": 750,
-    "duration": 330000,
+    "name": "Cleaning out the Library",
+    "desc": "Before we can make this a more permament location for our Settlement, we need to clean up this mess first!",
+    "exp": 750,
+    "money": 1200,
+    "duration": 60000,
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -146,20 +156,22 @@ export default [
       2,
       1,
       1,
-      1
+      1,
+      4,
+      3
     ],
     "armorRewardChance": 0.01,
     "levelRequirement": 5,
-    "lat": 651.7521025743564,
-    "lon": 1434.2654705843868
+    "lat": 397.3479034194225,
+    "lon": 1532.0614100143216
   },
   {
     "id": 6,
-    "name": "Mutant Hideout",
-    "desc": "Infiltrate the Mutant Hideout and eliminate the mutant leader.",
-    "exp": 5000,
-    "money": 1500,
-    "duration": 390000,
+    "name": "Last Supply Run!",
+    "desc": "Last Supply Run from The Underground Tunnels has come surfaced, put them inside into the storage area.",
+    "exp": 2500,
+    "money": 500,
+    "duration": 90000,
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -174,7 +186,7 @@ export default [
       1,
       1
     ],
-    "rewardChance": 0.06,
+    "rewardChance": 0.02,
     "armorReward": [
       3,
       2,
@@ -184,18 +196,18 @@ export default [
       1,
       1
     ],
-    "armorRewardChance": 0.02,
+    "armorRewardChance": 0.06,
     "levelRequirement": 7,
-    "lat": 610.1448547094533,
-    "lon": 320.55755519878653
+    "lat": 422.9415344422414,
+    "lon": 512.3616373373173
   },
   {
     "id": 7,
-    "name": "Forgotten Bunker",
-    "desc": "Explore the Forgotten Bunker and recover the lost artifacts.",
-    "exp": 6200,
-    "money": 2000,
-    "duration": 600000,
+    "name": "Cleaning out the Library Part 2",
+    "desc": "So Jimmy was careless and dropped a live grenade and made a mess in the Library, kill himself in the process!",
+    "exp": 2500,
+    "money": 100,
+    "duration": 30000,
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -218,8 +230,8 @@ export default [
     ],
     "armorRewardChance": 0.03,
     "levelRequirement": 7,
-    "lat": 841.9677334764386,
-    "lon": 1157.7649880151066
+    "lat": 686.3244280182539,
+    "lon": 1466.965685536691
   },
   {
     "id": 8,
@@ -255,8 +267,8 @@ export default [
     ],
     "armorRewardChance": 0.1,
     "levelRequirement": 9,
-    "lat": 302.26104937633147,
-    "lon": 1036.0338612708651
+    "lat": 551.289119780077,
+    "lon": 1426.143071480853
   },
   {
     "id": 9,
@@ -285,8 +297,8 @@ export default [
     ],
     "armorRewardChance": 0.02,
     "levelRequirement": 10,
-    "lat": 759.9079656150325,
-    "lon": 348.90210595037513
+    "lat": 480.0376719936492,
+    "lon": 1359.638815909419
   },
   {
     "id": 10,
@@ -321,8 +333,8 @@ export default [
     ],
     "armorRewardChance": 0.45,
     "levelRequirement": 12,
-    "lat": 615.6852503799198,
-    "lon": 1101.3581591832776
+    "lat": 678.1083063163046,
+    "lon": 770.6615421378729
   },
   {
     "id": 11,
@@ -357,8 +369,8 @@ export default [
     ],
     "armorRewardChance": 0.75,
     "levelRequirement": 15,
-    "lat": 462.3837918606729,
-    "lon": 1189.3916560480095
+    "lat": 604.7868679889498,
+    "lon": 1019.8730746789156
   },
   {
     "id": 12,
@@ -389,8 +401,8 @@ export default [
     ],
     "armorRewardChance": 0.05,
     "levelRequirement": 15,
-    "lat": 653.8638826847668,
-    "lon": 1149.4427021313627
+    "lat": 465.5820385660063,
+    "lon": 592.2658618661605
   },
   {
     "id": 13,
@@ -419,7 +431,7 @@ export default [
     ],
     "armorRewardChance": 0.2,
     "levelRequirement": 17,
-    "lat": 352.2672705982508,
-    "lon": 1597.241929902993
+    "lat": 766.5890945655593,
+    "lon": 1429.4929094899785
   }
 ];

@@ -8,37 +8,37 @@ export default [
     "playerChoices": [],
     "steps": [
       {
-        "npcMessage": "Welcome to NukeWorld, survivor! This is a dangerous world full of challenges and opportunities. ",
+        "npcMessage": "Welcome to NukeWorld, {PlayerName}! This is a dangerous world full of challenges and opportunities.",
         "playerOptions": [
           {
-            "text": "Tell me more",
+            "text": "Tell me more!",
             "nextId": 2
           }
         ]
       },
       {
-        "npcMessage": "You will find quests marked on your map. Complete them to gain experience and rewards.",
+        "npcMessage": "You can complete the Story and you will find quests marked on your map. Complete them to gain Experience, NukaCoins, Weapons, Armor and other Cool Drops!.",
         "playerOptions": [
           {
-            "text": "What else?",
+            "text": "That´s Amazing!",
             "nextId": 3
           }
         ]
       },
       {
-        "npcMessage": "Complete the Story but Beware of hostile encounters!",
+        "npcMessage": "LevelUp your character, create a strong build and follow the Story but Beware of hostile encounters! Death have no mercy in the Toxic Wastelands of NukeWorld!",
         "playerOptions": [
           {
-            "text": "Understood. What about equipment?",
+            "text": "I understrand. What about equipment?",
             "nextId": 4
           }
         ]
       },
       {
-        "npcMessage": "Visit the shop to buy and sell items. Good equipment is key to survival.",
+        "npcMessage": "Visit the shop to buy and sell items directly from our Inventory. Good equipment is key to survival.",
         "playerOptions": [
           {
-            "text": "Thanks for the information",
+            "text": "Thanks for the information!",
             "nextId": 5
           }
         ]
@@ -47,7 +47,7 @@ export default [
         "npcMessage": "Good luck out there, survivor. NukeWorld awaits you!",
         "playerOptions": [
           {
-            "text": "End conversation",
+            "text": "Continue Story.",
             "nextId": null
           }
         ]
@@ -59,11 +59,11 @@ export default [
       "resourceRewards": [
         {
           "id": 1,
-          "amount": 25
+          "amount": 1
         },
         {
           "id": 2,
-          "amount": 5
+          "amount": 1
         }
       ],
       "weaponRewards": [],
@@ -74,7 +74,7 @@ export default [
   },
   {
     "id": 1,
-    "name": "Getting the basics!",
+    "name": "Getting to know the Basics!",
     "levelRequirement": 1,
     "completed": false,
     "requiredStoryLineId": 0,
