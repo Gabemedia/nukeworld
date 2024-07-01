@@ -97,6 +97,9 @@ export default {
   computed: {
     ...mapState(['quests', 'character']),
     ...mapGetters(['getResource']),
+    characterLevel() {
+      return this.character.level || 1; // Fallback til niveau 1, hvis niveau ikke er defineret
+    },
     currentZoom() {
       if (this.windowWidth <= 1440) return 0;
       if (this.windowWidth <= 1920) return 1;
@@ -110,7 +113,8 @@ export default {
         quest.lat && 
         quest.lon && 
         (quest.state === 'not-started' || quest.state === 'ready-to-claim' || quest.state === 'in-progress') &&
-        quest.levelRequirement <= this.character.level
+        quest.levelRequirement <= this.characterLevel &&
+        quest.levelRequirement >= this.characterLevel - 3
       );
     },
   },

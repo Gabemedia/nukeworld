@@ -111,6 +111,14 @@ export default {
       // Vi behøver ikke at gøre noget her, da skaleringen håndteres i template
     },
   },
+  created() {
+  const savedCharacter = JSON.parse(localStorage.getItem('character'));
+    if (savedCharacter) {
+      console.log('Loaded character from localStorage:', savedCharacter);
+      this.$store.commit('updateCharacter', savedCharacter);
+    }
+  },
+
 };
 </script>
 

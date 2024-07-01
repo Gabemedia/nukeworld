@@ -79,6 +79,7 @@ const mutations = {
     state.characters.push(character);
   },
   updateCharacter(state, character) {
+    console.log('Updating character:', character);
     Object.assign(state.character, character);
   },
   updateCharacterInArray(state, character) {
