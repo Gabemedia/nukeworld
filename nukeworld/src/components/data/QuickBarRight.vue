@@ -85,7 +85,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  margin-bottom: 10px;
   background-color: rgba(0, 255, 0, 0.1);
   border-radius: 15px;
   padding: 3px 8px;

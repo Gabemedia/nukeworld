@@ -28,6 +28,12 @@
         <button @click="clearLocalStorage" class="btn btn-danger">Delete All</button>
       </div>
     </div>
+    <div class="patreon-container">
+      <a href="https://patreon.com/NukeWorldGame?utm_medium=unknown&utm_source=join_link&utm_campaign=creatorshare_creator&utm_content=copyLink" target="_blank" rel="noopener noreferrer" class="patreon-link">
+        <img src="@/assets/patreon-logo.png" alt="Support us on Patreon" class="patreon-logo">
+        <div class="patreon-text">Support us on Patreon</div>
+      </a>
+    </div>
     <div class="version-number">v{{ version }} - For testing purpose only</div>
   </div>
 </template>
@@ -271,12 +277,47 @@ export default {
   font-size: 0.875rem;
 }
 
+.patreon-container {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.patreon-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: #ffffff;
+  transition: transform 0.3s ease;
+}
+
+.patreon-link:hover {
+  transform: scale(1.05);
+}
+
+.patreon-logo {
+  width: 30px;
+  height: auto;
+  margin-bottom: 5px;
+}
+
+.patreon-text {
+  font-size: 0.8rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
 .version-number {
   position: fixed;
   bottom: 10px;
   right: 10px;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 1);
   font-size: 0.8rem;
   font-weight: 300;
 }
+
 </style>
