@@ -79,7 +79,6 @@ const mutations = {
     state.characters.push(character);
   },
   updateCharacter(state, character) {
-    console.log('Updating character:', character);
     Object.assign(state.character, character);
   },
   updateCharacterInArray(state, character) {
@@ -258,7 +257,6 @@ const mutations = {
     commit('setSettlementModalOpen', true);
   },
   removeResourceAtIndex(state, index) {
-    console.log('Removing resource at index:', index);
     state.character.resources.splice(index, 1);
   },
   setSettlementMarker(state, marker) {
@@ -693,20 +691,14 @@ const actions = {
   
   
   checkRequiredResources({ state }, requiredResources) {
-    console.log('Checking required resources:', requiredResources);
-    console.log('Current resources:', state.character.resources);
     return requiredResources.every(required => {
       const resourceCount = state.character.resources.filter(r => r.id === required.id).length;
-      console.log(`Resource ${required.id} count:`, resourceCount);
-      console.log(`Required amount:`, required.amount);
       const hasEnough = resourceCount >= required.amount;
-      console.log(`Has enough:`, hasEnough);
       return hasEnough;
     });
   },
   
   useRequiredResources({ state, commit }, requiredResources) {
-    console.log('Using required resources:', requiredResources);
     requiredResources.forEach(required => {
       for (let i = 0; i < required.amount; i++) {
         const resourceIndex = state.character.resources.findIndex(r => r.id === required.id);
@@ -715,13 +707,11 @@ const actions = {
         }
       }
     });
-    console.log('Resources after deduction:', state.character.resources);
   },
   async updateSettlementMarker({ commit }, marker) {
     commit('setSettlementMarker', marker);
   },
   openSettlementModal({ commit }) {
-    console.log('Opening settlement modal');
     commit('setSettlementModalOpen', true);
   },
 
@@ -781,8 +771,7 @@ const actions = {
     commit('setCurrentBattleStepIndex', null);
     
     return null;
-  },
-  
+  },  
   
   
     

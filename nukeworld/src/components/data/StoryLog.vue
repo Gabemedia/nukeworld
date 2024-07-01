@@ -19,7 +19,8 @@
           </div>
           <div class="modal-body">
             <div v-if="!currentStoryLine" class="story-intro">
-              <p>Welcome to your story log, survivor. Here you can track your progress and embark on new adventures in the wasteland. Beware in this development phase the story expands from Level <strong>[1-5]</strong></p>
+              <p class="p-0 pb-1 m-0  fs-6 fw-bold text-uppercase fst-italic">Did you know?</p>
+              <p class="p-0 m-0 small" v-html="currentRandomMessage"></p>
             </div>
             <div v-if="currentStoryLine" class="active-story">
               <h6 class="mb-3 text-uppercase fw-bold text-start text-success">Active Story</h6>
@@ -52,9 +53,11 @@
     </div>
   </div>
 </template>
+
 <script>
 import QuestDialog from './controller/QuestDialog.vue';
 import { mapGetters, mapState, mapActions } from 'vuex';
+import helpMessages from '@/store/helpMessages';
 
 export default {
   name: 'StoryLog',
@@ -64,6 +67,8 @@ export default {
   data() {
     return {
       showModal: false,
+      helpMessages: helpMessages,
+      currentRandomMessage: '',
     };
   },
   computed: {
@@ -77,19 +82,26 @@ export default {
     },
     sortedAvailableStoryLines() {
       return [...this.availableStoryLines].sort((a, b) => a.levelRequirement - b.levelRequirement);
-    }
+    },
   },
   methods: {
     ...mapActions(['startStoryLine']),
     openModal() {
       this.showModal = true;
+      this.setRandomMessage();
     },
     closeModal() {
       this.showModal = false;
     },
+    setRandomMessage() {
+      const randomIndex = Math.floor(Math.random() * this.helpMessages.length);
+      let message = this.helpMessages[randomIndex].message;
+      this.currentRandomMessage = message.replace(/{MyName}/g, this.$store.state.character.name);
+    },
   },
 };
 </script>
+
 <style scoped lang="scss">
 .story-log-container {
   position: relative;

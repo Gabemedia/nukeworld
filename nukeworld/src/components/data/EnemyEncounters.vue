@@ -3,7 +3,11 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-body">
-          <BattleSystem @battle-ended="closeModal" @battle-cancelled="closeModal" @show-reward-toast="showRewardToast" />
+          <BattleSystem 
+            @battle-ended="closeModal" 
+            @battle-cancelled="closeModal" 
+            @show-reward-toast="showRewardToast" 
+          />
         </div>
       </div>
     </div>
@@ -66,36 +70,44 @@ export default {
             `;
             break;
           case 'resource':
-            rewardMessage += `
-              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                <img src="${require(`@/assets/interface/icons/resources/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
-                <span>${reward.amount} x ${reward.item.name}</span>
-              </div>
-            `;
+            if (reward.item && reward.item.name) {
+              rewardMessage += `
+                <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                  <img src="${require(`@/assets/interface/icons/resources/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                  <span>${reward.amount} x ${reward.item.name}</span>
+                </div>
+              `;
+            }
             break;
           case 'weapon':
-            rewardMessage += `
-              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                <img src="${require(`@/assets/interface/icons/weapons/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
-                <span>${reward.item.name}</span>
-              </div>
-            `;
+            if (reward.item && reward.item.name) {
+              rewardMessage += `
+                <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                  <img src="${require(`@/assets/interface/icons/weapons/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                  <span>${reward.item.name}</span>
+                </div>
+              `;
+            }
             break;
           case 'armor':
-            rewardMessage += `
-              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                <img src="${require(`@/assets/interface/icons/armor/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
-                <span>${reward.item.name}</span>
-              </div>
-            `;
+            if (reward.item && reward.item.name) {
+              rewardMessage += `
+                <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                  <img src="${require(`@/assets/interface/icons/armor/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                  <span>${reward.item.name}</span>
+                </div>
+              `;
+            }
             break;
           case 'aid':
-            rewardMessage += `
-              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                <img src="${require(`@/assets/interface/icons/aid/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
-                <span>${reward.item.name}</span>
-              </div>
-            `;
+            if (reward.item && reward.item.name) {
+              rewardMessage += `
+                <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                  <img src="${require(`@/assets/interface/icons/aid/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                  <span>${reward.item.name}</span>
+                </div>
+              `;
+            }
             break;
         }
       });
@@ -110,15 +122,6 @@ export default {
         toastClassName: 'quest-toast-container',
         bodyClassName: 'quest-toast-body quest-toast',
       });
-    },
-    claimRewards() {
-      if (this.isBattleWon && this.currentEnemy) {
-        this.$store.dispatch('claimRewards', this.currentEnemy);
-        this.$store.dispatch('defeatEnemy');
-        this.showRewardConfetti();
-        this.resetBattleState();
-        this.$emit('battle-ended');
-      }
     },
   },
 };

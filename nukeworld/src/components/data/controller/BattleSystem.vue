@@ -72,6 +72,7 @@
 import { mapState, mapGetters } from 'vuex';
 import enemies from '@/store/enemy';
 import confetti from 'canvas-confetti';
+import { toast } from "vue3-toastify";
 
 export default {
   name: 'BattleSystem',
@@ -178,7 +179,6 @@ export default {
         this.stopAutoAttack();
       }
     },
-
     enemyAttack() {
       const enemyDamage = this.calculateDamage(this.enemy.attack, this.equippedArmor ? this.equippedArmor.defence : 0);
       const dodgeChance = Math.random();
@@ -205,24 +205,31 @@ export default {
         this.showVictoryConfetti();
       }
     },
-    
     async claimRewards() {
       if (this.isBattleWon && this.enemy) {
-        const result = await this.$store.dispatch('defeatEnemy');
-        this.showRewardConfetti();
-        this.resetBattleState();
-        this.$emit('battle-ended');
-        
-        // Luk kampsystemet
-        this.$store.commit('setEnemyEncounterOpen', false);
-        
-        // Vis belønningstoast hvis der er nogen belønninger
-        if (result && result.rewards) {
-          this.$emit('show-reward-toast', result.storyLineName, result.rewards);
+        try {
+          const result = await this.$store.dispatch('defeatEnemy');
+          this.showRewardConfetti();
+          this.resetBattleState();
+          
+          // Close the battle system
+          this.$store.commit('setEnemyEncounterOpen', false);
+          
+          // Emit the battle-ended event
+          this.$emit('battle-ended');
+          
+          // Show reward toast if there are rewards
+          if (result && result.rewards) {
+            this.$emit('show-reward-toast', result.storyLineName, result.rewards);
+            this.showRewardToast(result.storyLineName, result.rewards);
+          } else {
+            console.log('No rewards to show in toast');
+          }
+        } catch (error) {
+          console.error('Error claiming rewards:', error);
         }
       }
     },
-
     resetBattleState() {
       this.isBattleWon = false;
       this.$store.commit('updateCharacter');
@@ -249,10 +256,89 @@ export default {
         zIndex: 9999,
       });
     },
+    showRewardToast(storyLineName, rewards) {
+      let rewardMessage = `
+        <div class="d-flex flex-column align-items-start justify-content-start h-100">
+        <p class="text-left fw-bold mb-1">${storyLineName} completed!</p>
+        <p class="text-left fw-semi mb-2">You earned:</p>
+        <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
+      `;
+
+      rewards.forEach(reward => {
+        switch (reward.type) {
+          case 'exp':
+            rewardMessage += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require('@/assets/interface/icons/exp.png')}" title="Exp" style="width: 20px;" class="me-2">
+                <span>${reward.amount} exp</span>
+              </div>
+            `;
+            break;
+          case 'money':
+            rewardMessage += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
+                <span>${reward.amount} money</span>
+              </div>
+            `;
+            break;
+          case 'resource':
+            if (reward.item && reward.item.name) {
+              rewardMessage += `
+                <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                  <img src="${require(`@/assets/interface/icons/resources/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                  <span>${reward.amount} x ${reward.item.name}</span>
+                </div>
+              `;
+            }
+            break;
+          case 'weapon':
+            if (reward.item && reward.item.name) {
+              rewardMessage += `
+                <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                  <img src="${require(`@/assets/interface/icons/weapons/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                  <span>${reward.item.name}</span>
+                </div>
+              `;
+            }
+            break;
+          case 'armor':
+            if (reward.item && reward.item.name) {
+              rewardMessage += `
+                <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                  <img src="${require(`@/assets/interface/icons/armor/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                  <span>${reward.item.name}</span>
+                </div>
+              `;
+            }
+            break;
+          case 'aid':
+            if (reward.item && reward.item.name) {
+              rewardMessage += `
+                <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                  <img src="${require(`@/assets/interface/icons/aid/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                  <span>${reward.item.name}</span>
+                </div>
+              `;
+            }
+                        break;
+        }
+      });
+
+      rewardMessage += '</div></div>';
+
+      toast.success(rewardMessage, {
+        dangerouslyHTMLString: true,
+        autoClose: 10000,
+        hideProgressBar: false,
+        icon: false,
+        toastClassName: 'quest-toast-container',
+        bodyClassName: 'quest-toast-body quest-toast',
+      });
+    },
   },
 };
 </script>
-
 <style scoped>
 .battle-system {
 }

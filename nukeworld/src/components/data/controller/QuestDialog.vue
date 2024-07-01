@@ -1,7 +1,7 @@
 <template>
   <EnemyEncounters ref="enemyEncounters" @show-reward-toast="showRewardToast"/>
   <div class="dialog-system">
-    <!-- Samtalevindue - vises kun når en historie er valgt -->
+    <!-- Conversation window - only shown when a story is selected -->
     <div v-if="currentStoryLine && currentStoryStep" class="mb-3">
       <h6 class="mb-3 text-uppercase fw-bold text-start text-success">{{ currentStoryLine.name }}</h6>
       <div class="dialog-log border border-1 small">
@@ -31,7 +31,7 @@
       </div>
     </div>
 
-    <!-- Liste over tilgængelige historier - vises kun når ingen historie er valgt -->
+    <!-- List of available stories - only shown when no story is selected -->
     <div v-else>
       <div v-if="availableStoryLines.length > 0">
         <h6 class="mb-3 text-uppercase fw-bold text-start text-success">Available Storylines</h6>

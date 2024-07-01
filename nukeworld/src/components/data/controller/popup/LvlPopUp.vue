@@ -68,7 +68,6 @@ export default {
           clearInterval(timer);
           setTimeout(() => {
             this.closePopup();
-            console.log('Popup closed');
           }, 1000); // forsink lukning af popup med 1 sekund
         }
       }, interval);

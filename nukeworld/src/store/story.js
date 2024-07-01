@@ -59,11 +59,11 @@ export default [
       "resourceRewards": [
         {
           "id": 1,
-          "amount": 1
+          "amount": 10
         },
         {
           "id": 2,
-          "amount": 1
+          "amount": 5
         }
       ],
       "weaponRewards": [],
@@ -96,12 +96,12 @@ export default [
       "resourceRewards": [],
       "weaponRewards": [
         {
-          "id": 1
+          "id": 17
         }
       ],
       "armorRewards": [
         {
-          "id": 1
+          "id": 8
         }
       ],
       "aidRewards": [
@@ -114,31 +114,31 @@ export default [
   },
   {
     "id": 2,
-    "name": "Setup HomeBase Settlement",
-    "levelRequirement": 2,
+    "name": "Locate, Supply and Establish Settlement",
+    "levelRequirement": 1,
     "completed": false,
     "requiredStoryLineId": 1,
     "playerChoices": [],
     "steps": [
       {
-        "npcMessage": "It's time to establish a home base. We need resources to get started.",
+        "npcMessage": "It's time to establish a new Settlement, we have grown tried of the life down in The Underground Tunnel. We need to get started... ",
         "playerOptions": [
           {
-            "text": "What do you need?",
+            "text": "What do you need from me?",
             "nextId": 2
           }
         ]
       },
       {
-        "npcMessage": "We need 50 Steel Scraps for our guards. Can you get them?",
+        "npcMessage": "We need 5 Wood Scraps for our guards. Can you get them?",
         "playerOptions": [
           {
             "text": "I have them ready right here.",
             "nextId": 3,
             "requiredResources": [
               {
-                "id": 2,
-                "amount": 50
+                "id": 1,
+                "amount": 5
               }
             ],
             "giveReward": true
@@ -161,8 +161,8 @@ export default [
       }
     ],
     "reward": {
-      "exp": 1000,
-      "money": 250,
+      "exp": 2000,
+      "money": 500,
       "resourceRewards": [],
       "weaponRewards": [],
       "armorRewards": [],
@@ -175,7 +175,7 @@ export default [
     "name": "Defeat your first enemy encounter",
     "levelRequirement": 1,
     "completed": false,
-    "requiredStoryLineId": 2,
+    "requiredStoryLineId": 1,
     "playerChoices": [],
     "requiredEnemyDefeat": {
       "id": 1,
@@ -183,7 +183,7 @@ export default [
     },
     "steps": [
       {
-        "npcMessage": "A dangerous mutated Fly is terrorizing our settlement. Can you help us?",
+        "npcMessage": "A dangerous mutated Fly is terrorizing our group!?",
         "playerOptions": [
           {
             "text": "I'll take care of it",
@@ -221,21 +221,25 @@ export default [
       }
     ],
     "reward": {
-      "exp": 250,
-      "money": 12,
+      "exp": 500,
+      "money": 50,
       "resourceRewards": [
         {
           "id": 1,
-          "amount": 3
+          "amount": 5
         },
         {
           "id": 2,
           "amount": 2
+        },
+        {
+          "id": 9,
+          "amount": 10
         }
       ],
       "weaponRewards": [
         {
-          "id": 17
+          "id": 20
         },
         {
           "id": null
@@ -244,7 +248,7 @@ export default [
       "armorRewards": [],
       "aidRewards": [
         {
-          "id": 1
+          "id": 2
         }
       ]
     },
@@ -253,7 +257,7 @@ export default [
   {
     "id": 4,
     "name": "The Scavenger's Dilemma",
-    "levelRequirement": 5,
+    "levelRequirement": 3,
     "completed": false,
     "requiredStoryLineId": 0,
     "playerChoices": [],
