@@ -545,6 +545,7 @@ const actions = {
   
   claimRewards({ commit, dispatch, state }, quest) {
     let obtainedReward = null;
+    let obtainedResource = null;
   
     if (quest.reward && quest.reward.length > 0) {
       const rollDice = Math.random();
@@ -573,12 +574,20 @@ const actions = {
         }
       }
     }
+    const totalRewardChance = (quest.rewardChance || 0) + (quest.armorRewardChance || 0);
+    const resourceRollDice = Math.random();
+    if (resourceRollDice <= totalRewardChance) {
+      const validResources = state.resources.filter(r => r.id === 1 || r.id === 2);
+      const randomResource = validResources[Math.floor(Math.random() * validResources.length)];
+      dispatch('addResource', randomResource.id);
+      obtainedResource = randomResource;
+    }
   
     dispatch('increaseExp', quest.exp);
     dispatch('increaseMoney', quest.money);
     commit('updateCharacterInArray', state.character);
     commit('claimQuest', quest); // Opdater quest state til 'completed'
-    return obtainedReward;
+    return {obtainedReward, obtainedResource};
   },
 
   resetQuests({ state, commit }) {

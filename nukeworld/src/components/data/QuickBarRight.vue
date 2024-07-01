@@ -10,7 +10,7 @@
         <p class="mb-1 small">Current Balance: {{ character.money }}</p>
       </div>
     </div>
-    <div class="resources-container">
+    <div class="resources-container mt-2">
       <div v-for="resource in stackedResources" :key="resource.id" class="resource-item" @mouseover="showItemInfo(resource)" @mouseleave="hideItemInfo">
         <div class="resource-icon">
           <img :src="require(`@/assets/interface/icons/resources/${resource.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="resource.name" />

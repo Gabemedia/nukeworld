@@ -96,12 +96,12 @@ export default [
       "resourceRewards": [],
       "weaponRewards": [
         {
-          "id": 17
+          "id": 1
         }
       ],
       "armorRewards": [
         {
-          "id": 8
+          "id": 1
         }
       ],
       "aidRewards": [
@@ -226,21 +226,14 @@ export default [
       "resourceRewards": [
         {
           "id": 1,
-          "amount": 5
+          "amount": 3
         },
         {
           "id": 2,
-          "amount": 2
-        },
-        {
-          "id": 9,
-          "amount": 10
+          "amount": 1
         }
       ],
       "weaponRewards": [
-        {
-          "id": 20
-        },
         {
           "id": null
         }
@@ -248,7 +241,7 @@ export default [
       "armorRewards": [],
       "aidRewards": [
         {
-          "id": 2
+          "id": 1
         }
       ]
     },

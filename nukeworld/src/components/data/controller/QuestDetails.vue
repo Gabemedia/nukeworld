@@ -28,6 +28,10 @@
             <img :src="require('@/assets/interface/icons/shield.png')" :title="'Armor Reward Chance: ' + (localQuest.armorRewardChance * 100) + '%'">
             <span>{{ localQuest.armorRewardChance * 100 }}%</span>
           </div>
+          <div class="reward">
+            <img :src="require('@/assets/interface/icons/resources/wood_scrap.png')" title="Random Resource">
+            <span>{{ getTotalRewardChance(localQuest) }}%</span>
+          </div>
         </div>
         <div class="quest-duration">
           <span>Duration: {{ getQuestDuration(localQuest) }}</span>
@@ -55,6 +59,7 @@
     No quest selected.
   </div>
 </template>
+
 
 <script>
 import { mapState, mapActions } from 'vuex';
@@ -103,6 +108,10 @@ export default {
     hasArmorReward(quest) {
       return quest.armorReward && quest.armorReward.length > 0;
     },
+    getTotalRewardChance(quest) {
+      const totalChance = (quest.rewardChance || 0) + (quest.armorRewardChance || 0);
+      return (totalChance * 100).toFixed(0);
+    },
     async handleQuestAction(quest) {
       if (quest.state === 'not-started') {
         await this.handleQuest(quest);
@@ -119,7 +128,7 @@ export default {
       this.$emit('quest-updated', this.localQuest);
     },
     async claimRewardsAction(quest) {
-      const obtainedReward = await this.claimRewards(quest);
+      const { obtainedReward, obtainedResource } = await this.claimRewards(quest);
       this.localQuest = { ...quest, state: 'completed', claimed: true };
       confetti({
         particleCount: 100,
@@ -127,6 +136,7 @@ export default {
         origin: { y: 0.6 },
         zIndex: 9999,
       });
+      
       let rewardMessage = `
         <div class="d-flex flex-column align-items-start justify-content-start h-100">
         <p class="text-left fw-bold  mb-1">${quest.name} completed!</p>
@@ -140,14 +150,28 @@ export default {
             <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
             <span>${quest.money} money</span>
           </div>
-        </div>
         `;
+      
       if (obtainedReward) {
-        rewardMessage += '<div class="d-flex align-items-start justify-content-start reward-info mb-1"><img src="' + require('@/assets/interface/icons/reward.png') + '" title="Reward" style="width: 20px;" class="me-2">';
-        rewardMessage += `<span>${obtainedReward.name}</span>`;
-        rewardMessage += '</div>';
+        rewardMessage += `
+          <div class="d-flex align-items-start justify-content-start reward-info mb-1">
+            <img src="${require('@/assets/interface/icons/reward.png')}" title="Reward" style="width: 20px;" class="me-2">
+            <span>${obtainedReward.name}</span>
+          </div>
+        `;
       }
+      
+      if (obtainedResource) {
+        rewardMessage += `
+          <div class="d-flex align-items-start justify-content-start reward-info mb-1">
+            <img src="${require(`@/assets/interface/icons/resources/${obtainedResource.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${obtainedResource.name}" style="width: 20px;" class="me-2">
+            <span>${obtainedResource.name}</span>
+          </div>
+        `;
+      }
+      
       rewardMessage += '</div></div>';
+      
       toast.success(rewardMessage, {
         dangerouslyHTMLString: true,
         autoClose: 10000,
@@ -189,7 +213,6 @@ export default {
   },
 };
 </script>
-
 
 
 <style scoped lang="scss">

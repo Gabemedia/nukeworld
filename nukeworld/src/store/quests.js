@@ -27,7 +27,7 @@ export default [
       2
     ],
     "armorRewardChance": 0.2,
-    "levelRequirement": 2,
+    "levelRequirement": 1,
     "lat": 640.9052378575283,
     "lon": 1284.1204383065283
   },
@@ -58,7 +58,7 @@ export default [
       3
     ],
     "armorRewardChance": 0.1,
-    "levelRequirement": 3,
+    "levelRequirement": 2,
     "lat": 783.8325867020155,
     "lon": 1582.5651447616115
   },

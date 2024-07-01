@@ -1,8 +1,8 @@
 <template>
-  <div v-if="$store.state.isEnemyEncounterOpen" class="modal" tabindex="-1" @click.self="closeModal">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-body">
+  <div v-if="$store.state.isEnemyEncounterOpen" class="enemy-encounter-modal" tabindex="-1" @click.self="closeModal">
+    <div class="enemy-encounter-dialog">
+      <div class="enemy-encounter-content">
+        <div class="enemy-encounter-body">
           <BattleSystem 
             @battle-ended="closeModal" 
             @battle-cancelled="closeModal" 
@@ -128,7 +128,7 @@ export default {
 </script>
 
 <style scoped>
-.modal {
+.enemy-encounter-modal {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -139,61 +139,33 @@ export default {
   width: 100%;
   height: 100%;
   overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
 }
 
-.modal-dialog {
+.enemy-encounter-dialog {
   max-width: 500px;
   width: 90%;
   margin: 1.75rem auto;
 }
 
-@media (max-width: 576px) {
-  .modal-dialog {
-    width: 100%;
-    margin: 1.75rem auto;
-  }
+.enemy-encounter-content {
+  background-color: rgba(0, 0, 0, 0.8);
+  border: 2px solid #00ff00;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
 }
 
-.modal-body {
+.enemy-encounter-body {
   position: relative;
   flex: 1 1 auto;
   padding: 1rem;
-  max-height: 300px;
-  overflow-y: scroll;
   color: #fff;
 }
 
-.modal-content {
-  position: relative;
-  background-clip: padding-box;
-  border: 1px #fff solid;
-  border-radius: 0.3rem;
-  outline: 0;
-}
-
-.modal-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: 1rem;
-  border-bottom: 1px solid #dee2e6;
-  border-top-left-radius: calc(0.3rem - 1px);
-  border-top-right-radius: calc(0.3rem - 1px);
-}
-
-.modal-title {
-  margin-bottom: 0;
-  line-height: 1.5;
-}
-
-.modal-body {
-  position: relative;
-  flex: 1 1 auto;
-  padding: 1rem;
-}
-
-.card-text-header {
-  font-weight: 600;
-  font-size: 1rem;
+@media (max-width: 576px) {
+  .enemy-encounter-dialog {
+    width: 100%;
+    margin: 1.75rem auto;
+  }
 }
 </style>

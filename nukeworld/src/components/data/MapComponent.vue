@@ -42,7 +42,6 @@
   </div>
 </template>
 
-
 <script>
 import { LMap, LMarker, LImageOverlay, LRectangle } from '@vue-leaflet/vue-leaflet';
 import { mapState, mapGetters, mapActions, mapMutations } from 'vuex';
@@ -98,7 +97,7 @@ export default {
     ...mapState(['quests', 'character']),
     ...mapGetters(['getResource']),
     characterLevel() {
-      return this.character.level || 1; // Fallback til niveau 1, hvis niveau ikke er defineret
+      return this.character.level || 1;
     },
     currentZoom() {
       if (this.windowWidth <= 1440) return 0;
@@ -114,7 +113,7 @@ export default {
         quest.lon && 
         (quest.state === 'not-started' || quest.state === 'ready-to-claim' || quest.state === 'in-progress') &&
         quest.levelRequirement <= this.characterLevel &&
-        quest.levelRequirement >= this.characterLevel - 3
+        quest.levelRequirement > Math.max(0, this.characterLevel - 3)
       );
     },
   },
@@ -248,7 +247,6 @@ export default {
   },
 };
 </script>
-
 
 <style scoped>
 @import url(../../assets/MapPopup.css);

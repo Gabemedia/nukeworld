@@ -36,14 +36,20 @@ export default {
   },
   computed: {
     ...mapState(['quests', 'character']),
+    filteredQuests() {
+      return this.quests.filter(quest => 
+        quest.levelRequirement <= this.character.level &&
+        quest.levelRequirement > Math.max(1, this.character.level - 3)
+      );
+    },
     activeQuests() {
       switch (this.activeTab) {
         case 'available':
-          return this.quests.filter(quest => quest.state === 'not-started' && this.character.level >= quest.levelRequirement);
+          return this.filteredQuests.filter(quest => quest.state === 'not-started');
         case 'active':
-          return this.quests.filter(quest => quest.state === 'in-progress');
+          return this.filteredQuests.filter(quest => quest.state === 'in-progress');
         case 'ready':
-          return this.quests.filter(quest => quest.state === 'ready-to-claim');
+          return this.filteredQuests.filter(quest => quest.state === 'ready-to-claim');
         default:
           return [];
       }

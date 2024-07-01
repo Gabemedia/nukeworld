@@ -212,13 +212,10 @@ export default {
           this.showRewardConfetti();
           this.resetBattleState();
           
-          // Close the battle system
           this.$store.commit('setEnemyEncounterOpen', false);
           
-          // Emit the battle-ended event
           this.$emit('battle-ended');
           
-          // Show reward toast if there are rewards
           if (result && result.rewards) {
             this.$emit('show-reward-toast', result.storyLineName, result.rewards);
             this.showRewardToast(result.storyLineName, result.rewards);
@@ -321,7 +318,7 @@ export default {
                 </div>
               `;
             }
-                        break;
+            break;
         }
       });
 
@@ -339,29 +336,93 @@ export default {
   },
 };
 </script>
+
 <style scoped>
 .battle-system {
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #00ff00;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
 }
 
-.battle-system .icon{
+.battle-system .icon {
   height: 20px;
   width: auto;
 }
 
-.attack-button {
-  background-color: #28a745;
-  border-color: #fff;
-  border: 0;
+.player-info, .enemy-info, .player-equipment, .enemy-stats {
+  background-color: rgba(0, 255, 0, 0.1);
+  border: 1px solid #00ff00;
+  border-radius: 5px;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
-.use-item-button {
+.player-name, .enemy-name {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.equipment-item, .stat-item {
+  display: flex;
+  align-items: center;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.attack-button {
+  background-color: #00ff00;
+  color: #000000;
+}
+
+.attack-button:hover {
+  background-color: #00cc00;
+}
+
+.btn-warning {
+  background-color: #ffc107;
+  color: #000000;
+}
+
+.btn-warning:hover {
+  background-color: #e0a800;
+}
+
+.cancel-button {
+  background-color: #dc3545;
+  color: #ffffff;
+}
+
+.cancel-button:hover {
+  background-color: #c82333;
+}
+
+.claim-rewards-button {
   background-color: #17a2b8;
-  border-color: #17a2b8;
+  color: #ffffff;
+}
+
+.claim-rewards-button:hover {
+  background-color: #138496;
 }
 
 .battle-log {
   max-height: 200px;
   overflow-y: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 1px solid #00ff00;
+  border-radius: 5px;
+  padding: 0.5rem;
 }
 
 .battle-log ul {
@@ -376,21 +437,22 @@ export default {
 }
 
 .player-action {
-  background-color: #d4edda;
-  color: #155724;
+  background-color: rgba(0, 255, 0, 0.2);
+  color: #00ff00;
 }
 
 .enemy-action {
-  background-color: #f8d7da;
-  color: #721c24;
+  background-color: rgba(255, 0, 0, 0.2);
+  color: #ff0000;
 }
 
-.stop-attack-button {
-  background-color: #ffc107;
-  border-color: #ffc107;
-}
-.cancel-button {
-  background-color: #dc3545;
-  border-color: #dc3545;
+@media (max-width: 768px) {
+  .battle-actions {
+    flex-direction: column;
+  }
+
+  .battle-actions button {
+    margin-bottom: 0.5rem;
+  }
 }
 </style>
