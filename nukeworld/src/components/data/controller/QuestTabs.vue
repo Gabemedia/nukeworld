@@ -39,7 +39,7 @@ export default {
     filteredQuests() {
       return this.quests.filter(quest => 
         quest.levelRequirement <= this.character.level &&
-        quest.levelRequirement > Math.max(1, this.character.level - 3)
+        quest.levelRequirement > Math.max(0, this.character.level - 3)
       );
     },
     activeQuests() {

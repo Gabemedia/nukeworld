@@ -128,7 +128,7 @@ export default {
       this.$emit('quest-updated', this.localQuest);
     },
     async claimRewardsAction(quest) {
-      const { obtainedReward, obtainedResource } = await this.claimRewards(quest);
+      const { obtainedReward, obtainedArmorReward, obtainedResource } = await this.claimRewards(quest);
       this.localQuest = { ...quest, state: 'completed', claimed: true };
       confetti({
         particleCount: 100,
@@ -155,8 +155,17 @@ export default {
       if (obtainedReward) {
         rewardMessage += `
           <div class="d-flex align-items-start justify-content-start reward-info mb-1">
-            <img src="${require('@/assets/interface/icons/reward.png')}" title="Reward" style="width: 20px;" class="me-2">
+            <img src="${require(`@/assets/interface/icons/weapons/${obtainedReward.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${obtainedReward.name}" style="width: 20px;" class="me-2">
             <span>${obtainedReward.name}</span>
+          </div>
+        `;
+      }
+      
+      if (obtainedArmorReward) {
+        rewardMessage += `
+          <div class="d-flex align-items-start justify-content-start reward-info mb-1">
+            <img src="${require(`@/assets/interface/icons/armor/${obtainedArmorReward.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${obtainedArmorReward.name}" style="width: 20px;" class="me-2">
+            <span>${obtainedArmorReward.name}</span>
           </div>
         `;
       }
@@ -213,6 +222,7 @@ export default {
   },
 };
 </script>
+
 
 
 <style scoped lang="scss">

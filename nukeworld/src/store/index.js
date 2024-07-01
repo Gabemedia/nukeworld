@@ -545,9 +545,9 @@ const actions = {
   
   claimRewards({ commit, dispatch, state }, quest) {
     let obtainedReward = null;
+    let obtainedArmorReward = null;
     let obtainedResource = null;
   
-    if (quest.reward && quest.reward.length > 0) {
       const rollDice = Math.random();
       if (rollDice <= quest.rewardChance) {
         const randomIndex = Math.floor(Math.random() * quest.reward.length);
@@ -559,35 +559,33 @@ const actions = {
           obtainedReward = newItem;
         }
       }
-    }
   
-    if (quest.armorReward && quest.armorReward.length > 0) {
-      const rollDice = Math.random();
-      if (rollDice <= quest.armorRewardChance) {
+      const rollDiceArmor = Math.random();
+      if (rollDiceArmor <= quest.armorRewardChance) {
         const randomIndex = Math.floor(Math.random() * quest.armorReward.length);
         const rewardId = quest.armorReward[randomIndex];
         const rewardItem = state.armor.find((item) => item.id === rewardId);
         if (rewardItem) {
           const newItem = { ...rewardItem, uuid: uuidv4() };
           state.character.armor.push(newItem);
-          obtainedReward = newItem;
+          obtainedArmorReward = newItem;
         }
       }
-    }
-    const totalRewardChance = (quest.rewardChance || 0) + (quest.armorRewardChance || 0);
-    const resourceRollDice = Math.random();
-    if (resourceRollDice <= totalRewardChance) {
-      const validResources = state.resources.filter(r => r.id === 1 || r.id === 2);
-      const randomResource = validResources[Math.floor(Math.random() * validResources.length)];
-      dispatch('addResource', randomResource.id);
-      obtainedResource = randomResource;
-    }
+
+      const totalRewardChance = (quest.rewardChance || 0) + (quest.armorRewardChance || 0);
+      const resourceRollDice = Math.random();
+      if (resourceRollDice <= totalRewardChance) {
+        const validResources = state.resources.filter(r => r.id === 1 || r.id === 2);
+        const randomResource = validResources[Math.floor(Math.random() * validResources.length)];
+        dispatch('addResource', randomResource.id);
+        obtainedResource = randomResource;
+      }
   
     dispatch('increaseExp', quest.exp);
     dispatch('increaseMoney', quest.money);
     commit('updateCharacterInArray', state.character);
     commit('claimQuest', quest); // Opdater quest state til 'completed'
-    return {obtainedReward, obtainedResource};
+    return {obtainedReward, obtainedArmorReward, obtainedResource};
   },
 
   resetQuests({ state, commit }) {
