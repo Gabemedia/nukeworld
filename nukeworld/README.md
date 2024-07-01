@@ -214,8 +214,33 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Adjusted CSS to ensure consistent styling of all quest markers, including the new "in-progress" marker
 - Improved responsiveness and scalability of quest markers across different screen sizes
 
-
-
+### Version 0.1.6.0 (2024-07-01)
+- Added new map
+- Added new icons
+- Refactored QuestLines
+- Refactored ClaimRewards
+- Fixed quest level filtering in MapComponent.vue to correctly display quests within the appropriate level range
+- Updated quest filtering logic to only show quests.
+- Ensured that quests below level 1 are never displayed
+- Modified the filteredQuests computed property in MapComponent.vue to implement the new level range logic
+- Updated QuestTabs.vue to use the same quest level filtering logic as MapComponent.vue
+- Added a new filteredQuests computed property in to handle level-based quest filtering
+- Modified the activeQuests computed property in to use the new filteredQuests for consistent quest display across all tabs
+- Ensured that Available, Active, and Ready tabs only show quests within the correct level range
+- Fixed quest reward system to allow players to receive weapon, armor, and resource rewards independently
+- Updated `claimRewards` function in Vuex store to correctly handle multiple reward types
+- Improved reward chance calculations for each reward type (weapon, armor, resource)
+- Updated QuestDetails.vue and QuestList.vue components to display correct item icons in reward toasts
+- Refactored reward claiming logic to use item names for icon file paths, improving consistency and reducing errors
+- Fixed a bug where players couldn't receive both weapon and armor rewards from a single quest
+- Optimized quest reward calculations to provide a fair distribution of rewards
+- Resolved issues with quest reward display in toast notifications
+- Ensured consistency in item icon display across QuestDetails, QuestList, PlayerShop, and InventoryStash components
+- Improved code consistency and maintainability across components
+- Improved code consistency and maintainability across quest-related components
+- Enhanced user experience by providing a more balanced and level-appropriate quest selection
+- Enhanced user experience by providing more accurate visual feedback for quest rewards
+- Major fix to quest handling across game in multiple modals and components.
 
 
 
