@@ -29,7 +29,11 @@
       </div>
     </div>
     <div class="patreon-container">
-      <a href="https://patreon.com/NukeWorldGame?utm_medium=unknown&utm_source=join_link&utm_campaign=creatorshare_creator&utm_content=copyLink" target="_blank" rel="noopener noreferrer" class="patreon-link">
+      <a href="https://patreon.com/NukeWorldGame?utm_medium=unknown&utm_source=join_link&utm_campaign=creatorshare_creator&utm_content=copyLink" 
+         target="_blank" 
+         rel="noopener noreferrer" 
+         class="patreon-link"
+         @click="trackPatreonClick">
         <img src="@/assets/patreon-logo.png" alt="Support us on Patreon" class="patreon-logo">
         <div class="patreon-text">Support us on Patreon</div>
       </a>
@@ -87,6 +91,11 @@ export default {
           );
 
           await this.$store.commit('updateCharacter', character);
+          this.$gtag.event('player_login', {
+            event_category: 'user_action',
+            event_label: 'Player Login',
+            character_name: character.name
+          });
           this.$router.push('/game-world');
         } catch (error) {
           alert('Invalid login credentials. Please enter a valid email and password.');
@@ -101,6 +110,11 @@ export default {
         this.$store.commit('updateCharacter', this.character);
         this.$store.dispatch('createCharacter');
         this.showSuccessMessage = true;
+        this.$gtag.event('player_signup', {
+          event_category: 'user_action',
+          event_label: 'Player Signup',
+          character_name: this.character.name
+        });
       } else {
         alert('Please enter your character name.');
       }
@@ -108,9 +122,19 @@ export default {
     clearLocalStorage() {
       if (confirm('Are you sure you want to delete all saved data for this game?')) {
         localStorage.clear();
+        this.$gtag.event('clear_local_storage', {
+          event_category: 'user_action',
+          event_label: 'Clear Local Storage'
+        });
         alert('All saved data has been deleted.');
         location.reload();
       }
+    },
+    trackPatreonClick() {
+      this.$gtag.event('patreon_click', {
+        event_category: 'user_action',
+        event_label: 'Patreon Link Click'
+      });
     },
   }
 };
@@ -319,5 +343,4 @@ export default {
   font-size: 0.8rem;
   font-weight: 300;
 }
-
 </style>

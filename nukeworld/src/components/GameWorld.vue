@@ -77,6 +77,20 @@ export default {
     'character.health': function (newHealth) {
       if (newHealth === 0) {
         this.openModal();
+        this.$gtag.event('player_died', {
+          event_category: 'game_event',
+          event_label: 'Player Died',
+          character_level: this.character.level
+        });
+      }
+    },
+    'character.level': function (newLevel, oldLevel) {
+      if (newLevel > oldLevel) {
+        this.$gtag.event('player_level_up', {
+          event_category: 'game_event',
+          event_label: 'Player Level Up',
+          character_level: newLevel
+        });
       }
     },
     windowWidth() {
@@ -88,6 +102,11 @@ export default {
     this.checkCharacterHealth();
     window.addEventListener('resize', this.handleResize);
     this.updateUIScale();
+    this.$gtag.event('game_world_loaded', {
+      event_category: 'game_event',
+      event_label: 'Game World Loaded',
+      character_level: this.character.level
+    });
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.handleResize);
@@ -112,13 +131,12 @@ export default {
     },
   },
   created() {
-  const savedCharacter = JSON.parse(localStorage.getItem('character'));
+    const savedCharacter = JSON.parse(localStorage.getItem('character'));
     if (savedCharacter) {
       console.log('Loaded character from localStorage:', savedCharacter);
       this.$store.commit('updateCharacter', savedCharacter);
     }
   },
-
 };
 </script>
 

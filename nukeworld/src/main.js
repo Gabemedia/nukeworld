@@ -2,6 +2,7 @@ import { createApp } from 'vue';
 import 'bootstrap/dist/js/bootstrap.bundle';
 import App from './App.vue';
 import router from './router';
+import VueGtag from 'vue-gtag'
 import store from './store';
 import Toast from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
@@ -15,6 +16,11 @@ app.component('l-tile-layer', LTileLayer);
 app.component('l-marker', LMarker);
 
 app.use(router);
+
+app.use(VueGtag, {
+    config: { id: 'G-QB6Y2S2390' }
+  }, router)
+
 app.use(store);
 app.use(Toast);
 
