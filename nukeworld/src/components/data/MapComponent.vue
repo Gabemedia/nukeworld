@@ -124,6 +124,12 @@ export default {
         this.updateMapSize();
       });
     },
+    quests: {
+      handler() {
+        this.$forceUpdate();
+      },
+      deep: true
+    }
   },
   created() {
     this.updateDragging();

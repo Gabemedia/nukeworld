@@ -57,7 +57,6 @@
 </template>
 
 <script>
-import { reactive } from 'vue';
 import { mapState, mapActions, mapMutations } from 'vuex';
 import { toast } from "vue3-toastify";
 import confetti from 'canvas-confetti';
@@ -101,7 +100,6 @@ export default {
     handleQuestAction(quest) {
       if (quest.state === 'not-started') {
         this.handleQuest(quest);
-        this.startQuestProgress(quest);
         toast.success(`<strong>${quest.name} started!</strong>`, {
           autoClose: 5000,
           toastClassName: 'quest-toast-container',
@@ -133,9 +131,8 @@ export default {
       }
     },
     async claimRewardsAction(quest) {
-      const reactiveQuest = reactive(quest);
-      if (!reactiveQuest.claimed && reactiveQuest.state === 'ready-to-claim') {
-        const obtainedReward = await this.claimRewards(reactiveQuest);
+      if (!quest.claimed && quest.state === 'ready-to-claim') {
+        const obtainedReward = await this.claimRewards(quest);
         console.log('Obtained reward in component:', obtainedReward);
         confetti({
           particleCount: 100,
@@ -146,16 +143,16 @@ export default {
 
         let rewardMessage = `
         <div class="d-flex flex-column align-items-start justify-content-start h-100">
-          <p class="text-left fw-bold mb-1">${reactiveQuest.name} completed!</p>
+          <p class="text-left fw-bold mb-1">${quest.name} completed!</p>
           <p class="text-left fw-semi mb-2">You earned:</p>
           <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
             <div class="d-flex align-items-start justify-content-start reward-info mb-2">
               <img src="${require('@/assets/interface/icons/exp.png')}" title="Exp" style="width: 20px;" class="me-2">
-              <span>${reactiveQuest.exp} exp</span>
+              <span>${quest.exp} exp</span>
             </div>
             <div class="d-flex align-items-start justify-content-start reward-info mb-1">
               <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
-              <span>${reactiveQuest.money} money</span>
+              <span>${quest.money} money</span>
             </div>
           </div>
         `;
@@ -177,9 +174,7 @@ export default {
           bodyClassName: 'quest-toast-body quest-toast',
         });
 
-        reactiveQuest.claimed = true;
-        reactiveQuest.state = 'completed';
-        this.saveQuests();
+        this.updateQuest({ ...quest, claimed: true, state: 'completed' });
       }
     },
     formatTime(milliseconds) {
@@ -191,38 +186,6 @@ export default {
       const seconds = totalSeconds % 60;
       return `${minutes} min ${seconds} sec`;
     },
-    startQuestProgress(quest) {
-      const reactiveQuest = reactive(quest);
-      reactiveQuest.state = 'in-progress';
-      reactiveQuest.claimed = false;
-      reactiveQuest.startTime = Date.now();
-      reactiveQuest.remainingTime = reactiveQuest.duration;
-      reactiveQuest.progress = 0;
-
-      reactiveQuest.intervalId = setInterval(() => {
-        if (reactiveQuest.remainingTime > 0) {
-          reactiveQuest.remainingTime -= 1000;
-          const elapsedTime = Date.now() - reactiveQuest.startTime;
-          const progress = Math.min((elapsedTime / reactiveQuest.duration) * 100, 100);
-          reactiveQuest.progress = progress;
-        } else {
-          clearInterval(reactiveQuest.intervalId);
-          if (reactiveQuest.state !== 'ready-to-claim') {
-            reactiveQuest.state = 'ready-to-claim';
-            reactiveQuest.progress = 100;
-            setTimeout(() => {
-              toast.success(`<strong>${reactiveQuest.name} completed!</strong> <br>Claim your rewards!`, {
-                autoClose: 5000,
-                toastClassName: 'quest-toast-container',
-                bodyClassName: 'quest-toast-body',
-                dangerouslyHTMLString: true,
-              });
-            }, 0);
-          }
-        }
-        this.saveQuests();
-      }, 1000);
-    },
     updateQuestData() {
       if (this.quest) {
         const updatedQuest = this.$store.state.quests.find(q => q.id === this.quest.id);
@@ -230,9 +193,6 @@ export default {
           Object.assign(this.quest, updatedQuest);
         }
       }
-    },
-    saveQuests() {
-      localStorage.setItem('quests', JSON.stringify(this.quests));
     },
     getRewardItemName(rewardId) {
       const rewardItem = this.$store.state.items.find(item => item.id === rewardId);
@@ -243,17 +203,7 @@ export default {
     window.addEventListener('beforeunload', this.saveQuests);
   },
   beforeUnmount() {
-    this.quests.forEach(quest => {
-      if (quest.intervalId) {
-        clearInterval(quest.intervalId);
-      }
-    });
     window.removeEventListener('beforeunload', this.saveQuests);
-  },
-  created() {
-    if (this.quest.state === 'in-progress') {
-      this.startQuestProgress(this.quest);
-    }
   },
   watch: {
     '$store.state.quests': {

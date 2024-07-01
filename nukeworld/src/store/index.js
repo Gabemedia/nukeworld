@@ -21,7 +21,7 @@ const state = reactive({
     money: 0,
     health: 100,
     maxHealth: 100,
-    weapons: [], // Ændret fra inventory
+    weapons: [],
     equippedWeapons: [],
     armor: [], 
     equippedArmor: null,
@@ -460,16 +460,13 @@ const actions = {
     commit('increaseCharacterLevelInArray', state.character);
   },
   
-  handleQuest({ dispatch, commit, state }, quest) {
-    const stateQuest = state.quests.find(q => q.id === quest.id);
-    if (!stateQuest) return;
-
-    if (stateQuest.state === 'not-started' || stateQuest.state === 'in-progress') {
+  handleQuest({ commit, dispatch }, quest) {
+    if (quest.state === 'not-started' || quest.state === 'in-progress') {
       const updatedQuest = { 
-        ...stateQuest, 
+        ...quest, 
         state: 'in-progress', 
-        progress: stateQuest.progress || 0,
-        startTime: stateQuest.startTime || Date.now()
+        progress: quest.progress || 0,
+        startTime: quest.startTime || Date.now()
       };
       commit('updateQuest', updatedQuest);
       dispatch('startQuestProgress', updatedQuest);
@@ -508,7 +505,7 @@ const actions = {
   
     const intervalId = setInterval(updateProgress, 1000);
     commit('updateQuest', { ...quest, intervalId });
-    updateProgress(); // Kør første gang med det samme
+    updateProgress();
   },
   
   
