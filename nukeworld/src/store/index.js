@@ -584,7 +584,7 @@ const actions = {
     dispatch('increaseExp', quest.exp);
     dispatch('increaseMoney', quest.money);
     commit('updateCharacterInArray', state.character);
-    commit('claimQuest', quest); // Opdater quest state til 'completed'
+    commit('claimQuest', quest);
     return {obtainedReward, obtainedArmorReward, obtainedResource};
   },
 
@@ -602,7 +602,6 @@ const actions = {
     });
     localStorage.setItem('quests', JSON.stringify(state.quests));
   },
-    
 
   resetCharacter({ commit, state, dispatch }) {
     commit('updateCharacter', {
@@ -696,7 +695,6 @@ const actions = {
     return null;
   },
   
-  
   checkRequiredResources({ state }, requiredResources) {
     return requiredResources.every(required => {
       const resourceCount = state.character.resources.filter(r => r.id === required.id).length;
@@ -715,9 +713,11 @@ const actions = {
       }
     });
   },
+
   async updateSettlementMarker({ commit }, marker) {
     commit('setSettlementMarker', marker);
   },
+
   openSettlementModal({ commit }) {
     commit('setSettlementModalOpen', true);
   },
@@ -746,7 +746,6 @@ const actions = {
       }
     }
   },
-   
   
   async defeatEnemy({ commit, dispatch, state }) {
     const enemyId = state.currentEnemyId;
@@ -780,8 +779,6 @@ const actions = {
     return null;
   },  
   
-  
-    
   resetStoryLines({ commit, state }) {
     const resetStoryLines = state.storyLines.map(storyLine => ({
       ...storyLine,
@@ -795,24 +792,31 @@ const actions = {
   equipWeapon({ commit }, itemId) {
     commit('equipWeapon', itemId);
   },
+
   sellWeapon({ commit }, itemUuid) {
     commit('sellWeapon', itemUuid);
   },
+
   equipArmor({ commit }, itemUuid) {
     commit('equipArmor', itemUuid);
   },
+
   sellArmor({ commit }, itemUuid) {
     commit('sellArmor', itemUuid);
   },
+
   useAid({ commit }, itemUuid) {
     commit('useAid', itemUuid);
   },
+
   addItemToAid({ commit }, itemId) {
     commit('addItemToAid', itemId);
   },
+
   addItemToWeapons({ commit }, itemId) {
     commit('addItemToWeapons', itemId);
   },
+
   addItemToArmor({ commit }, itemId) {
     commit('addItemToArmor', itemId);
   },
@@ -835,6 +839,7 @@ const actions = {
   addResource({ commit }, resourceId) {
     commit('addResource', resourceId);
   },
+  
   removeResource({ commit }, resourceUuid) {
     commit('removeResource', resourceUuid);
   },

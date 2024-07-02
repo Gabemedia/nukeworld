@@ -1,139 +1,145 @@
 <template>
-  <div class="game-settings scrollable">
-    <h3 class="text-primary mb-3">Game Settings</h3>
-    <div class="settings-menu mb-3">
-      <button 
-        class="btn btn-outline-primary btn-sm" 
-        v-for="section in sections" 
-        :key="section" 
-        @click="changeSection(section)"
-        :class="{ active: activeSection === section }"
-      >
-        {{ section }}
-      </button>
-    </div>
-    <div class="action-buttons mb-3">
-      <button type="button" class="btn btn-success btn-sm" @click="addNewItem">Add New</button>
-      <button type="button" class="btn btn-primary btn-sm" @click="saveChanges">Save Changes</button>
-      <button type="button" class="btn btn-danger btn-sm" @click="deleteItem">Delete</button>
-      <button type="button" class="btn btn-info btn-sm" @click="exportChanges">Export {{ activeSection }}</button>
-      <button type="button" class="btn btn-warning btn-sm" @click="resetData">Reset Data</button>
-    </div>
-    <div class="data-container">
-      <div class="data-display">
-        <h5 class="text-primary">{{ activeSection }} Data</h5>
-        <div class="data-navigation mb-2">
-          <button class="btn btn-outline-primary btn-sm" @click="prevItem" :disabled="currentIndex === 0">&lt;</button>
-          <span class="mx-2">Item {{ currentIndex + 1 }} of {{ getActiveData.length }}</span>
-          <button class="btn btn-outline-primary btn-sm" @click="nextItem" :disabled="currentIndex === getActiveData.length - 1">&gt;</button>
-        </div>
-        <div class="data-content">
-          <pre class="small">{{ JSON.stringify(currentItem, null, 2) }}</pre>
-        </div>
+  <div class="settings-container">
+    <div class="settings-content">
+      <h1 class="game-title">Game Settings</h1>
+      <div class="settings-menu">
+        <button 
+          class="btn btn-outline-primary" 
+          v-for="section in sections" 
+          :key="section" 
+          @click="changeSection(section)"
+          :class="{ active: activeSection === section }"
+        >
+          {{ section }}
+        </button>
       </div>
-      <div class="data-form">
-        <h5 class="text-primary">Edit {{ activeSection }}</h5>
-        <form @submit.prevent="saveChanges">
-          <div class="form-group" v-for="(value, key) in currentItem" :key="key">
-            <label :for="key" class="small">{{ key }}</label>
-            <template v-if="activeSection === 'quests' && (key === 'reward' || key === 'armorReward')">
-              <div class="reward-list mb-2">
-                <div v-for="(itemId, index) in currentItem[key]" :key="index" class="mb-1">
-                  {{ getItemName(key, itemId) }}
-                  <button @click="removeReward(key, index)" class="btn btn-danger btn-sm ml-2">Remove</button>
+
+      <div class="action-buttons">
+        <button type="button" class="btn btn-success" @click="addNewItem">Add New</button>
+        <button type="button" class="btn btn-primary" @click="saveChanges">Save Changes</button>
+        <button type="button" class="btn btn-danger" @click="deleteItem">Delete</button>
+        <button type="button" class="btn btn-info" @click="exportChanges">Export {{ activeSection }}</button>
+        <button type="button" class="btn btn-warning" @click="resetData">Reset Data</button>
+      </div>
+
+      <div class="data-container">
+        <div class="data-display">
+          <h3 class="subsection-title">{{ activeSection }} Data</h3>
+          <div class="data-navigation">
+            <button class="btn btn-outline-primary" @click="prevItem" :disabled="currentIndex === 0">&lt;</button>
+            <span>Item {{ currentIndex + 1 }} of {{ getActiveData.length }}</span>
+            <button class="btn btn-outline-primary" @click="nextItem" :disabled="currentIndex === getActiveData.length - 1">&gt;</button>
+          </div>
+          <div class="data-content">
+            <pre>{{ JSON.stringify(currentItem, null, 2) }}</pre>
+          </div>
+        </div>
+        <div class="data-form">
+          <h3 class="subsection-title">Edit {{ activeSection }}</h3>
+          <form @submit.prevent="saveChanges">
+            <div class="form-group" v-for="(value, key) in currentItem" :key="key">
+              <label :for="key">{{ key }}</label>
+              <template v-if="activeSection === 'quests' && (key === 'reward' || key === 'armorReward')">
+                <div class="reward-list">
+                  <div v-for="(itemId, index) in currentItem[key]" :key="index" class="reward-item">
+                    {{ getItemName(key, itemId) }}
+                    <button @click="removeReward(key, index)" class="btn btn-danger btn-sm">Remove</button>
+                  </div>
                 </div>
-              </div>
-              <select v-model.number="selectedReward[key]" class="form-control form-control-sm mb-2">
-                <option value="">Select a reward</option>
-                <option v-for="option in getItemOptions(key)" :key="option.id" :value="option.id">
-                  {{ option.name }}
-                </option>
-              </select>
-              <button @click="addReward(key)" class="btn btn-primary btn-sm">Add reward</button>
-            </template>
-            <template v-else-if="activeSection === 'story' && key === 'requiredEnemyDefeat'">
-              <div class="mb-2">
-                <select v-model.number="currentItem[key].id" class="form-control form-control-sm mb-1">
-                  <option value="">Select an enemy</option>
-                  <option v-for="enemy in enemies" :key="enemy.id" :value="enemy.id">
-                    {{ enemy.name }}
+                <select v-model.number="selectedReward[key]" class="form-control">
+                  <option value="">Select a reward</option>
+                  <option v-for="option in getItemOptions(key)" :key="option.id" :value="option.id">
+                    {{ option.name }}
                   </option>
                 </select>
-                <input v-model.number="currentItem[key].count" class="form-control form-control-sm" placeholder="Count">
-              </div>
-            </template>
-            <template v-else-if="activeSection === 'story' && key === 'steps'">
-              <div v-for="(step, stepIndex) in currentItem[key]" :key="stepIndex" class="mb-2 story-step">
-                <textarea v-model="step.npcMessage" class="form-control form-control-sm mb-1" rows="2" placeholder="NPC Message"></textarea>
-                <div v-for="(option, optionIndex) in step.playerOptions" :key="optionIndex" class="mb-1 player-option">
-                  <input v-model="option.text" class="form-control form-control-sm mb-1" placeholder="Option Text">
-                  <input v-model.number="option.nextId" class="form-control form-control-sm mb-1" placeholder="Next ID">
-                  <div class="form-check mb-1">
-                    <input type="checkbox" class="form-check-input" v-model="option.giveReward" :id="'giveReward-' + stepIndex + '-' + optionIndex">
-                    <label class="form-check-label" :for="'giveReward-' + stepIndex + '-' + optionIndex">Give Reward</label>
-                  </div>
-                  <div class="form-check mb-1">
-                    <input type="checkbox" class="form-check-input" v-model="option.action" :true-value="'startEnemyBattle'" :false-value="null" :id="'action-' + stepIndex + '-' + optionIndex">
-                    <label class="form-check-label" :for="'action-' + stepIndex + '-' + optionIndex">Start Enemy Battle</label>
-                  </div>
-                  <div v-if="option.action === 'startEnemyBattle'" class="mb-1">
-                    <select v-model.number="option.actionParams.enemyId" class="form-control form-control-sm">
-                      <option value="">Select an enemy</option>
-                      <option v-for="enemy in enemies" :key="enemy.id" :value="enemy.id">
-                        {{ enemy.name }}
-                      </option>
-                    </select>
-                  </div>
-                  <div class="required-resources mb-1">
-                    <h6>Required Resources</h6>
-                    <div v-for="(resource, resourceIndex) in option.requiredResources" :key="resourceIndex" class="mb-1">
-                      <select v-model.number="resource.id" class="form-control form-control-sm mb-1">
-                        <option v-for="resourceOption in resources" :key="resourceOption.id" :value="resourceOption.id">
-                          {{ resourceOption.name }}
+                <button @click="addReward(key)" class="btn btn-primary btn-sm">Add reward</button>
+              </template>
+              <template v-else-if="activeSection === 'story' && key === 'requiredEnemyDefeat'">
+                <div>
+                  <select v-model.number="currentItem[key].id" class="form-control">
+                    <option value="">Select an enemy</option>
+                    <option v-for="enemy in enemies" :key="enemy.id" :value="enemy.id">
+                      {{ enemy.name }}
+                    </option>
+                  </select>
+                  <input v-model.number="currentItem[key].count" class="form-control" placeholder="Count">
+                </div>
+              </template>
+              <template v-else-if="activeSection === 'story' && key === 'steps'">
+                <div v-for="(step, stepIndex) in currentItem[key]" :key="stepIndex" class="story-step">
+                  <textarea v-model="step.npcMessage" class="form-control" rows="2" placeholder="NPC Message"></textarea>
+                  <div v-for="(option, optionIndex) in step.playerOptions" :key="optionIndex" class="player-option">
+                    <input v-model="option.text" class="form-control" placeholder="Option Text">
+                    <input v-model.number="option.nextId" class="form-control" placeholder="Next ID">
+                    <div class="form-check">
+                      <input type="checkbox" class="form-check-input" v-model="option.giveReward" :id="'giveReward-' + stepIndex + '-' + optionIndex">
+                      <label class="form-check-label" :for="'giveReward-' + stepIndex + '-' + optionIndex">Give Reward</label>
+                    </div>
+                    <div class="form-check">
+                      <input type="checkbox" class="form-check-input" v-model="option.action" :true-value="'startEnemyBattle'" :false-value="null" :id="'action-' + stepIndex + '-' + optionIndex">
+                      <label class="form-check-label" :for="'action-' + stepIndex + '-' + optionIndex">Start Enemy Battle</label>
+                    </div>
+                    <div v-if="option.action === 'startEnemyBattle'">
+                      <select v-model.number="option.actionParams.enemyId" class="form-control">
+                        <option value="">Select an enemy</option>
+                        <option v-for="enemy in enemies" :key="enemy.id" :value="enemy.id">
+                          {{ enemy.name }}
                         </option>
                       </select>
-                      <input v-model.number="resource.amount" class="form-control form-control-sm mb-1" placeholder="Amount">
-                      <button @click="removeRequiredResource(option, resourceIndex)" class="btn btn-danger btn-sm">Remove</button>
                     </div>
-                    <button @click="addRequiredResource(option)" class="btn btn-primary btn-sm">Add Required Resource</button>
+                    <div class="required-resources">
+                      <h6>Required Resources</h6>
+                      <div v-for="(resource, resourceIndex) in option.requiredResources" :key="resourceIndex">
+                        <select v-model.number="resource.id" class="form-control">
+                          <option v-for="resourceOption in resources" :key="resourceOption.id" :value="resourceOption.id">
+                            {{ resourceOption.name }}
+                          </option>
+                        </select>
+                        <input v-model.number="resource.amount" class="form-control" placeholder="Amount">
+                        <button @click="removeRequiredResource(option, resourceIndex)" class="btn btn-danger btn-sm">Remove</button>
+                      </div>
+                      <button @click="addRequiredResource(option)" class="btn btn-primary btn-sm">Add Required Resource</button>
+                    </div>
+                  </div>
+                  <button @click="addPlayerOption(stepIndex)" class="btn btn-primary btn-sm">Add Player Option</button>
+                </div>
+                <button @click="addStep" class="btn btn-primary btn-sm">Add Step</button>
+              </template>
+              <template v-else-if="activeSection === 'story' && key === 'reward'">
+                <div>
+                  <label>Experience:</label>
+                  <input v-model.number="currentItem[key].exp" class="form-control" placeholder="Experience">
+                  <label>Money:</label>
+                  <input v-model.number="currentItem[key].money" class="form-control" placeholder="Money">
+                  <div v-for="rewardKey in ['resourceRewards', 'weaponRewards', 'armorRewards', 'aidRewards']" :key="rewardKey">
+                    <h6>{{ rewardKey }}</h6>
+                    <div v-for="(reward, index) in currentItem[key][rewardKey]" :key="index">
+                      <select v-model.number="reward.id" class="form-control">
+                        <option v-for="option in getRewardOptions(rewardKey)" :key="option.id" :value="option.id">
+                          {{ option.name }}
+                        </option>
+                      </select>
+                      <input v-if="rewardKey !== 'weaponRewards' && rewardKey !== 'armorRewards' && rewardKey !== 'aidRewards'" v-model.number="reward.amount" class="form-control" placeholder="Amount">
+                      <button @click="removeRewardItem(rewardKey, index)" class="btn btn-danger btn-sm">Remove</button>
+                    </div>
+                    <button @click="addRewardItem(rewardKey)" class="btn btn-primary btn-sm">Add {{ rewardKey }}</button>
                   </div>
                 </div>
-                <button @click="addPlayerOption(stepIndex)" class="btn btn-primary btn-sm">Add Player Option</button>
-              </div>
-              <button @click="addStep" class="btn btn-primary btn-sm">Add Step</button>
-            </template>
-            <template v-else-if="activeSection === 'story' && key === 'reward'">
-              <div class="mb-2">
-                <label>Experience:</label>
-                <input v-model.number="currentItem[key].exp" class="form-control form-control-sm mb-1" placeholder="Experience">
-                <label>Money:</label>
-                <input v-model.number="currentItem[key].money" class="form-control form-control-sm mb-1" placeholder="Money">
-                <div v-for="rewardKey in ['resourceRewards', 'weaponRewards', 'armorRewards', 'aidRewards']" :key="rewardKey">
-                  <h6>{{ rewardKey }}</h6>
-                  <div v-for="(reward, index) in currentItem[key][rewardKey]" :key="index" class="mb-1">
-                    <select v-model.number="reward.id" class="form-control form-control-sm mb-1">
-                      <option v-for="option in getRewardOptions(rewardKey)" :key="option.id" :value="option.id">
-                        {{ option.name }}
-                      </option>
-                    </select>
-                    <input v-if="rewardKey !== 'weaponRewards' && rewardKey !== 'armorRewards' && rewardKey !== 'aidRewards'" v-model.number="reward.amount" class="form-control form-control-sm mb-1" placeholder="Amount">
-                    <button @click="removeRewardItem(rewardKey, index)" class="btn btn-danger btn-sm">Remove</button>
-                  </div>
-                  <button @click="addRewardItem(rewardKey)" class="btn btn-primary btn-sm mb-2">Add {{ rewardKey }}</button>
-                </div>
-              </div>
-            </template>
-            <input v-else-if="key === 'id'" v-model.number="currentItem[key]" class="form-control form-control-sm" :readonly="true">
-            <input v-else-if="isNumeric(key)" v-model.number="currentItem[key]" class="form-control form-control-sm">
-            <input v-else-if="typeof value !== 'object' && typeof value !== 'boolean'" :id="key" v-model="currentItem[key]" class="form-control form-control-sm">
-            <textarea v-else-if="typeof value === 'object' && key !== 'reward' && key !== 'armorReward' && key !== 'requiredEnemyDefeat' && key !== 'steps'" :id="key" v-model.lazy="currentItem[key]" class="form-control form-control-sm" rows="3"></textarea>
-            <input v-else-if="typeof value === 'boolean'" type="checkbox" :id="key" v-model="currentItem[key]" class="form-check-input">
-          </div>
-        </form>
+              </template>
+              <input v-else-if="key === 'id'" v-model.number="currentItem[key]" class="form-control" :readonly="true">
+              <input v-else-if="isNumeric(key)" v-model.number="currentItem[key]" class="form-control">
+              <input v-else-if="typeof value !== 'object' && typeof value !== 'boolean'" :id="key" v-model="currentItem[key]" class="form-control">
+              <textarea v-else-if="typeof value === 'object' && key !== 'reward' && key !== 'armorReward' && key !== 'requiredEnemyDefeat' && key !== 'steps'" :id="key" v-model="currentItem[key]" class="form-control" rows="3"></textarea>
+              <input v-else-if="typeof value === 'boolean'" type="checkbox" :id="key" v-model="currentItem[key]" class="form-check-input">
+            </div>
+          </form>
+        </div>
       </div>
+      <button @click="goToMainMenu" class="btn btn-outline-primary btn-back">Back to Main Menu</button>
     </div>
   </div>
 </template>
+
 
 <script>
 /* eslint-disable */
@@ -485,6 +491,9 @@ export default {
     removeRewardItem(rewardKey, index) {
       this.currentItem.reward[rewardKey].splice(index, 1);
     },
+    goToMainMenu() {
+      this.$router.push('/');
+    },
     getRewardOptions(rewardKey) {
       switch (rewardKey) {
         case 'resourceRewards':
@@ -542,174 +551,225 @@ export default {
 </script>
 
 <style scoped>
-.game-settings {
-  height: 100vh;
-  padding: 15px;
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
+.settings-container {
+  min-height: 100vh;
+  background-image: url('../assets/bg.jpg');
+  background-size: cover;
+  background-position: center;
   display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-  overflow-x: hidden;
-  font-size: 0.9rem;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Roboto', sans-serif;
+  padding: 20px;
+  color: #ffffff;
 }
 
-.settings-menu, .action-buttons {
+.settings-content {
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+  max-width: 100%;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.game-title {
+  font-size: 2.5rem;
+  color: #00ff00;
+  text-align: left;
+  margin-bottom: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 0 0 10px #00ff00;
+}
+
+.section-title {
+  color: #00ff00;
+  text-align: center;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.subsection-title {
+  color: #00ff00;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+.settings-menu {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
 }
 
-.settings-menu button.active {
-  background-color: #007bff;
-  color: white;
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.btn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-outline-primary {
+  background-color: transparent;
+  color: #00ff00;
+  border: 1px solid #00ff00;
+}
+
+.btn-outline-primary:hover, .btn-outline-primary.active {
+  background-color: #00ff00;
+  color: #000000;
+}
+
+.btn-primary {
+  background-color: #00ff00;
+  color: #000000;
+}
+
+.btn-primary:hover {
+  background-color: #00cc00;
+}
+
+.btn-success {
+  background-color: #28a745;
+  color: #ffffff;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: #ffffff;
+}
+
+.btn-info {
+  background-color: #17a2b8;
+  color: #ffffff;
+}
+
+.btn-warning {
+  background-color: #ffc107;
+  color: #000000;
+}
+
+.btn-back{
+  position: absolute;
+  right: 22px;
+  top:37px
 }
 
 .data-container {
   display: flex;
-  flex-grow: 1;
-  gap: 15px;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .data-display, .data-form {
   flex: 1;
-  background-color: #f8f9fa;
-  padding: 15px;
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 1rem;
   border-radius: 5px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
 }
 
-.data-content, form {
-  flex-grow: 1;
+.data-navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.data-content {
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 1rem;
+  border-radius: 5px;
+  max-height: 300px;
   overflow-y: auto;
 }
 
 pre {
+  color: #00ff00;
   white-space: pre-wrap;
   word-wrap: break-word;
-  background-color: #e9ecef;
-  padding: 10px;
-  border-radius: 5px;
-  font-size: 0.8rem;
-}
-
-.form-control {
-  margin-bottom: 5px;
-}
-
-.reward-list {
-  max-height: 150px;
-  overflow-y: auto;
-}
-
-/* Scrollbar styles */
-.data-content::-webkit-scrollbar, form::-webkit-scrollbar, .reward-list::-webkit-scrollbar {
-  width: 5px;
-}
-
-.data-content::-webkit-scrollbar-track, form::-webkit-scrollbar-track, .reward-list::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-.data-content::-webkit-scrollbar-thumb, form::-webkit-scrollbar-thumb, .reward-list::-webkit-scrollbar-thumb {
-  background-color: #888;
-  border-radius: 2px;
 }
 
 .form-group {
-  margin-bottom: 10px;
+  margin-bottom: 1rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.5rem;
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid #00ff00;
+  color: #ffffff;
+  border-radius: 3px;
+}
+
+.form-control:focus {
+  background-color: rgba(255, 255, 255, 0.2);
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 255, 0, 0.5);
 }
 
 .form-check-input {
-  margin-top: 0.3rem;
+  margin-right: 0.5rem;
 }
 
-/* Styles for story editing */
-.story-step {
-  border: 1px solid #ddd;
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
-}
-
-.player-option {
-  margin-left: 20px;
-  margin-bottom: 5px;
-  padding: 10px;
-  border: 1px solid #eee;
-  border-radius: 5px;
-}
-
-.add-step-btn, .add-option-btn {
-  margin-top: 5px;
-}
-
-/* Style for the reset button */
-.btn-warning {
-  background-color: #ffc107;
-  border-color: #ffc107;
-  color: #212529;
-}
-
-.btn-warning:hover {
-  background-color: #e0a800;
-  border-color: #d39e00;
-  color: #212529;
-}
-
-/* Styles for reward editing */
-.reward-item {
+.patreon-container {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  margin-bottom: 5px;
 }
 
-.reward-item select, .reward-item input {
-  margin-right: 5px;
-}
-
-.reward-item button {
-  margin-left: auto;
-}
-
-.reward-section {
-  margin-bottom: 15px;
-}
-
-.reward-section h6 {
-  margin-bottom: 10px;
-}
-
-/* Styles for required resources */
-.required-resources {
-  border: 1px solid #ddd;
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 5px;
-}
-
-.required-resources h6 {
-  margin-bottom: 10px;
-}
-
-.required-resource-item {
+.patreon-link {
   display: flex;
+  flex-direction: column;
   align-items: center;
+  text-decoration: none;
+  color: #ffffff;
+  transition: transform 0.3s ease;
+}
+
+.patreon-link:hover {
+  transform: scale(1.05);
+}
+
+.patreon-logo {
+  width: 30px;
+  height: auto;
   margin-bottom: 5px;
 }
 
-.required-resource-item select, .required-resource-item input {
-  margin-right: 5px;
+.patreon-text {
+  font-size: 0.8rem;
+  text-align: center;
+  white-space: nowrap;
 }
 
-.required-resource-item button {
-  margin-left: auto;
-}
-
-/* Style for readonly id field */
-input[readonly] {
-  background-color: #e9ecef;
-  cursor: not-allowed;
+.version-number {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  color: rgba(255, 255, 255, 1);
+  font-size: 0.8rem;
+  font-weight: 300;
 }
 </style>

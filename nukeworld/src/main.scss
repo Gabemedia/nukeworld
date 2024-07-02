@@ -111,6 +111,11 @@ div.modal-content {
 .btn{
   font-size: 0.655rem;
 }
+
+.btn-outline-primary.active, .btn-outline-primary:hover{
+  border: 1px #00ff00 solid;
+}
+
 .sidebar-btn{
   background-color: rgba(0, 0, 0, 0.7);
 }

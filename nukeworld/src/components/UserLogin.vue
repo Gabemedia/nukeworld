@@ -3,7 +3,7 @@
     <div class="login-content">
       <h1 class="game-title">NukeWorld</h1>
       <div v-if="!showCharacterList" class="login-form">
-        <h2 class="section-title">Login or Create Character</h2>
+        <h2 class="section-title">Create Character</h2>
         <input v-model="character.name" placeholder="Character Name" class="input-field" autocomplete="name">
         <input v-model="character.email" placeholder="Email" class="input-field" autocomplete="email">
         <input type="password" v-model="character.password" placeholder="Password" class="input-field">
@@ -12,6 +12,7 @@
           <button @click="createCharacter" class="btn btn-secondary">Create Character</button>
         </div>
         <button @click="toggleCharacterList" class="btn btn-tertiary">Show Character List</button>
+        <button @click="goToMainMenu" class="btn btn-tertiary">Back to Main Menu</button>
         <div v-if="showSuccessMessage" class="alert alert-success" role="alert">
           Character created successfully!
         </div>
@@ -57,7 +58,7 @@ export default {
       },
       showSuccessMessage: false,
       showCharacterList: false,
-      version: '0.1.5.5', // Current version number
+      version: '0.1.6.0', // Current version number
     };
   },
   computed: {
@@ -96,7 +97,7 @@ export default {
             event_label: 'Player Login',
             character_name: character.name
           });
-          this.$router.push('/game-world');
+          this.$router.push('/loading');
         } catch (error) {
           alert('Invalid login credentials. Please enter a valid email and password.');
         }
@@ -136,6 +137,9 @@ export default {
         event_label: 'Patreon Link Click'
       });
     },
+    goToMainMenu() {
+      this.$router.push('/');
+    }
   }
 };
 </script>
@@ -168,18 +172,21 @@ export default {
   font-size: 2.5rem;
   color: #00ff00;
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
   text-transform: uppercase;
   letter-spacing: 3px;
   text-shadow: 0 0 10px #00ff00;
 }
 
 .section-title {
-  color: #ffffff;
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   font-size: 1.2rem;
   font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 0 0 10px #00ff00;
+  color: #00ff00;
 }
 
 .input-field {
