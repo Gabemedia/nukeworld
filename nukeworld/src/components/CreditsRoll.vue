@@ -11,7 +11,10 @@
         <div class="credits-section">
           <h3 class="role-title">Development Team</h3>
           <p class="team-member">Gabemedia - Lead Developer</p>
-          <p class="team-member">AI Assistant - Code Support</p>
+        </div>
+        <div class="credits-section">
+          <h3 class="role-title">Patreon Contributes</h3>
+          <p class="special-thanks">Get your name listed here!</p>
         </div>
         <div class="credits-section">
           <h3 class="role-title">Special Thanks</h3>
@@ -39,7 +42,7 @@ export default {
   name: 'CreditsRoll',
   data() {
     return {
-      version: '0.1.6.0', // Update this to your current version
+      version: '0.1.7.0', // Update this to your current version
     }
   },
   methods: {
@@ -85,17 +88,21 @@ export default {
   font-size: 2.5rem;
   color: #00ff00;
   text-align: center;
-  margin-bottom: 1.5rem;
   text-transform: uppercase;
   letter-spacing: 3px;
   text-shadow: 0 0 10px #00ff00;
+  margin-bottom: 0.5rem;
 }
 
-.credits-scroll {
-  max-height: 400px;
-  overflow-y: auto;
-  margin-bottom: 1.5rem;
-  padding-right: 10px;
+.section-title {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  font-size: 1.2rem;
+  font-weight: 300;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  text-shadow: 0 0 10px #00ff00;
+  color: #00ff00;
 }
 
 .credits-scroll::-webkit-scrollbar {
@@ -111,39 +118,27 @@ export default {
   border-radius: 5px;
 }
 
-.section-title {
-  color: #ffffff;
-  text-align: center;
-  margin-bottom: 1.5rem;
-  font-size: 1.5rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-}
-
 .credits-section {
   margin-bottom: 2rem;
 }
 
 .role-title {
   color: #00ff00;
-  font-size: 1.2rem;
+  font-size: 1rem;
   margin-bottom: 0.5rem;
-  text-transform: uppercase;
   letter-spacing: 1px;
 }
 
 .creator-name {
   color: #ffffff;
-  font-size: 1.5rem;
+  font-size: 0.9rem;
   font-weight: 700;
   margin-bottom: 0.5rem;
-  text-shadow: 0 0 5px #00ff00;
 }
 
 .team-member, .special-thanks {
   color: #ffffff;
-  font-size: 1rem;
+  font-size: 0.9rem;
   margin-bottom: 0.3rem;
 }
 

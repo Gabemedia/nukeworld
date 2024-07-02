@@ -58,7 +58,7 @@ export default {
       },
       showSuccessMessage: false,
       showCharacterList: false,
-      version: '0.1.6.0', // Current version number
+      version: '0.1.7.0', // Current version number
     };
   },
   computed: {
@@ -172,10 +172,10 @@ export default {
   font-size: 2.5rem;
   color: #00ff00;
   text-align: center;
-  margin-bottom: 0.5rem;
   text-transform: uppercase;
   letter-spacing: 3px;
   text-shadow: 0 0 10px #00ff00;
+  margin-bottom: 0.5rem;
 }
 
 .section-title {

@@ -242,6 +242,24 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Enhanced user experience by providing more accurate visual feedback for quest rewards
 - Major fix to quest handling across game in multiple modals and components.
 
+### Version 0.1.7.0 (2024-07-02)
+## Changelog
+
+... (previous entries remain unchanged)
+
+### Version 0.1.6.1 (Current Date)
+- Updated MainMenu to include a "Delete All" button for clearing local storage
+- Improved GameSettings with consistent styling and layout matching other components
+- Added easy access to return to the main menu from GameSetting
+- Enhanced UserLogin with a button to return to the main menu
+- Improved CreditsRoll with better typography and graphical elements
+- Ensured consistent styling across all components (MainMenu, UserLogin, GameSettings, CreditsRoll)
+- Fixed issue where GameSettings was not displaying when accessed from MainMenu
+- Improved overall user interface and user experience with consistent button styles and layouts
+- Updated color scheme to maintain the post-apocalyptic theme across all components
+- Ensured all components have proper navigation options to improve user flow
+- Added confirmation dialog for the "Delete All" functionality to prevent accidental data loss
+
 
 
 ## Getting Started

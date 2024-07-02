@@ -45,7 +45,7 @@ export default {
   data() {
     return {
       showCharacterList: false,
-      version: '0.1.6.0', // Update this to your current version
+      version: '0.1.7.0', // Update this to your current version
     };
   },
   computed: {
