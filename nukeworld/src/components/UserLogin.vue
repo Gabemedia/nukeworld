@@ -5,28 +5,13 @@
       <div v-if="!showCharacterList" class="login-form">
         <h2 class="section-title">Create Character</h2>
         <input v-model="character.name" placeholder="Character Name" class="input-field" autocomplete="name">
-        <input v-model="character.email" placeholder="Email" class="input-field" autocomplete="email">
-        <input type="password" v-model="character.password" placeholder="Password" class="input-field">
         <div class="button-group">
-          <button @click="login" class="btn btn-primary">Login</button>
-          <button @click="createCharacter" class="btn btn-secondary">Create Character</button>
+          <button @click="createAndStartGame" class="btn btn-primary">Create Character</button>
         </div>
-        <button @click="toggleCharacterList" class="btn btn-tertiary">Show Character List</button>
         <button @click="goToMainMenu" class="btn btn-tertiary">Back to Main Menu</button>
         <div v-if="showSuccessMessage" class="alert alert-success" role="alert">
           Character created successfully!
         </div>
-      </div>
-      <div v-else class="character-list">
-        <h2 class="section-title">Character List</h2>
-        <div class="character-grid">
-          <div v-for="char in characters" :key="char.id" class="character-card" @click="selectCharacter(char)">
-            <h3 class="character-name">{{ char.name }}</h3>
-            <p class="character-level">Level: {{ char.level }}</p>
-          </div>
-        </div>
-        <button @click="toggleCharacterList" class="btn btn-tertiary">Back to Login</button>
-        <button @click="clearLocalStorage" class="btn btn-danger">Delete All</button>
       </div>
     </div>
     <div class="patreon-container">
@@ -48,13 +33,10 @@ import { mapActions, mapState } from 'vuex';
 
 export default {
   name: 'UserLogin',
-  props: ['loggedInUser'],
   data() {
     return {
       character: {
         name: '',
-        email: '',
-        password: ''
       },
       showSuccessMessage: false,
       showCharacterList: false,
@@ -65,71 +47,32 @@ export default {
     ...mapState(['characters'])
   },
   methods: {
+    ...mapActions(['updateCharacter', 'createCharacter']),
     toggleCharacterList() {
       this.showCharacterList = !this.showCharacterList;
     },
-    selectCharacter(selectedCharacter) {
-      this.character.name = selectedCharacter.name;
-      this.character.email = selectedCharacter.email;
-      this.character.password = selectedCharacter.password;
-      this.toggleCharacterList();
+    selectCharacter(character) {
+      this.updateCharacter(character);
+      this.$router.push('/loading');
     },
-    async login() {
-      if (this.character.email.trim() !== '' && this.character.password.trim() !== '') {
-        try {
-          let characters = this.$store.state.characters;
-          let characterExists = characters.some(character => 
-            character.email === this.character.email && character.password === this.character.password
-          );
-
-          if (!characterExists) {
-            alert('Invalid login credentials. Please enter a valid email and password.');
-            return;
-          }
-
-          let character = characters.find(character => 
-            character.email === this.character.email && character.password === this.character.password
-          );
-
-          await this.$store.commit('updateCharacter', character);
-          this.$gtag.event('player_login', {
-            event_category: 'user_action',
-            event_label: 'Player Login',
-            character_name: character.name
-          });
-          this.$router.push('/loading');
-        } catch (error) {
-          alert('Invalid login credentials. Please enter a valid email and password.');
-        }
-      } else {
-        alert('Please fill in all required fields.');
-      }
-    },
-    ...mapActions(['updateCharacter', 'createCharacter']),
-    createCharacter() {
+    async createAndStartGame() {
       if (this.character.name.trim() !== '') {
-        this.$store.commit('updateCharacter', this.character);
-        this.$store.dispatch('createCharacter');
+        await this.$store.dispatch('createCharacter', this.character);
         this.showSuccessMessage = true;
         this.$gtag.event('player_signup', {
           event_category: 'user_action',
           event_label: 'Player Signup',
           character_name: this.character.name
         });
+        setTimeout(() => {
+          this.$router.push('/loading');
+        }, 1000);
       } else {
         alert('Please enter your character name.');
       }
     },
-    clearLocalStorage() {
-      if (confirm('Are you sure you want to delete all saved data for this game?')) {
-        localStorage.clear();
-        this.$gtag.event('clear_local_storage', {
-          event_category: 'user_action',
-          event_label: 'Clear Local Storage'
-        });
-        alert('All saved data has been deleted.');
-        location.reload();
-      }
+    goToMainMenu() {
+      this.$router.push('/');
     },
     trackPatreonClick() {
       this.$gtag.event('patreon_click', {
@@ -137,9 +80,6 @@ export default {
         event_label: 'Patreon Link Click'
       });
     },
-    goToMainMenu() {
-      this.$router.push('/');
-    }
   }
 };
 </script>
@@ -219,19 +159,11 @@ export default {
 .btn-primary {
   background-color: #00ff00;
   color: #000000;
+  width: 100%;
 }
 
 .btn-primary:hover {
   background-color: #00cc00;
-}
-
-.btn-secondary {
-  background-color: #4a4a4a;
-  color: #ffffff;
-}
-
-.btn-secondary:hover {
-  background-color: #5a5a5a;
 }
 
 .btn-tertiary {
@@ -244,17 +176,6 @@ export default {
 
 .btn-tertiary:hover {
   background-color: rgba(0, 255, 0, 0.1);
-}
-
-.btn-danger {
-  background-color: #ff0000;
-  color: #ffffff;
-  width: 100%;
-  margin-top: 1rem;
-}
-
-.btn-danger:hover {
-  background-color: #cc0000;
 }
 
 .button-group {

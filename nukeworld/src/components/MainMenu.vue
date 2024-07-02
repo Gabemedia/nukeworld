@@ -10,7 +10,7 @@
         </div>
         <button @click="openSettings" class="btn btn-outline-primary btn-tertiary" disabled>Settings</button>
         <button @click="showCredits" class="btn btn-outline-primary btn-tertiary">Credits</button>
-        <button @click="clearLocalStorage" class="btn btn-outlines-danger btn-tertiary">Delete All</button>
+        <button @click="clearLocalStorage" class="btn btn-outlines-danger btn-tertiary">Delete All Saved Data</button>
       </div>
       <div v-else class="character-list">
         <h2 class="section-title">Character List</h2>
@@ -18,6 +18,7 @@
           <div v-for="char in characters" :key="char.id" class="character-card" @click="selectCharacter(char)">
             <h3 class="character-name">{{ char.name }}</h3>
             <p class="character-level">Level: {{ char.level }}</p>
+            <p class="character-level">NukaCoins: {{ char.money }}</p>
           </div>
         </div>
         <button @click="showCharacterList = false" class="btn btn-tertiary">Back to Menu</button>
