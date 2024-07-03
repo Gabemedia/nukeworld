@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex';
+import { mapState, mapGetters, mapActions } from 'vuex';
 import enemies from '@/store/enemy';
 import confetti from 'canvas-confetti';
 import { toast } from "vue3-toastify";
@@ -116,6 +116,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['handleQuest', 'claimStoryRewards', 'defeatEnemy']),
     getRandomEnemy() {
       if (enemies && enemies.length > 0) {
         const randomIndex = Math.floor(Math.random() * enemies.length);
@@ -205,10 +206,11 @@ export default {
         this.showVictoryConfetti();
       }
     },
+    
     async claimRewards() {
       if (this.isBattleWon && this.enemy) {
         try {
-          const result = await this.$store.dispatch('defeatEnemy');
+          const result = await this.defeatEnemy();
           this.showRewardConfetti();
           this.resetBattleState();
           
@@ -216,9 +218,15 @@ export default {
           
           this.$emit('battle-ended');
           
-          if (result && result.rewards) {
-            this.$emit('show-reward-toast', result.storyLineName, result.rewards);
-            this.showRewardToast(result.storyLineName, result.rewards);
+          if (result) {
+            const obtainedRewards = await this.claimStoryRewards({ 
+              storyLine: this.$store.getters.currentStoryLine,
+              battleRewards: {
+                exp: this.enemy.exp,
+                money: this.enemy.money
+              }
+            });
+            this.showRewardToast("Battle Rewards", obtainedRewards);
           } else {
             console.log('No rewards to show in toast');
           }
@@ -227,6 +235,8 @@ export default {
         }
       }
     },
+
+
     resetBattleState() {
       this.isBattleWon = false;
       this.$store.commit('updateCharacter');
@@ -253,73 +263,82 @@ export default {
         zIndex: 9999,
       });
     },
-    showRewardToast(storyLineName, rewards) {
+    showRewardToast(title, rewards) {
       let rewardMessage = `
         <div class="d-flex flex-column align-items-start justify-content-start h-100">
-        <p class="text-left fw-bold mb-1">${storyLineName} completed!</p>
+        <p class="text-left fw-bold mb-1">${title}</p>
         <p class="text-left fw-semi mb-2">You earned:</p>
         <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
       `;
 
-      rewards.forEach(reward => {
-        switch (reward.type) {
-          case 'exp':
-            rewardMessage += `
-              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                <img src="${require('@/assets/interface/icons/exp.png')}" title="Exp" style="width: 20px;" class="me-2">
-                <span>${reward.amount} exp</span>
-              </div>
-            `;
-            break;
-          case 'money':
-            rewardMessage += `
-              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
-                <span>${reward.amount} money</span>
-              </div>
-            `;
-            break;
-          case 'resource':
-            if (reward.item && reward.item.name) {
-              rewardMessage += `
-                <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                  <img src="${require(`@/assets/interface/icons/resources/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
-                  <span>${reward.amount} x ${reward.item.name}</span>
-                </div>
-              `;
-            }
-            break;
-          case 'weapon':
-            if (reward.item && reward.item.name) {
-              rewardMessage += `
-                <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                  <img src="${require(`@/assets/interface/icons/weapons/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
-                  <span>${reward.item.name}</span>
-                </div>
-              `;
-            }
-            break;
-          case 'armor':
-            if (reward.item && reward.item.name) {
-              rewardMessage += `
-                <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                  <img src="${require(`@/assets/interface/icons/armor/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
-                  <span>${reward.item.name}</span>
-                </div>
-              `;
-            }
-            break;
-          case 'aid':
-            if (reward.item && reward.item.name) {
-              rewardMessage += `
-                <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                  <img src="${require(`@/assets/interface/icons/aid/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
-                  <span>${reward.item.name}</span>
-                </div>
-              `;
-            }
-            break;
-        }
+      if (rewards.exp > 0) {
+        rewardMessage += `
+          <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+            <img src="${require('@/assets/interface/icons/exp.png')}" title="Exp" style="width: 20px;" class="me-2">
+            <span>${rewards.exp} exp</span>
+          </div>
+        `;
+      }
+
+      if (rewards.money > 0) {
+        rewardMessage += `
+          <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+            <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
+            <span>${rewards.money} money</span>
+          </div>
+        `;
+      }
+
+      // Håndter våben
+      const uniqueWeapons = [...new Set(rewards.weapons.map(w => w.id))];
+      uniqueWeapons.forEach(weaponId => {
+        const weapon = rewards.weapons.find(w => w.id === weaponId);
+        rewardMessage += `
+          <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+            <img src="${require(`@/assets/interface/icons/weapons/${weapon.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${weapon.name}" style="width: 20px;" class="me-2">
+            <span>${weapon.name}</span>
+          </div>
+        `;
+      });
+
+      // Håndter rustning
+      const uniqueArmor = [...new Set(rewards.armor.map(a => a.id))];
+      uniqueArmor.forEach(armorId => {
+        const armorItem = rewards.armor.find(a => a.id === armorId);
+        rewardMessage += `
+          <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+            <img src="${require(`@/assets/interface/icons/armor/${armorItem.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${armorItem.name}" style="width: 20px;" class="me-2">
+            <span>${armorItem.name}</span>
+          </div>
+        `;
+      });
+
+      // Håndter ressourcer
+      const resourceCounts = rewards.resources.reduce((acc, resource) => {
+        acc[resource.id] = (acc[resource.id] || 0) + 1;
+        return acc;
+      }, {});
+
+      Object.entries(resourceCounts).forEach(([resourceId, count]) => {
+        const resource = rewards.resources.find(r => r.id === parseInt(resourceId));
+        rewardMessage += `
+          <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+            <img src="${require(`@/assets/interface/icons/resources/${resource.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${resource.name}" style="width: 20px;" class="me-2">
+            <span>${count}x ${resource.name}</span>
+          </div>
+        `;
+      });
+
+      // Håndter hjælpemidler
+      const uniqueAid = [...new Set(rewards.aid.map(a => a.id))];
+      uniqueAid.forEach(aidId => {
+        const aidItem = rewards.aid.find(a => a.id === aidId);
+        rewardMessage += `
+          <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+            <img src="${require(`@/assets/interface/icons/aid/${aidItem.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${aidItem.name}" style="width: 20px;" class="me-2">
+            <span>${aidItem.name}</span>
+          </div>
+        `;
       });
 
       rewardMessage += '</div></div>';

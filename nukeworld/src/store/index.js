@@ -640,6 +640,95 @@ const actions = {
     }
   },
 
+  claimStoryRewards({ commit, dispatch, state }, { storyLine, battleRewards }) {
+    let obtainedRewards = {
+      exp: 0,
+      money: 0,
+      weapons: [],
+      armor: [],
+      resources: [],
+      aid: []
+    };
+  
+    // Håndter exp og penge
+    if (storyLine.reward) {
+      if (storyLine.reward.exp) {
+        obtainedRewards.exp += storyLine.reward.exp;
+        dispatch('increaseExp', storyLine.reward.exp);
+      }
+      if (storyLine.reward.money) {
+        obtainedRewards.money += storyLine.reward.money;
+        dispatch('increaseMoney', storyLine.reward.money);
+      }
+    }
+  
+    // Håndter våben
+    if (storyLine.reward && storyLine.reward.weaponRewards) {
+      storyLine.reward.weaponRewards.forEach(reward => {
+        const weapon = state.items.find(i => i.id === reward.id);
+        if (weapon) {
+          const newWeapon = { ...weapon, uuid: uuidv4() };
+          state.character.weapons.push(newWeapon);
+          obtainedRewards.weapons.push(newWeapon);
+        }
+      });
+    }
+  
+    // Håndter rustning
+    if (storyLine.reward && storyLine.reward.armorRewards) {
+      storyLine.reward.armorRewards.forEach(reward => {
+        const armorItem = state.armor.find(a => a.id === reward.id);
+        if (armorItem) {
+          const newArmor = { ...armorItem, uuid: uuidv4() };
+          state.character.armor.push(newArmor);
+          obtainedRewards.armor.push(newArmor);
+        }
+      });
+    }
+  
+    // Håndter ressourcer
+    if (storyLine.reward && storyLine.reward.resourceRewards) {
+      storyLine.reward.resourceRewards.forEach(reward => {
+        const resource = state.resources.find(r => r.id === reward.id);
+        if (resource) {
+          for (let i = 0; i < reward.amount; i++) {
+            const newResource = { ...resource, uuid: uuidv4() };
+            state.character.resources.push(newResource);
+            obtainedRewards.resources.push(newResource);
+          }
+        }
+      });
+    }
+  
+    // Håndter hjælpemidler
+    if (storyLine.reward && storyLine.reward.aidRewards) {
+      storyLine.reward.aidRewards.forEach(reward => {
+        const aidItem = state.aid.find(a => a.id === reward.id);
+        if (aidItem) {
+          const newAid = { ...aidItem, uuid: uuidv4() };
+          state.character.aid.push(newAid);
+          obtainedRewards.aid.push(newAid);
+        }
+      });
+    }
+  
+    // Håndter kampbelønninger
+    if (battleRewards) {
+      if (battleRewards.exp) {
+        obtainedRewards.exp += battleRewards.exp;
+        dispatch('increaseExp', battleRewards.exp);
+      }
+      if (battleRewards.money) {
+        obtainedRewards.money += battleRewards.money;
+        dispatch('increaseMoney', battleRewards.money);
+      }
+      // Tilføj yderligere kampbelønninger her, hvis nødvendigt
+    }
+  
+    commit('updateCharacterInArray', state.character);
+    return obtainedRewards;
+  },  
+
   completeStoryLine({ commit, dispatch, state }, { storyLineId, giveReward }) {
     const storyLine = state.storyLines.find(sl => sl.id === storyLineId);
     if (storyLine && (!storyLine.completed || storyLine.repeatable)) {
