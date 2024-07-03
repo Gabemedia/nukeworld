@@ -53,7 +53,8 @@
 import { mapGetters, mapActions } from 'vuex';
 import EnemyEncounters from '../EnemyEncounters.vue';
 import { ref } from 'vue';
-import { toast } from "vue3-toastify";
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 
 export default {
   name: 'QuestDialog',
@@ -116,6 +117,7 @@ export default {
           return;
         }
       }
+
       const result = await this.$store.dispatch('progressStory', { 
         nextId: option.nextId, 
         choiceText: option.text,
@@ -123,8 +125,11 @@ export default {
       });
       
       if (result && result.rewards) {
-        this.showRewardToast(this.currentStoryLine.name, result.rewards);
-        this.updateCharacter(this.$store.state.character); // Save character state
+        this.showRewardToast({
+          storyLineName: this.currentStoryLine.name,
+          rewards: result.rewards
+        });
+        this.updateCharacter(this.$store.state.character);
       }
     },
 
@@ -132,97 +137,72 @@ export default {
       this.$store.dispatch('cancelCurrentStoryLine');
     },
 
-    showRewardToast(storyLineName, rewards) {
+    showRewardToast(data) {
+      const { storyLineName, rewards } = data;
       let rewardMessage = `
         <div class="d-flex flex-column align-items-start justify-content-start h-100">
-        <p class="text-left fw-bold mb-1">${storyLineName} completed!</p>
-        <p class="text-left fw-semi mb-2">You earned:</p>
-        <div id="rewardMessage"></div>
-        <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
+          <p class="text-left fw-bold mb-1">${storyLineName} completed!</p>
+          <p class="text-left fw-semi mb-2">You earned:</p>
+          <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
       `;
-      console.log('Rewards:', rewards);
 
-      if (rewards.exp > 0) {
-        console.log('Adding exp reward');
-        rewardMessage += `
-          <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-            <img src="${require('@/assets/interface/icons/exp.png')}" title="Exp" style="width: 20px;" class="me-2">
-            <span>${rewards.exp} exp</span>
+      rewards.forEach(reward => {
+        switch(reward.type) {
+          case 'exp':
+            rewardMessage += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require('@/assets/interface/icons/exp.png')}" title="Exp" style="width: 20px;" class="me-2">
+                <span>${reward.amount} exp</span>
+              </div>
+            `;
+            break;
+          case 'money':
+            rewardMessage += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
+                <span>${reward.amount} money</span>
+              </div>
+            `;
+            break;
+          case 'resource':
+            rewardMessage += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-1">
+                <img src="${require(`@/assets/interface/icons/resources/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                <span>${reward.amount}x ${reward.item.name}</span>
+              </div>
+            `;
+            break;
+          case 'weapon':
+            rewardMessage += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-1">
+                <img src="${require(`@/assets/interface/icons/weapons/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                <span>${reward.item.name}</span>
+              </div>
+            `;
+            break;
+          case 'armor':
+            rewardMessage += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-1">
+                <img src="${require(`@/assets/interface/icons/armor/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                <span>${reward.item.name}</span>
+              </div>
+            `;
+            break;
+          case 'aid':
+            rewardMessage += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-1">
+                <img src="${require(`@/assets/interface/icons/aid/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                <span>${reward.item.name}</span>
+              </div>
+            `;
+            break;
+        }
+      });
+
+      rewardMessage += `
           </div>
-        `;
-      }
-
-      if (rewards.money > 0) {
-        console.log('Adding money reward');
-        rewardMessage += `
-          <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-            <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
-            <span>${rewards.money} money</span>
-          </div>
-        `;
-      }
-
-      // Handle weapons
-      if (rewards.weapons && rewards.weapons.length > 0) {
-        console.log('Adding weapon rewards');
-        rewards.weapons.forEach(weapon => {
-          rewardMessage += `
-            <div class="d-flex align-items-start justify-content-start reward-info mb-1">
-              <img src="${require(`@/assets/interface/icons/weapons/${weapon.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${weapon.name}" style="width: 20px;" class="me-2">
-              <span>${weapon.name}</span>
-            </div>
-          `;
-        });
-      }
-
-      // Handle armor
-      if (rewards.armor && rewards.armor.length > 0) {
-        console.log('Adding armor rewards');
-        rewards.armor.forEach(armorItem => {
-          rewardMessage += `
-            <div class="d-flex align-items-start justify-content-start reward-info mb-1">
-              <img src="${require(`@/assets/interface/icons/armor/${armorItem.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${armorItem.name}" style="width: 20px;" class="me-2">
-              <span>${armorItem.name}</span>
-            </div>
-          `;
-        });
-      }
-
-      // Handle resources
-      if (rewards.resources && rewards.resources.length > 0) {
-        console.log('Adding resource rewards');
-        const resourceCounts = rewards.resources.reduce((acc, resource) => {
-          acc[resource.id] = (acc[resource.id] || 0) + 1;
-          return acc;
-        }, {});
-
-        Object.entries(resourceCounts).forEach(([resourceId, count]) => {
-          const resource = rewards.resources.find(r => r.id === parseInt(resourceId));
-          rewardMessage += `
-            <div class="d-flex align-items-start justify-content-start reward-info mb-1">
-              <img src="${require(`@/assets/interface/icons/resources/${resource.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${resource.name}" style="width: 20px;" class="me-2">
-              <span>${count}x ${resource.name}</span>
-            </div>
-          `;
-        });
-      }
-
-      // Handle aid
-      if (rewards.aid && rewards.aid.length > 0) {
-        console.log('Adding aid rewards');
-        rewards.aid.forEach(aidItem => {
-          rewardMessage += `
-            <div class="d-flex align-items-start justify-content-start reward-info mb-1">
-              <img src="${require(`@/assets/interface/icons/aid/${aidItem.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${aidItem.name}" style="width: 20px;" class="me-2">
-              <span>${aidItem.name}</span>
-            </div>
-          `;
-        });
-      }
-
-      console.log('Final reward message:', rewardMessage);
-      document.getElementById('rewardMessage').innerHTML = rewardMessage;
-      rewardMessage += '</div></div>';
+        </div>
+      `;
 
       toast.success(rewardMessage, {
         dangerouslyHTMLString: true,
@@ -233,7 +213,6 @@ export default {
         bodyClassName: 'quest-toast-body quest-toast',
       });
     },
-
   },
 };
 </script>
@@ -348,4 +327,17 @@ export default {
   vertical-align: middle;
 }
 
+/* Tilføj disse styles for at sikre, at toast-beskeden vises korrekt */
+:global(.quest-toast-container) {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  color: white !important;
+}
+
+:global(.quest-toast-body) {
+  font-size: 14px !important;
+}
+
+:global(.quest-toast) {
+  max-width: 350px !important;
+}
 </style>
