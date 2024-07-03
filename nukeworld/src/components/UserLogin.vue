@@ -59,11 +59,6 @@ export default {
       if (this.character.name.trim() !== '') {
         await this.$store.dispatch('createCharacter', this.character);
         this.showSuccessMessage = true;
-        this.$gtag.event('player_signup', {
-          event_category: 'user_action',
-          event_label: 'Player Signup',
-          character_name: this.character.name
-        });
         setTimeout(() => {
           this.$router.push('/loading');
         }, 1000);
@@ -112,21 +107,18 @@ export default {
   font-size: 2.5rem;
   color: #00ff00;
   text-align: center;
+  margin-bottom: 1.5rem;
   text-transform: uppercase;
   letter-spacing: 3px;
   text-shadow: 0 0 10px #00ff00;
-  margin-bottom: 0.5rem;
 }
 
 .section-title {
+  color: #ffffff;
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   font-size: 1.2rem;
   font-weight: 300;
-  text-transform: uppercase;
-  letter-spacing: 3px;
-  text-shadow: 0 0 10px #00ff00;
-  color: #00ff00;
 }
 
 .input-field {
@@ -159,7 +151,6 @@ export default {
 .btn-primary {
   background-color: #00ff00;
   color: #000000;
-  width: 100%;
 }
 
 .btn-primary:hover {
@@ -195,38 +186,6 @@ export default {
   color: #155724;
   background-color: #d4edda;
   border-color: #c3e6cb;
-}
-
-.character-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.character-card {
-  background-color: rgba(255, 255, 255, 0.1);
-  padding: 1rem;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.character-card:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-3px);
-}
-
-.character-name {
-  color: #00ff00;
-  margin: 0 0 0.5rem 0;
-  font-size: 1rem;
-}
-
-.character-level {
-  color: #ffffff;
-  margin: 0;
-  font-size: 0.875rem;
 }
 
 .patreon-container {

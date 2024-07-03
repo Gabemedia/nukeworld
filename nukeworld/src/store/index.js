@@ -12,6 +12,7 @@ import enemies from './enemy';
 const state = reactive({
   characters: JSON.parse(localStorage.getItem('characters')) || [],
   character: JSON.parse(localStorage.getItem('character')) || {
+    id: '',
     name: '',
     email: '',
     password: '',
@@ -50,6 +51,7 @@ const state = reactive({
 
 
 const getters = {
+  characterById: (state) => (id) => state.characters.find((ch) => ch.id === id),
   characterInArray: (state) => (email) => state.characters.find((ch) => ch.email === email),
   getResource: (state) => (resourceId) => {
     return state.character.resources.find(r => r.id === resourceId);
@@ -82,9 +84,9 @@ const mutations = {
     Object.assign(state.character, character);
   },
   updateCharacterInArray(state, character) {
-    const characterInArray = getters.characterInArray(state)(character.email);
-    if (characterInArray) {
-      Object.assign(characterInArray, character);
+    const index = state.characters.findIndex(ch => ch.id === character.id);
+    if (index !== -1) {
+      state.characters[index] = { ...state.characters[index], ...character };
     }
   },
   increaseCharacterLevel(state) {
@@ -389,9 +391,10 @@ const actions = {
   login({ commit }, { username, email, password }) {
     commit('updateCharacter', { name: username, email, password });
   },
-  createCharacter({ commit, state }) {
+  createCharacter({ commit, state }, characterData) {
     const newCharacter = {
-      ...state.character,
+      id: uuidv4(),
+      name: characterData.name,
       level: 1,
       exp: 1,
       health: 100,
@@ -406,8 +409,8 @@ const actions = {
     };
     commit('addCharacter', newCharacter);
     commit('updateCharacter', newCharacter);
-    commit('equipWeapon', 0);
-    commit('equipArmor', 0); 
+    commit('equipWeapon', newCharacter.weapons[0].uuid);
+    commit('equipArmor', newCharacter.armor[0].uuid); 
     commit('setQuests', defaultQuests);
   },
   
@@ -878,9 +881,6 @@ const store = createStore({
 store.commit('assignRandomCoordinates');
 store.dispatch('initializeQuests');
 store.dispatch('autoResetQuests'); 
-
-
-
 
 watch(
   () => state.characters,
