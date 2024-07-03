@@ -222,8 +222,8 @@ const mutations = {
       storyLine.completed = true;
       storyLine.currentStepIndex = 0;
     }
-  },
-
+  },  
+  
   resetStoryLineProgress(state, storyLineId) {
     const storyLine = state.storyLines.find(sl => sl.id === storyLineId);
     if (storyLine) {
@@ -729,19 +729,26 @@ const actions = {
     return obtainedRewards;
   },  
 
-  completeStoryLine({ commit, dispatch, state }, { storyLineId, giveReward }) {
+  async completeStoryLine({ commit, dispatch, state }, { storyLineId, giveReward }) {
     const storyLine = state.storyLines.find(sl => sl.id === storyLineId);
     if (storyLine && (!storyLine.completed || storyLine.repeatable)) {
-      let rewards = [];
+      let rewards = {
+        exp: 0,
+        money: 0,
+        weapons: [],
+        armor: [],
+        resources: [],
+        aid: []
+      };
   
       if ((storyLine.alwaysGiveReward || giveReward) && storyLine.reward) {
         if (storyLine.reward.exp) {
           dispatch('increaseExp', storyLine.reward.exp);
-          rewards.push({ type: 'exp', amount: storyLine.reward.exp });
+          rewards.exp = storyLine.reward.exp;
         }
         if (storyLine.reward.money) {
           dispatch('increaseMoney', storyLine.reward.money);
-          rewards.push({ type: 'money', amount: storyLine.reward.money });
+          rewards.money = storyLine.reward.money;
         }
         if (storyLine.reward.resourceRewards && storyLine.reward.resourceRewards.length > 0) {
           storyLine.reward.resourceRewards.forEach(reward => {
@@ -749,28 +756,28 @@ const actions = {
             for (let i = 0; i < reward.amount; i++) {
               dispatch('addResource', reward.id);
             }
-            rewards.push({ type: 'resource', item: resource, amount: reward.amount });
+            rewards.resources.push(resource);
           });
         }
         if (storyLine.reward.weaponRewards && storyLine.reward.weaponRewards.length > 0) {
           storyLine.reward.weaponRewards.forEach(reward => {
             const weapon = state.items.find(i => i.id === reward.id);
             dispatch('addItemToWeapons', reward.id);
-            rewards.push({ type: 'weapon', item: weapon });
+            rewards.weapons.push(weapon);
           });
         }
         if (storyLine.reward.armorRewards && storyLine.reward.armorRewards.length > 0) {
           storyLine.reward.armorRewards.forEach(reward => {
             const armorItem = state.armor.find(a => a.id === reward.id);
             dispatch('addItemToArmor', reward.id);
-            rewards.push({ type: 'armor', item: armorItem });
+            rewards.armor.push(armorItem);
           });
         }
         if (storyLine.reward.aidRewards && storyLine.reward.aidRewards.length > 0) {
           storyLine.reward.aidRewards.forEach(reward => {
             const aidItem = state.aid.find(a => a.id === reward.id);
             dispatch('addItemToAid', reward.id);
-            rewards.push({ type: 'aid', item: aidItem });
+            rewards.aid.push(aidItem);
           });
         }
       }
@@ -785,8 +792,8 @@ const actions = {
       return { storyLineName: storyLine.name, rewards };
     }
     return null;
-  },
-  
+  },  
+
   checkRequiredResources({ state }, requiredResources) {
     return requiredResources.every(required => {
       const resourceCount = state.character.resources.filter(r => r.id === required.id).length;
@@ -832,7 +839,8 @@ const actions = {
       commit('addPlayerChoice', { storyLineId: state.currentStoryLineId, choice: choiceText });
       
       if (nextId === null) {
-        return dispatch('completeStoryLine', { storyLineId: state.currentStoryLineId, giveReward });
+        const rewards = await dispatch('completeStoryLine', { storyLineId: state.currentStoryLineId, giveReward });
+        return { rewards };
       } else {
         commit('progressStoryStep');
       }

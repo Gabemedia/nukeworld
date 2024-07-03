@@ -76,7 +76,7 @@ export default {
     ...mapGetters(['currentStoryLine', 'currentStoryStep', 'availableStoryLines', 'completedStoryLines']),
   },
   methods: {
-    ...mapActions(['startStoryLine', 'progressStory', 'claimStoryRewards']),
+    ...mapActions(['startStoryLine', 'progressStory', 'claimStoryRewards', 'updateCharacter']),
     checkResources(requiredResources) {
       return requiredResources.every(req => {
         return this.$store.state.character.resources.filter(r => r.id === req.id).length >= req.amount;
@@ -123,8 +123,8 @@ export default {
       });
       
       if (result && result.rewards) {
-        const obtainedRewards = await this.claimStoryRewards({ storyLine: this.currentStoryLine });
-        this.showRewardToast(this.currentStoryLine.name, obtainedRewards);
+        this.showRewardToast(this.currentStoryLine.name, result.rewards);
+        this.updateCharacter(this.$store.state.character); // Save character state
       }
     },
 
@@ -137,10 +137,13 @@ export default {
         <div class="d-flex flex-column align-items-start justify-content-start h-100">
         <p class="text-left fw-bold mb-1">${storyLineName} completed!</p>
         <p class="text-left fw-semi mb-2">You earned:</p>
+        <div id="rewardMessage"></div>
         <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
       `;
+      console.log('Rewards:', rewards);
 
       if (rewards.exp > 0) {
+        console.log('Adding exp reward');
         rewardMessage += `
           <div class="d-flex align-items-start justify-content-start reward-info mb-2">
             <img src="${require('@/assets/interface/icons/exp.png')}" title="Exp" style="width: 20px;" class="me-2">
@@ -150,6 +153,7 @@ export default {
       }
 
       if (rewards.money > 0) {
+        console.log('Adding money reward');
         rewardMessage += `
           <div class="d-flex align-items-start justify-content-start reward-info mb-2">
             <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
@@ -158,58 +162,66 @@ export default {
         `;
       }
 
-      // Håndter våben
-      const uniqueWeapons = [...new Set(rewards.weapons.map(w => w.id))];
-      uniqueWeapons.forEach(weaponId => {
-        const weapon = rewards.weapons.find(w => w.id === weaponId);
-        rewardMessage += `
-          <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-            <img src="${require(`@/assets/interface/icons/weapons/${weapon.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${weapon.name}" style="width: 20px;" class="me-2">
-            <span>${weapon.name}</span>
-          </div>
-        `;
-      });
+      // Handle weapons
+      if (rewards.weapons && rewards.weapons.length > 0) {
+        console.log('Adding weapon rewards');
+        rewards.weapons.forEach(weapon => {
+          rewardMessage += `
+            <div class="d-flex align-items-start justify-content-start reward-info mb-1">
+              <img src="${require(`@/assets/interface/icons/weapons/${weapon.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${weapon.name}" style="width: 20px;" class="me-2">
+              <span>${weapon.name}</span>
+            </div>
+          `;
+        });
+      }
 
-      // Håndter rustning
-      const uniqueArmor = [...new Set(rewards.armor.map(a => a.id))];
-      uniqueArmor.forEach(armorId => {
-        const armorItem = rewards.armor.find(a => a.id === armorId);
-        rewardMessage += `
-          <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-            <img src="${require(`@/assets/interface/icons/armor/${armorItem.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${armorItem.name}" style="width: 20px;" class="me-2">
-            <span>${armorItem.name}</span>
-          </div>
-        `;
-      });
+      // Handle armor
+      if (rewards.armor && rewards.armor.length > 0) {
+        console.log('Adding armor rewards');
+        rewards.armor.forEach(armorItem => {
+          rewardMessage += `
+            <div class="d-flex align-items-start justify-content-start reward-info mb-1">
+              <img src="${require(`@/assets/interface/icons/armor/${armorItem.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${armorItem.name}" style="width: 20px;" class="me-2">
+              <span>${armorItem.name}</span>
+            </div>
+          `;
+        });
+      }
 
-      // Håndter ressourcer
-      const resourceCounts = rewards.resources.reduce((acc, resource) => {
-        acc[resource.id] = (acc[resource.id] || 0) + 1;
-        return acc;
-      }, {});
+      // Handle resources
+      if (rewards.resources && rewards.resources.length > 0) {
+        console.log('Adding resource rewards');
+        const resourceCounts = rewards.resources.reduce((acc, resource) => {
+          acc[resource.id] = (acc[resource.id] || 0) + 1;
+          return acc;
+        }, {});
 
-      Object.entries(resourceCounts).forEach(([resourceId, count]) => {
-        const resource = rewards.resources.find(r => r.id === parseInt(resourceId));
-        rewardMessage += `
-          <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-            <img src="${require(`@/assets/interface/icons/resources/${resource.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${resource.name}" style="width: 20px;" class="me-2">
-            <span>${count}x ${resource.name}</span>
-          </div>
-        `;
-      });
+        Object.entries(resourceCounts).forEach(([resourceId, count]) => {
+          const resource = rewards.resources.find(r => r.id === parseInt(resourceId));
+          rewardMessage += `
+            <div class="d-flex align-items-start justify-content-start reward-info mb-1">
+              <img src="${require(`@/assets/interface/icons/resources/${resource.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${resource.name}" style="width: 20px;" class="me-2">
+              <span>${count}x ${resource.name}</span>
+            </div>
+          `;
+        });
+      }
 
-      // Håndter hjælpemidler
-      const uniqueAid = [...new Set(rewards.aid.map(a => a.id))];
-      uniqueAid.forEach(aidId => {
-        const aidItem = rewards.aid.find(a => a.id === aidId);
-        rewardMessage += `
-          <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-            <img src="${require(`@/assets/interface/icons/aid/${aidItem.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${aidItem.name}" style="width: 20px;" class="me-2">
-            <span>${aidItem.name}</span>
-          </div>
-        `;
-      });
+      // Handle aid
+      if (rewards.aid && rewards.aid.length > 0) {
+        console.log('Adding aid rewards');
+        rewards.aid.forEach(aidItem => {
+          rewardMessage += `
+            <div class="d-flex align-items-start justify-content-start reward-info mb-1">
+              <img src="${require(`@/assets/interface/icons/aid/${aidItem.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${aidItem.name}" style="width: 20px;" class="me-2">
+              <span>${aidItem.name}</span>
+            </div>
+          `;
+        });
+      }
 
+      console.log('Final reward message:', rewardMessage);
+      document.getElementById('rewardMessage').innerHTML = rewardMessage;
       rewardMessage += '</div></div>';
 
       toast.success(rewardMessage, {
@@ -227,100 +239,113 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-  .dialog-system {
-    border-radius: 5px;
-    color: white;
-    text-shadow: rgba(0, 0, 0, 1) 0px 0px 2px;
-    font-size: 1rem;
-  }
-  
-  .dialog-log {
-    max-height: 200px;
-    overflow-y: auto;
-  }
-  
-  .conversation-box {
-    display: flex;
-    align-items: flex-start;
-    margin: 10px 0px;
-  }
-  
-  .npc-box {
-    flex-direction: row;
-  }
-  
-  .player-box .sidebar-icon{ 
-    -webkit-transform: scaleX(-1);
-    transform: scaleX(-1);
-  }
-  
-  .sidebar-icon {
-    width: 50px;
-    height: 50px;
-    margin: 0 10px;
-  }
-  
-  .message-box {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
-    padding: 10px;
-    flex-grow: 1;
-  }
-  
-  .npc-message {
-    margin-right: 15px;
-    text-align: left;
-    font-size: 1rem;
-    font-weight: 600;
-  }
-  
-  .player-message {
-    margin-left: 15px;
-    text-align: right;
-    font-size: 1rem;
-    font-weight: 600;
-  }
+.dialog-system {
+  border-radius: 5px;
+  color: white;
+  text-shadow: rgba(0, 0, 0, 1) 0px 0px 2px;
+  font-size: 1rem;
+}
 
-  .player-message .btn{
-    font-size: 0.7rem;
-  }
+.dialog-log {
+  max-height: 200px;
+  overflow-y: auto;
+}
 
-  .resource-icon {
-    width: 20px;
-    height: 20px;
-    vertical-align: middle;
-    margin-right: 2px;
-  }
+.conversation-box {
+  display: flex;
+  align-items: flex-start;
+  margin: 10px 0px;
+}
 
-  .storyline-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1rem;
-  }
+.npc-box {
+  flex-direction: row;
+}
 
-  .storyline-card {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+.player-box .sidebar-icon{ 
+  -webkit-transform: scaleX(-1);
+  transform: scaleX(-1);
+}
 
-    &:hover {
-      background-color: rgba(255, 255, 255, 0.2);
-    }
-  }
+.sidebar-icon {
+  width: 50px;
+  height: 50px;
+  margin: 0 10px;
+}
 
-  .storyline-title {
-    font-size: 0.8rem;
-    font-weight: bold;
-  }
+.message-box {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  padding: 10px;
+  flex-grow: 1;
+}
 
-  .storyline-level {
-    font-size: 0.6rem;
-    font-weight: bold;
-    color: #aaa;
+.npc-message {
+  margin-right: 15px;
+  text-align: left;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.player-message {
+  margin-left: 15px;
+  text-align: right;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.player-message .btn{
+  font-size: 0.7rem;
+}
+
+.resource-icon {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  margin-right: 2px;
+}
+
+.storyline-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.storyline-card {
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.2);
   }
+}
+
+.storyline-title {
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.storyline-level {
+  font-size: 0.6rem;
+  font-weight: bold;
+  color: #aaa;
+}
+
+.reward-info {
+  font-size: 14px;
+}
+
+.reward-info img {
+  vertical-align: middle;
+}
+
+.reward-info span {
+  vertical-align: middle;
+}
+
 </style>
