@@ -87,7 +87,7 @@ export default {
   },
   computed: {
     ...mapState(['character']),
-    ...mapGetters(['currentEnemy']),
+    ...mapGetters(['currentEnemy', 'currentStoryLine']),
     equippedWeapon() {
       return this.character.equippedWeapons[0];
     },
@@ -116,7 +116,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['handleQuest', 'claimStoryRewards', 'defeatEnemy']),
+    ...mapActions(['handleQuest', 'defeatEnemy', 'increaseExp', 'increaseMoney', 'addItemToWeapons', 'addItemToArmor', 'addResource', 'addItemToAid', 'updateCharacter']),
     getRandomEnemy() {
       if (enemies && enemies.length > 0) {
         const randomIndex = Math.floor(Math.random() * enemies.length);
@@ -165,7 +165,7 @@ export default {
         const dodgeChance = Math.random();
         
         if (dodgeChance <= this.enemy.defense / 100) {
-          this.addToLog(`The ${this.enemy.name} dodged your attack!`, 'enemy-action');
+          this.addToLog(`The ${this.enemy.name} dodged your attack!`, 'dodge-action');
         } else {
           this.enemy.enemyHealth = Math.max(this.enemy.enemyHealth - playerDamage, 0);
           this.addToLog(`You attacked the ${this.enemy.name} with your ${this.equippedWeapon.name} for ${playerDamage} damage.`, 'player-action');
@@ -185,7 +185,7 @@ export default {
       const dodgeChance = Math.random();
       
       if (dodgeChance <= (this.equippedArmor ? this.equippedArmor.defence : 0) / 100) {
-        this.addToLog(`You dodged the ${this.enemy.name}'s attack!`, 'player-action');
+        this.addToLog(`You dodged the ${this.enemy.name}'s attack!`, 'dodge-action');
       } else {
         this.$store.commit('updateCharacter', { health: Math.max(this.character.health - enemyDamage, 0) });
         this.addToLog(`The ${this.enemy.name} attacked you for ${enemyDamage} damage.`, 'enemy-action');
@@ -206,37 +206,118 @@ export default {
         this.showVictoryConfetti();
       }
     },
-    
     async claimRewards() {
       if (this.isBattleWon && this.enemy) {
         try {
           const result = await this.defeatEnemy();
           this.showRewardConfetti();
-          this.resetBattleState();
           
           this.$store.commit('setEnemyEncounterOpen', false);
           
           this.$emit('battle-ended');
           
           if (result) {
-            const obtainedRewards = await this.claimStoryRewards({ 
-              storyLine: this.$store.getters.currentStoryLine,
-              battleRewards: {
-                exp: this.enemy.exp,
-                money: this.enemy.money
+            console.log('Current story line:', this.currentStoryLine);
+            
+            let storyRewards = [];
+            if (this.currentStoryLine && this.$store.state.currentStoryLineId) {
+              // Claim story rewards
+              const storyResult = await this.$store.dispatch('completeStoryLine', {
+                storyLineId: this.$store.state.currentStoryLineId,
+                giveReward: true
+              });
+              if (storyResult && storyResult.rewards) {
+                storyRewards = storyResult.rewards;
               }
-            });
-            this.showRewardToast("Battle Rewards", obtainedRewards);
-          } else {
-            console.log('No rewards to show in toast');
+            }
+            console.log('Story rewards:', storyRewards);
+
+            // Generate standard battle rewards
+            const battleRewards = this.generateBattleRewards();
+            console.log('Battle rewards:', battleRewards);
+
+            // Combine story and battle rewards
+            const combinedRewards = {
+              storyRewards: storyRewards,
+              battleRewards: battleRewards
+            };
+            console.log('Combined rewards:', combinedRewards);
+
+            // Apply all rewards
+            this.applyRewards(combinedRewards.storyRewards);
+            this.applyRewards(combinedRewards.battleRewards);
+
+            // Show combined rewards toast
+            this.showCombinedRewardsToast(combinedRewards);
           }
+          
+          this.resetBattleState();
         } catch (error) {
           console.error('Error claiming rewards:', error);
         }
       }
     },
+    generateBattleRewards() {
+      const rewards = [
+        { type: 'exp', amount: this.enemy.exp },
+        { type: 'money', amount: this.enemy.money }
+      ];
 
+      if (Math.random() <= this.enemy.rewardChance && this.enemy.reward && this.enemy.reward.length > 0) {
+        const randomIndex = Math.floor(Math.random() * this.enemy.reward.length);
+        const rewardId = this.enemy.reward[randomIndex];
+        const rewardItem = this.$store.state.items.find((item) => item.id === rewardId);
+        if (rewardItem) {
+          rewards.push({ type: 'weapon', item: rewardItem });
+        }
+      }
 
+      if (Math.random() <= this.enemy.armorRewardChance && this.enemy.armorReward && this.enemy.armorReward.length > 0) {
+        const randomIndex = Math.floor(Math.random() * this.enemy.armorReward.length);
+        const rewardId = this.enemy.armorReward[randomIndex];
+        const rewardItem = this.$store.state.armor.find((item) => item.id === rewardId);
+        if (rewardItem) {
+          rewards.push({ type: 'armor', item: rewardItem });
+        }
+      }
+
+      const totalRewardChance = (this.enemy.rewardChance || 0) + (this.enemy.armorRewardChance || 0);
+      if (Math.random() <= totalRewardChance) {
+        const validResources = this.$store.state.resources.filter(r => r.id === 1 || r.id === 2);
+        const randomResource = validResources[Math.floor(Math.random() * validResources.length)];
+        rewards.push({ type: 'resource', item: randomResource, amount: 1 });
+      }
+
+      return rewards;
+    },
+    applyRewards(rewards) {
+      rewards.forEach(reward => {
+        switch(reward.type) {
+          case 'exp':
+            this.increaseExp(reward.amount);
+            break;
+          case 'money':
+            this.increaseMoney(reward.amount);
+            break;
+          case 'weapon':
+            this.addItemToWeapons(reward.item.id);
+            break;
+          case 'armor':
+            this.addItemToArmor(reward.item.id);
+            break;
+          case 'resource':
+            for (let i = 0; i < reward.amount; i++) {
+              this.addResource(reward.item.id);
+            }
+            break;
+          case 'aid':
+            this.addItemToAid(reward.item.id);
+            break;
+        }
+      });
+      // Update the character in the store
+      this.updateCharacter(this.character);
+    },
     resetBattleState() {
       this.isBattleWon = false;
       this.$store.commit('updateCharacter');
@@ -263,85 +344,25 @@ export default {
         zIndex: 9999,
       });
     },
-    showRewardToast(title, rewards) {
+    showCombinedRewardsToast(combinedRewards) {
       let rewardMessage = `
         <div class="d-flex flex-column align-items-start justify-content-start h-100">
-        <p class="text-left fw-bold mb-1">${title}</p>
+        <p class="text-left fw-bold mb-1">Battle Rewards</p>
         <p class="text-left fw-semi mb-2">You earned:</p>
         <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
       `;
 
-      if (rewards.exp > 0) {
-        rewardMessage += `
-          <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-            <img src="${require('@/assets/interface/icons/exp.png')}" title="Exp" style="width: 20px;" class="me-2">
-            <span>${rewards.exp} exp</span>
-          </div>
-        `;
+      if (combinedRewards.storyRewards && combinedRewards.storyRewards.length > 0) {
+        rewardMessage += `<p class="text-left fw-bold mb-1">Story Rewards:</p>`;
+        rewardMessage += this.generateRewardHTML(combinedRewards.storyRewards);
       }
 
-      if (rewards.money > 0) {
-        rewardMessage += `
-          <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-            <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
-            <span>${rewards.money} money</span>
-          </div>
-        `;
-      }
-
-      // Håndter våben
-      const uniqueWeapons = [...new Set(rewards.weapons.map(w => w.id))];
-      uniqueWeapons.forEach(weaponId => {
-        const weapon = rewards.weapons.find(w => w.id === weaponId);
-        rewardMessage += `
-          <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-            <img src="${require(`@/assets/interface/icons/weapons/${weapon.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${weapon.name}" style="width: 20px;" class="me-2">
-            <span>${weapon.name}</span>
-          </div>
-        `;
-      });
-
-      // Håndter rustning
-      const uniqueArmor = [...new Set(rewards.armor.map(a => a.id))];
-      uniqueArmor.forEach(armorId => {
-        const armorItem = rewards.armor.find(a => a.id === armorId);
-        rewardMessage += `
-          <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-            <img src="${require(`@/assets/interface/icons/armor/${armorItem.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${armorItem.name}" style="width: 20px;" class="me-2">
-            <span>${armorItem.name}</span>
-          </div>
-        `;
-      });
-
-      // Håndter ressourcer
-      const resourceCounts = rewards.resources.reduce((acc, resource) => {
-        acc[resource.id] = (acc[resource.id] || 0) + 1;
-        return acc;
-      }, {});
-
-      Object.entries(resourceCounts).forEach(([resourceId, count]) => {
-        const resource = rewards.resources.find(r => r.id === parseInt(resourceId));
-        rewardMessage += `
-          <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-            <img src="${require(`@/assets/interface/icons/resources/${resource.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${resource.name}" style="width: 20px;" class="me-2">
-            <span>${count}x ${resource.name}</span>
-          </div>
-        `;
-      });
-
-      // Håndter hjælpemidler
-      const uniqueAid = [...new Set(rewards.aid.map(a => a.id))];
-      uniqueAid.forEach(aidId => {
-        const aidItem = rewards.aid.find(a => a.id === aidId);
-        rewardMessage += `
-          <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-            <img src="${require(`@/assets/interface/icons/aid/${aidItem.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${aidItem.name}" style="width: 20px;" class="me-2">
-            <span>${aidItem.name}</span>
-          </div>
-        `;
-      });
+      rewardMessage += `<p class="text-left fw-bold mb-1">Enemy Rewards:</p>`;
+      rewardMessage += this.generateRewardHTML(combinedRewards.battleRewards);
 
       rewardMessage += '</div></div>';
+
+      console.log('Combined Rewards Message:', rewardMessage); // For debugging
 
       toast.success(rewardMessage, {
         dangerouslyHTMLString: true,
@@ -351,6 +372,54 @@ export default {
         toastClassName: 'quest-toast-container',
         bodyClassName: 'quest-toast-body quest-toast',
       });
+    },
+    generateRewardHTML(rewards) {
+      let html = '';
+      rewards.forEach(reward => {
+        switch(reward.type) {
+          case 'exp':
+            html += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require('@/assets/interface/icons/exp.png')}" title="Exp" style="width: 20px;" class="me-2">
+                <span>${reward.amount} exp</span>
+              </div>
+            `;
+            break;
+          case 'money':
+            html += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
+                <span>${reward.amount} money</span>
+              </div>
+            `;
+            break;
+          case 'resource':
+            html += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-1">
+                <img src="${require(`@/assets/interface/icons/resources/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                <span>${reward.amount}x ${reward.item.name}</span>
+              </div>
+            `;
+            break;
+          case 'weapon':
+            html += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-1">
+                <img src="${require(`@/assets/interface/icons/weapons/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                <span>${reward.item.name}</span>
+              </div>
+            `;
+            break;
+          case 'armor':
+            html += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-1">
+                <img src="${require(`@/assets/interface/icons/armor/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                <span>${reward.item.name}</span>
+              </div>
+            `;
+            break;
+        }
+      });
+      return html;
     },
   },
 };
@@ -465,6 +534,11 @@ export default {
   color: #ff0000;
 }
 
+.dodge-action {
+  background-color: rgba(255, 255, 0, 0.5);
+  color: #ffffff;
+}
+
 @media (max-width: 768px) {
   .battle-actions {
     flex-direction: column;
@@ -473,5 +547,19 @@ export default {
   .battle-actions button {
     margin-bottom: 0.5rem;
   }
+}
+
+/* Tilføj disse styles for at sikre, at toast-beskeden vises korrekt */
+:global(.quest-toast-container) {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  color: white !important;
+}
+
+:global(.quest-toast-body) {
+  font-size: 14px !important;
+}
+
+:global(.quest-toast) {
+  max-width: 350px !important;
 }
 </style>
