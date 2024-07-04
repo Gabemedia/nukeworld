@@ -59,11 +59,11 @@ export default [
       "resourceRewards": [
         {
           "id": 1,
-          "amount": 10
+          "amount": 2
         },
         {
           "id": 2,
-          "amount": 5
+          "amount": 2
         }
       ],
       "weaponRewards": [],
@@ -91,8 +91,8 @@ export default [
       }
     ],
     "reward": {
-      "exp": 500,
-      "money": 500,
+      "exp": 200,
+      "money": 25,
       "resourceRewards": [],
       "weaponRewards": [
         {
@@ -162,7 +162,7 @@ export default [
     ],
     "reward": {
       "exp": 2000,
-      "money": 500,
+      "money": 200,
       "resourceRewards": [],
       "weaponRewards": [],
       "armorRewards": [],
@@ -221,27 +221,14 @@ export default [
       }
     ],
     "reward": {
-      "exp": 500,
-      "money": 50,
-      "resourceRewards": [
-        {
-          "id": 1,
-          "amount": 3
-        },
-        {
-          "id": 2,
-          "amount": 1
-        }
-      ],
-      "weaponRewards": [
-        {
-          "id": null
-        }
-      ],
+      "exp": 10,
+      "money": 5,
+      "resourceRewards": [],
+      "weaponRewards": [],
       "armorRewards": [],
       "aidRewards": [
         {
-          "id": 1
+          "id": 2
         }
       ]
     },
@@ -252,7 +239,7 @@ export default [
     "name": "The Scavenger's Dilemma",
     "levelRequirement": 3,
     "completed": false,
-    "requiredStoryLineId": 0,
+    "requiredStoryLineId": 3,
     "playerChoices": [],
     "requiredEnemyDefeat": {
       "id": 2,
@@ -298,8 +285,8 @@ export default [
       }
     ],
     "reward": {
-      "exp": 1500,
-      "money": 750,
+      "exp": 750,
+      "money": 500,
       "resourceRewards": [
         {
           "id": 1,
@@ -309,10 +296,6 @@ export default [
           "id": 2,
           "amount": 2
         },
-        {
-          "id": 3,
-          "amount": 1
-        }
       ],
       "weaponRewards": [
         {
@@ -385,23 +368,23 @@ export default [
       "money": 250,
       "resourceRewards": [
         {
-          "id": 11,
+          "id": 5,
           "amount": 1
         }
       ],
       "weaponRewards": [
         {
-          "id": 3
+          "id": 2
         }
       ],
       "armorRewards": [
         {
-          "id": 1
+          "id": 3
         }
       ],
       "aidRewards": [
         {
-          "id": 2
+          "id": 1
         }
       ]
     },
@@ -455,26 +438,22 @@ export default [
       "count": 1
     },
     "reward": {
-      "exp": 5500,
-      "money": 1000,
+      "exp": 4000,
+      "money": 825,
       "resourceRewards": [
         {
           "id": 1,
-          "amount": 10
+          "amount": 1
         },
         {
           "id": 2,
           "amount": 2
         },
-        {
-          "id": 5,
-          "amount": 5
-        }
       ],
       "weaponRewards": [],
       "armorRewards": [
         {
-          "id": 11
+          "id": 6
         }
       ],
       "aidRewards": [

@@ -23,7 +23,7 @@ export default [
     "id": 2,
     "uuid": uuidv4(),
     "name": "Medkit",
-    "desc": "Small edkit restores 50 health.",
+    "desc": "Medkit restores 50 health.",
     "health": 50,
     "state": "none",
     "price": 150

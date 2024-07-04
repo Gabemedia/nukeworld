@@ -217,13 +217,12 @@ export default {
           if (result) {
             const storyRewards = await this.claimStoryRewards();
             const battleRewards = this.generateBattleRewards();
-            const combinedRewards = { storyRewards, battleRewards };
 
-            this.applyRewards(combinedRewards.storyRewards);
-            this.applyRewards(combinedRewards.battleRewards);
+            this.applyRewards(storyRewards);
+            this.applyRewards(battleRewards);
 
-            // Her ville vi normalt vise en toast, men det er fjernet
-            console.log('Rewards claimed:', combinedRewards);
+            console.log('Story Rewards:', storyRewards);
+            console.log('Battle Rewards:', battleRewards);
           }
           
           this.resetBattleState();

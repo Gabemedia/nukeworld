@@ -19,14 +19,14 @@ export default [
       2,
       3
     ],
-    "rewardChance": 1,
+    "rewardChance": 0.055,
     "armorReward": [
       1,
       1,
       1,
       2
     ],
-    "armorRewardChance": 1,
+    "armorRewardChance": 0.025,
     "levelRequirement": 1,
     "lat": 640.9052378575283,
     "lon": 1284.1204383065283
