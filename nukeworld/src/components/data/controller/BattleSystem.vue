@@ -72,7 +72,6 @@
 import { mapState, mapGetters, mapActions } from 'vuex';
 import enemies from '@/store/enemy';
 import confetti from 'canvas-confetti';
-import { toast } from "vue3-toastify";
 
 export default {
   name: 'BattleSystem',
@@ -213,42 +212,18 @@ export default {
           this.showRewardConfetti();
           
           this.$store.commit('setEnemyEncounterOpen', false);
-          
           this.$emit('battle-ended');
           
           if (result) {
-            console.log('Current story line:', this.currentStoryLine);
-            
-            let storyRewards = [];
-            if (this.currentStoryLine && this.$store.state.currentStoryLineId) {
-              // Claim story rewards
-              const storyResult = await this.$store.dispatch('completeStoryLine', {
-                storyLineId: this.$store.state.currentStoryLineId,
-                giveReward: true
-              });
-              if (storyResult && storyResult.rewards) {
-                storyRewards = storyResult.rewards;
-              }
-            }
-            console.log('Story rewards:', storyRewards);
-
-            // Generate standard battle rewards
+            const storyRewards = await this.claimStoryRewards();
             const battleRewards = this.generateBattleRewards();
-            console.log('Battle rewards:', battleRewards);
+            const combinedRewards = { storyRewards, battleRewards };
 
-            // Combine story and battle rewards
-            const combinedRewards = {
-              storyRewards: storyRewards,
-              battleRewards: battleRewards
-            };
-            console.log('Combined rewards:', combinedRewards);
-
-            // Apply all rewards
             this.applyRewards(combinedRewards.storyRewards);
             this.applyRewards(combinedRewards.battleRewards);
 
-            // Show combined rewards toast
-            this.showCombinedRewardsToast(combinedRewards);
+            // Her ville vi normalt vise en toast, men det er fjernet
+            console.log('Rewards claimed:', combinedRewards);
           }
           
           this.resetBattleState();
@@ -257,29 +232,24 @@ export default {
         }
       }
     },
+    async claimStoryRewards() {
+      if (this.currentStoryLine && this.$store.state.currentStoryLineId) {
+        const storyResult = await this.$store.dispatch('completeStoryLine', {
+          storyLineId: this.$store.state.currentStoryLineId,
+          giveReward: true
+        });
+        return storyResult && storyResult.rewards ? storyResult.rewards : [];
+      }
+      return [];
+    },
     generateBattleRewards() {
       const rewards = [
         { type: 'exp', amount: this.enemy.exp },
         { type: 'money', amount: this.enemy.money }
       ];
 
-      if (Math.random() <= this.enemy.rewardChance && this.enemy.reward && this.enemy.reward.length > 0) {
-        const randomIndex = Math.floor(Math.random() * this.enemy.reward.length);
-        const rewardId = this.enemy.reward[randomIndex];
-        const rewardItem = this.$store.state.items.find((item) => item.id === rewardId);
-        if (rewardItem) {
-          rewards.push({ type: 'weapon', item: rewardItem });
-        }
-      }
-
-      if (Math.random() <= this.enemy.armorRewardChance && this.enemy.armorReward && this.enemy.armorReward.length > 0) {
-        const randomIndex = Math.floor(Math.random() * this.enemy.armorReward.length);
-        const rewardId = this.enemy.armorReward[randomIndex];
-        const rewardItem = this.$store.state.armor.find((item) => item.id === rewardId);
-        if (rewardItem) {
-          rewards.push({ type: 'armor', item: rewardItem });
-        }
-      }
+      this.addRandomReward(rewards, 'weapon', this.enemy.rewardChance, this.enemy.reward, this.$store.state.items);
+      this.addRandomReward(rewards, 'armor', this.enemy.armorRewardChance, this.enemy.armorReward, this.$store.state.armor);
 
       const totalRewardChance = (this.enemy.rewardChance || 0) + (this.enemy.armorRewardChance || 0);
       if (Math.random() <= totalRewardChance) {
@@ -289,6 +259,16 @@ export default {
       }
 
       return rewards;
+    },
+    addRandomReward(rewards, type, chance, rewardPool, itemPool) {
+      if (Math.random() <= chance && rewardPool && rewardPool.length > 0) {
+        const randomIndex = Math.floor(Math.random() * rewardPool.length);
+        const rewardId = rewardPool[randomIndex];
+        const rewardItem = itemPool.find((item) => item.id === rewardId);
+        if (rewardItem) {
+          rewards.push({ type, item: rewardItem });
+        }
+      }
     },
     applyRewards(rewards) {
       rewards.forEach(reward => {
@@ -315,7 +295,6 @@ export default {
             break;
         }
       });
-      // Update the character in the store
       this.updateCharacter(this.character);
     },
     resetBattleState() {
@@ -343,83 +322,6 @@ export default {
         origin: { y: 0.7 },
         zIndex: 9999,
       });
-    },
-    showCombinedRewardsToast(combinedRewards) {
-      let rewardMessage = `
-        <div class="d-flex flex-column align-items-start justify-content-start h-100">
-        <p class="text-left fw-bold mb-1">Battle Rewards</p>
-        <p class="text-left fw-semi mb-2">You earned:</p>
-        <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
-      `;
-
-      if (combinedRewards.storyRewards && combinedRewards.storyRewards.length > 0) {
-        rewardMessage += `<p class="text-left fw-bold mb-1">Story Rewards:</p>`;
-        rewardMessage += this.generateRewardHTML(combinedRewards.storyRewards);
-      }
-
-      rewardMessage += `<p class="text-left fw-bold mb-1">Enemy Rewards:</p>`;
-      rewardMessage += this.generateRewardHTML(combinedRewards.battleRewards);
-
-      rewardMessage += '</div></div>';
-
-      console.log('Combined Rewards Message:', rewardMessage); // For debugging
-
-      toast.success(rewardMessage, {
-        dangerouslyHTMLString: true,
-        autoClose: 10000,
-        hideProgressBar: false,
-        icon: false,
-        toastClassName: 'quest-toast-container',
-        bodyClassName: 'quest-toast-body quest-toast',
-      });
-    },
-    generateRewardHTML(rewards) {
-      let html = '';
-      rewards.forEach(reward => {
-        switch(reward.type) {
-          case 'exp':
-            html += `
-              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                <img src="${require('@/assets/interface/icons/exp.png')}" title="Exp" style="width: 20px;" class="me-2">
-                <span>${reward.amount} exp</span>
-              </div>
-            `;
-            break;
-          case 'money':
-            html += `
-              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
-                <span>${reward.amount} money</span>
-              </div>
-            `;
-            break;
-          case 'resource':
-            html += `
-              <div class="d-flex align-items-start justify-content-start reward-info mb-1">
-                <img src="${require(`@/assets/interface/icons/resources/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
-                <span>${reward.amount}x ${reward.item.name}</span>
-              </div>
-            `;
-            break;
-          case 'weapon':
-            html += `
-              <div class="d-flex align-items-start justify-content-start reward-info mb-1">
-                <img src="${require(`@/assets/interface/icons/weapons/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
-                <span>${reward.item.name}</span>
-              </div>
-            `;
-            break;
-          case 'armor':
-            html += `
-              <div class="d-flex align-items-start justify-content-start reward-info mb-1">
-                <img src="${require(`@/assets/interface/icons/armor/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
-                <span>${reward.item.name}</span>
-              </div>
-            `;
-            break;
-        }
-      });
-      return html;
     },
   },
 };
@@ -547,19 +449,5 @@ export default {
   .battle-actions button {
     margin-bottom: 0.5rem;
   }
-}
-
-/* Tilføj disse styles for at sikre, at toast-beskeden vises korrekt */
-:global(.quest-toast-container) {
-  background-color: rgba(0, 0, 0, 0.8) !important;
-  color: white !important;
-}
-
-:global(.quest-toast-body) {
-  font-size: 14px !important;
-}
-
-:global(.quest-toast) {
-  max-width: 350px !important;
 }
 </style>
