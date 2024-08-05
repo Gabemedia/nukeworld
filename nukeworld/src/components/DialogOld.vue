@@ -202,7 +202,6 @@
     color: #00ff00;
     border: 1px solid #00ff00;
     width: 100%;
-    margin-top: 1rem;
   }
   
   .btn-tertiary:hover {

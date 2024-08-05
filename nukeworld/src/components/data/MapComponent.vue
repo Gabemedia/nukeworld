@@ -100,11 +100,11 @@ export default {
       return this.character.level || 1;
     },
     currentZoom() {
-      if (this.windowWidth <= 1440) return 0;
-      if (this.windowWidth <= 1920) return 1;
-      if (this.windowWidth <= 2880) return 2;
-      if (this.windowWidth <= 3840) return 2;
-      return 3;
+      if (this.windowWidth <= 1440) return 1;
+      if (this.windowWidth <= 1920) return 2;
+      if (this.windowWidth <= 2880) return 3;
+      if (this.windowWidth <= 3840) return 4;
+      return 4;
     },
     filteredQuests() {
       return this.quests.filter(quest => 
