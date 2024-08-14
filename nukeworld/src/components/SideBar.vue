@@ -1,5 +1,42 @@
 <template>
-  <div class="d-flex flex-row flex-shrink-0 sidebar" :class="{ 'show': sidebarOpen }">
+  <!-- Mobile Offcanvas -->
+  <div class="offcanvas offcanvas-start d-md-none" tabindex="-1" id="sidebarOffcanvas">
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title">Menu</h5>
+      <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <ul class="nav nav-pills nav-flush flex-column mb-auto text-center">
+        <li class="nav-item mb-2">
+          <div class="nav-item-name price-box position-relative" :class="{ 'new-story': hasNewStory }">
+            Story
+          </div>
+          <StoryLog />
+        </li>
+        <li class="nav-item mb-2">
+          <div class="nav-item-name price-box">Quests</div>
+          <QuestLog />
+        </li>
+        <li class="nav-item mb-2">
+          <div class="nav-item-name price-box">Inventory</div>
+          <InventoryLog />
+        </li>
+        <li class="nav-item mb-2">
+          <div class="nav-item-name price-box">Shop</div>
+          <PlayerShop />
+        </li>
+        <li class="nav-item mb-2">
+          <div class="nav-item-name price-box">Settlement</div>
+          <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="openSettlementModal">
+            <img class="sidebar-icon" :src="require(`@/assets/interface/icons/settlement.png`)" title="Settlement">
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Desktop Sidebar -->
+  <div class="d-none d-md-flex flex-row flex-shrink-0 sidebar" :class="{ 'show': sidebarOpen }">
     <ul class="nav nav-pills nav-flush flex-row mb-auto text-center">
       <li class="nav-item mx-2">
         <div class="nav-item-name price-box position-relative" :class="{ 'new-story': hasNewStory }">
@@ -27,6 +64,11 @@
       </li>
     </ul>
   </div>
+  
+  <!-- Mobile Toggle Button -->
+  <button class="btn btn-primary d-md-none offcanvas-toggle" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas">
+    <i class="fas fa-chevron-right"></i>
+  </button>
 </template>
 
 <script>
@@ -114,5 +156,32 @@ export default {
 
 .nav-item-name.price-box.new-story {
   border-color: #28a745;
+}
+
+.offcanvas-toggle {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1050;
+}
+
+@media (max-width: 767.98px) {
+  .offcanvas {
+    width: 80%;
+    max-width: 300px;
+  }
+
+  .offcanvas-body .nav-item {
+    margin-bottom: 1rem;
+  }
+
+  .offcanvas-body .nav-item-name {
+    transform: none;
+    margin-bottom: 0.5rem;
+  }
+
+  .offcanvas-body .sidebar-btn {
+    width: 100%;
+  }
 }
 </style>
