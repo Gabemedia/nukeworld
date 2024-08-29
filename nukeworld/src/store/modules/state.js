@@ -1,8 +1,8 @@
-import defaultStoryLines from './story';
-import items from './items';
-import armor from './armor';
-import aid from './aid';
-import resources from './ressources';
+import defaultStoryLines from '../story';
+import items from '../items';
+import armor from '../armor';
+import aid from '../aid';
+import resources from '../ressources';
 
 export default {
   characters: JSON.parse(localStorage.getItem('characters')) || [],

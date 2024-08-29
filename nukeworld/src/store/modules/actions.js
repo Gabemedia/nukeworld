@@ -1,4 +1,5 @@
-import defaultQuests from './quests';
+import defaultQuests from '../quests';
+import { v4 as uuidv4 } from 'uuid';
 
 export default {
   login({ commit }, { username, email, password }) {
@@ -291,5 +292,154 @@ export default {
   },
   cancelCurrentStoryLine({ commit }) {
     commit('cancelStoryLine');
+  },
+  // Quest-relaterede actions
+  handleQuest({ dispatch, commit, state }, quest) {
+    const stateQuest = state.quests.find(q => q.id === quest.id);
+    if (!stateQuest) return;
+
+    if (stateQuest.state === 'not-started' || stateQuest.state === 'in-progress') {
+      const updatedQuest = { 
+        ...stateQuest, 
+        state: 'in-progress', 
+        progress: stateQuest.progress || 0,
+        startTime: stateQuest.startTime || Date.now()
+      };
+      commit('updateQuest', updatedQuest);
+      dispatch('startQuestProgress', updatedQuest);
+    }
+  },
+  startQuestProgress({ commit, state }, quest) {
+    const updateProgress = () => {
+      const stateQuest = state.quests.find(q => q.id === quest.id);
+      if (!stateQuest || stateQuest.state !== 'in-progress') return;
+  
+      const now = Date.now();
+      const elapsedTime = now - stateQuest.startTime;
+      const progress = Math.min((elapsedTime / stateQuest.duration) * 100, 100);
+      const remainingTime = Math.max(0, stateQuest.duration - elapsedTime);
+      const updatedQuest = { ...stateQuest, progress, remainingTime };
+      
+      if (remainingTime <= 0) {
+        updatedQuest.state = 'ready-to-claim';
+      }
+      
+      commit('updateQuest', updatedQuest);
+  
+      if (updatedQuest.state === 'ready-to-claim') {
+        clearInterval(stateQuest.intervalId);
+      }
+    };
+  
+    const existingQuest = state.quests.find(q => q.id === quest.id);
+    if (existingQuest && existingQuest.intervalId) {
+      clearInterval(existingQuest.intervalId);
+    }
+  
+    if (!quest.startTime) {
+      quest.startTime = Date.now();
+    }
+  
+    const intervalId = setInterval(updateProgress, 1000);
+    commit('updateQuest', { ...quest, intervalId });
+    updateProgress(); // Kør første gang med det samme
+  },
+  initializeQuests({ commit, state, dispatch }) {
+    const savedQuests = JSON.parse(localStorage.getItem('quests'));
+    if (savedQuests && savedQuests.length > 0) {
+      commit('setQuests', savedQuests);
+      state.quests.forEach(quest => {
+        if (quest.state === 'in-progress') {
+          dispatch('resumeQuestProgress', quest);
+        }
+      });
+    } else {
+      commit('setQuests', defaultQuests);
+    }
+  },
+  resumeQuestProgress({ dispatch, commit }, quest) {
+    const now = Date.now();
+    const elapsedTime = now - quest.startTime;
+    const remainingTime = Math.max(0, quest.duration - elapsedTime);
+    const progress = Math.min((elapsedTime / quest.duration) * 100, 100);
+  
+    if (remainingTime > 0) {
+      const updatedQuest = { ...quest, progress, remainingTime };
+      commit('updateQuest', updatedQuest);
+      dispatch('startQuestProgress', updatedQuest);
+    } else {
+      commit('updateQuest', { ...quest, state: 'ready-to-claim', progress: 100 });
+    }
+  },
+  claimRewards({ commit, dispatch, state }, quest) {
+    let obtainedReward = null;
+    let obtainedArmorReward = null;
+    let obtainedResource = null;
+  
+    const rollDice = Math.random();
+    if (rollDice <= quest.rewardChance) {
+      const randomIndex = Math.floor(Math.random() * quest.reward.length);
+      const rewardId = quest.reward[randomIndex];
+      const rewardItem = state.items.find((item) => item.id === rewardId);
+      if (rewardItem) {
+        const newItem = { ...rewardItem, uuid: uuidv4() };
+        state.character.weapons.push(newItem);
+        obtainedReward = newItem;
+      }
+    }
+  
+    const rollDiceArmor = Math.random();
+    if (rollDiceArmor <= quest.armorRewardChance) {
+      const randomIndex = Math.floor(Math.random() * quest.armorReward.length);
+      const rewardId = quest.armorReward[randomIndex];
+      const rewardItem = state.armor.find((item) => item.id === rewardId);
+      if (rewardItem) {
+        const newItem = { ...rewardItem, uuid: uuidv4() };
+        state.character.armor.push(newItem);
+        obtainedArmorReward = newItem;
+      }
+    }
+
+    const totalRewardChance = (quest.rewardChance || 0) + (quest.armorRewardChance || 0);
+    const resourceRollDice = Math.random();
+    if (resourceRollDice <= totalRewardChance) {
+      const validResources = state.resources.filter(r => r.id === 1 || r.id === 2);
+      const randomResource = validResources[Math.floor(Math.random() * validResources.length)];
+      dispatch('addResource', randomResource.id);
+      obtainedResource = randomResource;
+    }
+  
+    dispatch('increaseExp', quest.exp);
+    dispatch('increaseMoney', quest.money);
+    commit('updateCharacterInArray', state.character);
+    commit('updateQuest', { ...quest, state: 'completed' });
+    return { obtainedReward, obtainedArmorReward, obtainedResource };
+  },
+  resetQuests({ state, commit }) {
+    state.quests.forEach((quest) => {
+      if (quest.state === 'completed') {
+        const playableArea = [
+          [270, 270], [850, 1650]
+        ];
+        const lat = Math.random() * (playableArea[1][0] - playableArea[0][0]) + playableArea[0][0];
+        const lon = Math.random() * (playableArea[1][1] - playableArea[0][1]) + playableArea[0][1];
+        
+        commit('updateQuest', { 
+          ...quest, 
+          state: 'not-started', 
+          progress: 0, 
+          startTime: null,
+          remainingTime: quest.duration,
+          lat, 
+          lon 
+        });
+      }
+    });
+    localStorage.setItem('quests', JSON.stringify(state.quests));
+  },
+  autoResetQuests({ dispatch }) {
+    setInterval(() => {
+      dispatch('resetQuests');
+    }, 60000); // 60 sekunder
   },
 };

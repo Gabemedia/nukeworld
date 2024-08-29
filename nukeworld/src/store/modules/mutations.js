@@ -188,4 +188,31 @@ export default {
   cancelStoryLine(state) {
     state.currentStoryLineId = null;
   },
+  // Quest-relaterede mutations
+  updateQuest(state, updatedQuest) {
+    const index = state.quests.findIndex(q => q.id === updatedQuest.id);
+    if (index !== -1) {
+      state.quests[index] = updatedQuest;
+    }
+  },
+  startQuest(state, quest) {
+    const index = state.quests.findIndex((q) => q.name === quest.name);
+    if (index !== -1) {
+      state.quests[index] = { ...quest, disabled: true, state: 'in-progress', progress: 0, startTime: Date.now() };
+    }
+  },
+  setQuests(state, quests) {
+    state.quests = quests;
+  },
+  assignRandomCoordinates(state) {
+    const playableArea = [
+      [350, 300], [800, 1600]
+    ];
+    state.quests.forEach((quest) => {
+      const lat = Math.random() * (playableArea[1][0] - playableArea[0][0]) + playableArea[0][0];
+      const lon = Math.random() * (playableArea[1][1] - playableArea[0][1]) + playableArea[0][1];
+      quest.lat = lat;
+      quest.lon = lon;
+    });
+  },
 };

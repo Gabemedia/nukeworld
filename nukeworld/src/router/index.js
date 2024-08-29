@@ -11,7 +11,8 @@ const routes = [
   {
     path: '/',
     name: 'MainMenu',
-    component: MainMenu
+    component: MainMenu,
+    meta: { allowCrawling: true }
   },
   {
     path: '/user-login',
