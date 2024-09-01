@@ -1,6 +1,12 @@
 import { createStore } from 'vuex';
 import { reactive, watch } from 'vue';
 import defaultQuests from './quests';
+import defaultStoryLines from './story';
+import { v4 as uuidv4 } from 'uuid'; 
+import items from './items';
+import armor from './armor';
+import aid from './aid';
+import resources from './ressources';
 import enemies from './enemy';
 
 const state = reactive({
