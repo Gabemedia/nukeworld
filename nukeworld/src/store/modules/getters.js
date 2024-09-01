@@ -1,4 +1,4 @@
-import enemies from './enemy';
+import enemies from '../enemy';
 
 export default {
   characterById: (state) => (id) => state.characters.find((ch) => ch.id === id),

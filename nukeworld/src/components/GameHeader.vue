@@ -10,7 +10,6 @@
       </div>
     </div>
     <ExpLvl />    
-    <CharacterInfo />
   </div>
 </template>
 

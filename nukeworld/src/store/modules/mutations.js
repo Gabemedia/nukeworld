@@ -16,6 +16,11 @@ export default {
   increaseCharacterLevel(state) {
     state.character.level += 1;
   },
+
+  setLvlPopupRef(state, ref) {
+    state.lvlPopupRef = ref;
+  },
+
   increaseCharacterLevelInArray(state, character) {
     const characterInArray = state.characters.find(ch => ch.email === character.email);
     if (characterInArray) {

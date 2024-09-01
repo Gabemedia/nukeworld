@@ -27,23 +27,26 @@ export default {
   data() {
     return {
       isPopupOpen: false,
-      levelingUp: false, // add this flag
+      levelingUp: false,
     };
   },
   methods: {
     ...mapActions(['increaseExp', 'decreaseExp', 'levelUp', 'increaseMoney', 'decreaseMoney']),
     onPopupClosed() {
       this.isPopupOpen = false;
-      this.levelingUp = false; // set the flag to false when the popup is closed
+      this.levelingUp = false;
     },
   },
   watch: {
     'character.level': function(newLevel, oldLevel) {
-      if (newLevel > oldLevel && !this.isPopupOpen && !this.levelingUp) { // check the flag here
+      if (newLevel > oldLevel && !this.isPopupOpen && !this.levelingUp) {
         this.isPopupOpen = true;
         this.$refs.lvlPopUp.openPopup();
       }
     },
+  },
+  mounted() {
+    this.$store.commit('setLvlPopupRef', this.$refs.lvlPopUp);
   }
 }
 </script>

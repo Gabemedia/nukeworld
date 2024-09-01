@@ -1,6 +1,6 @@
 <template>
-  <LvlPopUp ref="lvlPopUp" title="Congratulations!" @popup-closed="onPopupClosed" />    
-  <div class="quick-bar-left">
+    <LvlPopUp ref="lvlPopUp" title="Congratulations!" @popup-closed="onPopupClosed" />    
+    <div class="quick-bar-left">
     <div class="character-info" @mouseover="showItemInfo('character')" @mouseleave="hideItemInfo">
       <div class="character-avatar">
         <img :src="require(`@/assets/interface/icons/player.png`)" alt="Character Avatar">

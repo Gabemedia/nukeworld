@@ -60,7 +60,7 @@ export default {
     const newMoney = Math.max(state.character.money - amount, 0);
     commit('updateCharacter', { money: newMoney });
   },
-  levelUp({ commit, state }) {
+  levelUp({ commit, state, dispatch }) {
     const overflowExp = state.character.exp - state.character.maxExp;
     const newMaxExp = Math.floor(state.character.maxExp * 1.6);
     commit('updateCharacter', {
@@ -70,6 +70,15 @@ export default {
       maxHealth: state.character.maxHealth + 50,
     });
     commit('increaseCharacterLevelInArray', state.character);
+    
+    // Tilføj denne linje for at udløse level up toasten
+    dispatch('showLevelUpPopup');
+  },
+
+  showLevelUpPopup({ state }) {
+    if (state.lvlPopupRef && typeof state.lvlPopupRef.openPopup === 'function') {
+      state.lvlPopupRef.openPopup();
+    }
   },
   resetCharacter({ commit, state, dispatch }) {
     commit('updateCharacter', {

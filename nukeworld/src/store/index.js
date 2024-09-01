@@ -1,15 +1,17 @@
 import { createStore } from 'vuex';
 import { reactive, watch } from 'vue';
 import defaultQuests from './quests';
+import enemies from './enemy';
 
 import stateModule from './modules/state';
-import gettersModule from './getters';
+import gettersModule from './modules/getters';
 import mutationsModule from './modules/mutations';
 import actionsModule from './modules/actions';
 
 const state = reactive({
   ...stateModule,
   quests: reactive(JSON.parse(localStorage.getItem('quests')) || defaultQuests),
+  enemies: enemies,
 });
 
 const store = createStore({

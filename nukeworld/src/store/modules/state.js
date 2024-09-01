@@ -5,6 +5,7 @@ import aid from '../aid';
 import resources from '../ressources';
 
 export default {
+  lvlPopupRef: null,
   characters: JSON.parse(localStorage.getItem('characters')) || [],
   character: JSON.parse(localStorage.getItem('character')) || {
     id: '',
