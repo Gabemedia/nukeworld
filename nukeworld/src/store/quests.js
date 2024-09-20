@@ -3,7 +3,7 @@ export default [
     "id": 1,
     "name": "Settlement Supplies",
     "desc": "Help moving the Settlement Supplies from the old underground tunnels.",
-    "exp": 1200,
+    "exp": 3200,
     "money": 250,
     "duration": 15000,
     "progress": 0,
