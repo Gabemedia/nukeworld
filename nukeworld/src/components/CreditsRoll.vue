@@ -42,7 +42,7 @@ export default {
   name: 'CreditsRoll',
   data() {
     return {
-      version: '0.1.7.1', // Update this to your current version
+      version: '0.1.7.2', // Update this to your current version
     }
   },
   methods: {
