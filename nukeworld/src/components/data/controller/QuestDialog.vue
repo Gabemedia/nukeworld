@@ -3,7 +3,12 @@
   <div class="dialog-system">
     <!-- Conversation window - only shown when a story is selected -->
     <div v-if="currentStoryLine && currentStoryStep" class="mb-3">
-      <h6 class="mb-3 text-uppercase fw-bold text-start text-success">{{ currentStoryLine.name }}</h6>
+      <h6 class="mb-3 text-uppercase fw-bold text-start text-success">
+        {{ currentStoryLine.name }}
+        <button v-if="isSpeaking" @click="stopSpeaking" class="btn btn-sm btn-outline-danger ms-2" title="Stop speaking">
+          <i class="bi bi-stop-fill"></i>
+        </button>
+      </h6>
       <div class="dialog-log border border-1 small">
         <div class="conversation-box npc-box">
           <img class="sidebar-icon" :src="require(`@/assets/interface/icons/encounter.png`)" title="Todd Wimsey">
@@ -63,6 +68,9 @@ export default {
   },
   setup() {
     const expandedStoryLines = ref({});
+    const isSpeaking = ref(false);
+    const speechSynthesis = window.speechSynthesis;
+    const currentUtterance = ref(null);
 
     const toggleStoryLineDetails = (storyLineId) => {
       expandedStoryLines.value[storyLineId] = !expandedStoryLines.value[storyLineId];
@@ -70,7 +78,10 @@ export default {
 
     return {
       expandedStoryLines,
-      toggleStoryLineDetails
+      toggleStoryLineDetails,
+      isSpeaking,
+      speechSynthesis,
+      currentUtterance
     };
   },
   computed: {
@@ -96,10 +107,9 @@ export default {
 
     async selectOption(option) {
       if (option.requiredResources && !this.checkResources(option.requiredResources)) {
-        // Show a message about missing resources
         return;
       }
-      // Remove resources if necessary
+      
       if (option.requiredResources) {
         option.requiredResources.forEach(req => {
           for (let i = 0; i < req.amount; i++) {
@@ -110,10 +120,10 @@ export default {
           }
         });
       }
+      
       if (option.action) {
         await this.$store.dispatch(option.action, option.actionParams);
         if (option.action === 'startEnemyBattle') {
-          // If it's a battle, we shouldn't continue the story yet
           return;
         }
       }
@@ -123,6 +133,11 @@ export default {
         choiceText: option.text,
         giveReward: option.giveReward !== undefined ? option.giveReward : true
       });
+      
+      // Only speak if there's a next step (not on the last choice)
+      if (option.nextId !== null) {
+        this.speakNpcMessage();
+      }
       
       if (result && result.rewards) {
         this.showRewardToast({
@@ -212,6 +227,45 @@ export default {
         toastClassName: 'quest-toast-container',
         bodyClassName: 'quest-toast-body quest-toast',
       });
+    },
+    
+    speakNpcMessage() {
+      this.stopSpeaking();
+      
+      if (!this.currentStoryStep?.npcMessage) return;
+      
+      // Replace {PlayerName} with actual name before speaking
+      const textToSpeak = this.currentStoryStep.npcMessage.replace(/{PlayerName}/g, this.$store.state.character.name);
+      
+      const utterance = new SpeechSynthesisUtterance(textToSpeak);
+      utterance.lang = 'en-US';
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+      
+      utterance.onstart = () => {
+        this.isSpeaking = true;
+      };
+      
+      utterance.onend = () => {
+        this.isSpeaking = false;
+        this.currentUtterance = null;
+      };
+      
+      utterance.onerror = () => {
+        this.isSpeaking = false;
+        this.currentUtterance = null;
+      };
+      
+      this.currentUtterance = utterance;
+      this.speechSynthesis.speak(utterance);
+    },
+    
+    stopSpeaking() {
+      if (this.isSpeaking) {
+        this.speechSynthesis.cancel();
+        this.isSpeaking = false;
+        this.currentUtterance = null;
+      }
     },
   },
 };

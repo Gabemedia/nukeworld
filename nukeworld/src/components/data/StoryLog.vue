@@ -33,7 +33,7 @@
               <div v-if="availableStoryLines.length > 0">
                 <h6 class="mb-3 text-uppercase fw-bold text-start text-success">Available Storylines</h6>
                 <div class="storyline-grid">
-                  <div v-for="storyLine in sortedAvailableStoryLines" :key="storyLine.id" class="story-item" @click="startStoryLine(storyLine.id)">
+                  <div v-for="storyLine in sortedAvailableStoryLines" :key="storyLine.id" class="story-item" @click="startStoryLineAndSpeak(storyLine.id)">
                     <div class="story-title">{{ storyLine.name }}</div>
                     <div class="story-level">Level Req: {{ storyLine.levelRequirement }}</div>
                   </div>
@@ -43,7 +43,7 @@
                 <h6 class="m-0 text-uppercase fw-bold text-start">Come back later for more Storylines</h6>
               </div>
             </div>
-            <QuestDialog v-if="currentStoryLine" />
+            <QuestDialog ref="questDialog" v-if="currentStoryLine" />
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" @click="closeModal">Close</button>
@@ -58,11 +58,16 @@
 import QuestDialog from './controller/QuestDialog.vue';
 import { mapGetters, mapState, mapActions } from 'vuex';
 import helpMessages from '@/store/helpMessages';
+import { ref } from 'vue';
 
 export default {
   name: 'StoryLog',
   components: {
     QuestDialog,
+  },
+  setup() {
+    const questDialog = ref(null);
+    return { questDialog };
   },
   data() {
     return {
@@ -98,6 +103,15 @@ export default {
       let message = this.helpMessages[randomIndex].message;
       this.currentRandomMessage = message.replace(/{MyName}/g, this.$store.state.character.name);
     },
+    async startStoryLineAndSpeak(storyLineId) {
+      await this.startStoryLine(storyLineId);
+      // Use the template ref to access QuestDialog
+      this.$nextTick(() => {
+        if (this.$refs.questDialog) {
+          this.$refs.questDialog.speakNpcMessage();
+        }
+      });
+    }
   },
 };
 </script>
