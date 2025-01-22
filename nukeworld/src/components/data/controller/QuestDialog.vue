@@ -110,6 +110,11 @@ export default {
         return;
       }
       
+      // Stop any current speech if this is the last choice
+      if (option.nextId === null && this.isSpeaking) {
+        this.stopSpeaking();
+      }
+      
       if (option.requiredResources) {
         option.requiredResources.forEach(req => {
           for (let i = 0; i < req.amount; i++) {
