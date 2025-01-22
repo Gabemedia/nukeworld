@@ -445,7 +445,6 @@ const actions = {
       exp: overflowExp * 2,
       maxExp: newMaxExp,
       level: state.character.level + 1,
-      maxHealth: state.character.maxHealth + 50, // Tilføj denne linje
     });
     commit('increaseCharacterLevelInArray', state.character);
   },

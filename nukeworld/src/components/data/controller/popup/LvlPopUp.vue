@@ -11,7 +11,7 @@
                 <p><b>You have gained the following rewards</b><br/>
                 <img style="width:20px;" :src="require(`@/assets/interface/icons/exp.png`)" title="Experience"> {{ expGained }}
                 <img style="width:20px;" :src="require(`@/assets/interface/icons/money.png`)" title="Money"> {{ moneyGained }}
-                <img style="width:20px;" :src="require(`@/assets/interface/icons/aid/medkit.png`)" title="Health"> +50 Max Health
+                <img style="width:20px;" :src="require(`@/assets/interface/icons/aid/medkit.png`)" title="Health"> +{{ healthGained }} Max Health
                 </p>
                 <div class="progress mt-2">
                 <div class="progress-bar" role="progressbar" :style="{width: progress + '%'}"></div>
@@ -45,7 +45,8 @@ export default {
             showPopup: false,
             progress: 0,
             expGained: 0,
-            moneyGained: 0
+            moneyGained: 0,
+            healthGained: 10
         };
     },
     computed: {
@@ -84,14 +85,20 @@ export default {
             }, interval);
         },
         calculateRewards() {
-            // Beregn belønninger baseret på level
-            this.expGained = Math.floor(this.character.maxExp * 0.1); // 10% af max exp som bonus
-            this.moneyGained = Math.floor(this.character.level * 100); // 100 penge per level
+            // Beregn belønninger baseret på level med mere balancerede værdier
+            this.expGained = Math.floor(this.character.maxExp * 0.0005); // 0.05% af max exp som bonus
+            this.moneyGained = this.character.level; // 1 penge per level
         },
         addRewardsToCharacter() {
-            // Tilføj belønninger ved at bruge eksisterende Vuex actions
+            // Tilføj belønninger ved at bruge eksisterende Vuex actions og mutations
             this.increaseMoney(this.moneyGained);
             this.increaseExp(this.expGained);
+            
+            // Opdater maxHealth og heal karakteren
+            this.$store.commit('updateCharacter', {
+                maxHealth: this.character.maxHealth + this.healthGained,
+                health: this.character.maxHealth + this.healthGained // Heal til ny max health
+            });
         },
     },
 };

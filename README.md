@@ -4,52 +4,52 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 
 ## Changelog
 
-### Version 0.0.1 (2024-02-29)
+### Version 0.0.1 (29-02-2024)
 
 - Initial commit
 - Set up Vue.js project with Vue CLI
 - Configured Vuex store
 - Implemented basic components and routing
 
-### Version 0.0.2 (2024-02-29)
+### Version 0.0.2 (29-02-2024)
 - Added CharacterCreation component to allow players to create new characters
 - Added GameWorld component to display the main game area
 - Added UserLogin component to handle user authentication
 - Updated Vue Store to handle Character Creation and User Login state
 
-### Version 0.0.3 (2024-03-04)
+### Version 0.0.3 (04-03-2024)
 - Added CharacterList component to display all created characters
 - Implemented character selection to set active character
 - Added Character leveling system to track XP and level
 - Introduced money/currency system
 
-### Version 0.0.4 (2024-03-04)
+### Version 0.0.4 (04-03-2024)
 - Added quest system with progress tracking
 - Implemented reward system for completed quests
 - Implemented popup system for completed quests
 - Implemented level system for completed quests
 
 
-### Version 0.0.5 (2024-03-05)
+### Version 0.0.5 (05-03-2024)
 - Code cleanup and refactoring
 - Added offcanvas
 - Added CharacterInfo component to display character details
 - Added QuestLog component to track quest progress
 - Implemented more quests with different objectives.
 
-### Version 0.0.6 (2024-03-06)
+### Version 0.0.6 (06-03-2024)
 - Added Toastify notifications for quest completions.
 - Updated overall styling and UI.
 - Refactored Character component to inherit from base Character class.
 - Refactored ExpLvl component to inherit from base ExpLvl class.
 - Refactored QuestLines component.
 
-### Version 0.0.7 (2024-05-16)
+### Version 0.0.7 (16-05-2024)
 - Integrated map component with quest markers
 - Introduced inventory management system
 - Fixed an issue where reward items were not added to the character's inventory
 
-### Version 0.0.8 (2024-05-19)
+### Version 0.0.8 (19-05-2024)
 - Added Loot Chance Roll on Quest Completion.
 - Added equipment system for weapons/armor.
 - Added Equipped Weapons Info to Character Details.
@@ -61,7 +61,7 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Minor styling tweaks.
 - Minor bug fixes.
 
-### Version 0.0.9 (2024-06-14)
+### Version 0.0.9 (14-06-2024)
 - Added Generated Quest Locations
 - Added Quest Level Requirement
 - Added Quest Reward Drop
@@ -77,7 +77,7 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Major Tweaks and Bug Fixes. (Alpha Stable Build)
 - Minor styling tweaks to Toasts in QuestList & QuestDetails.
 
-### Version 0.1.0 (2024-06-15)
+### Version 0.1.0 (15-06-2024)
 - Added Refresh Quests for 2500 money.
 - Added Battle System.
 - Added Health for Player and Enemies.
@@ -92,7 +92,7 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Tweaked UI.
 - Tweaked Mobile-friendly UI.
 
-### Version 0.1.1 (2024-06-20)
+### Version 0.1.1 (20-06-2024)
 - Fixed quest claiming logic in QuestList and QuestDetails components.
 - Added separators between items in the QuickBar dropdown menu.
 - Resolved conflicts between the HealthBar and QuestDetails progress bars.
@@ -101,7 +101,7 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Simplified the PlayerShop component's HTML structure for better maintainability.
 - Fixed ESLint errors related to unused variables in MapComponent and MapComponent2.
 
-### Version 0.1.2 (2024-06-20)
+### Version 0.1.2 (20-06-2024)
 - Added functionality to equip weapons and armor by clicking on the item image in InventoryStash.
 - Implemented item information hover feature in InventoryStash component.
 - Refactored InventoryStash component to display weapons, armor, and aid items in a grid layout.
@@ -122,7 +122,7 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Performed code cleanup and removed unused components, methods, and styles throughout the project.
 - Added comprehensive inline comments to complex parts of the codebase to improve code readability and maintainability.
 
-### Version 0.1.3.5 (2024-06-22)
+### Version 0.1.3.5 (22-06-2024)
 - Added automatic initialization of quests at app startup
 - Added display of quests with levelRequirement equal to or below the player's current level.
 - Added resources system for character and story.
@@ -143,7 +143,7 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Refactored Game Over to include resources and story.
 - Fixed an issue that made shop items cost 1.65% more.
 
-### Version 0.1.4.0 (2024-06-23)
+### Version 0.1.4.0 (23-06-2024)
 - Improved combat system implementation
 - Added automatic attack function in battles
 - Fixed a bug where random enemies were shown instead of specific enemies from stories
@@ -166,10 +166,11 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Fixed issues with overlapping modals in SettlementModal.
 - Enhanced responsiveness and user experience when interacting with settlement functionality.
 
-### Version 0.1.5 (2024-06-28)
+### Version 0.1.5 (28-06-2024)
 - Added new maps
 - Added Backend to control all items, quests, story etc.
 - Added Game Security to Backend changes cant happen without new game build
+- Added Screen Resolution Support 1024 - 1280 - 1366 - 1440 - 1600 - 1920 - 2K - 4K 
 - Refactored Userlogin Component
 - Refactored New Story Styling
 - Refactored MapComponent
@@ -188,6 +189,88 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Fixed Settlement button issue
 
 
+### Version 0.1.5.5 (30-06-2024)
+- Added fullscreen mode to the GameWorld component
+- Added methods to handle switching between normal view and fullscreen
+- Updated CSS to support fullscreen display
+- Improved responsiveness for different screen sizes in fullscreen mode
+- Optimized scaling of UI elements in fullscreen mode
+- Added event listeners to handle changes in fullscreen state
+- Enhanced user experience by providing the option to maximize the game area
+- Increased the size of map markers in MapComponent.vue for better visibility
+- Adjusted quest markers to 36x48 pixels (20% larger than original)
+- Updated settlement marker to 36x54 pixels to maintain proportions
+- Fine-tuned marker anchor points to ensure correct placement on the map
+- Removed MapComponent2.vue and consolidated map functionality into a single MapComponent
+- Updated GameWorld.vue to use a single MapComponent with dynamic mapImageUrl based on player level
+- Optimized codebase by removing unused methods and watches in GameWorld.vue
+- Improved handling of map switching based on player level through computed properties
+- Ensured preservation of all existing functionality and responsive design
+- Simplified logic for displaying different maps based on player level
+- Updated MapComponent.vue to display and handle quests in "in-progress" state
+- Added new custom icon for "in-progress" quests on the map
+- Modified filteredQuests computed property to include "in-progress" quests
+- Updated getQuestIcon method to return the correct icon for "in-progress" quests
+- Adjusted CSS to ensure consistent styling of all quest markers, including the new "in-progress" marker
+- Improved responsiveness and scalability of quest markers across different screen sizes
+
+### Version 0.1.6.0 (01-07-2024)
+- Added new map
+- Added new icons
+- Refactored QuestLines
+- Refactored ClaimRewards
+- Fixed quest level filtering in MapComponent.vue to correctly display quests within the appropriate level range
+- Updated quest filtering logic to only show quests.
+- Ensured that quests below level 1 are never displayed
+- Modified the filteredQuests computed property in MapComponent.vue to implement the new level range logic
+- Updated QuestTabs.vue to use the same quest level filtering logic as MapComponent.vue
+- Added a new filteredQuests computed property in to handle level-based quest filtering
+- Modified the activeQuests computed property in to use the new filteredQuests for consistent quest display across all tabs
+- Ensured that Available, Active, and Ready tabs only show quests within the correct level range
+- Fixed quest reward system to allow players to receive weapon, armor, and resource rewards independently
+- Updated `claimRewards` function in Vuex store to correctly handle multiple reward types
+- Improved reward chance calculations for each reward type (weapon, armor, resource)
+- Updated QuestDetails.vue and QuestList.vue components to display correct item icons in reward toasts
+- Refactored reward claiming logic to use item names for icon file paths, improving consistency and reducing errors
+- Fixed a bug where players couldn't receive both weapon and armor rewards from a single quest
+- Optimized quest reward calculations to provide a fair distribution of rewards
+- Resolved issues with quest reward display in toast notifications
+- Ensured consistency in item icon display across QuestDetails, QuestList, PlayerShop, and InventoryStash components
+- Improved code consistency and maintainability across components
+- Improved code consistency and maintainability across quest-related components
+- Enhanced user experience by providing a more balanced and level-appropriate quest selection
+- Enhanced user experience by providing more accurate visual feedback for quest rewards
+- Major fix to quest handling across game in multiple modals and components.
+
+### Version 0.1.6.1 (02-07-2024)
+- Updated MainMenu to include a "Delete All" button for clearing local storage
+- Improved GameSettings with consistent styling and layout matching other components
+- Added easy access to return to the main menu from GameSetting
+- Enhanced UserLogin with a button to return to the main menu
+- Improved CreditsRoll with better typography and graphical elements
+- Ensured consistent styling across all components (MainMenu, UserLogin, GameSettings, CreditsRoll)
+- Fixed issue where GameSettings was not displaying when accessed from MainMenu
+- Improved overall user interface and user experience with consistent button styles and layouts
+- Updated color scheme to maintain the post-apocalyptic theme across all components
+- Ensured all components have proper navigation options to improve user flow
+- Added confirmation dialog for the "Delete All" functionality to prevent accidental data loss
+
+### Version 0.1.7.5 (22-01-2025)
+- Added ESC key functionality to return to Main Menu from anywhere in the game
+- Implemented global keyboard event handling in App.vue
+- Added cleanup of event listeners when component unmounts
+- Ensured ESC key only triggers navigation when not already on Main Menu
+- Fixed LvlPopUp not showing up when leveling up
+- Improved level-up rewards system using existing Vuex actions
+- Added visual feedback for health increase on level up
+- Centralized level-up popup handling in GameWorld.vue
+- Enhanced popup UI with better visuals and animations
+- Rebalanced level-up rewards for better game progression:
+  - Reduced exp bonus from 10% to 0.05% of max exp
+  - Reduced money reward from 100 to 1 per level
+  - Reduced health gain from 50 to 10 per level
+- Moved maxHealth increase handling from Vuex store to LvlPopUp component
+- Fixed issue with double health gain on level up
 
 ## Getting Started
 To get started with NukeWorld, follow these steps:
