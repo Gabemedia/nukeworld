@@ -271,6 +271,14 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
   - Reduced health gain from 50 to 10 per level
 - Moved maxHealth increase handling from Vuex store to LvlPopUp component
 - Fixed issue with double health gain on level up
+- Added text-to-speech functionality for story dialogues:
+  - Automatically reads NPC messages when story starts
+  - Reads new messages after each player choice
+  - Stops current speech if player makes the final choice
+  - Added stop button to manually stop speech playback
+  - Optimized speech timing to prevent overlapping messages
+  - Integrated with existing story progression system
+  - Uses browser's native Web Speech API for optimal performance
 
 ## Getting Started
 To get started with NukeWorld, follow these steps:
