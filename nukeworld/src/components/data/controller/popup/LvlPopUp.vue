@@ -53,7 +53,7 @@ export default {
         ...mapState(['character']),
     },
     methods: {
-        ...mapActions(['increaseMoney', 'increaseExp']),
+        ...mapActions(['increaseMoney', 'increaseExp', 'updateCharacter']),
         closePopup() {
             this.showPopup = false;
             this.progress = 0;
@@ -90,14 +90,15 @@ export default {
             this.moneyGained = this.character.level; // 1 penge per level
         },
         addRewardsToCharacter() {
-            // Tilføj belønninger ved at bruge eksisterende Vuex actions og mutations
+            // Brug de eksisterende Vuex actions
             this.increaseMoney(this.moneyGained);
             this.increaseExp(this.expGained);
             
-            // Opdater maxHealth og heal karakteren
-            this.$store.commit('updateCharacter', {
-                maxHealth: this.character.maxHealth + this.healthGained,
-                health: this.character.maxHealth + this.healthGained // Heal til ny max health
+            // Opdater maxHealth og health via updateCharacter action
+            const newMaxHealth = this.character.maxHealth + this.healthGained;
+            this.updateCharacter({
+                maxHealth: newMaxHealth,
+                health: newMaxHealth // Heal til ny max health
             });
         },
     },
