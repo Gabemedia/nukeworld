@@ -9,10 +9,12 @@ export default {
   name: 'App',
   created() {
     document.addEventListener('fullscreenchange', this.fullscreenChangeHandler);
+    document.addEventListener('keydown', this.handleKeyPress);
     this.requestFullscreen();
   },
   beforeUnmount() {
     document.removeEventListener('fullscreenchange', this.fullscreenChangeHandler);
+    document.removeEventListener('keydown', this.handleKeyPress);
   },
   methods: {
     async requestFullscreen() {
@@ -27,6 +29,13 @@ export default {
     fullscreenChangeHandler() {
       if (!document.fullscreenElement) {
         this.requestFullscreen();
+      }
+    },
+    handleKeyPress(event) {
+      if (event.key === 'Escape') {
+        if (this.$route.name !== 'MainMenu') {
+          this.$router.push({ name: 'MainMenu' });
+        }
       }
     }
   }

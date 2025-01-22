@@ -242,12 +242,7 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Enhanced user experience by providing more accurate visual feedback for quest rewards
 - Major fix to quest handling across game in multiple modals and components.
 
-### Version 0.1.7.0 (2024-07-02)
-## Changelog
-
-... (previous entries remain unchanged)
-
-### Version 0.1.6.1 (Current Date)
+### Version 0.1.6.1 (2024-07-02)
 - Updated MainMenu to include a "Delete All" button for clearing local storage
 - Improved GameSettings with consistent styling and layout matching other components
 - Added easy access to return to the main menu from GameSetting
@@ -260,7 +255,16 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Ensured all components have proper navigation options to improve user flow
 - Added confirmation dialog for the "Delete All" functionality to prevent accidental data loss
 
-
+### Version 0.1.7.5 (2024-01-22)
+- Added ESC key functionality to return to Main Menu from anywhere in the game
+- Implemented global keyboard event handling in App.vue
+- Added cleanup of event listeners when component unmounts
+- Ensured ESC key only triggers navigation when not already on Main Menu
+- Fixed LvlPopUp not showing up when leveling up
+- Improved level-up rewards system using existing Vuex actions
+- Added visual feedback for health increase on level up
+- Centralized level-up popup handling in GameWorld.vue
+- Enhanced popup UI with better visuals and animations
 
 ## Getting Started
 To get started with NukeWorld, follow these steps:

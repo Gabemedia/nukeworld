@@ -1,5 +1,4 @@
 <template>
-    <LvlPopUp ref="lvlPopUp" title="Congratulations!" @popup-closed="onPopupClosed" />    
     <div class="quick-bar-left">
     <div class="character-info" @mouseover="showItemInfo('character')" @mouseleave="hideItemInfo">
       <div class="character-avatar">
@@ -50,17 +49,11 @@
 
 <script>
 import { mapState, mapActions } from 'vuex';
-import LvlPopUp from './controller/popup/LvlPopUp.vue';
 
 export default {
   name: 'QuickBarLeft',  
-  components: {
-    LvlPopUp,
-  },
   data() {
     return {
-      isPopupOpen: false,
-      levelingUp: false,
       hoveredItem: null,
     };
   },
@@ -75,23 +68,11 @@ export default {
   },
   methods: {
     ...mapActions(['increaseExp', 'decreaseExp', 'levelUp']),
-    onPopupClosed() {
-      this.isPopupOpen = false;
-      this.levelingUp = false;
-    },
     showItemInfo(item) {
       this.hoveredItem = item;
     },
     hideItemInfo() {
       this.hoveredItem = null;
-    },
-  },
-  watch: {
-    'character.level': function(newLevel, oldLevel) {
-      if (newLevel > oldLevel && !this.isPopupOpen && !this.levelingUp) {
-        this.isPopupOpen = true;
-        this.$refs.lvlPopUp.openPopup();
-      }
     },
   }
 };

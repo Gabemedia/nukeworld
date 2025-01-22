@@ -11,6 +11,7 @@
                 <p><b>You have gained the following rewards</b><br/>
                 <img style="width:20px;" :src="require(`@/assets/interface/icons/exp.png`)" title="Experience"> {{ expGained }}
                 <img style="width:20px;" :src="require(`@/assets/interface/icons/money.png`)" title="Money"> {{ moneyGained }}
+                <img style="width:20px;" :src="require(`@/assets/interface/icons/aid/medkit.png`)" title="Health"> +50 Max Health
                 </p>
                 <div class="progress mt-2">
                 <div class="progress-bar" role="progressbar" :style="{width: progress + '%'}"></div>
@@ -24,114 +25,151 @@
   
 <script>
 import confetti from 'canvas-confetti';
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 
 export default {
     name: 'LvlPopUp',
-  props: ['title', 'desc'],
-  emits: ['popup-closed'], 
-  data() {
-    return {
-      showPopup: false,
-      progress: 0,
-      expGained: 0,
-      moneyGained: 0,
-      healthGained: 0,
-    };
-  },
-  computed: {
-    ...mapState(['character']),
-  },
-  methods: {
-    closePopup() {
-        this.showPopup = false;
-        this.progress = 0;
-        this.$emit('popup-closed'); // emit an event when the popup is closed
-    },
-    openPopup() {
-      this.showPopup = true;
-      this.calculateRewards();
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
-      const duration = 5000; // 5 sekunder
-      const interval = 50; // opdatering hvert 50ms
-      const increment = 100 / (duration / interval); // beregn inkrement baseret på varighed og interval
-      let currentProgress = 0;
-
-      const timer = setInterval(() => {
-        currentProgress += increment;
-        this.progress = Math.min(currentProgress, 100); // sørg for, at progress ikke overstiger 100%
-        if (currentProgress >= 100) {
-          clearInterval(timer);
-          setTimeout(() => {
-            this.closePopup();
-          }, 1000); // forsink lukning af popup med 1 sekund
+    props: {
+        title: {
+            type: String,
+            default: 'Congratulations!'
+        },
+        desc: {
+            type: String,
+            default: 'You have leveled up!'
         }
-      }, interval);
     },
-    calculateRewards() {
-      this.expGained = this.character.maxExp - this.character.exp;
-      this.moneyGained = Math.floor(this.character.level * 100);
-      this.healthGained = Math.floor(this.character.level * 10);
+    emits: ['popup-closed'], 
+    data() {
+        return {
+            showPopup: false,
+            progress: 0,
+            expGained: 0,
+            moneyGained: 0
+        };
     },
-  },
+    computed: {
+        ...mapState(['character']),
+    },
+    methods: {
+        ...mapActions(['increaseMoney', 'increaseExp']),
+        closePopup() {
+            this.showPopup = false;
+            this.progress = 0;
+            this.$emit('popup-closed');
+        },
+        openPopup() {
+            this.showPopup = true;
+            this.calculateRewards();
+            this.addRewardsToCharacter();
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 }
+            });
+            const duration = 5000;
+            const interval = 50;
+            const increment = 100 / (duration / interval);
+            let currentProgress = 0;
+
+            const timer = setInterval(() => {
+                currentProgress += increment;
+                this.progress = Math.min(currentProgress, 100);
+                if (currentProgress >= 100) {
+                    clearInterval(timer);
+                    setTimeout(() => {
+                        this.closePopup();
+                    }, 1000);
+                }
+            }, interval);
+        },
+        calculateRewards() {
+            // Beregn belønninger baseret på level
+            this.expGained = Math.floor(this.character.maxExp * 0.1); // 10% af max exp som bonus
+            this.moneyGained = Math.floor(this.character.level * 100); // 100 penge per level
+        },
+        addRewardsToCharacter() {
+            // Tilføj belønninger ved at bruge eksisterende Vuex actions
+            this.increaseMoney(this.moneyGained);
+            this.increaseExp(this.expGained);
+        },
+    },
 };
 </script>
   
 <style scoped>
-  .lvlpopup {
+.lvlpopup {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     z-index: 1050;
-  }
+}
   
-  .modal-backdrop {
+.modal-backdrop {
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.5);
-  }
+}
 
-  .modal-dialog {
+.modal-dialog {
     max-width: 500px;
     width: 90%;
     margin: 1.75rem auto;
-  }
+}
   
-  .modal {
+.modal {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 1051;
     animation: scaleIn 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
-  }
+}
 
-  @keyframes scaleIn {
+@keyframes scaleIn {
     0% {
-      transform: translate(-50%, -50%) scale(0.5);
-      opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0;
     }
     100% {
-      transform: translate(-50%, -50%) scale(1);
-      opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
     }
-  }
+}
+
 .progress {
-  height: 20px;
+    height: 20px;
 }
 
 .progress-bar {
-  width: 0;
-  height: 100%;
-  background-color: #007bff;
+    width: 0;
+    height: 100%;
+    background-color: #007bff;
+}
+
+.modal-content {
+    background-color: #1a1a1a;
+    color: #fff;
+    border: 2px solid #00ff00;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+}
+
+.modal-body {
+    padding: 20px;
+    text-align: center;
+}
+
+.modal-body p {
+    margin-bottom: 15px;
+}
+
+.modal-body img {
+    margin: 0 5px;
+    vertical-align: middle;
 }
 </style>

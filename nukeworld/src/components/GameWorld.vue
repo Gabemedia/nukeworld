@@ -21,6 +21,7 @@
       </div>
     </div>
     <GameOver :showModal="showModal" @close="closeModal" />
+    <LvlPopUp ref="lvlPopUp" />
   </div>
 </template>
 
@@ -32,6 +33,7 @@ import QuickBar from './data/QuickBar.vue';
 import QuickBarLeft from './data/QuickBarLeft.vue';
 import QuickBarRight from './data/QuickBarRight.vue';
 import GameOver from './data/GameOver.vue';
+import LvlPopUp from './data/controller/popup/LvlPopUp.vue';
 import { mapState } from 'vuex';
 
 export default {
@@ -44,6 +46,7 @@ export default {
     QuickBar,
     QuickBarLeft,
     QuickBarRight,
+    LvlPopUp,
   },
   data() {
     return {
@@ -86,6 +89,7 @@ export default {
     },
     'character.level': function (newLevel, oldLevel) {
       if (newLevel > oldLevel) {
+        this.$refs.lvlPopUp.openPopup();
         this.$gtag.event('player_level_up', {
           event_category: 'game_event',
           event_label: 'Player Level Up',
