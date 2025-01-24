@@ -178,8 +178,8 @@ export default {
 
 .scaled-ui-bottom-center {
   bottom: 0;
-  left: 50%;
   transform: translateX(-50%);
+  width: 100%;
 }
 
 .scaled-ui-bottom-left {

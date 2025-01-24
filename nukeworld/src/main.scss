@@ -122,9 +122,17 @@ div.modal-content {
 .sidebar-btn:hover{
   @extend .btn-success
 }
+
 .sidebar-icon{
   width: 35px;
   @extend .my-2;
+}
+
+@media (max-width: 767.98px) {
+  .sidebar-icon {
+    width: 50px !important;
+    height: 50px !important;
+  }
 }
 
 .quest-toast div{

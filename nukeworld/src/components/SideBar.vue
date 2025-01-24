@@ -3,36 +3,46 @@
     <!-- Mobile Offcanvas -->
     <div class="offcanvas offcanvas-start w-25 d-md-none" tabindex="-1" id="sidebarOffcanvas">
       <div class="offcanvas-header">
-        <h5 class="offcanvas-title">Menu</h5>
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        <h5 class="offcanvas-title text-white">Game Menu</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
       <div class="offcanvas-body">
-        <ul class="nav nav-pills nav-flush flex-column mb-auto text-center">
-          <li class="nav-item mb-2">
-            <div class="nav-item-name price-box position-relative" :class="{ 'new-story': hasNewStory }">
-              Story
+        <div class="mobile-grid">
+          <div class="menu-item">
+            <div class="menu-button">STORY</div>
+            <div class="icon-box">
+              <StoryLog />
             </div>
-            <StoryLog />
-          </li>
-          <li class="nav-item mb-2">
-            <div class="nav-item-name price-box">Quests</div>
-            <QuestLog />
-          </li>
-          <li class="nav-item mb-2">
-            <div class="nav-item-name price-box">Inventory</div>
-            <InventoryLog />
-          </li>
-          <li class="nav-item mb-2">
-            <div class="nav-item-name price-box">Shop</div>
-            <PlayerShop />
-          </li>
-          <li class="nav-item mb-2">
-            <div class="nav-item-name price-box">Settlement</div>
-            <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="openSettlementModal">
-              <img class="sidebar-icon" :src="require(`@/assets/interface/icons/settlement.png`)" title="Settlement">
-            </button>
-          </li>
-        </ul>
+          </div>
+
+          <div class="menu-item">
+            <div class="menu-button">QUESTS</div>
+            <div class="icon-box">
+              <QuestLog />
+            </div>
+          </div>
+
+          <div class="menu-item">
+            <div class="menu-button">INVENTORY</div>
+            <div class="icon-box">
+              <InventoryLog />
+            </div>
+          </div>
+
+          <div class="menu-item">
+            <div class="menu-button">SHOP</div>
+            <div class="icon-box">
+              <PlayerShop />
+            </div>
+          </div>
+
+          <div class="menu-item">
+            <div class="menu-button">SETTLEMENT</div>
+            <div class="icon-box" @click="openSettlementModal">
+              <img :src="require('@/assets/interface/icons/settlement.png')" alt="Settlement">
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -67,8 +77,8 @@
     </div>
     
     <!-- Mobile Toggle Button -->
-    <button class="btn btn-primary btn-offcanvas d-md-none offcanvas-toggle" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas">
-      &gt;
+    <button class="toggle-btn d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas">
+      <span class="toggle-arrow">&lt;</span>
     </button>
   </div>
 </template>
@@ -160,32 +170,134 @@ export default {
   border-color: #28a745;
 }
 
-.offcanvas-toggle {
-  position: fixed;
-  top: 50%;
-  left: 0;
-  transform: translateY(-50%);
-  z-index: 1050;
-  width: 30px;
-  height: 60px;
-  border-top-right-radius: 30px;
-  border-bottom-right-radius: 30px;
+.offcanvas-start {
+  width: 85% !important;
+  max-width: 300px;
+  background-color: rgba(0, 0, 0, 0.95);
+  border-right: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.offcanvas-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 1rem;
+}
+
+.offcanvas-title {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+.btn-close-white {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Mobile Menu Grid Layout */
+.mobile-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  padding: 20px;
+}
+
+.menu-item {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.menu-button {
+  background-color: transparent;
+  border: 2px solid #ffffff;
+  border-radius: 4px;
+  color: #ffffff;
+  padding: 10px 20px;
+  margin-bottom: 12px;
+  font-weight: bold;
+  font-size: 1rem;
+  text-transform: uppercase;
+  min-width: 200px;
+}
+
+.icon-box {
+  width: 64px;
+  height: 64px;
+  background-color: transparent;
+  border: 2px solid #ffffff;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.2rem;
-  padding: 0;
+  cursor: pointer;
+  padding: 8px;
 }
 
-@media (max-width: 767.98px) {
-  .offcanvas-body .nav-item {
-    margin-bottom: 1rem;
-  }
+.icon-box img,
+.icon-box :deep(img),
+.icon-box :deep(.sidebar-icon) {
+  width: 50px !important;
+  height: 50px !important;
+  object-fit: contain;
+}
 
-  .offcanvas-body .nav-item-name {
-    transform: none;
-    margin-bottom: 0.5rem;
-  }
+/* Settlement specific styles to match others */
+.menu-item:last-child {
+  margin-top: 15px; /* Extra space for Settlement */
+}
 
+.menu-item:last-child .menu-button {
+  margin-bottom: 12px;
+}
+
+.menu-item:last-child .icon-box {
+  width: 64px;
+  height: 64px;
+}
+
+.menu-item:last-child .icon-box img {
+  width: 100%;
+  height: 100%;
+}
+
+/* Toggle Button */
+.toggle-btn {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0;
+  z-index: 1050;
+  width: 32px;
+  height: 64px;
+  background-color: #000000;
+  border: 2px solid #ffffff;
+  border-left: none;
+  border-radius: 0 32px 32px 0;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.toggle-arrow {
+  font-size: 1.2rem;
+  font-weight: bold;
+  transform: rotate(180deg);
+}
+
+.offcanvas.show ~ .toggle-btn {
+  opacity: 0;
+  visibility: hidden;
+}
+
+@media (min-width: 768px) {
+  .toggle-btn {
+    display: none;
+  }
+  .sidebar-icon {
+    width: 35px;
+    height: 35px;
+  }
 }
 </style>
