@@ -1,7 +1,10 @@
 <template>
   <div class="settings-container">
     <div class="settings-content">
-      <h1 class="game-title">Game Settings</h1>
+      <div class="settings-header">
+        <h1 class="game-title">Settings</h1>
+        <button @click="goToMainMenu" class="btn btn-outline-primary me-2 mt-2">Back to Main Menu</button>
+      </div>
       <div class="settings-menu">
         <button 
           class="btn btn-outline-primary" 
@@ -135,7 +138,6 @@
           </form>
         </div>
       </div>
-      <button @click="goToMainMenu" class="btn btn-outline-primary btn-back">Back to Main Menu</button>
     </div>
   </div>
 </template>
@@ -394,13 +396,23 @@ export default {
       const item = items.find(i => i.id === itemId);
       return item ? item.name : 'Unknown';
     },
+    calculateNextStepId(currentSteps) {
+      if (!currentSteps || currentSteps.length === 0) return 2;
+      const lastStep = currentSteps[currentSteps.length - 1];
+      const lastOptions = lastStep.playerOptions || [];
+      const existingNextIds = lastOptions
+        .map(opt => opt.nextId)
+        .filter(id => id !== null);
+      return existingNextIds.length > 0 ? Math.max(...existingNextIds) + 1 : null;
+    },
     addStep() {
+      const nextStepId = this.calculateNextStepId(this.currentItem.steps);
       this.currentItem.steps.push({
         npcMessage: 'New NPC message',
         playerOptions: [
           { 
             text: 'New player option', 
-            nextId: null,
+            nextId: nextStepId,
             requiredResources: [],
             giveReward: false,
             action: null,
@@ -410,9 +422,10 @@ export default {
       });
     },
     addPlayerOption(stepIndex) {
+      const nextStepId = this.calculateNextStepId(this.currentItem.steps);
       this.currentItem.steps[stepIndex].playerOptions.push({
         text: 'New player option',
-        nextId: null,
+        nextId: nextStepId,
         requiredResources: [],
         giveReward: false,
         action: null,
@@ -577,6 +590,12 @@ export default {
   overflow-y: auto;
 }
 
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items:start;
+}
+
 .game-title {
   font-size: 2.5rem;
   color: #00ff00;
@@ -667,12 +686,6 @@ export default {
   color: #000000;
 }
 
-.btn-back{
-  position: absolute;
-  right: 22px;
-  top:37px
-}
-
 .data-container {
   display: flex;
   gap: 1rem;
@@ -697,7 +710,6 @@ export default {
   background-color: rgba(0, 0, 0, 0.5);
   padding: 1rem;
   border-radius: 5px;
-  max-height: 300px;
   overflow-y: auto;
 }
 

@@ -8,7 +8,7 @@
           <button @click="continueGame" class="btn btn-primary">Continue</button>
           <button @click="newGame" class="btn btn-outline-primary btn-tertiary">New Game</button>
         </div>
-        <button @click="openSettings" class="btn btn-outline-primary btn-tertiary" disabled>Settings</button>
+        <button @click="openSettings" class="btn btn-outline-primary btn-tertiary" disabledd>Settings</button>
         <button @click="showCredits" class="btn btn-outline-primary btn-tertiary">Credits</button>
         <button @click="clearLocalStorage" class="btn btn-outlines-danger btn-tertiary">Delete All Saved Data</button>
       </div>
