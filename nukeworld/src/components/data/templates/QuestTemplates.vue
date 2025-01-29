@@ -186,7 +186,8 @@ export default {
       'supply_quest.jpg',
       'exploration_quest.jpg',
       'high_risk_quest.jpg',
-      'settlement_quest.jpg'
+      'settlement_quest.jpg',
+      'highway.jpg',
     ]);
 
     const filteredTemplates = computed(() => {
