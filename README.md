@@ -291,6 +291,34 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
   - Added Quest Templates
   - Added Enemy Templates
   - Added Resources Templates
+- Added img property to aid items for proper icon display
+- Added AidTemplates system with icon selector
+- Enhanced GameSettings with Aid Templates support
+- Fixed aid item structure to match the correct format:
+  - Proper ID and UUID placement
+  - Consistent object structure
+  - Correct image property handling
+- Improved template preview system for aid items
+- Added visual icon selector for aid items
+- Ensured proper data validation for aid items
+- Added `img` property to all resources in `ressources.js`
+- Updated `resourceTemplateData.js` with image support
+- Added icon selector to `ResourceTemplates.vue` for choosing resource icons
+- Added `img` property to all quests in `quests.js`
+- Updated `questTemplateData.js` with quest background images
+- Added background image selector to `QuestTemplates.vue` for choosing quest backgrounds
+- Added `img` property to all weapons in `items.js`
+- Created new `weaponTemplateData.js` with weapon templates and image support
+- Created new `WeaponTemplates.vue` with weapon icon selector
+- Updated `GameSettings.vue` to include WeaponTemplates
+- Updated `QuickBar.vue` to use the new `img` property for weapons, Armor, Aid, Resources
+- Updated `QuestDetails.vue` to use the new `img` property for weapons, Armor, Aid, Resources
+- Updated `QuestDialog.vue` to use the new `img` property for weapons, Armor, Aid, Resources
+- Updated `QuestList.vue` to use the new `img` property for weapons, Armor, Aid, Resources
+- Updated `PlayerShop.vue` to use the new `img` property for weapons, Armor, Aid, Resources
+- Updated `EnemyEncounters.vue` to use the new `img` property for weapons, Armor, Aid, Resources
+- Updated `QuickBarRight.vue` to use the new `img` property for weapons, Armor, Aid, Resources
+- Updated `InventoryStash.vue` to use the new `img` property for weapons, Armor, Aid, Resources
 
 ## Getting Started
 To get started with NukeWorld, follow these steps:
@@ -328,4 +356,4 @@ Contributions are welcome! If you find any issues or have suggestions for improv
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [MIT License](nukeworld/LICENSE).

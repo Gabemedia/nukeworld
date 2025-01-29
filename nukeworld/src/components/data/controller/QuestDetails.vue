@@ -1,7 +1,7 @@
 <template>
   <div class="quest-details" v-if="localQuest">
     <div class="quest-header" :style="{
-      backgroundImage: `url(${require(`@/assets/quests/bg/${localQuest.id}.jpg`)})`,
+      backgroundImage: `url(${require(`@/assets/quests/bg/${localQuest.img}.jpg`)})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center center',
       backgroundRepeat: 'no-repeat'
@@ -155,7 +155,7 @@ export default {
       if (obtainedReward) {
         rewardMessage += `
           <div class="d-flex align-items-start justify-content-start reward-info mb-1">
-            <img src="${require(`@/assets/interface/icons/weapons/${obtainedReward.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${obtainedReward.name}" style="width: 20px;" class="me-2">
+            <img src="${require(`@/assets/interface/icons/weapons/${obtainedReward.img}`)}" title="${obtainedReward.name}" style="width: 20px;" class="me-2">
             <span>${obtainedReward.name}</span>
           </div>
         `;
@@ -164,7 +164,7 @@ export default {
       if (obtainedArmorReward) {
         rewardMessage += `
           <div class="d-flex align-items-start justify-content-start reward-info mb-1">
-            <img src="${require(`@/assets/interface/icons/armor/${obtainedArmorReward.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${obtainedArmorReward.name}" style="width: 20px;" class="me-2">
+            <img src="${require(`@/assets/interface/icons/armor/${obtainedArmorReward.img}`)}" title="${obtainedArmorReward.name}" style="width: 20px;" class="me-2">
             <span>${obtainedArmorReward.name}</span>
           </div>
         `;
@@ -173,7 +173,7 @@ export default {
       if (obtainedResource) {
         rewardMessage += `
           <div class="d-flex align-items-start justify-content-start reward-info mb-1">
-            <img src="${require(`@/assets/interface/icons/resources/${obtainedResource.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${obtainedResource.name}" style="width: 20px;" class="me-2">
+            <img src="${require(`@/assets/interface/icons/resources/${obtainedResource.img}`)}" title="${obtainedResource.name}" style="width: 20px;" class="me-2">
             <span>${obtainedResource.name}</span>
           </div>
         `;

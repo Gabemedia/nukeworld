@@ -31,7 +31,8 @@ export const questTemplateData = [
       rewardChance: 0.05,
       armorReward: [1, 2],
       armorRewardChance: 0.03,
-      levelRequirement: 1
+      levelRequirement: 1,
+      img: 'supply_quest.jpg'
     }
   },
   {
@@ -66,7 +67,8 @@ export const questTemplateData = [
       rewardChance: 0.1,
       armorReward: [2, 3, 4],
       armorRewardChance: 0.05,
-      levelRequirement: 3
+      levelRequirement: 3,
+      img: 'exploration_quest.jpg'
     }
   },
   {
@@ -101,7 +103,8 @@ export const questTemplateData = [
       rewardChance: 0.15,
       armorReward: [3, 4, 5, 6],
       armorRewardChance: 0.1,
-      levelRequirement: 5
+      levelRequirement: 5,
+      img: 'high_risk_quest.jpg'
     }
   },
   {
@@ -136,7 +139,8 @@ export const questTemplateData = [
       rewardChance: 0.08,
       armorReward: [1, 2, 2, 3],
       armorRewardChance: 0.04,
-      levelRequirement: 2
+      levelRequirement: 2,
+      img: 'settlement_quest.jpg'
     }
   }
 ]; 

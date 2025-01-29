@@ -6,7 +6,7 @@
         <div class="shop-items d-flex flex-row flex-wrap">
           <div v-for="item in weapons" :key="item.uuid" class="shop-item position-relative" @click="toggleEquipWeapon(item.uuid)" @mouseover="showItemInfo(item, 'weapon')" @mouseleave="hideItemInfo">
             <span v-if="isEquipped(item.uuid)" class="active-equip"></span>
-            <img :src="require(`@/assets/interface/icons/weapons/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="item.name" />
+            <img :src="require(`@/assets/interface/icons/weapons/${item.img}`)" :title="item.name" />
             <div class="item-actions">
               <button v-if="item.price !== -1" class="btn btn-danger btn-sm position-absolute top-100 start-100 translate-middle py-0 px-1" @click.stop="sellWeapon(item.uuid)" :disabled="isEquipped(item.uuid)">
                 <p class="card-text m-0">{{ Math.floor(item.price * 0.1) }}</p>
@@ -27,7 +27,7 @@
         <div class="shop-items d-flex flex-row flex-wrap">
           <div v-for="item in armor" :key="item.uuid" class="shop-item position-relative" @click="toggleEquipArmor(item.uuid)" @mouseover="showItemInfo(item, 'armor')" @mouseleave="hideItemInfo">
             <span v-if="isArmorEquipped(item.uuid)" class="active-equip"></span>
-            <img :src="require(`@/assets/interface/icons/armor/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="item.name" />
+            <img :src="require(`@/assets/interface/icons/armor/${item.img}`)" :title="item.name" />
             <div class="item-actions">
               <button v-if="item.price !== -1" class="btn btn-danger btn-sm position-absolute top-100 start-100 translate-middle py-0 px-1" @click.stop="sellArmor(item.uuid)" :disabled="isArmorEquipped(item.uuid)">
                 <p class="card-text m-0">{{ Math.floor(item.price * 0.1) }}</p>

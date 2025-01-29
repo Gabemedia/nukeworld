@@ -73,7 +73,7 @@ export default {
             if (reward.item && reward.item.name) {
               rewardMessage += `
                 <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                  <img src="${require(`@/assets/interface/icons/resources/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                  <img src="${require(`@/assets/interface/icons/resources/${reward.item.img}`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
                   <span>${reward.amount} x ${reward.item.name}</span>
                 </div>
               `;
@@ -83,7 +83,7 @@ export default {
             if (reward.item && reward.item.name) {
               rewardMessage += `
                 <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                  <img src="${require(`@/assets/interface/icons/weapons/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                  <img src="${require(`@/assets/interface/icons/weapons/${reward.item.img}`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
                   <span>${reward.item.name}</span>
                 </div>
               `;
@@ -93,7 +93,7 @@ export default {
             if (reward.item && reward.item.name) {
               rewardMessage += `
                 <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                  <img src="${require(`@/assets/interface/icons/armor/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                  <img src="${require(`@/assets/interface/icons/armor/${reward.item.img}`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
                   <span>${reward.item.name}</span>
                 </div>
               `;

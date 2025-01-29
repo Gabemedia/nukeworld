@@ -34,6 +34,9 @@
               {{ template.difficulty }}
             </span>
           </div>
+          <div class="template-icon">
+            <img :src="require('@/assets/quests/bg/' + template.template.img)" :alt="template.name">
+          </div>
           <div class="template-card-content">
             <p>{{ template.shortDescription }}</p>
             <div class="template-features">
@@ -107,7 +110,26 @@
         </div>
       </div>
 
-      <div class="template-actions">
+      <div class="icon-selector" v-if="showIconSelector">
+        <h3>Select Quest Background</h3>
+        <div class="icons-grid">
+          <div 
+            v-for="icon in availableIcons" 
+            :key="icon"
+            class="icon-item"
+            @click="selectIcon(icon)"
+            :class="{ 'selected': selectedTemplate && selectedTemplate.template.img === icon }"
+          >
+            <img :src="require('@/assets/quests/bg/' + icon)" :alt="icon">
+          </div>
+        </div>
+        <div class="icon-selector-actions">
+          <button class="btn btn-success" @click="confirmTemplate">Confirm</button>
+          <button class="btn btn-danger" @click="cancelIconSelection">Cancel</button>
+        </div>
+      </div>
+
+      <div class="template-actions" v-if="!showIconSelector">
         <button class="btn btn-danger" @click="closeDialog">Cancel</button>
         <button 
           class="btn btn-success" 
@@ -137,6 +159,8 @@ export default {
   setup(props, { emit }) {
     const selectedCategory = ref('all');
     const selectedTemplateId = ref(null);
+    const showIconSelector = ref(false);
+    const selectedTemplate = ref(null);
     const categories = ref([
       { id: 'all', name: 'All Quests' },
       { id: 'basic', name: 'Basic Quests' },
@@ -145,15 +169,31 @@ export default {
       { id: 'settlement', name: 'Settlement' }
     ]);
 
+    const availableIcons = ref([
+      'settlement_supplies.jpg',
+      'search_location.jpg',
+      'clock_tower.jpg',
+      'strange_noises.jpg',
+      'library_cleanup.jpg',
+      'supply_run.jpg',
+      'library_cleanup_2.jpg',
+      'radioactive_wasteland.jpg',
+      'overgrown_village.jpg',
+      'supply_shipment.jpg',
+      'atlantic_city.jpg',
+      'warehouse_stashes.jpg',
+      'acid_rain.jpg',
+      'supply_quest.jpg',
+      'exploration_quest.jpg',
+      'high_risk_quest.jpg',
+      'settlement_quest.jpg'
+    ]);
+
     const filteredTemplates = computed(() => {
       return selectedCategory.value === 'all'
         ? questTemplateData
         : questTemplateData.filter(t => t.category === selectedCategory.value);
     });
-
-    const selectedTemplate = computed(() => 
-      questTemplateData.find(t => t.id === selectedTemplateId.value)
-    );
 
     const formatDuration = (ms) => {
       const seconds = Math.floor(ms / 1000);
@@ -168,12 +208,39 @@ export default {
 
     const selectTemplate = (template) => {
       selectedTemplateId.value = template.id;
+      selectedTemplate.value = { ...template };
+      showIconSelector.value = true;
+    };
+
+    const selectIcon = (icon) => {
+      if (selectedTemplate.value) {
+        selectedTemplate.value = {
+          ...selectedTemplate.value,
+          template: {
+            ...selectedTemplate.value.template,
+            img: icon
+          }
+        };
+      }
     };
 
     const useTemplate = () => {
       if (selectedTemplate.value) {
         emit('select-template', selectedTemplate.value);
       }
+    };
+
+    const confirmTemplate = () => {
+      if (selectedTemplate.value) {
+        emit('select-template', selectedTemplate.value);
+        emit('close');
+      }
+    };
+
+    const cancelIconSelection = () => {
+      showIconSelector.value = false;
+      selectedTemplate.value = null;
+      selectedTemplateId.value = null;
     };
 
     const closeDialog = () => {
@@ -185,10 +252,15 @@ export default {
       selectedCategory,
       selectedTemplateId,
       selectedTemplate,
+      showIconSelector,
+      availableIcons,
       filteredTemplates,
       selectCategory,
       selectTemplate,
+      selectIcon,
       useTemplate,
+      confirmTemplate,
+      cancelIconSelection,
       closeDialog,
       formatDuration
     };
@@ -390,6 +462,73 @@ export default {
     margin-right: 0.5rem;
     font-weight: bold;
   }
+}
+
+.template-icon {
+  text-align: center;
+  margin: 1rem 0;
+
+  img {
+    width: 200px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 255, 0, 0.3);
+  }
+}
+
+.icon-selector {
+  background: rgba(0, 0, 0, 0.95);
+  border: 1px solid #00ff00;
+  border-radius: 10px;
+  padding: 1rem;
+  margin-top: 1rem;
+
+  h3 {
+    color: #00ff00;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+}
+
+.icons-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.icon-item {
+  background: rgba(0, 255, 0, 0.1);
+  border: 1px solid #00ff00;
+  border-radius: 5px;
+  padding: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+
+  img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 3px;
+  }
+
+  &:hover {
+    background: rgba(0, 255, 0, 0.2);
+  }
+
+  &.selected {
+    background: rgba(0, 255, 0, 0.3);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+  }
+}
+
+.icon-selector-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 .template-actions {

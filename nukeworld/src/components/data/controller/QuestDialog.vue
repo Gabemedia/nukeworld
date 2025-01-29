@@ -97,7 +97,7 @@ export default {
 
     getResourceIcon(resourceId) {
       const resource = this.$store.state.resources.find(r => r.id === resourceId);
-      return resource ? require(`@/assets/interface/icons/resources/${resource.name.toLowerCase().replace(/ /g, '_')}.png`) : '';
+      return resource ? require(`@/assets/interface/icons/resources/${resource.img}`) : '';
     },
 
     getResourceName(resourceId) {
@@ -187,7 +187,7 @@ export default {
           case 'resource':
             rewardMessage += `
               <div class="d-flex align-items-start justify-content-start reward-info mb-1">
-                <img src="${require(`@/assets/interface/icons/resources/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                <img src="${require(`@/assets/interface/icons/resources/${reward.item.img}`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
                 <span>${reward.amount}x ${reward.item.name}</span>
               </div>
             `;
@@ -195,7 +195,7 @@ export default {
           case 'weapon':
             rewardMessage += `
               <div class="d-flex align-items-start justify-content-start reward-info mb-1">
-                <img src="${require(`@/assets/interface/icons/weapons/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                <img src="${require(`@/assets/interface/icons/weapons/${reward.item.img}`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
                 <span>${reward.item.name}</span>
               </div>
             `;
@@ -203,7 +203,7 @@ export default {
           case 'armor':
             rewardMessage += `
               <div class="d-flex align-items-start justify-content-start reward-info mb-1">
-                <img src="${require(`@/assets/interface/icons/armor/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                <img src="${require(`@/assets/interface/icons/armor/${reward.item.img}`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
                 <span>${reward.item.name}</span>
               </div>
             `;

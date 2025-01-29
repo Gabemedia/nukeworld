@@ -35,6 +35,20 @@
       @select-template="handleAidTemplateSelect"
     />
     
+    <ArmorTemplates 
+      v-if="showArmorTemplates"
+      :show="showArmorTemplates"
+      @close="showArmorTemplates = false"
+      @select-template="handleArmorTemplateSelect"
+    />
+    
+    <WeaponTemplates 
+      v-if="showWeaponTemplates"
+      :show="showWeaponTemplates"
+      @close="showWeaponTemplates = false"
+      @select-template="handleWeaponTemplateSelect"
+    />
+    
     <div class="settings-content">
       <div class="settings-header">
         <h1 class="game-title">Settings</h1>
@@ -193,6 +207,8 @@ import QuestTemplates from './data/templates/QuestTemplates.vue';
 import EnemyTemplates from './data/templates/EnemyTemplates.vue';
 import ResourceTemplates from './data/templates/ResourceTemplates.vue';
 import AidTemplates from './data/templates/AidTemplates.vue';
+import ArmorTemplates from './data/templates/ArmorTemplates.vue';
+import WeaponTemplates from './data/templates/WeaponTemplates.vue';
 
 export default {
   name: 'GameSettings',
@@ -202,6 +218,8 @@ export default {
     EnemyTemplates,
     ResourceTemplates,
     AidTemplates,
+    ArmorTemplates,
+    WeaponTemplates,
   },
   data() {
     return {
@@ -225,6 +243,8 @@ export default {
       showEnemyTemplates: false,
       showResourceTemplates: false,
       showAidTemplates: false,
+      showArmorTemplates: false,
+      showWeaponTemplates: false,
     };
   },
   computed: {
@@ -320,6 +340,12 @@ export default {
           break;
         case 'aid':
           this.showAidTemplates = true;
+          break;
+        case 'armor':
+          this.showArmorTemplates = true;
+          break;
+        case 'items':
+          this.showWeaponTemplates = true;
           break;
         default:
           const newItem = this.createNewItem();
@@ -428,6 +454,29 @@ export default {
             defense: 5,
             exp: 50,
             money: 10,
+          };
+        case 'armor':
+          return {
+            ...baseItem,
+            uuid: uuidv4(),
+            name: 'New Armor',
+            desc: 'Armor description',
+            attack: 0,
+            defence: 0,
+            state: 'none',
+            price: 0,
+            img: '',
+          };
+        case 'items':
+          return {
+            ...baseItem,
+            uuid: uuidv4(),
+            name: 'New Weapon',
+            desc: 'Weapon description',
+            attack: 10,
+            defence: 5,
+            state: 'none',
+            price: 0
           };
         default:
           return baseItem;
@@ -698,6 +747,42 @@ export default {
       this.currentIndex = this.aid.length - 1;
       this.saveToLocalStorage();
       this.showAidTemplates = false;
+    },
+    handleArmorTemplateSelect(template) {
+      const newArmor = {
+        id: this.getNextId(),
+        uuid: uuidv4(),
+        name: template.name,
+        desc: template.desc,
+        attack: template.attack,
+        defence: template.defence,
+        state: template.state,
+        price: template.price,
+        img: template.img
+      };
+      
+      this.armor.push(newArmor);
+      this.currentIndex = this.armor.length - 1;
+      this.saveToLocalStorage();
+      this.showArmorTemplates = false;
+    },
+    handleWeaponTemplateSelect(template) {
+      const newWeapon = {
+        id: this.getNextId(),
+        uuid: uuidv4(),
+        name: template.name,
+        desc: template.desc,
+        attack: template.attack,
+        defence: template.defence,
+        state: template.state,
+        price: template.price,
+        img: template.img
+      };
+      
+      this.items.push(newWeapon);
+      this.currentIndex = this.items.length - 1;
+      this.saveToLocalStorage();
+      this.showWeaponTemplates = false;
     },
   },
   mounted() {

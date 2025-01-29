@@ -9,7 +9,8 @@ export default [
     "attack": 1,
     "defence": 0,
     "state": "none",
-    "price": -1
+    "price": -1,
+    "img": "hands.png"
   },
   {
     "id": 1,
@@ -19,7 +20,8 @@ export default [
     "attack": 2,
     "defence": 0,
     "state": "0",
-    "price": 499
+    "price": 499,
+    "img": "knife.png"
   },
   {
     "id": 2,
@@ -29,7 +31,8 @@ export default [
     "attack": 2,
     "defence": 0,
     "state": "none",
-    "price": 799
+    "price": 799,
+    "img": "baseball_bat.png"
   },
   {
     "id": 3,
@@ -39,7 +42,8 @@ export default [
     "attack": 5,
     "defence": 0,
     "state": "none",
-    "price": 2499
+    "price": 2499,
+    "img": "fire_axe.png"
   },
   {
     "id": 4,
@@ -49,7 +53,8 @@ export default [
     "attack": 6,
     "defence": 0,
     "state": "none",
-    "price": 7999
+    "price": 7999,
+    "img": "machete.png"
   },
   {
     "id": 5,
@@ -59,7 +64,8 @@ export default [
     "attack": 10,
     "defence": 0,
     "state": "none",
-    "price": -1
+    "price": -1,
+    "img": "coil_stick.png"
   },
   {
     "id": 6,
@@ -69,7 +75,8 @@ export default [
     "attack": 12,
     "defence": 0,
     "state": "none",
-    "price": 2999
+    "price": 2999,
+    "img": "flare_gun.png"
   },
   {
     "id": 7,
@@ -79,7 +86,8 @@ export default [
     "attack": 12,
     "defence": 0,
     "state": "none",
-    "price": 4999
+    "price": 4999,
+    "img": "10mm_pistol.png"
   },
   {
     "id": 8,
@@ -89,7 +97,8 @@ export default [
     "attack": 15,
     "defence": 0,
     "state": "none",
-    "price": 12999
+    "price": 12999,
+    "img": "revolver.png"
   },
   {
     "id": 9,
@@ -99,7 +108,8 @@ export default [
     "attack": 15,
     "defence": 0,
     "state": "none",
-    "price": 24999
+    "price": 24999,
+    "img": "laser_pistol.png"
   },
   {
     "id": 10,
@@ -109,7 +119,8 @@ export default [
     "attack": 25,
     "defence": 0,
     "state": "none",
-    "price": -1
+    "price": -1,
+    "img": "semi_pistol.png"
   },
   {
     "id": 11,
@@ -119,7 +130,8 @@ export default [
     "attack": 12,
     "defence": 0,
     "state": "none",
-    "price": 9999
+    "price": 9999,
+    "img": "flinklock_rifle.png"
   },
   {
     "id": 12,
@@ -129,7 +141,8 @@ export default [
     "attack": 15,
     "defence": 0,
     "state": "none",
-    "price": 24999
+    "price": 24999,
+    "img": "hunting_rifle.png"
   },
   {
     "id": 13,
@@ -139,7 +152,8 @@ export default [
     "attack": 18,
     "defence": 0,
     "state": "none",
-    "price": 34999
+    "price": 34999,
+    "img": "smg.png"
   },
   {
     "id": 14,
@@ -149,7 +163,8 @@ export default [
     "attack": 25,
     "defence": 0,
     "state": "none",
-    "price": 49999
+    "price": 49999,
+    "img": "assault_rifle.png"
   },
   {
     "id": 15,
@@ -159,7 +174,8 @@ export default [
     "attack": 28,
     "defence": 0,
     "state": "none",
-    "price": -1
+    "price": -1,
+    "img": "tommy_gun.png"
   },
   {
     "id": 16,
@@ -169,7 +185,8 @@ export default [
     "attack": 25,
     "defence": 0,
     "state": "none",
-    "price": 49999
+    "price": 49999,
+    "img": "lmg.png"
   },
   {
     "id": 17,
@@ -179,7 +196,8 @@ export default [
     "attack": 29,
     "defence": 0,
     "state": "none",
-    "price": 74999
+    "price": 74999,
+    "img": "minigun.png"
   },
   {
     "id": 18,
@@ -189,7 +207,8 @@ export default [
     "attack": 32,
     "defence": 0,
     "state": "none",
-    "price": 89999
+    "price": 89999,
+    "img": "flamethrower.png"
   },
   {
     "id": 19,
@@ -199,7 +218,8 @@ export default [
     "attack": 50,
     "defence": 0,
     "state": "none",
-    "price": 99999
+    "price": 99999,
+    "img": "rocket_launcher.png"
   },
   {
     "id": 20,
@@ -209,7 +229,8 @@ export default [
     "attack": 100,
     "defence": 0,
     "state": "none",
-    "price": -1
+    "price": -1,
+    "img": "santa_gloves.png"
   },
   {
     "id": 21,
@@ -219,6 +240,7 @@ export default [
     "attack": 3,
     "defence": 0,
     "state": "none",
-    "price": -1
+    "price": -1,
+    "img": "knuckles.png"
   }
 ];

@@ -13,7 +13,7 @@
     <div class="resources-container mt-2">
       <div v-for="resource in stackedResources" :key="resource.id" class="resource-item" @mouseover="showItemInfo(resource)" @mouseleave="hideItemInfo">
         <div class="resource-icon">
-          <img :src="require(`@/assets/interface/icons/resources/${resource.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="resource.name" />
+          <img :src="require(`@/assets/interface/icons/resources/${resource.img}`)" :alt="resource.name" />
         </div>
         <span class="resource-amount">{{ resource.quantity }}</span>
         <div v-if="hoveredItem && hoveredItem.id === resource.id" class="item-info">

@@ -9,7 +9,8 @@ export default [
     "attack": 0,
     "defence": 1,
     "state": "none",
-    "price": -1
+    "price": -1,
+    "img": "rags.png"
   },
   {
     "id": 1,
@@ -19,7 +20,8 @@ export default [
     "attack": 0,
     "defence": 4,
     "state": "none",
-    "price": 499
+    "price": 499,
+    "img": "leather_armor.png"
   },
   {
     "id": 2,
@@ -29,7 +31,8 @@ export default [
     "attack": 0,
     "defence": 8,
     "state": "none",
-    "price": 1299
+    "price": 1299,
+    "img": "trader_suit.png"
   },
   {
     "id": 3,
@@ -39,7 +42,8 @@ export default [
     "attack": 0,
     "defence": 12,
     "state": "none",
-    "price": 2499
+    "price": 2499,
+    "img": "radiation_suit.png"
   },
   {
     "id": 4,
@@ -49,7 +53,8 @@ export default [
     "attack": 0,
     "defence": 16,
     "state": "none",
-    "price": 4999
+    "price": 4999,
+    "img": "metal_armor.png"
   },
   {
     "id": 5,
@@ -59,7 +64,8 @@ export default [
     "attack": 0,
     "defence": 25,
     "state": "none",
-    "price": -1
+    "price": -1,
+    "img": "raider_armor.png"
   },
   {
     "id": 6,
@@ -69,7 +75,8 @@ export default [
     "attack": 0,
     "defence": 22,
     "state": "none",
-    "price": 9999
+    "price": 9999,
+    "img": "plate_armor.png"
   },
   {
     "id": 7,
@@ -79,7 +86,8 @@ export default [
     "attack": 0,
     "defence": 30,
     "state": "none",
-    "price": 12999
+    "price": 12999,
+    "img": "battle_armor.png"
   },
   {
     "id": 8,
@@ -89,7 +97,8 @@ export default [
     "attack": 0,
     "defence": 48,
     "state": "none",
-    "price": 24999
+    "price": 24999,
+    "img": "military_armor.png"
   },
   {
     "id": 9,
@@ -99,7 +108,8 @@ export default [
     "attack": 0,
     "defence": 62,
     "state": "none",
-    "price": 49999
+    "price": 49999,
+    "img": "nano_suit.png"
   },
   {
     "id": 10,
@@ -109,7 +119,8 @@ export default [
     "attack": 0,
     "defence": 89,
     "state": "none",
-    "price": -1
+    "price": -1,
+    "img": "doomslayer.png"
   },
   {
     "id": 11,
@@ -119,6 +130,7 @@ export default [
     "attack": 0,
     "defence": 2,
     "state": "none",
-    "price": -1
+    "price": -1,
+    "img": "wooden_armor.png"
   }
 ];

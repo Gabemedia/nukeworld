@@ -29,7 +29,8 @@ export default [
     "armorRewardChance": 0.025,
     "levelRequirement": 1,
     "lat": 573.1495546382839,
-    "lon": 476.31056200498546
+    "lon": 476.31056200498546,
+    "img": "settlement_supplies.png"
   },
   {
     "id": 2,
@@ -60,7 +61,8 @@ export default [
     "armorRewardChance": 0.1,
     "levelRequirement": 2,
     "lat": 428.4701829320696,
-    "lon": 1260.9887351862867
+    "lon": 1260.9887351862867,
+    "img": "search_location.png"
   },
   {
     "id": 3,
@@ -92,7 +94,8 @@ export default [
     "armorRewardChance": 0.01,
     "levelRequirement": 3,
     "lat": 609.1503677544474,
-    "lon": 526.3654563318473
+    "lon": 526.3654563318473,
+    "img": "clock_tower.png"
   },
   {
     "id": 4,
@@ -130,7 +133,8 @@ export default [
     "armorRewardChance": 0.02,
     "levelRequirement": 4,
     "lat": 616.5086549644191,
-    "lon": 1067.0752012310995
+    "lon": 1067.0752012310995,
+    "img": "strange_noises.png"
   },
   {
     "id": 5,
@@ -163,7 +167,8 @@ export default [
     "armorRewardChance": 0.01,
     "levelRequirement": 5,
     "lat": 527.8218263116082,
-    "lon": 1144.5134266960295
+    "lon": 1144.5134266960295,
+    "img": "library_cleanup.png"
   },
   {
     "id": 6,
@@ -199,7 +204,8 @@ export default [
     "armorRewardChance": 0.06,
     "levelRequirement": 7,
     "lat": 450.677157393861,
-    "lon": 1083.2879796845477
+    "lon": 1083.2879796845477,
+    "img": "supply_run.png"
   },
   {
     "id": 7,
@@ -231,7 +237,8 @@ export default [
     "armorRewardChance": 0.03,
     "levelRequirement": 7,
     "lat": 651.7907284638684,
-    "lon": 1330.0617723590804
+    "lon": 1330.0617723590804,
+    "img": "library_cleanup_2.png"
   },
   {
     "id": 8,
@@ -268,7 +275,8 @@ export default [
     "armorRewardChance": 0.1,
     "levelRequirement": 9,
     "lat": 762.2174575612377,
-    "lon": 779.5434573277191
+    "lon": 779.5434573277191,
+    "img": "radioactive_wasteland.png"
   },
   {
     "id": 9,
@@ -298,7 +306,8 @@ export default [
     "armorRewardChance": 0.02,
     "levelRequirement": 10,
     "lat": 556.1420727572331,
-    "lon": 1562.7445670262262
+    "lon": 1562.7445670262262,
+    "img": "overgrown_village.png"
   },
   {
     "id": 10,
@@ -334,7 +343,8 @@ export default [
     "armorRewardChance": 0.45,
     "levelRequirement": 12,
     "lat": 472.1433549481972,
-    "lon": 726.1905743839554
+    "lon": 726.1905743839554,
+    "img": "supply_shipment.png"
   },
   {
     "id": 11,
@@ -370,7 +380,8 @@ export default [
     "armorRewardChance": 0.75,
     "levelRequirement": 15,
     "lat": 612.2144891047244,
-    "lon": 739.5315940333699
+    "lon": 739.5315940333699,
+    "img": "atlantic_city.png"
   },
   {
     "id": 12,
@@ -401,7 +412,8 @@ export default [
     "armorRewardChance": 0.05,
     "levelRequirement": 15,
     "lat": 739.8456214925488,
-    "lon": 1447.1103334948334
+    "lon": 1447.1103334948334,
+    "img": "warehouse_stashes.png"
   },
   {
     "id": 13,
@@ -430,6 +442,7 @@ export default [
     "armorRewardChance": 0.2,
     "levelRequirement": 17,
     "lat": 632.0923199133139,
-    "lon": 1122.5484397404812
+    "lon": 1122.5484397404812,
+    "img": "acid_rain.png"
   }
 ];

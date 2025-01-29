@@ -20,7 +20,7 @@
                     @mouseover="showItemInfo(weapon)"
                     @mouseleave="hideItemInfo"
                     :ref="'item-weapons-' + weapon.id">
-                  <img :src="require(`@/assets/interface/icons/weapons/${weapon.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="weapon.name" />
+                  <img :src="require(`@/assets/interface/icons/weapons/${weapon.img}`)" :alt="weapon.name" />
                   <div class="price-box">{{ weapon.price }}</div>
                   <div v-if="hoveredItem === weapon" class="item-info">
                     <p class="mb-1 fw-bold small">Name: {{ weapon.name }}</p>
@@ -41,7 +41,7 @@
                     @mouseover="showItemInfo(armor)"
                     @mouseleave="hideItemInfo"
                     :ref="'item-armor-' + armor.id">
-                  <img :src="require(`@/assets/interface/icons/armor/${armor.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="armor.name" />
+                  <img :src="require(`@/assets/interface/icons/armor/${armor.img}`)" :alt="armor.name" />
                   <div class="price-box">{{ armor.price }}</div>
                   <div v-if="hoveredItem === armor" class="item-info">
                     <p class="mb-1 fw-bold small">Name: {{ armor.name }}</p>
