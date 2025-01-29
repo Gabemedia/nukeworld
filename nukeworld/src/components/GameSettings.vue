@@ -178,6 +178,103 @@
                   </div>
                 </div>
               </template>
+              <template v-else-if="activeSection === 'settings' && key === 'voiceSettings'">
+                <div class="voice-settings">
+                  <h4 class="text-success mb-4">Stemmeindstillinger</h4>
+                  
+                  <!-- Enable/Disable Voice -->
+                  <div class="form-group mb-3">
+                    <label class="d-flex align-items-center">
+                      <input type="checkbox" v-model="currentItem[key].enabled" class="form-check-input me-2">
+                      Aktivér stemme
+                    </label>
+                  </div>
+                  
+                  <!-- Language Selection -->
+                  <div class="form-group mb-3">
+                    <label>Sprog</label>
+                    <select v-model="currentItem[key].language" class="form-control" @change="updateVoiceList">
+                      <option v-for="lang in availableLanguages" :key="lang.code" :value="lang.code">
+                        {{ lang.name }}
+                      </option>
+                    </select>
+                  </div>
+                  
+                  <!-- Voice Selection -->
+                  <div class="form-group mb-3">
+                    <label>Stemme</label>
+                    <select v-model="currentItem[key].selectedVoice" class="form-control">
+                      <option value="">Standard stemme</option>
+                      <option v-for="voice in currentVoices" :key="voice.voiceURI" :value="voice.voiceURI">
+                        {{ voice.name }} ({{ voice.localService ? 'Lokal' : 'Online' }})
+                      </option>
+                    </select>
+                  </div>
+                  
+                  <!-- Mobile Settings -->
+                  <div class="form-group mb-3">
+                    <label class="d-flex align-items-center">
+                      <input type="checkbox" v-model="currentItem[key].forceVoiceOnMobile" class="form-check-input me-2">
+                      Tving valgt stemme på mobil
+                    </label>
+                    <small class="text-muted d-block">Forhindrer Siri og andre systemstemmer i at overtage</small>
+                  </div>
+
+                  <div class="form-group mb-3">
+                    <label class="d-flex align-items-center">
+                      <input type="checkbox" v-model="currentItem[key].useNativeVoice" class="form-check-input me-2">
+                      Brug native stemme hvis muligt
+                    </label>
+                    <small class="text-muted d-block">Giver bedre kvalitet på nogle enheder</small>
+                  </div>
+                  
+                  <!-- Voice Controls -->
+                  <div class="voice-controls border rounded p-3 mb-3">
+                    <h5 class="text-success mb-3">Stemmekontrol</h5>
+                    
+                    <!-- Rate Control -->
+                    <div class="form-group mb-3">
+                      <label>Talehastighed ({{ currentItem[key].rate }})</label>
+                      <input type="range" v-model.number="currentItem[key].rate" 
+                             class="form-range" min="0.1" max="2" step="0.1">
+                    </div>
+                    
+                    <!-- Pitch Control -->
+                    <div class="form-group mb-3">
+                      <label>Tonehøjde ({{ currentItem[key].pitch }})</label>
+                      <input type="range" v-model.number="currentItem[key].pitch" 
+                             class="form-range" min="0.1" max="2" step="0.1">
+                    </div>
+                    
+                    <!-- Volume Control -->
+                    <div class="form-group mb-3">
+                      <label>Lydstyrke ({{ currentItem[key].volume }})</label>
+                      <input type="range" v-model.number="currentItem[key].volume" 
+                             class="form-range" min="0" max="1" step="0.1">
+                    </div>
+                  </div>
+                  
+                  <!-- Test Area -->
+                  <div class="test-area border rounded p-3 mb-3">
+                    <h5 class="text-success mb-3">Test Stemmeindstillinger</h5>
+                    
+                    <div class="form-group mb-3">
+                      <label>Test Tekst</label>
+                      <textarea v-model="currentItem[key].testText" class="form-control" 
+                               rows="3" placeholder="Skriv tekst her for at teste stemmeindstillingerne"></textarea>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                      <button @click="testVoiceSettings" class="btn btn-primary">
+                        Test Stemme
+                      </button>
+                      <button @click="stopSpeaking" class="btn btn-danger">
+                        Stop
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </template>
               <input v-else-if="key === 'id'" v-model.number="currentItem[key]" class="form-control" :readonly="true">
               <input v-else-if="isNumeric(key)" v-model.number="currentItem[key]" class="form-control">
               <input v-else-if="typeof value !== 'object' && typeof value !== 'boolean'" :id="key" v-model="currentItem[key]" class="form-control">
@@ -224,7 +321,7 @@ export default {
   data() {
     return {
       activeSection: 'quests',
-      sections: ['quests', 'items', 'story', 'armor', 'aid', 'resources', 'enemies'],
+      sections: ['quests', 'items', 'story', 'armor', 'aid', 'resources', 'enemies', 'settings'],
       quests: [],
       items: [],
       story: [],
@@ -232,6 +329,34 @@ export default {
       aid: [],
       resources: [],
       enemies: [],
+      settings: [{
+        id: 1,
+        voiceSettings: {
+          enabled: true,
+          selectedVoice: null,
+          language: 'da-DK',
+          rate: 1.0,
+          pitch: 1.0,
+          volume: 1.0,
+          testText: 'Dette er en test af stemmeindstillingerne. Hvordan lyder det?',
+          forceVoiceOnMobile: true,
+          useNativeVoice: true,
+          preferredVoices: {
+            'da-DK': null,
+            'en-US': null,
+            'en-GB': null
+          }
+        }
+      }],
+      availableVoices: [],
+      availableLanguages: [
+        { code: 'da-DK', name: 'Dansk' },
+        { code: 'en-US', name: 'English (US)' },
+        { code: 'en-GB', name: 'English (UK)' },
+        { code: 'de-DE', name: 'Deutsch' },
+        { code: 'fr-FR', name: 'Français' },
+        { code: 'es-ES', name: 'Español' }
+      ],
       currentIndex: 0,
       selectedReward: {
         reward: '',
@@ -253,6 +378,18 @@ export default {
     },
     currentItem() {
       return this.getActiveData[this.currentIndex] || {};
+    },
+    currentVoices() {
+      if (!this.currentItem?.voiceSettings?.language) return [];
+      return this.availableVoices.filter(voice => 
+        voice.lang.toLowerCase().startsWith(this.currentItem.voiceSettings.language.toLowerCase())
+      ).sort((a, b) => {
+        // Prioriter lokale stemmer
+        if (a.localService !== b.localService) {
+          return a.localService ? -1 : 1;
+        }
+        return a.name.localeCompare(b.name);
+      });
     }
   },
   methods: {
@@ -784,9 +921,84 @@ export default {
       this.saveToLocalStorage();
       this.showWeaponTemplates = false;
     },
+    updateVoiceList() {
+      if (!this.currentItem?.voiceSettings?.language) return;
+      
+      // Reset selected voice when language changes
+      this.currentItem.voiceSettings.selectedVoice = null;
+      
+      // Get all available voices
+      const voices = speechSynthesis.getVoices();
+      this.availableVoices = voices;
+      
+      // Try to find and set a preferred voice for the language
+      const language = this.currentItem.voiceSettings.language;
+      const languageVoices = voices.filter(voice => 
+        voice.lang.toLowerCase().startsWith(language.toLowerCase())
+      );
+      
+      if (languageVoices.length > 0) {
+        // Prefer local voices
+        const localVoice = languageVoices.find(v => v.localService);
+        if (localVoice) {
+          this.currentItem.voiceSettings.selectedVoice = localVoice.voiceURI;
+        } else {
+          this.currentItem.voiceSettings.selectedVoice = languageVoices[0].voiceURI;
+        }
+      }
+      
+      console.log('Available voices for', language, ':', languageVoices);
+    },
+    
+    testVoiceSettings() {
+      const settings = this.currentItem.voiceSettings;
+      if (!settings.enabled) {
+        alert('Stemme er deaktiveret. Aktivér den for at teste indstillingerne.');
+        return;
+      }
+
+      this.stopSpeaking();
+      
+      const utterance = new SpeechSynthesisUtterance(settings.testText);
+      
+      // Apply settings
+      utterance.rate = settings.rate;
+      utterance.pitch = settings.pitch;
+      utterance.volume = settings.volume;
+      utterance.lang = settings.language;
+      
+      // Set specific voice if selected
+      if (settings.selectedVoice) {
+        const voices = speechSynthesis.getVoices();
+        const selectedVoice = voices.find(v => v.voiceURI === settings.selectedVoice);
+        if (selectedVoice) {
+          utterance.voice = selectedVoice;
+        }
+      }
+      
+      // Speak
+      speechSynthesis.speak(utterance);
+    },
+    
+    stopSpeaking() {
+      speechSynthesis.cancel();
+    },
   },
   mounted() {
     this.loadFromLocalStorage();
+    
+    // Initialize speech synthesis
+    const loadVoices = () => {
+      const voices = speechSynthesis.getVoices();
+      this.availableVoices = voices;
+      if (this.currentItem?.voiceSettings) {
+        this.updateVoiceList();
+      }
+    };
+    
+    speechSynthesis.onvoiceschanged = loadVoices;
+    setTimeout(loadVoices, 100); // Ensure voices are loaded
+    loadVoices();
   }
 };
 </script>
