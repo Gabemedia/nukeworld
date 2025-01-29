@@ -637,12 +637,17 @@ export default {
     },
     handleEnemyTemplateSelect(template) {
       const newEnemy = {
-        ...template.template,
-        id: this.getNextId()
+        id: this.getNextId(),
+        name: template.name,
+        enemyHealth: template.enemyHealth,
+        attack: template.attack,
+        defense: template.defense,
+        exp: template.exp,
+        money: template.money
       };
       
-      this.getActiveData.push(newEnemy);
-      this.currentIndex = this.getActiveData.length - 1;
+      this.enemies.push(newEnemy);
+      this.currentIndex = this.enemies.length - 1;
       this.saveToLocalStorage();
       this.showEnemyTemplates = false;
     },
