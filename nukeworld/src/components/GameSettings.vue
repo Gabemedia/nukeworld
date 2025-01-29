@@ -28,6 +28,13 @@
       @select-template="handleResourceTemplateSelect"
     />
     
+    <AidTemplates 
+      v-if="showAidTemplates"
+      :show="showAidTemplates"
+      @close="showAidTemplates = false"
+      @select-template="handleAidTemplateSelect"
+    />
+    
     <div class="settings-content">
       <div class="settings-header">
         <h1 class="game-title">Settings</h1>
@@ -185,6 +192,7 @@ import StoryTemplates from './data/templates/StoryTemplates.vue';
 import QuestTemplates from './data/templates/QuestTemplates.vue';
 import EnemyTemplates from './data/templates/EnemyTemplates.vue';
 import ResourceTemplates from './data/templates/ResourceTemplates.vue';
+import AidTemplates from './data/templates/AidTemplates.vue';
 
 export default {
   name: 'GameSettings',
@@ -193,6 +201,7 @@ export default {
     QuestTemplates,
     EnemyTemplates,
     ResourceTemplates,
+    AidTemplates,
   },
   data() {
     return {
@@ -215,6 +224,7 @@ export default {
       showQuestTemplates: false,
       showEnemyTemplates: false,
       showResourceTemplates: false,
+      showAidTemplates: false,
     };
   },
   computed: {
@@ -308,6 +318,9 @@ export default {
         case 'resources':
           this.showResourceTemplates = true;
           break;
+        case 'aid':
+          this.showAidTemplates = true;
+          break;
         default:
           const newItem = this.createNewItem();
           this.getActiveData.push(newItem);
@@ -344,12 +357,13 @@ export default {
         case 'armor':
           return {
             ...baseItem,
+            uuid: uuidv4(),
             name: 'New Item',
             desc: 'Item description',
-            attack: 0,
-            defence: 0,
+            attack: this.activeSection === 'items' ? 1 : 0,
+            defence: this.activeSection === 'armor' ? 1 : 0,
             state: 'none',
-            price: 0,
+            price: 0
           };
         case 'story':
           return {
@@ -388,6 +402,7 @@ export default {
         case 'aid':
           return {
             ...baseItem,
+            uuid: uuidv4(),
             name: 'New Aid Item',
             desc: 'Aid item description',
             health: 0,
@@ -397,6 +412,7 @@ export default {
         case 'resources':
           return {
             ...baseItem,
+            uuid: uuidv4(),
             name: 'New Resource',
             desc: 'Resource description',
             state: 'none',
@@ -527,12 +543,12 @@ export default {
         content = 'export default ' + JSON.stringify(data, null, 2) + ';';
       } else if (section === 'enemies') {
         content = 'export default ' + JSON.stringify(data, null, 2) + ';';
-      } else if (section === 'items' || section === 'armor' || section === 'aid') {
+      } else if (section === 'items' || section === 'armor' || section === 'aid' || section === 'resources') {
         content = `import { v4 as uuidv4 } from 'uuid';\n\nexport default ${JSON.stringify(data.map(item => ({
           ...item,
           uuid: 'uuidv4()'
         })), null, 2).replace(/"uuidv4\(\)"/g, 'uuidv4()')};`;
-      } else if (section === 'resources') {
+      } else {
         content = 'export default ' + JSON.stringify(data, null, 2) + ';';
       }
 
@@ -665,6 +681,23 @@ export default {
       this.resources.push(newResource);
       this.saveToLocalStorage();
       this.showResourceTemplates = false;
+    },
+    handleAidTemplateSelect(template) {
+      const newAid = {
+        id: this.getNextId(),
+        uuid: uuidv4(),
+        name: template.name,
+        desc: template.desc,
+        health: template.health,
+        state: template.state,
+        price: template.price,
+        img: template.img
+      };
+      
+      this.aid.push(newAid);
+      this.currentIndex = this.aid.length - 1;
+      this.saveToLocalStorage();
+      this.showAidTemplates = false;
     },
   },
   mounted() {

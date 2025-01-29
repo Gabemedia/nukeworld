@@ -61,7 +61,7 @@
                     @mouseover="showItemInfo(aid)"
                     @mouseleave="hideItemInfo"
                     :ref="'item-aid-' + aid.id">
-                  <img :src="require(`@/assets/interface/icons/aid/${aid.name.toLowerCase().replace(/ /g, '_')}.png`)" :alt="aid.name" />
+                  <img :src="require(`@/assets/interface/icons/aid/${aid.img}`)" :alt="aid.name" />
                   <div class="price-box">{{ aid.price }}</div>
                   <div v-if="hoveredItem === aid" class="item-info">
                     <p class="mb-1 fw-bold small">Name: {{ aid.name }}</p>

@@ -103,7 +103,7 @@ export default {
             if (reward.item && reward.item.name) {
               rewardMessage += `
                 <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                  <img src="${require(`@/assets/interface/icons/aid/${reward.item.name.toLowerCase().replace(/ /g, '_')}.png`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                  <img src="${require(`@/assets/interface/icons/aid/${reward.item.img}`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
                   <span>${reward.item.name}</span>
                 </div>
               `;

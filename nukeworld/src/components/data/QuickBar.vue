@@ -5,7 +5,7 @@
       <div class="quick-bar-item" v-if="getEquippedItem(index)" @click="toggleDropdown(index)">
         <img v-if="index === 0" :src="require(`@/assets/interface/icons/weapons/${getEquippedItem(index).name.toLowerCase().replace(/ /g, '_')}.png`)" :title="getEquippedItem(index).name" />
         <img v-else-if="index === 1" :src="require(`@/assets/interface/icons/armor/${getEquippedItem(index).name.toLowerCase().replace(/ /g, '_')}.png`)" :title="getEquippedItem(index).name" />
-        <img v-else-if="index === 2" :src="require(`@/assets/interface/icons/aid/${getEquippedItem(index).name.toLowerCase().replace(/ /g, '_')}.png`)" :title="getEquippedItem(index).name" />
+        <img v-else-if="index === 2" :src="require(`@/assets/interface/icons/aid/${getEquippedItem(index).img}`)" :title="getEquippedItem(index).name" />
         <span v-if="index === 2" class="use-aid-button" title="Use Aid Item" @click.stop="useEquippedAidItem">
           +
         </span>
@@ -14,7 +14,7 @@
         <div class="dropdown-item" v-for="item in getItems(index)" :key="item.uuid" @click="handleSelectItem(index, item)">
           <img v-if="index === 0" :src="require(`@/assets/interface/icons/weapons/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="item.name" />
           <img v-else-if="index === 1" :src="require(`@/assets/interface/icons/armor/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="item.name" />
-          <img v-else-if="index === 2" :src="require(`@/assets/interface/icons/aid/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="item.name" />
+          <img v-else-if="index === 2" :src="require(`@/assets/interface/icons/aid/${item.img}`)" :title="item.name" />
         </div>
       </div>
     </div>

@@ -46,7 +46,7 @@
         <h6 class="mb-3 text-uppercase fw-bold text-start text-success">Aid</h6>
         <div class="shop-items d-flex flex-row flex-wrap">
           <div v-for="item in aid" :key="item.uuid" class="shop-item position-relative" @mouseover="showItemInfo(item, 'aid')" @mouseleave="hideItemInfo">
-            <img :src="require(`@/assets/interface/icons/aid/${item.name.toLowerCase().replace(/ /g, '_')}.png`)" :title="item.name" />
+            <img :src="require(`@/assets/interface/icons/aid/${item.img}`)" :title="item.name" />
             <div class="item-actions">
               <button class="btn btn-success btn-sm position-absolute top-0 start-100 translate-middle py-0 px-1" @click="useAid(item.uuid)">
                 <p class="card-text m-0">+</p>
