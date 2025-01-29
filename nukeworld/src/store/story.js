@@ -5,7 +5,13 @@ export default [
     "levelRequirement": 1,
     "completed": false,
     "requiredStoryLineId": 0,
-    "playerChoices": [],
+    "playerChoices": [
+      "Tell me more!",
+      "That´s Amazing!",
+      "I understrand. What about equipment?",
+      "Thanks for the information!",
+      "Continue Story."
+    ],
     "steps": [
       {
         "npcMessage": "Welcome to NukeWorld, {PlayerName}! This is a dangerous world full of challenges and opportunities.",
@@ -55,30 +61,33 @@ export default [
     ],
     "reward": {
       "exp": 250,
-      "money": 50,
+      "money": 500,
       "resourceRewards": [
         {
           "id": 1,
-          "amount": 2
+          "amount": 200
         },
         {
           "id": 2,
-          "amount": 2
+          "amount": 200
         }
       ],
       "weaponRewards": [],
       "armorRewards": [],
       "aidRewards": []
     },
-    "alwaysGiveReward": true
+    "alwaysGiveReward": true,
+    "currentStepIndex": 0
   },
   {
     "id": 1,
     "name": "Getting to know the Basics!",
     "levelRequirement": 1,
-    "completed": false,
+    "completed": true,
     "requiredStoryLineId": 0,
-    "playerChoices": [],
+    "playerChoices": [
+      "Thank you very much!"
+    ],
     "steps": [
       {
         "npcMessage": "This should get you started. I'll give you a basic weapon, armor, and a medkit.",
@@ -110,7 +119,8 @@ export default [
         }
       ]
     },
-    "alwaysGiveReward": true
+    "alwaysGiveReward": true,
+    "currentStepIndex": 0
   },
   {
     "id": 2,
@@ -295,7 +305,7 @@ export default [
         {
           "id": 2,
           "amount": 2
-        },
+        }
       ],
       "weaponRewards": [
         {
@@ -448,7 +458,7 @@ export default [
         {
           "id": 2,
           "amount": 2
-        },
+        }
       ],
       "weaponRewards": [],
       "armorRewards": [
@@ -463,5 +473,302 @@ export default [
       ]
     },
     "alwaysGiveReward": false
+  },
+  {
+    "name": "Simple Story",
+    "levelRequirement": 1,
+    "completed": false,
+    "requiredStoryLineId": null,
+    "playerChoices": [
+      "What do you need?",
+      "I'll help you",
+      "You're welcome!"
+    ],
+    "steps": [
+      {
+        "npcMessage": "Greetings traveler! Can you help me with something?",
+        "playerOptions": [
+          {
+            "text": "What do you need?",
+            "nextId": 2,
+            "requiredResources": [],
+            "giveReward": false
+          }
+        ]
+      },
+      {
+        "npcMessage": "Thank you for your interest. Let me explain...",
+        "playerOptions": [
+          {
+            "text": "I'll help you",
+            "nextId": 3,
+            "requiredResources": [],
+            "giveReward": false
+          },
+          {
+            "text": "Sorry, not interested",
+            "nextId": null,
+            "requiredResources": [],
+            "giveReward": false
+          }
+        ]
+      },
+      {
+        "npcMessage": "Thank you for your help! Here's your reward.",
+        "playerOptions": [
+          {
+            "text": "You're welcome!",
+            "nextId": null,
+            "requiredResources": [],
+            "giveReward": true
+          }
+        ]
+      }
+    ],
+    "reward": {
+      "exp": 1000,
+      "money": 500,
+      "resourceRewards": [
+        {
+          "id": 2,
+          "amount": 100
+        },
+        {
+          "id": 1,
+          "amount": 100
+        }
+      ],
+      "weaponRewards": [
+        {
+          "id": 20
+        }
+      ],
+      "armorRewards": [
+        {
+          "id": 10
+        }
+      ],
+      "aidRewards": [
+        {
+          "id": 4
+        }
+      ]
+    },
+    "alwaysGiveReward": false,
+    "id": 7,
+    "currentStepIndex": 0
+  },
+  {
+    "name": "Simple Combat Story",
+    "levelRequirement": 2,
+    "completed": false,
+    "requiredStoryLineId": null,
+    "playerChoices": [],
+    "steps": [
+      {
+        "npcMessage": "We've spotted a dangerous enemy nearby!",
+        "playerOptions": [
+          {
+            "text": "I'll help deal with it",
+            "nextId": 2,
+            "requiredResources": [],
+            "giveReward": false
+          }
+        ]
+      },
+      {
+        "npcMessage": "Be careful, it's a tough one. Ready to fight?",
+        "playerOptions": [
+          {
+            "text": "Let's do this!",
+            "nextId": null,
+            "action": "startEnemyBattle",
+            "actionParams": {
+              "enemyId": 1
+            },
+            "giveReward": false
+          },
+          {
+            "text": "I need to prepare first",
+            "nextId": null,
+            "giveReward": false
+          }
+        ]
+      }
+    ],
+    "requiredEnemyDefeat": {
+      "id": 1,
+      "count": 1
+    },
+    "reward": {
+      "exp": 2500,
+      "money": 1000,
+      "resourceRewards": [
+        {
+          "id": 2,
+          "amount": 100
+        }
+      ],
+      "weaponRewards": [
+        {
+          "id": 2
+        }
+      ],
+      "armorRewards": [],
+      "aidRewards": [
+        {
+          "id": 1
+        }
+      ]
+    },
+    "alwaysGiveReward": false,
+    "id": 8
+  },
+  {
+    "name": "Simple Resource Quest",
+    "levelRequirement": 1,
+    "completed": false,
+    "requiredStoryLineId": null,
+    "playerChoices": [
+      "What resources do you need?"
+    ],
+    "steps": [
+      {
+        "npcMessage": "We need resources for the settlement. Can you help?",
+        "playerOptions": [
+          {
+            "text": "What resources do you need?",
+            "nextId": 2,
+            "requiredResources": [],
+            "giveReward": false
+          }
+        ]
+      },
+      {
+        "npcMessage": "We need 5 Wood Scraps and 2 Steel.",
+        "playerOptions": [
+          {
+            "text": "Here are the resources",
+            "nextId": null,
+            "requiredResources": [
+              {
+                "id": 1,
+                "amount": 5
+              },
+              {
+                "id": 2,
+                "amount": 2
+              }
+            ],
+            "giveReward": true
+          },
+          {
+            "text": "I'll come back when I have them",
+            "nextId": null,
+            "giveReward": false
+          }
+        ]
+      }
+    ],
+    "reward": {
+      "exp": 150,
+      "money": 75,
+      "resourceRewards": [
+        {
+          "id": 5,
+          "amount": 1
+        }
+      ],
+      "weaponRewards": [],
+      "armorRewards": [],
+      "aidRewards": []
+    },
+    "alwaysGiveReward": false,
+    "id": 9,
+    "currentStepIndex": 1
+  },
+  {
+    "name": "Simple Quest Chain",
+    "levelRequirement": 1,
+    "completed": false,
+    "requiredStoryLineId": null,
+    "playerChoices": [
+      "Tell me more"
+    ],
+    "steps": [
+      {
+        "npcMessage": "We have a complex situation that needs your help...",
+        "playerOptions": [
+          {
+            "text": "Tell me more",
+            "nextId": 2,
+            "requiredResources": [],
+            "giveReward": false
+          }
+        ]
+      },
+      {
+        "npcMessage": "First, we need to gather supplies. Bring me 3 Wood Scraps.",
+        "playerOptions": [
+          {
+            "text": "Here are the resources",
+            "nextId": 3,
+            "requiredResources": [
+              {
+                "id": 1,
+                "amount": 3
+              }
+            ],
+            "giveReward": true
+          }
+        ]
+      },
+      {
+        "npcMessage": "Now, there's an enemy blocking our path. Ready to fight?",
+        "playerOptions": [
+          {
+            "text": "Let's handle this enemy",
+            "nextId": null,
+            "action": "startEnemyBattle",
+            "actionParams": {
+              "enemyId": 2
+            },
+            "giveReward": true
+          }
+        ]
+      }
+    ],
+    "requiredEnemyDefeat": {
+      "id": 2,
+      "count": 1
+    },
+    "reward": {
+      "exp": 500,
+      "money": 250,
+      "resourceRewards": [
+        {
+          "id": 2,
+          "amount": 3
+        }
+      ],
+      "weaponRewards": [
+        {
+          "id": 3
+        }
+      ],
+      "armorRewards": [
+        {
+          "id": 2
+        }
+      ],
+      "aidRewards": [
+        {
+          "id": 2
+        }
+      ]
+    },
+    "alwaysGiveReward": false,
+    "id": 10,
+    "currentStepIndex": 1
   }
 ];

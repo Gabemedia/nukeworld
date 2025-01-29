@@ -1,5 +1,33 @@
 <template>
   <div class="settings-container">
+    <StoryTemplates 
+      v-if="showStoryTemplates"
+      :show="showStoryTemplates"
+      @close="showStoryTemplates = false"
+      @select-template="handleTemplateSelect"
+    />
+    
+    <QuestTemplates 
+      v-if="showQuestTemplates"
+      :show="showQuestTemplates"
+      @close="showQuestTemplates = false"
+      @select-template="handleQuestTemplateSelect"
+    />
+    
+    <EnemyTemplates 
+      v-if="showEnemyTemplates"
+      :show="showEnemyTemplates"
+      @close="showEnemyTemplates = false"
+      @select-template="handleEnemyTemplateSelect"
+    />
+    
+    <ResourceTemplates 
+      v-if="showResourceTemplates"
+      :show="showResourceTemplates"
+      @close="showResourceTemplates = false"
+      @select-template="handleResourceTemplateSelect"
+    />
+    
     <div class="settings-content">
       <div class="settings-header">
         <h1 class="game-title">Settings</h1>
@@ -153,9 +181,19 @@ import armorData from '@/store/armor.js';
 import aidData from '@/store/aid.js';
 import resourcesData from '@/store/ressources.js';
 import enemyData from '@/store/enemy.js';
+import StoryTemplates from './data/templates/StoryTemplates.vue';
+import QuestTemplates from './data/templates/QuestTemplates.vue';
+import EnemyTemplates from './data/templates/EnemyTemplates.vue';
+import ResourceTemplates from './data/templates/ResourceTemplates.vue';
 
 export default {
   name: 'GameSettings',
+  components: {
+    StoryTemplates,
+    QuestTemplates,
+    EnemyTemplates,
+    ResourceTemplates,
+  },
   data() {
     return {
       activeSection: 'quests',
@@ -172,7 +210,11 @@ export default {
         reward: '',
         armorReward: ''
       },
-      numericFields: ['id', 'exp', 'money', 'duration', 'progress', 'rewardChance', 'armorRewardChance', 'levelRequirement', 'attack', 'defence', 'health', 'price', 'quantity', 'requiredStoryLineId', 'enemyHealth', 'defense']
+      numericFields: ['id', 'exp', 'money', 'duration', 'progress', 'rewardChance', 'armorRewardChance', 'levelRequirement', 'attack', 'defence', 'health', 'price', 'quantity', 'requiredStoryLineId', 'enemyHealth', 'defense'],
+      showStoryTemplates: false,
+      showQuestTemplates: false,
+      showEnemyTemplates: false,
+      showResourceTemplates: false,
     };
   },
   computed: {
@@ -253,17 +295,30 @@ export default {
       }
     },
     addNewItem() {
-      const newItem = this.createNewItem();
-      this.getActiveData.push(newItem);
-      this.currentIndex = this.getActiveData.length - 1;
-      this.saveToLocalStorage();
-      alert('New item added successfully!');
+      switch(this.activeSection) {
+        case 'story':
+          this.showStoryTemplates = true;
+          break;
+        case 'quests':
+          this.showQuestTemplates = true;
+          break;
+        case 'enemies':
+          this.showEnemyTemplates = true;
+          break;
+        case 'resources':
+          this.showResourceTemplates = true;
+          break;
+        default:
+          const newItem = this.createNewItem();
+          this.getActiveData.push(newItem);
+          this.currentIndex = this.getActiveData.length - 1;
+          this.saveToLocalStorage();
+      }
     },
     createNewItem() {
       const newId = this.getNextId();
       const baseItem = {
         id: newId,
-        uuid: uuidv4(),
       };
 
       switch (this.activeSection) {
@@ -337,7 +392,7 @@ export default {
             desc: 'Aid item description',
             health: 0,
             state: 'none',
-            price: 0,
+            price: 0
           };
         case 'resources':
           return {
@@ -555,7 +610,57 @@ export default {
           break;
       }
       localStorage.removeItem(section);
-    }
+    },
+    handleTemplateSelect(template) {
+      const newStory = {
+        ...template.template,
+        id: this.getNextId()
+      };
+      
+      this.getActiveData.push(newStory);
+      this.currentIndex = this.getActiveData.length - 1;
+      this.saveToLocalStorage();
+      this.showStoryTemplates = false;
+    },
+    handleQuestTemplateSelect(template) {
+      const newQuest = {
+        ...template.template,
+        id: this.getNextId(),
+        lat: 350 + Math.random() * 450,
+        lon: 300 + Math.random() * 1300
+      };
+      
+      this.getActiveData.push(newQuest);
+      this.currentIndex = this.getActiveData.length - 1;
+      this.saveToLocalStorage();
+      this.showQuestTemplates = false;
+    },
+    handleEnemyTemplateSelect(template) {
+      const newEnemy = {
+        ...template.template,
+        id: this.getNextId()
+      };
+      
+      this.getActiveData.push(newEnemy);
+      this.currentIndex = this.getActiveData.length - 1;
+      this.saveToLocalStorage();
+      this.showEnemyTemplates = false;
+    },
+    handleResourceTemplateSelect(template) {
+      const newResource = {
+        id: this.getNextId(),
+        uuid: uuidv4(),
+        name: template.template.name,
+        desc: template.template.desc,
+        state: template.template.state,
+        price: template.template.price,
+        quantity: template.template.quantity
+      };
+
+      this.resources.push(newResource);
+      this.saveToLocalStorage();
+      this.showResourceTemplates = false;
+    },
   },
   mounted() {
     this.loadFromLocalStorage();

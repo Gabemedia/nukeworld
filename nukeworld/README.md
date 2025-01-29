@@ -280,10 +280,17 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
   - Integrated with existing story progression system
   - Uses browser's native Web Speech API for optimal performance
 
-### Version 0.1.7.6 (23-01-2025)
+
+### Version 0.1.7.8 (29-01-2025)
 - Improved mobile menu UI and functionality
 - Optimized mobile menu layout
 - Added responsive design improvements
+- Improved "Back to Main Menu" button in GameSettings
+- Refactored GameSettings
+  - Added Story Templates
+  - Added Quest Templates
+  - Added Enemy Templates
+  - Added Resources Templates
 
 ## Getting Started
 To get started with NukeWorld, follow these steps:

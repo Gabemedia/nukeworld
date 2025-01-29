@@ -40,10 +40,19 @@ export default [
   {
     "id": 4,
     "uuid": uuidv4(),
-    "name": "Huge Medkit",
-    "desc": "Huge Medkit restores 200 health.",
+    "name": "Large Medkit",
+    "desc": "Large Medkit restores 200 health.",
     "health": 200,
     "state": "none",
     "price": 500
+  },
+  {
+    "id": 5,
+    "name": "Huge Medkit",
+    "desc": "Huge Medkit restores 500 health.",
+    "health": 500,
+    "state": "none",
+    "price": 1000,
+    "uuid": uuidv4()
   }
 ];

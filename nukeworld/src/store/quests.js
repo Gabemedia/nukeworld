@@ -374,7 +374,6 @@ export default [
   },
   {
     "id": 12,
-    "uuid": "2596f386-f4f4-4238-b76a-17c550974224",
     "name": "Hidden Stashes in The Warehouse",
     "desc": "We are looking for supplies in old dock, with a lot of warehouses around.",
     "exp": 3500,
@@ -406,7 +405,6 @@ export default [
   },
   {
     "id": 13,
-    "uuid": "63e6d98b-4770-421d-82d0-42007c988b48",
     "name": "Into the Acid Rain",
     "desc": "The Acid Rain is destroying everything! We need find shelther and wait it out! ",
     "exp": 12000,
