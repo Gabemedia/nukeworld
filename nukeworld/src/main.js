@@ -28,12 +28,17 @@ const initializeSpeech = () => {
     }
 
     if (!settings.selectedVoiceURI && voices.length > 0) {
-      // Try to find a Danish voice first
-      let defaultVoice = voices.find(voice => voice.lang.includes('da'));
-      // If no Danish voice, try English
+      // Try to find a good English male voice
+      let defaultVoice = voices.find(voice => 
+        voice.name.toLowerCase().includes('english') && 
+        voice.name.toLowerCase().includes('male')
+      );
+      
+      // If no male voice found, try any English voice
       if (!defaultVoice) {
-        defaultVoice = voices.find(voice => voice.lang.includes('en'));
+        defaultVoice = voices.find(voice => voice.lang === 'en-US');
       }
+      
       // If still no voice, use the first available
       defaultVoice = defaultVoice || voices[0];
       

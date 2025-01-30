@@ -851,41 +851,48 @@ export default {
       const loadVoices = () => {
         const voices = window.speechSynthesis.getVoices();
         
-        // Create a Set to store unique voice identifiers
-        const uniqueVoiceIdentifiers = new Set();
-        const qualityVoices = [];
-        
-        // Process each voice
-        voices.forEach(voice => {
+        // Filter for English voices only
+        const englishVoices = voices.filter(voice => {
           const name = voice.name.toLowerCase();
           const lang = voice.lang.toLowerCase();
-          const identifier = `${name}-${lang}`;
           
-          // Skip if we've already seen this voice
-          if (uniqueVoiceIdentifiers.has(identifier)) {
-            return;
-          }
-          
-          // Only add high-quality voices
-          if ((name === 'karen' && lang === 'en-au') ||
-              (name === 'daniel' && lang === 'en-gb') ||
-              (name.includes('google us english'))) {
-            uniqueVoiceIdentifiers.add(identifier);
-            qualityVoices.push(voice);
-          }
+          // Only include English voices
+          return (
+            // US English voices
+            (lang === 'en-us' && !name.includes('zira')) ||
+            // UK English voices
+            (lang === 'en-gb' && !name.includes('hazel')) ||
+            // Australian English voices
+            (lang === 'en-au')
+          );
         });
         
-        console.log('Available voices:', qualityVoices.map(v => `${v.name} (${v.lang})`));
-        this.speechSettings.availableVoices = qualityVoices;
+        // Remove duplicates by voiceURI
+        const uniqueVoices = Array.from(new Map(englishVoices.map(voice => [voice.voiceURI, voice])).values());
+        
+        // Sort voices to prioritize male voices first
+        const sortedVoices = uniqueVoices.sort((a, b) => {
+          const aName = a.name.toLowerCase();
+          const bName = b.name.toLowerCase();
+          
+          // Prioritize male voices
+          const aIsMale = aName.includes('male') || aName.includes('daniel');
+          const bIsMale = bName.includes('male') || bName.includes('daniel');
+          
+          if (aIsMale && !bIsMale) return -1;
+          if (!aIsMale && bIsMale) return 1;
+          return 0;
+        });
+        
+        this.speechSettings.availableVoices = sortedVoices;
         
         // Set default voice if none is selected
-        if (!this.speechSettings.selectedVoice && qualityVoices.length > 0) {
-          // Try to find the best voice in this order
+        if (!this.speechSettings.selectedVoice && sortedVoices.length > 0) {
+          // Try to find the best male voice first
           const defaultVoice = 
-            qualityVoices.find(v => v.name.toLowerCase() === 'daniel' && v.lang.toLowerCase() === 'en-gb') ||
-            qualityVoices.find(v => v.name.toLowerCase().includes('google us english male')) ||
-            qualityVoices.find(v => v.name.toLowerCase() === 'karen' && v.lang.toLowerCase() === 'en-au') ||
-            qualityVoices[0];
+            sortedVoices.find(v => v.name.toLowerCase().includes('male')) ||
+            sortedVoices.find(v => v.name.toLowerCase() === 'daniel') ||
+            sortedVoices[0];
           
           this.speechSettings.selectedVoice = defaultVoice;
           this.saveSpeechSettings();
