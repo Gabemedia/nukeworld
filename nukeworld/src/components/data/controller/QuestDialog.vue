@@ -297,11 +297,28 @@ export default {
       const voices = window.speechSynthesis.getVoices();
       
       // Find the saved voice by URI if it exists
+      let selectedVoice = null;
       if (speechSettings.selectedVoiceURI && voices.length > 0) {
-        const selectedVoice = voices.find(voice => voice.voiceURI === speechSettings.selectedVoiceURI);
-        if (selectedVoice) {
-          utterance.voice = selectedVoice;
-        }
+        selectedVoice = voices.find(voice => voice.voiceURI === speechSettings.selectedVoiceURI);
+      }
+      
+      // If no saved voice found, try to find Karen
+      if (!selectedVoice) {
+        selectedVoice = voices.find(voice => voice.name === 'Karen');
+      }
+      
+      // If still no voice found, try any English voice
+      if (!selectedVoice) {
+        selectedVoice = voices.find(voice => voice.lang.startsWith('en-'));
+      }
+      
+      // Last resort: use first available voice
+      if (!selectedVoice && voices.length > 0) {
+        selectedVoice = voices[0];
+      }
+      
+      if (selectedVoice) {
+        utterance.voice = selectedVoice;
       }
       
       // Apply other speech settings

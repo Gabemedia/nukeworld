@@ -852,35 +852,18 @@ export default {
         const voices = window.speechSynthesis.getVoices();
         
         // Filter for English voices only
-        const englishVoices = voices.filter(voice => {
-          const name = voice.name.toLowerCase();
-          const lang = voice.lang.toLowerCase();
-          
-          // Only include English voices
-          return (
-            // US English voices
-            (lang === 'en-us' && !name.includes('zira')) ||
-            // UK English voices
-            (lang === 'en-gb' && !name.includes('hazel')) ||
-            // Australian English voices
-            (lang === 'en-au')
-          );
-        });
+        const englishVoices = voices.filter(voice => 
+          voice.lang.startsWith('en-')
+        );
         
         // Remove duplicates by voiceURI
         const uniqueVoices = Array.from(new Map(englishVoices.map(voice => [voice.voiceURI, voice])).values());
         
-        // Sort voices to prioritize male voices first
+        // Sort voices to prioritize Karen first
         const sortedVoices = uniqueVoices.sort((a, b) => {
-          const aName = a.name.toLowerCase();
-          const bName = b.name.toLowerCase();
-          
-          // Prioritize male voices
-          const aIsMale = aName.includes('male') || aName.includes('daniel');
-          const bIsMale = bName.includes('male') || bName.includes('daniel');
-          
-          if (aIsMale && !bIsMale) return -1;
-          if (!aIsMale && bIsMale) return 1;
+          // Karen should always be first
+          if (a.name === 'Karen') return -1;
+          if (b.name === 'Karen') return 1;
           return 0;
         });
         
@@ -888,11 +871,13 @@ export default {
         
         // Set default voice if none is selected
         if (!this.speechSettings.selectedVoice && sortedVoices.length > 0) {
-          // Try to find the best male voice first
-          const defaultVoice = 
-            sortedVoices.find(v => v.name.toLowerCase().includes('male')) ||
-            sortedVoices.find(v => v.name.toLowerCase() === 'daniel') ||
-            sortedVoices[0];
+          // Try to find Karen first
+          let defaultVoice = sortedVoices.find(v => v.name === 'Karen');
+          
+          // If Karen not found, use any English voice
+          if (!defaultVoice) {
+            defaultVoice = sortedVoices[0];
+          }
           
           this.speechSettings.selectedVoice = defaultVoice;
           this.saveSpeechSettings();

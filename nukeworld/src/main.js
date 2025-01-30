@@ -13,38 +13,61 @@ import './main.scss';
 // Initialize speech synthesis settings
 const initializeSpeech = () => {
   const loadVoices = () => {
-    const voices = window.speechSynthesis.getVoices();
-    const savedSettings = localStorage.getItem('speechSettings');
-    let settings = {
-      enabled: true,
-      volume: 1.0,
-      rate: 1.0,
-      pitch: 1.0,
-      selectedVoiceURI: null
-    };
-
-    if (savedSettings) {
-      settings = { ...settings, ...JSON.parse(savedSettings) };
+    // Force Safari to load voices synchronously
+    if (typeof speechSynthesis !== 'undefined') {
+      speechSynthesis.getVoices();
     }
 
-    if (!settings.selectedVoiceURI && voices.length > 0) {
-      // Try to find a good English male voice
-      let defaultVoice = voices.find(voice => 
-        voice.name.toLowerCase().includes('english') && 
-        voice.name.toLowerCase().includes('male')
-      );
-      
-      // If no male voice found, try any English voice
-      if (!defaultVoice) {
-        defaultVoice = voices.find(voice => voice.lang === 'en-US');
+    // Wait a moment for Safari to properly load voices
+    setTimeout(() => {
+      const voices = window.speechSynthesis.getVoices();
+      const savedSettings = localStorage.getItem('speechSettings');
+      let settings = {
+        enabled: true,
+        volume: 1.0,
+        rate: 1.0,
+        pitch: 1.0,
+        selectedVoiceURI: null
+      };
+
+      // Only use saved settings if they exist AND include a selectedVoiceURI
+      if (savedSettings) {
+        const parsed = JSON.parse(savedSettings);
+        if (parsed.selectedVoiceURI) {
+          settings = { ...settings, ...parsed };
+        }
       }
-      
-      // If still no voice, use the first available
-      defaultVoice = defaultVoice || voices[0];
-      
-      settings.selectedVoiceURI = defaultVoice.voiceURI;
-      localStorage.setItem('speechSettings', JSON.stringify(settings));
-    }
+
+      // Always try to set Karen as default voice on first load
+      if (!settings.selectedVoiceURI && voices.length > 0) {
+        // Try to find Karen voice first (Safari)
+        let defaultVoice = voices.find(voice => voice.name === 'Karen');
+        
+        // If Karen not found, try Karen in different variations
+        if (!defaultVoice) {
+          defaultVoice = voices.find(voice => 
+            voice.name.toLowerCase().includes('karen') || 
+            (voice.lang === 'en-AU' && voice.name.includes('Karen'))
+          );
+        }
+        
+        // If still no Karen, try any English voice
+        if (!defaultVoice) {
+          defaultVoice = voices.find(voice => voice.lang.startsWith('en-'));
+        }
+        
+        // Last resort: use first available voice
+        defaultVoice = defaultVoice || voices[0];
+        
+        settings.selectedVoiceURI = defaultVoice.voiceURI;
+        
+        // Save the settings immediately
+        localStorage.setItem('speechSettings', JSON.stringify(settings));
+        
+        // Log the selected voice for debugging
+        console.log('Selected voice:', defaultVoice.name, defaultVoice.lang);
+      }
+    }, 100); // Small delay to ensure voices are loaded in Safari
   };
 
   // Initial load of voices
