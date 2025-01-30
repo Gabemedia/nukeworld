@@ -16,8 +16,6 @@
         v-if="$store.state.settlementMarker"
         :lat-lng="$store.state.settlementMarker.latlng"
         :icon="settlementIcon"
-        draggable
-        @dragend="onMarkerDragEnd"
         @click="openSettlementModal"
       >
       </l-marker>
@@ -188,12 +186,6 @@ export default {
       if (!this.$store.state.settlementMarker) {
         this.$refs.settlementModal.attemptPlaceSettlement(event.latlng);
       }
-    },
-    async onMarkerDragEnd(event) {
-      await this.updateSettlementMarker({
-        ...this.$store.state.settlementMarker,
-        latlng: event.target.getLatLng(),
-      });
     },
     openSettlementModal() {
       if (this.$refs.settlementModal) {

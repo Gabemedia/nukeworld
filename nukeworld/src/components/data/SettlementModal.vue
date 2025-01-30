@@ -4,20 +4,19 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Settlement</h5>
+            <h5 class="modal-title">Settlement: {{ settlementMarker.latlng.lat.toFixed(2) }}, {{ settlementMarker.latlng.lng.toFixed(2) }}</h5>
             <button type="button" class="btn-close" @click="closeSettlementModal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
+            <p>Your settlement is located at: {{ settlementMarker.latlng.lat.toFixed(2) }}, {{ settlementMarker.latlng.lng.toFixed(2) }}</p>
+          </div>
+          <div class="modal-footer">
             <template v-if="settlementMarker">
-              <p>Your settlement is located at: {{ settlementMarker.latlng.lat.toFixed(2) }}, {{ settlementMarker.latlng.lng.toFixed(2) }}</p>
               <button @click="confirmRemoveSettlement" class="btn btn-danger">Remove Settlement</button>
             </template>
             <template v-else>
               <p>You haven't placed a settlement yet.</p>
-              <p>[Not available at the moment]</p>
             </template>
-          </div>
-          <div class="modal-footer">
             <button type="button" class="btn btn-secondary" @click="closeSettlementModal">Close</button>
           </div>
         </div>
@@ -31,7 +30,7 @@
             <button type="button" class="btn-close" @click="closeConfirmationModal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <p>It costs 20 Wood Scrap to place a settlement. Do you want to continue?</p>
+            <p>It costs 20 Wood & Steel Scrap to place a settlement. Do you want to continue?</p>
             <div class="button-group">
               <button @click="confirmPlaceSettlement" class="btn btn-primary">Yes</button>
               <button @click="cancelPlaceSettlement" class="btn btn-secondary">No</button>
@@ -80,17 +79,17 @@ export default {
       }
     },
     async attemptPlaceSettlement(latlng) {
-      const requiredResources = [{ id: 1, amount: 20 }];
+      const requiredResources = [{ id: 1, amount: 20 }, { id: 2, amount: 20 }];
       const hasEnoughResources = await this.checkRequiredResources(requiredResources);
       if (hasEnoughResources) {
         this.pendingSettlementLocation = latlng;
         this.openConfirmationModal();
       } else {
-        alert('You don\'t have enough Wood Scrap to place a settlement. You need 20 Wood Scrap.');
+        alert('You don\'t have enough Wood Scrap to place a settlement. You need 20 Wood & Steel Scrap.');
       }
     },
     async confirmPlaceSettlement() {
-      const requiredResources = [{ id: 1, amount: 20 }];
+      const requiredResources = [{ id: 1, amount: 20 }, { id: 2, amount: 20 }];
       await this.useRequiredResources(requiredResources);
       await this.updateSettlementMarker({
         latlng: this.pendingSettlementLocation,

@@ -14,7 +14,7 @@ export default [
     ],
     "steps": [
       {
-        "npcMessage": "Welcome to NukeWorld, {PlayerName}! This is a dangerous world full of challenges and opportunities.",
+        "npcMessage": "Welcome to NukeWorld {PlayerName}! This is a dangerous world full of challenges and opportunities.",
         "playerOptions": [
           {
             "text": "Tell me more!",
@@ -61,15 +61,15 @@ export default [
     ],
     "reward": {
       "exp": 250,
-      "money": 500,
+      "money": 50,
       "resourceRewards": [
         {
           "id": 1,
-          "amount": 200
+          "amount": 500
         },
         {
           "id": 2,
-          "amount": 200
+          "amount": 500
         }
       ],
       "weaponRewards": [],
@@ -90,7 +90,7 @@ export default [
     ],
     "steps": [
       {
-        "npcMessage": "This should get you started. I'll give you a basic weapon, armor, and a medkit.",
+        "npcMessage": "I'll give you a basic weapon, armor, and a medkit. This should get you started out there in the wasteland!",
         "playerOptions": [
           {
             "text": "Thank you very much!",
@@ -100,8 +100,8 @@ export default [
       }
     ],
     "reward": {
-      "exp": 200,
-      "money": 25,
+      "exp": 250,
+      "money": 50,
       "resourceRewards": [],
       "weaponRewards": [
         {
