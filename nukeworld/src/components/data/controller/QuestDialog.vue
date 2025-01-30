@@ -239,58 +239,14 @@ export default {
       
       if (!this.currentStoryStep?.npcMessage) return;
       
-      // Get voice settings from localStorage
-      const settings = JSON.parse(localStorage.getItem('settings') || '[]')[0]?.voiceSettings;
-      
-      // Don't speak if voice is disabled in settings
-      if (!settings?.enabled) return;
-      
       // Replace {PlayerName} with actual name before speaking
       const textToSpeak = this.currentStoryStep.npcMessage.replace(/{PlayerName}/g, this.$store.state.character.name);
       
       const utterance = new SpeechSynthesisUtterance(textToSpeak);
+      utterance.lang = 'en-US';
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
       
-      // Apply voice settings
-      utterance.rate = settings.rate;
-      utterance.pitch = settings.pitch;
-      utterance.volume = settings.volume;
-      utterance.lang = settings.language;
-      
-      // Handle voice selection
-      if (settings.selectedVoice) {
-        const voices = speechSynthesis.getVoices();
-        const selectedVoice = voices.find(v => v.voiceURI === settings.selectedVoice);
-        
-        if (selectedVoice) {
-          utterance.voice = selectedVoice;
-        } else if (settings.useNativeVoice) {
-          // Try to find a native voice for the language
-          const nativeVoice = voices.find(v => 
-            v.lang.startsWith(settings.language) && 
-            v.localService
-          );
-          if (nativeVoice) {
-            utterance.voice = nativeVoice;
-          }
-        }
-      }
-      
-      // Mobile handling
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) && settings.forceVoiceOnMobile) {
-        // Force voice selection on mobile
-        if (!utterance.voice) {
-          const voices = speechSynthesis.getVoices();
-          const mobileVoice = voices.find(v => 
-            v.lang.startsWith(settings.language) &&
-            !v.name.includes('Siri')
-          );
-          if (mobileVoice) {
-            utterance.voice = mobileVoice;
-          }
-        }
-      }
-      
-      // Event handlers
       utterance.onstart = () => {
         this.isSpeaking = true;
       };
@@ -300,25 +256,18 @@ export default {
         this.currentUtterance = null;
       };
       
-      utterance.onerror = (event) => {
-        console.error('Speech error:', event);
+      utterance.onerror = () => {
         this.isSpeaking = false;
         this.currentUtterance = null;
       };
       
-      // Store current utterance
       this.currentUtterance = utterance;
-      
-      // Cancel any ongoing speech
-      window.speechSynthesis.cancel();
-      
-      // Start speaking
-      window.speechSynthesis.speak(utterance);
+      this.speechSynthesis.speak(utterance);
     },
     
     stopSpeaking() {
       if (this.isSpeaking) {
-        window.speechSynthesis.cancel();
+        this.speechSynthesis.cancel();
         this.isSpeaking = false;
         this.currentUtterance = null;
       }
