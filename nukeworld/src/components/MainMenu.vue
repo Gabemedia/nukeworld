@@ -58,7 +58,7 @@ export default {
   data() {
     return {
       showCharacterList: false,
-      version: '0.1.7.8',
+      version: '0.1.7.9',
       showFullscreenDialog: false,
       selectedCharacter: null,
     };

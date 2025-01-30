@@ -31,7 +31,7 @@ export default {
     return {
       progress: 0,
       loadingMessage: 'Initializing...',
-      version: '0.1.7.8',
+      version: '0.1.7.9',
       loadingMessages: [
         'Loading game assets...',
         'Preparing nuclear wasteland...',

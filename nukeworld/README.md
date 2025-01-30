@@ -321,6 +321,20 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 
 ### Version 0.1.7.9 (30-01-2025)
 - Added QuestDialog with text-to-speech functionality
+- Improved voice synthesis implementation:
+  - Added Karen as default voice across all browsers
+  - Fixed Safari voice compatibility issues
+  - Added synchronous voice loading for Safari
+  - Improved voice selection logic to prioritize Karen
+  - Added fallback to other English voices if Karen is unavailable
+  - Fixed issue where default voice wasn't set on first load
+  - Added voice debugging information to console
+  - Optimized voice loading with 100ms delay for Safari compatibility
+  - Improved voice settings persistence in localStorage
+  - Added voice selection validation to prevent empty settings
+  - Streamlined voice initialization process
+  - Added error handling for voice synthesis
+  - Improved voice consistency across components
 
 ## Getting Started
 To get started with NukeWorld, follow these steps:
