@@ -1,6 +1,6 @@
 <template>
   <EnemyEncounters ref="enemyEncounters" @show-reward-toast="showRewardToast"/>
-  <div class="dialog-system">
+  <div class="dialog-system" ref="dialogSystem">
     <!-- Conversation window - only shown when a story is selected -->
     <div v-if="currentStoryLine && currentStoryStep" class="mb-3">
       <h6 class="mb-3 text-uppercase fw-bold text-start text-success">
@@ -57,7 +57,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import EnemyEncounters from '../EnemyEncounters.vue';
-import { ref } from 'vue';
+import { ref, onUnmounted } from 'vue';
 import { toast } from 'vue3-toastify';
 import 'vue3-toastify/dist/index.css';
 
@@ -71,18 +71,61 @@ export default {
     const isSpeaking = ref(false);
     const speechSynthesis = window.speechSynthesis;
     const currentUtterance = ref(null);
+    const availableVoices = ref([]);
+    const selectedVoice = ref(null);
+    const speechVolume = ref(1.0);
+    const speechRate = ref(1.0);
+    const speechPitch = ref(1.0);
+    const dialogSystem = ref(null);
+
+    // Load available voices
+    const loadVoices = () => {
+      availableVoices.value = speechSynthesis.getVoices();
+      if (availableVoices.value.length > 0) {
+        // Default to first English voice, fallback to first available
+        selectedVoice.value = availableVoices.value.find(voice => voice.lang.includes('en')) || availableVoices.value[0];
+      }
+    };
+
+    // Initial voice loading
+    loadVoices();
+    if (speechSynthesis.onvoiceschanged !== undefined) {
+      speechSynthesis.onvoiceschanged = loadVoices;
+    }
 
     const toggleStoryLineDetails = (storyLineId) => {
       expandedStoryLines.value[storyLineId] = !expandedStoryLines.value[storyLineId];
     };
+
+    // Add cleanup on component unmount
+    onUnmounted(() => {
+      window.speechSynthesis.cancel();
+    });
 
     return {
       expandedStoryLines,
       toggleStoryLineDetails,
       isSpeaking,
       speechSynthesis,
-      currentUtterance
+      currentUtterance,
+      availableVoices,
+      selectedVoice,
+      speechVolume,
+      speechRate,
+      speechPitch,
+      dialogSystem
     };
+  },
+  mounted() {
+    // Add event listeners for ESC key and click outside
+    document.addEventListener('keydown', this.handleEscKey);
+    document.addEventListener('click', this.handleOutsideClick);
+  },
+  beforeUnmount() {
+    // Remove event listeners and stop speech
+    document.removeEventListener('keydown', this.handleEscKey);
+    document.removeEventListener('click', this.handleOutsideClick);
+    this.stopSpeaking();
   },
   computed: {
     ...mapGetters(['currentStoryLine', 'currentStoryStep', 'availableStoryLines', 'completedStoryLines']),
@@ -106,13 +149,11 @@ export default {
     },
 
     async selectOption(option) {
+      // Stop speaking when user makes a choice
+      this.stopSpeaking();
+      
       if (option.requiredResources && !this.checkResources(option.requiredResources)) {
         return;
-      }
-      
-      // Stop any current speech if this is the last choice
-      if (option.nextId === null && this.isSpeaking) {
-        this.stopSpeaking();
       }
       
       if (option.requiredResources) {
@@ -139,9 +180,12 @@ export default {
         giveReward: option.giveReward !== undefined ? option.giveReward : true
       });
       
-      // Only speak if there's a next step (not on the last choice)
+      // Only speak if there's a next step and speech is enabled
       if (option.nextId !== null) {
-        this.speakNpcMessage();
+        // Add a small delay to ensure previous speech is fully stopped
+        setTimeout(() => {
+          this.speakNpcMessage();
+        }, 100);
       }
       
       if (result && result.rewards) {
@@ -154,6 +198,7 @@ export default {
     },
 
     cancelStory() {
+      this.stopSpeaking();
       this.$store.dispatch('cancelCurrentStoryLine');
     },
 
@@ -239,13 +284,30 @@ export default {
       
       if (!this.currentStoryStep?.npcMessage) return;
       
+      // Get speech settings from localStorage
+      const speechSettings = JSON.parse(localStorage.getItem('speechSettings') || '{}');
+      if (!speechSettings.enabled) return;
+      
       // Replace {PlayerName} with actual name before speaking
       const textToSpeak = this.currentStoryStep.npcMessage.replace(/{PlayerName}/g, this.$store.state.character.name);
       
       const utterance = new SpeechSynthesisUtterance(textToSpeak);
-      utterance.lang = 'en-US';
-      utterance.rate = 1.0;
-      utterance.pitch = 1.0;
+      
+      // Get all available voices
+      const voices = window.speechSynthesis.getVoices();
+      
+      // Find the saved voice by URI if it exists
+      if (speechSettings.selectedVoiceURI && voices.length > 0) {
+        const selectedVoice = voices.find(voice => voice.voiceURI === speechSettings.selectedVoiceURI);
+        if (selectedVoice) {
+          utterance.voice = selectedVoice;
+        }
+      }
+      
+      // Apply other speech settings
+      utterance.volume = speechSettings.volume || 1.0;
+      utterance.rate = speechSettings.rate || 1.0;
+      utterance.pitch = speechSettings.pitch || 1.0;
       
       utterance.onstart = () => {
         this.isSpeaking = true;
@@ -256,20 +318,64 @@ export default {
         this.currentUtterance = null;
       };
       
-      utterance.onerror = () => {
+      utterance.onerror = (event) => {
+        console.error('Speech synthesis error:', event);
         this.isSpeaking = false;
         this.currentUtterance = null;
       };
       
-      this.currentUtterance = utterance;
-      this.speechSynthesis.speak(utterance);
+      try {
+        // Ensure any previous speech is cancelled
+        window.speechSynthesis.cancel();
+        
+        this.currentUtterance = utterance;
+        window.speechSynthesis.speak(utterance);
+      } catch (error) {
+        console.error('Failed to initialize speech:', error);
+      }
     },
     
     stopSpeaking() {
       if (this.isSpeaking) {
-        this.speechSynthesis.cancel();
+        window.speechSynthesis.cancel();
         this.isSpeaking = false;
         this.currentUtterance = null;
+      }
+    },
+
+    // New method to change voice
+    setVoice(voice) {
+      this.selectedVoice = voice;
+    },
+    
+    // New method to update speech parameters
+    updateSpeechParams(params) {
+      if (params.volume !== undefined) this.speechVolume = params.volume;
+      if (params.rate !== undefined) this.speechRate = params.rate;
+      if (params.pitch !== undefined) this.speechPitch = params.pitch;
+    },
+
+    handleEscKey(event) {
+      if (event.key === 'Escape') {
+        this.stopSpeaking();
+      }
+    },
+
+    handleOutsideClick(event) {
+      // Check if click is outside the dialog
+      const dialogElement = this.$refs.dialogSystem;
+      if (dialogElement && !dialogElement.contains(event.target)) {
+        this.stopSpeaking();
+      }
+    },
+
+    async startStoryLine(id) {
+      await this.$store.dispatch('startStoryLine', id);
+      // Start speaking when a new storyline is started
+      if (this.currentStoryStep) {
+        setTimeout(() => {
+          this.speakNpcMessage();
+        }, 100);
       }
     },
   },

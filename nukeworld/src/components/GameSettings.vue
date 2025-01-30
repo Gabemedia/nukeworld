@@ -77,16 +77,55 @@
       <div class="data-container">
         <div class="data-display">
           <h3 class="subsection-title">{{ activeSection }} Data</h3>
-          <div class="data-navigation">
+          <div v-if="activeSection === 'speech'" class="speech-settings">
+            <div class="form-group">
+              <label class="form-check-label">
+                <input type="checkbox" v-model="speechSettings.enabled" @change="updateSpeechSettings" class="form-check-input">
+                Enable Speech Synthesis
+              </label>
+            </div>
+            
+            <div class="form-group" v-if="speechSettings.enabled">
+              <label>Voice Selection</label>
+              <select v-model="speechSettings.selectedVoice" @change="updateSpeechSettings" class="form-control">
+                <option v-for="voice in speechSettings.availableVoices" :key="voice.voiceURI" :value="voice">
+                  {{ voice.name }} ({{ voice.lang }})
+                </option>
+              </select>
+            </div>
+            
+            <div class="form-group" v-if="speechSettings.enabled">
+              <label>Volume ({{ speechSettings.volume }})</label>
+              <input type="range" v-model="speechSettings.volume" @change="updateSpeechSettings" 
+                     min="0" max="1" step="0.1" class="form-control">
+            </div>
+            
+            <div class="form-group" v-if="speechSettings.enabled">
+              <label>Speech Rate ({{ speechSettings.rate }})</label>
+              <input type="range" v-model="speechSettings.rate" @change="updateSpeechSettings"
+                     min="0.1" max="2" step="0.1" class="form-control">
+            </div>
+            
+            <div class="form-group" v-if="speechSettings.enabled">
+              <label>Pitch ({{ speechSettings.pitch }})</label>
+              <input type="range" v-model="speechSettings.pitch" @change="updateSpeechSettings"
+                     min="0.1" max="2" step="0.1" class="form-control">
+            </div>
+            
+            <button @click="testSpeechSettings" class="btn btn-primary" v-if="speechSettings.enabled">
+              Test Speech Settings
+            </button>
+          </div>
+          <div v-else class="data-navigation">
             <button class="btn btn-outline-primary" @click="prevItem" :disabled="currentIndex === 0">&lt;</button>
             <span>Item {{ currentIndex + 1 }} of {{ getActiveData.length }}</span>
             <button class="btn btn-outline-primary" @click="nextItem" :disabled="currentIndex === getActiveData.length - 1">&gt;</button>
           </div>
-          <div class="data-content">
+          <div v-if="activeSection !== 'speech'" class="data-content">
             <pre>{{ JSON.stringify(currentItem, null, 2) }}</pre>
           </div>
         </div>
-        <div class="data-form">
+        <div class="data-form" v-if="activeSection !== 'speech'">
           <h3 class="subsection-title">Edit {{ activeSection }}</h3>
           <form @submit.prevent="saveChanges">
             <div class="form-group" v-for="(value, key) in currentItem" :key="key">
@@ -224,7 +263,7 @@ export default {
   data() {
     return {
       activeSection: 'quests',
-      sections: ['quests', 'items', 'story', 'armor', 'aid', 'resources', 'enemies'],
+      sections: ['quests', 'items', 'story', 'armor', 'aid', 'resources', 'enemies', 'speech'],
       quests: [],
       items: [],
       story: [],
@@ -245,13 +284,25 @@ export default {
       showAidTemplates: false,
       showArmorTemplates: false,
       showWeaponTemplates: false,
+      // Speech synthesis settings
+      speechSettings: {
+        enabled: true,
+        selectedVoice: null,
+        volume: 1.0,
+        rate: 1.0,
+        pitch: 1.0,
+        availableVoices: []
+      },
     };
   },
   computed: {
     getActiveData() {
-      return this[this.activeSection];
+      return this.activeSection === 'speech' ? [] : this[this.activeSection];
     },
     currentItem() {
+      if (this.activeSection === 'speech') {
+        return this.speechSettings;
+      }
       return this.getActiveData[this.currentIndex] || {};
     }
   },
@@ -647,6 +698,18 @@ export default {
           this.resetSectionData(section);
         }
         this.currentIndex = 0;
+        
+        // Reinitialize speech settings with defaults after reset
+        this.speechSettings = {
+          enabled: true,
+          selectedVoice: null,
+          volume: 1.0,
+          rate: 1.0,
+          pitch: 1.0,
+          availableVoices: []
+        };
+        this.initializeSpeechSettings();
+        
         alert('All data has been reset to original values.');
       }
     },
@@ -784,9 +847,120 @@ export default {
       this.saveToLocalStorage();
       this.showWeaponTemplates = false;
     },
+    initializeSpeechSettings() {
+      const loadVoices = () => {
+        const voices = window.speechSynthesis.getVoices();
+        
+        // Create a Set to store unique voice identifiers
+        const uniqueVoiceIdentifiers = new Set();
+        const qualityVoices = [];
+        
+        // Process each voice
+        voices.forEach(voice => {
+          const name = voice.name.toLowerCase();
+          const lang = voice.lang.toLowerCase();
+          const identifier = `${name}-${lang}`;
+          
+          // Skip if we've already seen this voice
+          if (uniqueVoiceIdentifiers.has(identifier)) {
+            return;
+          }
+          
+          // Only add high-quality voices
+          if ((name === 'karen' && lang === 'en-au') ||
+              (name === 'daniel' && lang === 'en-gb') ||
+              (name.includes('google us english'))) {
+            uniqueVoiceIdentifiers.add(identifier);
+            qualityVoices.push(voice);
+          }
+        });
+        
+        console.log('Available voices:', qualityVoices.map(v => `${v.name} (${v.lang})`));
+        this.speechSettings.availableVoices = qualityVoices;
+        
+        // Set default voice if none is selected
+        if (!this.speechSettings.selectedVoice && qualityVoices.length > 0) {
+          // Try to find the best voice in this order
+          const defaultVoice = 
+            qualityVoices.find(v => v.name.toLowerCase() === 'daniel' && v.lang.toLowerCase() === 'en-gb') ||
+            qualityVoices.find(v => v.name.toLowerCase().includes('google us english male')) ||
+            qualityVoices.find(v => v.name.toLowerCase() === 'karen' && v.lang.toLowerCase() === 'en-au') ||
+            qualityVoices[0];
+          
+          this.speechSettings.selectedVoice = defaultVoice;
+          this.saveSpeechSettings();
+        }
+      };
+
+      // Initial load of voices
+      loadVoices();
+
+      // Some browsers need the onvoiceschanged event
+      if (window.speechSynthesis.onvoiceschanged !== undefined) {
+        window.speechSynthesis.onvoiceschanged = loadVoices;
+      }
+
+      // Load saved settings
+      this.loadSpeechSettings();
+    },
+    saveSpeechSettings() {
+      const settings = {
+        enabled: this.speechSettings.enabled,
+        volume: this.speechSettings.volume,
+        rate: this.speechSettings.rate,
+        pitch: this.speechSettings.pitch,
+        selectedVoiceURI: this.speechSettings.selectedVoice?.voiceURI
+      };
+      localStorage.setItem('speechSettings', JSON.stringify(settings));
+    },
+    loadSpeechSettings() {
+      const savedSettings = localStorage.getItem('speechSettings');
+      if (savedSettings) {
+        const settings = JSON.parse(savedSettings);
+        this.speechSettings.enabled = settings.enabled;
+        this.speechSettings.volume = settings.volume;
+        this.speechSettings.rate = settings.rate;
+        this.speechSettings.pitch = settings.pitch;
+        
+        // Restore selected voice if available
+        if (settings.selectedVoiceURI) {
+          const voice = this.speechSettings.availableVoices.find(v => v.voiceURI === settings.selectedVoiceURI);
+          if (voice) {
+            this.speechSettings.selectedVoice = voice;
+          }
+        }
+      }
+    },
+    updateSpeechSettings() {
+      this.saveSpeechSettings();
+      // Test the current settings
+      this.testSpeechSettings();
+    },
+    testSpeechSettings() {
+      if (!this.speechSettings.enabled) return;
+      
+      console.log('Current voice:', this.speechSettings.selectedVoice?.name);
+      const testMessage = "This is a test message for speech synthesis.";
+      const utterance = new SpeechSynthesisUtterance(testMessage);
+      
+      if (this.speechSettings.selectedVoice) {
+        utterance.voice = this.speechSettings.selectedVoice;
+      }
+      
+      utterance.volume = this.speechSettings.volume;
+      utterance.rate = this.speechSettings.rate;
+      utterance.pitch = this.speechSettings.pitch;
+      
+      // Cancel any ongoing speech
+      window.speechSynthesis.cancel();
+      
+      // Speak the test message
+      window.speechSynthesis.speak(utterance);
+    },
   },
   mounted() {
     this.loadFromLocalStorage();
+    this.initializeSpeechSettings();
   }
 };
 </script>
