@@ -292,7 +292,17 @@
                   </div>
                 </div>
               </template>
-              <input v-else-if="key === 'id'" v-model.number="currentItem[key]" class="form-control" :readonly="true">
+              <template v-else-if="key === 'playerChoices'">
+                <div class="player-choices-container mb-3">
+                  <label class="form-label">Player Choices (Auto-generated)</label>
+                  <div class="choices-list">
+                    <div v-for="(choice, index) in currentItem[key]" :key="index" class="choice-item">
+                      {{ choice }}
+                    </div>
+                  </div>
+                </div>
+              </template>
+              <input v-else-if="key === 'id'" v-model.number="currentItem[key]" class="form-control" readonly>
               <input v-else-if="isNumeric(key)" v-model.number="currentItem[key]" class="form-control">
               <input v-else-if="typeof value !== 'object' && typeof value !== 'boolean'" :id="key" v-model="currentItem[key]" class="form-control">
               <textarea v-else-if="typeof value === 'object' && key !== 'reward' && key !== 'armorReward' && key !== 'requiredEnemyDefeat' && key !== 'steps'" :id="key" v-model="currentItem[key]" class="form-control" rows="3"></textarea>
@@ -401,6 +411,7 @@ export default {
     },
     saveChanges() {
       if (this.activeSection === 'story') {
+        this.updatePlayerChoices();
         this.processStoryData(this.currentItem);
       }
       this.getActiveData[this.currentIndex] = this.convertToNumbers({ ...this.currentItem });
@@ -679,6 +690,7 @@ export default {
         action: null,
         actionParams: null
       });
+      this.updatePlayerChoices();
     },
     addRequiredResource(option) {
       const resources = this.getOrCreateRequiredResources(option);
@@ -1090,6 +1102,7 @@ export default {
     removePlayerOption(stepIndex, optionIndex) {
       if (confirm('Are you sure you want to remove this option? This action cannot be undone.')) {
         this.currentItem.steps[stepIndex].playerOptions.splice(optionIndex, 1);
+        this.updatePlayerChoices();
       }
     },
     ensureArray(arr) {
@@ -1100,6 +1113,21 @@ export default {
         option.actionParams = { enemyId: null };
       } else {
         option.actionParams = null;
+      }
+    },
+    updatePlayerChoices() {
+      if (this.currentItem && this.currentItem.steps) {
+        const choices = this.currentItem.steps.reduce((acc, step) => {
+          if (step.playerOptions) {
+            step.playerOptions.forEach(option => {
+              if (option.text && !acc.includes(option.text)) {
+                acc.push(option.text);
+              }
+            });
+          }
+          return acc;
+        }, []);
+        this.currentItem.playerChoices = choices;
       }
     }
   },
@@ -1392,5 +1420,28 @@ pre {
 .form-label {
   color: #00ff00;
   margin-bottom: 0.5rem;
+}
+
+.player-choices-container {
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 1rem;
+  border-radius: 5px;
+}
+
+.choices-list {
+  background-color: rgba(255, 255, 255, 0.1);
+  padding: 0.5rem;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 255, 0, 0.2);
+}
+
+.choice-item {
+  color: #00ff00;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.1);
+}
+
+.choice-item:last-child {
+  border-bottom: none;
 }
 </style>
