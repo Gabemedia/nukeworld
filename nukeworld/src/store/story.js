@@ -83,7 +83,7 @@ export default [
     "id": 1,
     "name": "Getting to know the Basics!",
     "levelRequirement": 1,
-    "completed": true,
+    "completed": false,
     "requiredStoryLineId": 0,
     "playerChoices": [
       "Thank you very much!"
