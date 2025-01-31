@@ -32,7 +32,7 @@ export const questTemplateData = [
       armorReward: [1, 2],
       armorRewardChance: 0.03,
       levelRequirement: 1,
-      img: 'supply_quest.jpg'
+      img: 'supply_quest'
     }
   },
   {
@@ -68,7 +68,7 @@ export const questTemplateData = [
       armorReward: [2, 3, 4],
       armorRewardChance: 0.05,
       levelRequirement: 3,
-      img: 'exploration_quest.jpg'
+      img: 'exploration_quest'
     }
   },
   {
@@ -104,7 +104,7 @@ export const questTemplateData = [
       armorReward: [3, 4, 5, 6],
       armorRewardChance: 0.1,
       levelRequirement: 5,
-      img: 'high_risk_quest.jpg'
+      img: 'high_risk_quest'
     }
   },
   {
@@ -140,7 +140,7 @@ export const questTemplateData = [
       armorReward: [1, 2, 2, 3],
       armorRewardChance: 0.04,
       levelRequirement: 2,
-      img: 'settlement_quest.jpg'
+      img: 'settlement_quest'
     }
   }
 ]; 

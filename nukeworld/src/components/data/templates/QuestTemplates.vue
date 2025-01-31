@@ -35,7 +35,7 @@
             </span>
           </div>
           <div class="template-icon">
-            <img :src="require('@/assets/quests/bg/' + template.template.img)" :alt="template.name">
+            <img :src="require('@/assets/quests/bg/' + template.template.img + '.jpg')" :alt="template.name">
           </div>
           <div class="template-card-content">
             <p>{{ template.shortDescription }}</p>
@@ -120,7 +120,7 @@
             @click="selectIcon(icon)"
             :class="{ 'selected': selectedTemplate && selectedTemplate.template.img === icon }"
           >
-            <img :src="require('@/assets/quests/bg/' + icon)" :alt="icon">
+            <img :src="require('@/assets/quests/bg/' + icon + '.jpg')" :alt="icon">
           </div>
         </div>
         <div class="icon-selector-actions">
@@ -170,24 +170,24 @@ export default {
     ]);
 
     const availableIcons = ref([
-      'settlement_supplies.jpg',
-      'search_location.jpg',
-      'clock_tower.jpg',
-      'strange_noises.jpg',
-      'library_cleanup.jpg',
-      'supply_run.jpg',
-      'library_cleanup_2.jpg',
-      'radioactive_wasteland.jpg',
-      'overgrown_village.jpg',
-      'supply_shipment.jpg',
-      'atlantic_city.jpg',
-      'warehouse_stashes.jpg',
-      'acid_rain.jpg',
-      'supply_quest.jpg',
-      'exploration_quest.jpg',
-      'high_risk_quest.jpg',
-      'settlement_quest.jpg',
-      'highway.jpg',
+      'settlement_supplies',
+      'search_location',
+      'clock_tower',
+      'strange_noises',
+      'library_cleanup',
+      'supply_run',
+      'library_cleanup_2',
+      'radioactive_wasteland',
+      'overgrown_village',
+      'supply_shipment',
+      'atlantic_city',
+      'warehouse_stashes',
+      'acid_rain',
+      'supply_quest',
+      'exploration_quest',
+      'high_risk_quest',
+      'settlement_quest',
+      'highway',
     ]);
 
     const filteredTemplates = computed(() => {

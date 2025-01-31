@@ -28,9 +28,9 @@ export default [
     ],
     "armorRewardChance": 0.025,
     "levelRequirement": 1,
-    "lat": 573.1495546382839,
-    "lon": 476.31056200498546,
-    "img": "settlement_supplies.png"
+    "lat": 539.7513037388919,
+    "lon": 887.9123598579757,
+    "img": "settlement_supplies"
   },
   {
     "id": 2,
@@ -60,9 +60,9 @@ export default [
     ],
     "armorRewardChance": 0.1,
     "levelRequirement": 2,
-    "lat": 428.4701829320696,
-    "lon": 1260.9887351862867,
-    "img": "search_location.png"
+    "lat": 443.6058302383243,
+    "lon": 595.9267881227183,
+    "img": "search_location"
   },
   {
     "id": 3,
@@ -93,9 +93,9 @@ export default [
     ],
     "armorRewardChance": 0.01,
     "levelRequirement": 3,
-    "lat": 609.1503677544474,
-    "lon": 526.3654563318473,
-    "img": "clock_tower.png"
+    "lat": 431.20445333692595,
+    "lon": 1505.115364599656,
+    "img": "clock_tower"
   },
   {
     "id": 4,
@@ -132,9 +132,9 @@ export default [
     ],
     "armorRewardChance": 0.02,
     "levelRequirement": 4,
-    "lat": 616.5086549644191,
-    "lon": 1067.0752012310995,
-    "img": "strange_noises.png"
+    "lat": 577.1120006637091,
+    "lon": 405.3674957006255,
+    "img": "strange_noises"
   },
   {
     "id": 5,
@@ -166,9 +166,9 @@ export default [
     ],
     "armorRewardChance": 0.01,
     "levelRequirement": 5,
-    "lat": 527.8218263116082,
-    "lon": 1144.5134266960295,
-    "img": "library_cleanup.png"
+    "lat": 741.0071055888336,
+    "lon": 1581.5410583527942,
+    "img": "library_cleanup"
   },
   {
     "id": 6,
@@ -203,9 +203,9 @@ export default [
     ],
     "armorRewardChance": 0.06,
     "levelRequirement": 7,
-    "lat": 450.677157393861,
-    "lon": 1083.2879796845477,
-    "img": "supply_run.png"
+    "lat": 397.75944603183245,
+    "lon": 898.0748849299532,
+    "img": "supply_run"
   },
   {
     "id": 7,
@@ -236,9 +236,9 @@ export default [
     ],
     "armorRewardChance": 0.03,
     "levelRequirement": 7,
-    "lat": 651.7907284638684,
-    "lon": 1330.0617723590804,
-    "img": "library_cleanup_2.png"
+    "lat": 666.2673346912874,
+    "lon": 765.9514857772996,
+    "img": "library_cleanup_2"
   },
   {
     "id": 8,
@@ -274,9 +274,9 @@ export default [
     ],
     "armorRewardChance": 0.1,
     "levelRequirement": 9,
-    "lat": 762.2174575612377,
-    "lon": 779.5434573277191,
-    "img": "radioactive_wasteland.png"
+    "lat": 435.6223827928487,
+    "lon": 640.5184618239955,
+    "img": "radioactive_wasteland"
   },
   {
     "id": 9,
@@ -305,9 +305,9 @@ export default [
     ],
     "armorRewardChance": 0.02,
     "levelRequirement": 10,
-    "lat": 556.1420727572331,
-    "lon": 1562.7445670262262,
-    "img": "overgrown_village.png"
+    "lat": 453.9046136197555,
+    "lon": 337.24037159852486,
+    "img": "overgrown_village"
   },
   {
     "id": 10,
@@ -342,9 +342,9 @@ export default [
     ],
     "armorRewardChance": 0.45,
     "levelRequirement": 12,
-    "lat": 472.1433549481972,
-    "lon": 726.1905743839554,
-    "img": "supply_shipment.png"
+    "lat": 603.0567069681547,
+    "lon": 1303.9951754454275,
+    "img": "supply_shipment"
   },
   {
     "id": 11,
@@ -379,9 +379,9 @@ export default [
     ],
     "armorRewardChance": 0.75,
     "levelRequirement": 15,
-    "lat": 612.2144891047244,
-    "lon": 739.5315940333699,
-    "img": "atlantic_city.png"
+    "lat": 763.911934267905,
+    "lon": 1582.1162100102758,
+    "img": "atlantic_city"
   },
   {
     "id": 12,
@@ -411,9 +411,9 @@ export default [
     ],
     "armorRewardChance": 0.05,
     "levelRequirement": 15,
-    "lat": 739.8456214925488,
-    "lon": 1447.1103334948334,
-    "img": "warehouse_stashes.png"
+    "lat": 514.3955416614195,
+    "lon": 899.4427564846104,
+    "img": "warehouse_stashes"
   },
   {
     "id": 13,
@@ -441,8 +441,37 @@ export default [
     ],
     "armorRewardChance": 0.2,
     "levelRequirement": 17,
-    "lat": 632.0923199133139,
-    "lon": 1122.5484397404812,
-    "img": "acid_rain.png"
+    "lat": 415.0698031999426,
+    "lon": 1078.113264360958,
+    "img": "acid_rain"
+  },
+  {
+    "name": "New Exploration Quest",
+    "desc": "Explore a dangerous area for valuable resources.",
+    "exp": 2500,
+    "money": 250,
+    "duration": 45000,
+    "progress": 0,
+    "state": "not-started",
+    "claimed": false,
+    "disabled": false,
+    "reward": [
+      2,
+      2,
+      3,
+      4
+    ],
+    "rewardChance": 0.1,
+    "armorReward": [
+      2,
+      3,
+      4
+    ],
+    "armorRewardChance": 0.05,
+    "levelRequirement": 1,
+    "img": "highway",
+    "id": 14,
+    "lat": 604.0355679372634,
+    "lon": 1147.0266039703497
   }
 ];
