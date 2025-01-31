@@ -188,12 +188,57 @@ const getters = {
   }
 };
 
-// Add watcher for settlement changes
+// Debounce function to limit storage updates
+const debounce = (fn, delay) => {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => fn(...args), delay);
+  };
+};
+
+// Add watcher for settlement changes with optimizations
 const watch = (store) => {
+  let lastSave = Date.now();
+  
+  // Debounced save function
+  const debouncedSave = debounce((settlement) => {
+    try {
+      // Only save essential settlement data
+      const essentialData = {
+        id: settlement.id,
+        level: settlement.level,
+        health: settlement.health,
+        maxHealth: settlement.maxHealth,
+        inhabitants: settlement.inhabitants,
+        maxInhabitants: settlement.maxInhabitants,
+        defences: settlement.defences,
+        maxDefences: settlement.maxDefences,
+        power: settlement.power,
+        maxPower: settlement.maxPower,
+        radiation: settlement.radiation,
+        maxRadiation: settlement.maxRadiation,
+        lastHealthUpdate: settlement.lastHealthUpdate,
+        lastRadiationUpdate: settlement.lastRadiationUpdate,
+        lastAttack: settlement.lastAttack,
+        position: settlement.position
+      };
+      
+      localStorage.setItem('settlement', JSON.stringify(essentialData));
+    } catch (error) {
+      console.error('Error saving settlement:', error);
+    }
+  }, 1000); // 1 second debounce
+
   store.watch(
     (state) => state.settlement.settlement,
     (newSettlement) => {
-      localStorage.setItem('settlement', JSON.stringify(newSettlement));
+      const now = Date.now();
+      // Only save if at least 1 second has passed since last save
+      if (now - lastSave >= 1000) {
+        debouncedSave(newSettlement);
+        lastSave = now;
+      }
     },
     { deep: true }
   );

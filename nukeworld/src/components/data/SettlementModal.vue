@@ -4,7 +4,9 @@
       <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Settlement: {{ settlementMarker.latlng.lat.toFixed(2) }}, {{ settlementMarker.latlng.lng.toFixed(2) }}</h5>
+            <h5 class="modal-title">
+              Settlement: {{ settlementMarker?.latlng ? `${settlementMarker.latlng.lat.toFixed(2)}, ${settlementMarker.latlng.lng.toFixed(2)}` : 'Not placed' }}
+            </h5>
             <button type="button" class="btn-close" @click="closeSettlementModal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
@@ -91,7 +93,34 @@ export default {
     },
     async confirmRemoveSettlement() {
       if (confirm('Are you sure you want to remove your settlement?')) {
+        // Clear settlement data first
+        await this.$store.commit('settlement/setSettlement', {
+          id: null,
+          level: 1,
+          health: 100,
+          maxHealth: 100,
+          inhabitants: 0,
+          maxInhabitants: 10,
+          defences: 0,
+          maxDefences: 100,
+          power: 0,
+          maxPower: 100,
+          radiation: 0,
+          maxRadiation: 100,
+          lastHealthUpdate: null,
+          lastRadiationUpdate: null,
+          lastAttack: null,
+          upgrades: [],
+          resources: [],
+          position: null
+        });
+        
+        // Then remove marker
         await this.updateSettlementMarker(null);
+        
+        // Clear from localStorage
+        localStorage.removeItem('settlement');
+        
         this.closeSettlementModal();
       }
     },
