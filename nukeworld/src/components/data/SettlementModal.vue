@@ -1,14 +1,19 @@
 <template>
   <div>
     <div v-if="isSettlementModalOpen" class="modal" tabindex="-1" @click.self="closeSettlementModal">
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-lg">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Settlement: {{ settlementMarker.latlng.lat.toFixed(2) }}, {{ settlementMarker.latlng.lng.toFixed(2) }}</h5>
             <button type="button" class="btn-close" @click="closeSettlementModal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <p>Your settlement is located at: {{ settlementMarker.latlng.lat.toFixed(2) }}, {{ settlementMarker.latlng.lng.toFixed(2) }}</p>
+            <div v-if="isUnderAttack" class="mb-4">
+              <SettlementBattle @battle-ended="onBattleEnded" />
+            </div>
+            <div v-else>
+              <SettlementStats />
+            </div>
           </div>
           <div class="modal-footer">
             <template v-if="settlementMarker">
@@ -44,20 +49,32 @@
 
 <script>
 import { mapState, mapActions, mapMutations } from 'vuex';
+import SettlementStats from './settlement/SettlementStats.vue';
+import SettlementBattle from './settlement/SettlementBattle.vue';
 
 export default {
   name: 'SettlementModal',
+  components: {
+    SettlementStats,
+    SettlementBattle
+  },
   computed: {
-    ...mapState(['settlementMarker', 'isSettlementModalOpen']),
+    ...mapState(['settlementMarker', 'isSettlementModalOpen', 'currentEnemyId']),
+    ...mapState('settlement', ['settlement']),
+    isUnderAttack() {
+      return this.currentEnemyId !== null;
+    }
   },
   data() {
     return {
       isSettlementConfirmationModalOpen: false,
       pendingSettlementLocation: null,
+      updateInterval: null
     };
   },
   methods: {
     ...mapActions(['updateSettlementMarker', 'checkRequiredResources', 'useRequiredResources']),
+    ...mapActions('settlement', ['initializeSettlement', 'updateSettlement']),
     ...mapMutations(['setSettlementModalOpen']),
     openSettlementModal() {
       this.setSettlementModalOpen(true);
@@ -85,23 +102,60 @@ export default {
         this.pendingSettlementLocation = latlng;
         this.openConfirmationModal();
       } else {
-        alert('You don\'t have enough Wood Scrap to place a settlement. You need 20 Wood & Steel Scrap.');
+        alert('You don\'t have enough resources to place a settlement. You need 20 Wood & Steel Scrap.');
       }
     },
     async confirmPlaceSettlement() {
-      const requiredResources = [{ id: 1, amount: 20 }, { id: 2, amount: 20 }];
-      await this.useRequiredResources(requiredResources);
-      await this.updateSettlementMarker({
-        latlng: this.pendingSettlementLocation,
-        name: ''
-      });
-      this.closeConfirmationModal();
-      this.closeSettlementModal();
+      try {
+        const requiredResources = [{ id: 1, amount: 20 }, { id: 2, amount: 20 }];
+        await this.useRequiredResources(requiredResources);
+        
+        // Initialize settlement in store
+        await this.initializeSettlement(this.pendingSettlementLocation);
+        
+        // Update marker
+        await this.updateSettlementMarker({
+          latlng: this.pendingSettlementLocation,
+          name: ''
+        });
+        
+        this.closeConfirmationModal();
+        this.startSettlementUpdates();
+      } catch (error) {
+        console.error('Error placing settlement:', error);
+        alert('Failed to place settlement. Please try again.');
+      }
     },
     cancelPlaceSettlement() {
       this.closeConfirmationModal();
     },
+    onBattleEnded() {
+      this.$store.commit('setCurrentEnemyId', null);
+    },
+    startSettlementUpdates() {
+      // Clear any existing interval
+      if (this.updateInterval) {
+        clearInterval(this.updateInterval);
+      }
+      
+      // Start new update interval
+      this.updateInterval = setInterval(() => {
+        if (this.settlement && this.settlement.id) {
+          this.updateSettlement();
+        }
+      }, 60000); // Update every minute
+    }
   },
+  mounted() {
+    if (this.settlementMarker) {
+      this.startSettlementUpdates();
+    }
+  },
+  beforeUnmount() {
+    if (this.updateInterval) {
+      clearInterval(this.updateInterval);
+    }
+  }
 };
 </script>
 
@@ -121,7 +175,7 @@ export default {
 }
 
 .modal-dialog {
-  max-width: 500px;
+  max-width: 800px;
   width: 90%;
   margin: 1.75rem auto;
 }
@@ -150,7 +204,7 @@ export default {
   position: relative;
   flex: 1 1 auto;
   padding: 1rem;
-  max-height: 400px;
+  max-height: 80vh;
   overflow-y: auto;
 }
 

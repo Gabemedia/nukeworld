@@ -8,6 +8,7 @@ import armor from './armor';
 import aid from './aid';
 import resources from './ressources';
 import enemies from './enemy';
+import settlement from './settlement';
 
 const state = reactive({
   characters: JSON.parse(localStorage.getItem('characters')) || [],
@@ -863,7 +864,15 @@ const store = createStore({
   getters,
   mutations,
   actions,
+  modules: {
+    settlement
+  }
 });
+
+// Initialize settlement watcher
+if (settlement.watch) {
+  settlement.watch(store);
+}
 
 store.commit('assignRandomCoordinates');
 store.dispatch('initializeQuests');
