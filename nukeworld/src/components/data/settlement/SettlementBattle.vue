@@ -212,12 +212,37 @@ export default {
       this.addToLog('The settlement has fallen!', 'defeat-action');
       this.stopAutoAttack();
       
-      // Remove settlement using the same sequence as confirmRemoveSettlement
-      this.$store.commit('settlement/setSelectedSettlement', null);
-      await this.$store.dispatch('settlement/removeSettlement', this.settlement.id);
-      this.$store.commit('closeSettlementModal');
-      this.$store.commit('closeEnemyEncounter');
-      this.$store.commit('settlement/clearSelectedSettlement');
+      // Clear settlement data first
+      await this.$store.commit('settlement/setSettlement', {
+        id: null,
+        level: 1,
+        health: 100,
+        maxHealth: 100,
+        inhabitants: 0,
+        maxInhabitants: 10,
+        defences: 0,
+        maxDefences: 100,
+        power: 0,
+        maxPower: 100,
+        radiation: 0,
+        maxRadiation: 100,
+        lastHealthUpdate: null,
+        lastRadiationUpdate: null,
+        lastAttack: null,
+        upgrades: [],
+        resources: [],
+        position: null
+      });
+      
+      // Then remove marker
+      await this.$store.dispatch('updateSettlementMarker', null);
+      
+      // Clear from localStorage
+      localStorage.removeItem('settlement');
+      
+      // Close modals
+      this.$store.commit('setSettlementModalOpen', false);
+      this.$store.commit('setEnemyEncounterOpen', false);
       
       // Show defeat toast
       this.showDefeatToast();
