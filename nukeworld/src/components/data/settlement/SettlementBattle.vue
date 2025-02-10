@@ -77,17 +77,22 @@
 
 <script>
 import { mapState, mapGetters, mapActions, mapMutations } from 'vuex';
+import { toast } from "vue3-toastify";
 
 export default {
   name: 'SettlementBattle',
   data() {
     return {
       enemyHealth: 0,
+      initialSettlementHealth: 0,
       battleLog: [],
       isAutoAttackActive: false,
       autoAttackInterval: null,
       isBattleOver: false,
-      battleResult: null
+      battleResult: null,
+      totalDamageDealt: 0,
+      totalDamageTaken: 0,
+      localEnemy: null
     };
   },
   computed: {
@@ -103,10 +108,14 @@ export default {
       immediate: true,
       handler(enemy) {
         if (enemy) {
-          this.enemyHealth = enemy.enemyHealth;
+          this.localEnemy = JSON.parse(JSON.stringify(enemy));
+          this.enemyHealth = this.localEnemy.enemyHealth;
+          this.initialSettlementHealth = this.settlement.health;
           this.isBattleOver = false;
           this.battleResult = null;
           this.battleLog = [];
+          this.totalDamageDealt = 0;
+          this.totalDamageTaken = 0;
           this.addToLog(`A ${enemy.name} is attacking your settlement!`, 'enemy-action');
         }
       }
@@ -133,9 +142,16 @@ export default {
       if (this.isBattleOver) return;
 
       // Settlement attacks enemy
-      const settlementDamage = this.calculateDamage(this.settlementAttackPower, this.currentEnemy.defense);
-      this.enemyHealth = Math.max(0, this.enemyHealth - settlementDamage);
-      this.addToLog(`Settlement dealt ${settlementDamage} damage to ${this.currentEnemy.name}`, 'player-action');
+      const settlementDamage = this.calculateDamage(this.settlementAttackPower, this.localEnemy.defense);
+      const dodgeChance = Math.random();
+      
+      if (dodgeChance <= this.localEnemy.defense / 100) {
+        this.addToLog(`The ${this.localEnemy.name} dodged the attack!`, 'dodge-action');
+      } else {
+        this.enemyHealth = Math.max(0, this.enemyHealth - settlementDamage);
+        this.totalDamageDealt += settlementDamage;
+        this.addToLog(`Settlement dealt ${settlementDamage} damage to ${this.localEnemy.name}`, 'player-action');
+      }
 
       // Check if enemy is defeated
       if (this.enemyHealth <= 0) {
@@ -144,9 +160,16 @@ export default {
       }
 
       // Enemy attacks settlement
-      const enemyDamage = this.calculateDamage(this.currentEnemy.attack, this.settlementDefencePower);
-      this.updateSettlementHealth(-enemyDamage);
-      this.addToLog(`${this.currentEnemy.name} dealt ${enemyDamage} damage to settlement`, 'enemy-action');
+      const enemyDamage = this.calculateDamage(this.localEnemy.attack, this.settlementDefencePower);
+      const settlementDodgeChance = Math.random();
+      
+      if (settlementDodgeChance <= this.settlementDefencePower / 100) {
+        this.addToLog(`Settlement dodged the ${this.localEnemy.name}'s attack!`, 'dodge-action');
+      } else {
+        this.updateSettlementHealth(-enemyDamage);
+        this.totalDamageTaken += enemyDamage;
+        this.addToLog(`${this.localEnemy.name} dealt ${enemyDamage} damage to settlement`, 'enemy-action');
+      }
 
       // Check if settlement is defeated
       if (this.settlement.health <= 0) {
@@ -177,41 +200,108 @@ export default {
         clearInterval(this.autoAttackInterval);
       }
     },
-    battleVictory() {
+    async battleVictory() {
       this.isBattleOver = true;
       this.battleResult = 'victory';
-      this.addToLog(`Victory! The ${this.currentEnemy.name} was defeated!`, 'victory-action');
+      this.addToLog(`Victory! The ${this.localEnemy.name} was defeated!`, 'victory-action');
       this.stopAutoAttack();
     },
-    battleDefeat() {
+    async battleDefeat() {
       this.isBattleOver = true;
       this.battleResult = 'defeat';
       this.addToLog('The settlement has fallen!', 'defeat-action');
       this.stopAutoAttack();
+      
+      // Remove settlement using the same sequence as confirmRemoveSettlement
+      this.$store.commit('settlement/setSelectedSettlement', null);
+      await this.$store.dispatch('settlement/removeSettlement', this.settlement.id);
+      this.$store.commit('closeSettlementModal');
+      this.$store.commit('closeEnemyEncounter');
+      this.$store.commit('settlement/clearSelectedSettlement');
+      
+      // Show defeat toast
+      this.showDefeatToast();
+      
+      // Emit defeat results
+      this.$emit('battle-ended', {
+        enemy: this.localEnemy,
+        damageDealt: this.totalDamageDealt,
+        damageTaken: this.totalDamageTaken,
+        survived: false,
+        time: Date.now()
+      });
     },
     async claimRewards() {
       if (this.battleResult === 'victory') {
-        // Base rewards
-        const expReward = this.currentEnemy.exp * 2;
-        const moneyReward = this.currentEnemy.money * 2;
+        // Use predefined rewards from enemy
+        const expReward = this.localEnemy.exp;
+        const moneyReward = this.localEnemy.money;
         
         await this.increaseExp(expReward);
         await this.increaseMoney(moneyReward);
         
-        // Random resource rewards
-        const resourceTypes = [1, 2]; // Wood and Steel Scrap
-        const resourceAmount = Math.floor(Math.random() * 3) + 1;
-        const resourceId = resourceTypes[Math.floor(Math.random() * resourceTypes.length)];
+        this.addToLog(`Rewards claimed: ${expReward} EXP, ${moneyReward} Money`, 'reward-action');
         
-        for (let i = 0; i < resourceAmount; i++) {
-          await this.addResource(resourceId);
-        }
+        // Show reward toast
+        this.showRewardToast(expReward, moneyReward);
         
-        this.addToLog(`Rewards claimed: ${expReward} EXP, ${moneyReward} Money, ${resourceAmount} resources`, 'reward-action');
-        
-        // Close battle window
-        this.$emit('battle-ended');
+        // Emit battle results with all required data
+        this.$emit('battle-ended', {
+          enemy: this.localEnemy,
+          damageDealt: this.totalDamageDealt,
+          damageTaken: this.totalDamageTaken,
+          survived: true,
+          time: Date.now()
+        });
       }
+    },
+    showRewardToast(expReward, moneyReward) {
+      let rewardMessage = `
+        <div class="d-flex flex-column align-items-start justify-content-start h-100">
+          <p class="text-left fw-bold mb-1">Settlement Battle Victory!</p>
+          <p class="text-left fw-semi mb-2">You earned:</p>
+          <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
+            <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+              <img src="${require('@/assets/interface/icons/exp.png')}" title="Exp" style="width: 20px;" class="me-2">
+              <span>${expReward} exp</span>
+            </div>
+            <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+              <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
+              <span>${moneyReward} money</span>
+            </div>
+          </div>
+        </div>
+      `;
+
+      toast.success(rewardMessage, {
+        dangerouslyHTMLString: true,
+        autoClose: 10000,
+        hideProgressBar: false,
+        icon: false,
+        toastClassName: 'quest-toast-container',
+        bodyClassName: 'quest-toast-body quest-toast'
+      });
+    },
+    showDefeatToast() {
+      let defeatMessage = `
+        <div class="d-flex flex-column align-items-start justify-content-start h-100">
+          <p class="text-left fw-bold mb-1">Settlement Defeated!</p>
+          <p class="text-left fw-semi mb-2">Your settlement was destroyed by ${this.localEnemy.name}</p>
+          <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+            <img src="${require('@/assets/interface/icons/encounter.png')}" title="Enemy" style="width: 20px;" class="me-2">
+            <span>Settlement was removed</span>
+          </div>
+        </div>
+      `;
+
+      toast.error(defeatMessage, {
+        dangerouslyHTMLString: true,
+        autoClose: 5000,
+        hideProgressBar: false,
+        icon: false,
+        toastClassName: 'quest-toast-container',
+        bodyClassName: 'quest-toast-body quest-toast'
+      });
     }
   },
   beforeUnmount() {
@@ -359,5 +449,12 @@ h4 {
 .btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* Remove custom toast styles since we're using the global ones */
+:global(.quest-toast-container),
+:global(.quest-toast-body),
+:global(.reward-info) {
+  /* These styles are now handled by the global quest-toast classes */
 }
 </style> 

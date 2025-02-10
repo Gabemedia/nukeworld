@@ -65,11 +65,11 @@ export default [
       "resourceRewards": [
         {
           "id": 1,
-          "amount": 5000
+          "amount": 500
         },
         {
           "id": 2,
-          "amount": 5000
+          "amount": 500
         }
       ],
       "weaponRewards": [],

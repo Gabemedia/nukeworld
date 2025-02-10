@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import enemies from './enemy';
 
 // Load initial state from localStorage
 const initialState = {
@@ -29,36 +30,43 @@ const state = initialState;
 const mutations = {
   setSettlement(state, settlement) {
     state.settlement = { ...state.settlement, ...settlement };
+    localStorage.setItem('settlement', JSON.stringify(state.settlement));
   },
   
   updateSettlementHealth(state, amount) {
     state.settlement.health = Math.max(0, Math.min(state.settlement.maxHealth, state.settlement.health + amount));
     state.settlement.lastHealthUpdate = Date.now();
+    localStorage.setItem('settlement', JSON.stringify(state.settlement));
   },
   
   updateSettlementRadiation(state, amount) {
     state.settlement.radiation = Math.max(0, Math.min(state.settlement.maxRadiation, state.settlement.radiation + amount));
     state.settlement.lastRadiationUpdate = Date.now();
+    localStorage.setItem('settlement', JSON.stringify(state.settlement));
   },
   
   addInhabitant(state) {
     if (state.settlement.inhabitants < state.settlement.maxInhabitants) {
       state.settlement.inhabitants++;
+      localStorage.setItem('settlement', JSON.stringify(state.settlement));
     }
   },
   
   removeInhabitant(state) {
     if (state.settlement.inhabitants > 0) {
       state.settlement.inhabitants--;
+      localStorage.setItem('settlement', JSON.stringify(state.settlement));
     }
   },
   
   upgradeDefences(state, amount) {
     state.settlement.defences = Math.min(state.settlement.maxDefences, state.settlement.defences + amount);
+    localStorage.setItem('settlement', JSON.stringify(state.settlement));
   },
   
   upgradePower(state, amount) {
     state.settlement.power = Math.min(state.settlement.maxPower, state.settlement.power + amount);
+    localStorage.setItem('settlement', JSON.stringify(state.settlement));
   },
   
   upgradeLevel(state) {
@@ -67,10 +75,12 @@ const mutations = {
     state.settlement.maxInhabitants += 5;
     state.settlement.maxDefences += 25;
     state.settlement.maxPower += 25;
+    localStorage.setItem('settlement', JSON.stringify(state.settlement));
   },
   
   recordAttack(state) {
     state.settlement.lastAttack = Date.now();
+    localStorage.setItem('settlement', JSON.stringify(state.settlement));
   },
   
   addUpgrade(state, upgrade) {
@@ -79,10 +89,17 @@ const mutations = {
       id: uuidv4(),
       installedAt: Date.now()
     });
+    localStorage.setItem('settlement', JSON.stringify(state.settlement));
   },
   
   removeUpgrade(state, upgradeId) {
     state.settlement.upgrades = state.settlement.upgrades.filter(u => u.id !== upgradeId);
+    localStorage.setItem('settlement', JSON.stringify(state.settlement));
+  },
+  
+  setCurrentEnemyId(state, enemyId) {
+    state.settlement.currentEnemyId = enemyId;
+    localStorage.setItem('settlement', JSON.stringify(state.settlement));
   }
 };
 
@@ -123,11 +140,16 @@ const actions = {
       const healthLoss = -1 * Math.floor(hoursSinceLastUpdate);
       const radiationDamage = -1 * Math.floor((state.settlement.radiation / 100) * hoursSinceLastUpdate);
       commit('updateSettlementHealth', healthLoss + radiationDamage);
-      
-      // Random enemy attacks
-      if (Math.random() < 0.1) { // 10% chance per hour
-        dispatch('handleEnemyAttack');
-      }
+    }
+    
+    // Check for enemy attacks every minute
+    const minutesSinceLastAttack = state.settlement.lastAttack 
+      ? (now - state.settlement.lastAttack) / (1000 * 60)
+      : (now - state.settlement.lastHealthUpdate) / (1000 * 60);
+    
+    if (minutesSinceLastAttack >= 1) {
+      // 100% chance of attack every minute
+      dispatch('handleEnemyAttack');
     }
     
     // Update radiation levels
@@ -138,17 +160,38 @@ const actions = {
     }
   },
   
-  async handleEnemyAttack({ commit, dispatch }) {
-    const enemyId = Math.floor(Math.random() * 8) + 1; // Random enemy from enemy.js
+  async handleEnemyAttack({ commit, getters }) {
+    // Get a random enemy
+    const enemy = enemies[Math.floor(Math.random() * enemies.length)];
+    if (!enemy) return;
+
+    // Record the attack and set current enemy
     commit('recordAttack');
-    return dispatch('startSettlementBattle', { enemyId });
+    commit('setCurrentEnemyId', enemy.id, { root: true });
+
+    return {
+      attack: getters.settlementAttackPower,
+      defence: getters.settlementDefencePower,
+      enemy: { 
+        ...enemy,
+        level: 1 // Add level property for consistency
+      }
+    };
   },
   
-  startSettlementBattle(context, { enemyId }) {
+  startSettlementBattle({ getters }, { enemyId }) {
+    const enemy = enemies.find(e => e.id === enemyId);
+    if (!enemy) {
+      console.error('Enemy not found:', enemyId);
+      return null;
+    }
     return {
-      attack: context.getters.settlementAttackPower,
-      defence: context.getters.settlementDefencePower,
-      enemyId
+      attack: getters.settlementAttackPower,
+      defence: getters.settlementDefencePower,
+      enemy: { 
+        ...enemy,
+        level: 1 // Add level property for consistency
+      }
     };
   },
   
@@ -188,67 +231,10 @@ const getters = {
   }
 };
 
-// Debounce function to limit storage updates
-const debounce = (fn, delay) => {
-  let timeoutId;
-  return (...args) => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => fn(...args), delay);
-  };
-};
-
-// Add watcher for settlement changes with optimizations
-const watch = (store) => {
-  let lastSave = Date.now();
-  
-  // Debounced save function
-  const debouncedSave = debounce((settlement) => {
-    try {
-      // Only save essential settlement data
-      const essentialData = {
-        id: settlement.id,
-        level: settlement.level,
-        health: settlement.health,
-        maxHealth: settlement.maxHealth,
-        inhabitants: settlement.inhabitants,
-        maxInhabitants: settlement.maxInhabitants,
-        defences: settlement.defences,
-        maxDefences: settlement.maxDefences,
-        power: settlement.power,
-        maxPower: settlement.maxPower,
-        radiation: settlement.radiation,
-        maxRadiation: settlement.maxRadiation,
-        lastHealthUpdate: settlement.lastHealthUpdate,
-        lastRadiationUpdate: settlement.lastRadiationUpdate,
-        lastAttack: settlement.lastAttack,
-        position: settlement.position
-      };
-      
-      localStorage.setItem('settlement', JSON.stringify(essentialData));
-    } catch (error) {
-      console.error('Error saving settlement:', error);
-    }
-  }, 1000); // 1 second debounce
-
-  store.watch(
-    (state) => state.settlement.settlement,
-    (newSettlement) => {
-      const now = Date.now();
-      // Only save if at least 1 second has passed since last save
-      if (now - lastSave >= 1000) {
-        debouncedSave(newSettlement);
-        lastSave = now;
-      }
-    },
-    { deep: true }
-  );
-};
-
 export default {
   namespaced: true,
   state,
   mutations,
   actions,
-  getters,
-  watch // Export watch function to be used in store initialization
+  getters
 }; 

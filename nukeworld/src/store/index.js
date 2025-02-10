@@ -869,15 +869,12 @@ const store = createStore({
   }
 });
 
-// Initialize settlement watcher
-if (settlement.watch) {
-  settlement.watch(store);
-}
-
+// Remove settlement watcher initialization
 store.commit('assignRandomCoordinates');
 store.dispatch('initializeQuests');
-store.dispatch('autoResetQuests'); 
+store.dispatch('autoResetQuests');
 
+// Keep existing watchers for other state
 watch(
   () => state.characters,
   (newCharacters) => {
