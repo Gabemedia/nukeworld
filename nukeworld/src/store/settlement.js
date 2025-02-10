@@ -32,7 +32,39 @@ const initialState = {
     maxHealth: 100,
     startingResources: 0,
     maxResources: 1000,
-    attackChance: 100
+    attackChance: 100,
+    upgradeCosts: {
+      defences: {
+        resource1: 1, // Wood Scrap
+        resource1Amount: 30,
+        resource2: 2, // Steel Scrap
+        resource2Amount: 50,
+        amount: 10 // Defence increase amount
+      },
+      power: {
+        resource1: 1, // Wood Scrap
+        resource1Amount: 40,
+        resource2: 2, // Steel Scrap
+        resource2Amount: 40,
+        amount: 10 // Power increase amount
+      },
+      level: {
+        resource1: 1, // Wood Scrap
+        resource1Amount: 100,
+        resource2: 2, // Steel Scrap
+        resource2Amount: 100,
+        healthIncrease: 50,
+        inhabitantsIncrease: 5,
+        defencesIncrease: 25,
+        powerIncrease: 25
+      },
+      inhabitant: {
+        resource1: 1, // Wood Scrap
+        resource1Amount: 50,
+        resource2: 2, // Steel Scrap
+        resource2Amount: 30
+      }
+    }
   }
 };
 
@@ -55,7 +87,8 @@ const mutations = {
       maxHealth: Number(settings.maxHealth),
       startingResources: Number(settings.startingResources),
       maxResources: Number(settings.maxResources),
-      attackChance: Number(settings.attackChance)
+      attackChance: Number(settings.attackChance),
+      upgradeCosts: settings.upgradeCosts || state.settings.upgradeCosts
     };
     
     // Update settlement maxHealth if needed
@@ -97,22 +130,24 @@ const mutations = {
     }
   },
   
-  upgradeDefences(state, amount) {
-    state.settlement.defences = Math.min(state.settlement.maxDefences, state.settlement.defences + amount);
+  upgradeDefences(state) {
+    const increaseAmount = state.settings.upgradeCosts.defences.amount;
+    state.settlement.defences = Math.min(state.settlement.maxDefences, state.settlement.defences + increaseAmount);
     localStorage.setItem('settlement', JSON.stringify(state.settlement));
   },
   
-  upgradePower(state, amount) {
-    state.settlement.power = Math.min(state.settlement.maxPower, state.settlement.power + amount);
+  upgradePower(state) {
+    const increaseAmount = state.settings.upgradeCosts.power.amount;
+    state.settlement.power = Math.min(state.settlement.maxPower, state.settlement.power + increaseAmount);
     localStorage.setItem('settlement', JSON.stringify(state.settlement));
   },
   
   upgradeLevel(state) {
     state.settlement.level++;
-    state.settlement.maxHealth += 50;
-    state.settlement.maxInhabitants += 5;
-    state.settlement.maxDefences += 25;
-    state.settlement.maxPower += 25;
+    state.settlement.maxHealth += state.settings.upgradeCosts.level.healthIncrease;
+    state.settlement.maxInhabitants += state.settings.upgradeCosts.level.inhabitantsIncrease;
+    state.settlement.maxDefences += state.settings.upgradeCosts.level.defencesIncrease;
+    state.settlement.maxPower += state.settings.upgradeCosts.level.powerIncrease;
     localStorage.setItem('settlement', JSON.stringify(state.settlement));
   },
   
@@ -236,20 +271,45 @@ const actions = {
     };
   },
   
-  async upgradeSettlement({ commit, dispatch }, { type, amount, resources }) {
-    const hasResources = await dispatch('checkRequiredResources', resources, { root: true });
+  async upgradeSettlement({ commit, dispatch }, { type }) {
+    let requiredResources;
+    
+    switch(type) {
+      case 'defences':
+        requiredResources = [
+          { id: state.settings.upgradeCosts.defences.resource1, amount: state.settings.upgradeCosts.defences.resource1Amount },
+          { id: state.settings.upgradeCosts.defences.resource2, amount: state.settings.upgradeCosts.defences.resource2Amount }
+        ];
+        break;
+      case 'power':
+        requiredResources = [
+          { id: state.settings.upgradeCosts.power.resource1, amount: state.settings.upgradeCosts.power.resource1Amount },
+          { id: state.settings.upgradeCosts.power.resource2, amount: state.settings.upgradeCosts.power.resource2Amount }
+        ];
+        break;
+      case 'level':
+        requiredResources = [
+          { id: state.settings.upgradeCosts.level.resource1, amount: state.settings.upgradeCosts.level.resource1Amount },
+          { id: state.settings.upgradeCosts.level.resource2, amount: state.settings.upgradeCosts.level.resource2Amount }
+        ];
+        break;
+      default:
+        throw new Error('Invalid upgrade type');
+    }
+    
+    const hasResources = await dispatch('checkRequiredResources', requiredResources, { root: true });
     if (!hasResources) {
       throw new Error('Not enough resources');
     }
     
-    await dispatch('useRequiredResources', resources, { root: true });
+    await dispatch('useRequiredResources', requiredResources, { root: true });
     
     switch(type) {
       case 'defences':
-        commit('upgradeDefences', amount);
+        commit('upgradeDefences');
         break;
       case 'power':
-        commit('upgradePower', amount);
+        commit('upgradePower');
         break;
       case 'level':
         commit('upgradeLevel');
@@ -269,7 +329,9 @@ const getters = {
   
   canUpgradeLevel: state => {
     return state.settlement.health > 50 && state.settlement.inhabitants >= state.settlement.level * 5;
-  }
+  },
+
+  settings: state => state.settings
 };
 
 export default {

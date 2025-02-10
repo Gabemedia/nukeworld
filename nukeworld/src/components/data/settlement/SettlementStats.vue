@@ -10,7 +10,8 @@
             :disabled="!canUpgradeLevel"
             class="btn btn-success btn-sm"
           >
-            Upgrade (100 Wood Scrap, 100 Steel Scrap)
+            Upgrade ({{ settings?.upgradeCosts?.level?.resource1Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.level?.resource1) }}, 
+            {{ settings?.upgradeCosts?.level?.resource2Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.level?.resource2) }})
           </button>
         </div>
         <div class="cost-info">Requires: Health > 50% and {{ settlement.level * 5 }} Inhabitants</div>
@@ -31,7 +32,7 @@
         <!-- Left Column -->
         <div class="stats-column">
           <div class="stat-group">
-            <div class="stat-header" data-cost="50 Wood Scrap, 30 Steel Scrap per Inhabitant">Population</div>
+            <div class="stat-header" :data-cost="`${settings?.upgradeCosts?.inhabitant?.resource1Amount || 0} ${getResourceName(settings?.upgradeCosts?.inhabitant?.resource1)}, ${settings?.upgradeCosts?.inhabitant?.resource2Amount || 0} ${getResourceName(settings?.upgradeCosts?.inhabitant?.resource2)} per Inhabitant`">Population</div>
             <div class="stat-row">
               <span>Inhabitants</span>
               <div class="stat-value">
@@ -76,7 +77,8 @@
                   +
                 </button>
               </div>
-              <div class="cost-info">30 Wood Scrap, 50 Steel Scrap</div>
+              <div class="cost-info">{{ settings?.upgradeCosts?.defences?.resource1Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.defences?.resource1) }}, 
+              {{ settings?.upgradeCosts?.defences?.resource2Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.defences?.resource2) }}</div>
             </div>
             
             <div class="stat-row">
@@ -91,7 +93,8 @@
                   +
                 </button>
               </div>
-              <div class="cost-info">40 Wood Scrap, 40 Steel Scrap</div>
+              <div class="cost-info">{{ settings?.upgradeCosts?.power?.resource1Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.power?.resource1) }}, 
+              {{ settings?.upgradeCosts?.power?.resource2Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.power?.resource2) }}</div>
             </div>
           </div>
 
@@ -127,7 +130,8 @@ import { mapState, mapGetters, mapActions } from 'vuex';
 export default {
   name: 'SettlementStats',
   computed: {
-    ...mapState('settlement', ['settlement']),
+    ...mapState('settlement', ['settlement', 'settings']),
+    ...mapState(['resources']),
     ...mapGetters('settlement', [
       'settlementAttackPower',
       'settlementDefencePower',
@@ -137,6 +141,12 @@ export default {
       if (!this.settlement.lastAttack) return 'Never';
       const date = new Date(this.settlement.lastAttack);
       return date.toLocaleString();
+    },
+    getResourceName() {
+      return (resourceId) => {
+        const resource = this.resources.find(r => r.id === resourceId);
+        return resource ? resource.name : 'Unknown Resource';
+      }
     }
   },
   methods: {
@@ -149,41 +159,21 @@ export default {
     },
     async upgradeLevel() {
       try {
-        await this.upgradeSettlement({
-          type: 'level',
-          resources: [
-            { id: 1, amount: 100 }, // Wood Scrap
-            { id: 2, amount: 100 }  // Steel Scrap
-          ]
-        });
+        await this.upgradeSettlement({ type: 'level' });
       } catch (error) {
         alert('Not enough resources to upgrade level');
       }
     },
     async upgradeDefences() {
       try {
-        await this.upgradeSettlement({
-          type: 'defences',
-          amount: 10,
-          resources: [
-            { id: 1, amount: 30 }, // Wood Scrap
-            { id: 2, amount: 50 }  // Steel Scrap
-          ]
-        });
+        await this.upgradeSettlement({ type: 'defences' });
       } catch (error) {
         alert('Not enough resources to upgrade defences');
       }
     },
     async upgradePower() {
       try {
-        await this.upgradeSettlement({
-          type: 'power',
-          amount: 10,
-          resources: [
-            { id: 1, amount: 40 }, // Wood Scrap
-            { id: 2, amount: 40 }  // Steel Scrap
-          ]
-        });
+        await this.upgradeSettlement({ type: 'power' });
       } catch (error) {
         alert('Not enough resources to upgrade power');
       }
@@ -191,8 +181,8 @@ export default {
     async addInhabitant() {
       try {
         const resources = [
-          { id: 1, amount: 50 }, // Wood Scrap
-          { id: 2, amount: 30 }  // Steel Scrap
+          { id: this.settings.upgradeCosts.inhabitant.resource1, amount: this.settings.upgradeCosts.inhabitant.resource1Amount },
+          { id: this.settings.upgradeCosts.inhabitant.resource2, amount: this.settings.upgradeCosts.inhabitant.resource2Amount }
         ];
         const hasResources = await this.$store.dispatch('checkRequiredResources', resources);
         if (!hasResources) {

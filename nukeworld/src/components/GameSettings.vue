@@ -208,6 +208,122 @@
                 <small class="form-text text-muted">Maximum health for settlements</small>
               </div>
             </div>
+
+            <div class="settings-group">
+              <h4 class="group-title">Upgrade Costs</h4>
+              
+              <div class="upgrade-section">
+                <h5 class="upgrade-title">Defence Upgrade</h5>
+                <div class="form-group">
+                  <label>Resource Type 1</label>
+                  <select v-model="settlement.upgradeCosts.defences.resource1" class="form-control">
+                    <option v-for="resource in availableResources" :key="resource.id" :value="resource.id">
+                      {{ resource.name }}
+                    </option>
+                  </select>
+                  <input type="number" v-model="settlement.upgradeCosts.defences.resource1Amount" class="form-control" min="0" placeholder="Amount">
+                </div>
+                <div class="form-group">
+                  <label>Resource Type 2</label>
+                  <select v-model="settlement.upgradeCosts.defences.resource2" class="form-control">
+                    <option v-for="resource in availableResources" :key="resource.id" :value="resource.id">
+                      {{ resource.name }}
+                    </option>
+                  </select>
+                  <input type="number" v-model="settlement.upgradeCosts.defences.resource2Amount" class="form-control" min="0" placeholder="Amount">
+                </div>
+                <div class="form-group">
+                  <label>Defence Increase Amount</label>
+                  <input type="number" v-model.number="settlement.upgradeCosts.defences.amount" class="form-control" min="1">
+                </div>
+              </div>
+
+              <div class="upgrade-section">
+                <h5 class="upgrade-title">Power Upgrade</h5>
+                <div class="form-group">
+                  <label>Resource Type 1</label>
+                  <select v-model="settlement.upgradeCosts.power.resource1" class="form-control">
+                    <option v-for="resource in availableResources" :key="resource.id" :value="resource.id">
+                      {{ resource.name }}
+                    </option>
+                  </select>
+                  <input type="number" v-model="settlement.upgradeCosts.power.resource1Amount" class="form-control" min="0" placeholder="Amount">
+                </div>
+                <div class="form-group">
+                  <label>Resource Type 2</label>
+                  <select v-model="settlement.upgradeCosts.power.resource2" class="form-control">
+                    <option v-for="resource in availableResources" :key="resource.id" :value="resource.id">
+                      {{ resource.name }}
+                    </option>
+                  </select>
+                  <input type="number" v-model="settlement.upgradeCosts.power.resource2Amount" class="form-control" min="0" placeholder="Amount">
+                </div>
+                <div class="form-group">
+                  <label>Power Increase Amount</label>
+                  <input type="number" v-model.number="settlement.upgradeCosts.power.amount" class="form-control" min="1">
+                </div>
+              </div>
+
+              <div class="upgrade-section">
+                <h5 class="upgrade-title">Level Upgrade</h5>
+                <div class="form-group">
+                  <label>Resource Type 1</label>
+                  <select v-model="settlement.upgradeCosts.level.resource1" class="form-control">
+                    <option v-for="resource in availableResources" :key="resource.id" :value="resource.id">
+                      {{ resource.name }}
+                    </option>
+                  </select>
+                  <input type="number" v-model="settlement.upgradeCosts.level.resource1Amount" class="form-control" min="0" placeholder="Amount">
+                </div>
+                <div class="form-group">
+                  <label>Resource Type 2</label>
+                  <select v-model="settlement.upgradeCosts.level.resource2" class="form-control">
+                    <option v-for="resource in availableResources" :key="resource.id" :value="resource.id">
+                      {{ resource.name }}
+                    </option>
+                  </select>
+                  <input type="number" v-model="settlement.upgradeCosts.level.resource2Amount" class="form-control" min="0" placeholder="Amount">
+                </div>
+                <div class="form-group">
+                  <label>Health Increase</label>
+                  <input type="number" v-model.number="settlement.upgradeCosts.level.healthIncrease" class="form-control" min="1">
+                </div>
+                <div class="form-group">
+                  <label>Inhabitants Increase</label>
+                  <input type="number" v-model.number="settlement.upgradeCosts.level.inhabitantsIncrease" class="form-control" min="1">
+                </div>
+                <div class="form-group">
+                  <label>Defences Increase</label>
+                  <input type="number" v-model.number="settlement.upgradeCosts.level.defencesIncrease" class="form-control" min="1">
+                </div>
+                <div class="form-group">
+                  <label>Power Increase</label>
+                  <input type="number" v-model.number="settlement.upgradeCosts.level.powerIncrease" class="form-control" min="1">
+                </div>
+              </div>
+
+              <div class="upgrade-section">
+                <h5 class="upgrade-title">Inhabitant Cost</h5>
+                <div class="form-group">
+                  <label>Resource Type 1</label>
+                  <select v-model="settlement.upgradeCosts.inhabitant.resource1" class="form-control">
+                    <option v-for="resource in availableResources" :key="resource.id" :value="resource.id">
+                      {{ resource.name }}
+                    </option>
+                  </select>
+                  <input type="number" v-model="settlement.upgradeCosts.inhabitant.resource1Amount" class="form-control" min="0" placeholder="Amount">
+                </div>
+                <div class="form-group">
+                  <label>Resource Type 2</label>
+                  <select v-model="settlement.upgradeCosts.inhabitant.resource2" class="form-control">
+                    <option v-for="resource in availableResources" :key="resource.id" :value="resource.id">
+                      {{ resource.name }}
+                    </option>
+                  </select>
+                  <input type="number" v-model="settlement.upgradeCosts.inhabitant.resource2Amount" class="form-control" min="0" placeholder="Amount">
+                </div>
+              </div>
+            </div>
             
             <div class="settings-actions">
               <button @click="applySettlementSettings" class="btn btn-success">
@@ -435,6 +551,7 @@ import ResourceTemplates from './data/templates/ResourceTemplates.vue';
 import AidTemplates from './data/templates/AidTemplates.vue';
 import ArmorTemplates from './data/templates/ArmorTemplates.vue';
 import WeaponTemplates from './data/templates/WeaponTemplates.vue';
+import { mapState } from 'vuex';
 
 export default {
   name: 'GameSettings',
@@ -466,7 +583,39 @@ export default {
         maxHealth: 100,
         startingResources: 0,
         maxResources: 1000,
-        attackChance: 100
+        attackChance: 100,
+        upgradeCosts: {
+          defences: {
+            resource1: 1,
+            resource1Amount: 30,
+            resource2: 2,
+            resource2Amount: 50,
+            amount: 10
+          },
+          power: {
+            resource1: 1,
+            resource1Amount: 40,
+            resource2: 2,
+            resource2Amount: 40,
+            amount: 10
+          },
+          level: {
+            resource1: 1,
+            resource1Amount: 100,
+            resource2: 2,
+            resource2Amount: 100,
+            healthIncrease: 50,
+            inhabitantsIncrease: 5,
+            defencesIncrease: 25,
+            powerIncrease: 25
+          },
+          inhabitant: {
+            resource1: 1,
+            resource1Amount: 50,
+            resource2: 2,
+            resource2Amount: 30
+          }
+        }
       },
       currentIndex: 0,
       selectedReward: {
@@ -493,6 +642,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(['resources']),
     getActiveData() {
       return this.activeSection === 'speech' ? [] : this[this.activeSection];
     },
@@ -501,6 +651,9 @@ export default {
         return this.speechSettings;
       }
       return this.getActiveData[this.currentIndex] || {};
+    },
+    availableResources() {
+      return this.$store.state.resources;
     }
   },
   methods: {
@@ -927,7 +1080,39 @@ export default {
             maxHealth: 100,
             startingResources: 0,
             maxResources: 1000,
-            attackChance: 100
+            attackChance: 100,
+            upgradeCosts: {
+              defences: {
+                resource1: 1,
+                resource1Amount: 30,
+                resource2: 2,
+                resource2Amount: 50,
+                amount: 10
+              },
+              power: {
+                resource1: 1,
+                resource1Amount: 40,
+                resource2: 2,
+                resource2Amount: 40,
+                amount: 10
+              },
+              level: {
+                resource1: 1,
+                resource1Amount: 100,
+                resource2: 2,
+                resource2Amount: 100,
+                healthIncrease: 50,
+                inhabitantsIncrease: 5,
+                defencesIncrease: 25,
+                powerIncrease: 25
+              },
+              inhabitant: {
+                resource1: 1,
+                resource1Amount: 50,
+                resource2: 2,
+                resource2Amount: 30
+              }
+            }
           };
           break;
         case 'quests':
@@ -1268,7 +1453,39 @@ export default {
         maxHealth: Number(this.settlement.maxHealth),
         startingResources: Number(this.settlement.startingResources),
         maxResources: Number(this.settlement.maxResources),
-        attackChance: Number(this.settlement.attackChance)
+        attackChance: Number(this.settlement.attackChance),
+        upgradeCosts: {
+          defences: {
+            resource1: Number(this.settlement.upgradeCosts.defences.resource1),
+            resource1Amount: Number(this.settlement.upgradeCosts.defences.resource1Amount),
+            resource2: Number(this.settlement.upgradeCosts.defences.resource2),
+            resource2Amount: Number(this.settlement.upgradeCosts.defences.resource2Amount),
+            amount: Number(this.settlement.upgradeCosts.defences.amount)
+          },
+          power: {
+            resource1: Number(this.settlement.upgradeCosts.power.resource1),
+            resource1Amount: Number(this.settlement.upgradeCosts.power.resource1Amount),
+            resource2: Number(this.settlement.upgradeCosts.power.resource2),
+            resource2Amount: Number(this.settlement.upgradeCosts.power.resource2Amount),
+            amount: Number(this.settlement.upgradeCosts.power.amount)
+          },
+          level: {
+            resource1: Number(this.settlement.upgradeCosts.level.resource1),
+            resource1Amount: Number(this.settlement.upgradeCosts.level.resource1Amount),
+            resource2: Number(this.settlement.upgradeCosts.level.resource2),
+            resource2Amount: Number(this.settlement.upgradeCosts.level.resource2Amount),
+            healthIncrease: Number(this.settlement.upgradeCosts.level.healthIncrease),
+            inhabitantsIncrease: Number(this.settlement.upgradeCosts.level.inhabitantsIncrease),
+            defencesIncrease: Number(this.settlement.upgradeCosts.level.defencesIncrease),
+            powerIncrease: Number(this.settlement.upgradeCosts.level.powerIncrease)
+          },
+          inhabitant: {
+            resource1: Number(this.settlement.upgradeCosts.inhabitant.resource1),
+            resource1Amount: Number(this.settlement.upgradeCosts.inhabitant.resource1Amount),
+            resource2: Number(this.settlement.upgradeCosts.inhabitant.resource2),
+            resource2Amount: Number(this.settlement.upgradeCosts.inhabitant.resource2Amount)
+          }
+        }
       };
 
       // Save to Vuex store
@@ -1298,7 +1515,39 @@ export default {
           maxHealth: Number(settings.maxHealth || 100),
           startingResources: Number(settings.startingResources || 0),
           maxResources: Number(settings.maxResources || 1000),
-          attackChance: Number(settings.attackChance || 100)
+          attackChance: Number(settings.attackChance || 100),
+          upgradeCosts: {
+            defences: {
+              resource1: Number(settings.upgradeCosts.defences.resource1 || 1),
+              resource1Amount: Number(settings.upgradeCosts.defences.resource1Amount || 30),
+              resource2: Number(settings.upgradeCosts.defences.resource2 || 2),
+              resource2Amount: Number(settings.upgradeCosts.defences.resource2Amount || 50),
+              amount: Number(settings.upgradeCosts.defences.amount || 10)
+            },
+            power: {
+              resource1: Number(settings.upgradeCosts.power.resource1 || 1),
+              resource1Amount: Number(settings.upgradeCosts.power.resource1Amount || 40),
+              resource2: Number(settings.upgradeCosts.power.resource2 || 2),
+              resource2Amount: Number(settings.upgradeCosts.power.resource2Amount || 40),
+              amount: Number(settings.upgradeCosts.power.amount || 10)
+            },
+            level: {
+              resource1: Number(settings.upgradeCosts.level.resource1 || 1),
+              resource1Amount: Number(settings.upgradeCosts.level.resource1Amount || 100),
+              resource2: Number(settings.upgradeCosts.level.resource2 || 2),
+              resource2Amount: Number(settings.upgradeCosts.level.resource2Amount || 100),
+              healthIncrease: Number(settings.upgradeCosts.level.healthIncrease || 50),
+              inhabitantsIncrease: Number(settings.upgradeCosts.level.inhabitantsIncrease || 5),
+              defencesIncrease: Number(settings.upgradeCosts.level.defencesIncrease || 25),
+              powerIncrease: Number(settings.upgradeCosts.level.powerIncrease || 25)
+            },
+            inhabitant: {
+              resource1: Number(settings.upgradeCosts.inhabitant.resource1 || 1),
+              resource1Amount: Number(settings.upgradeCosts.inhabitant.resource1Amount || 50),
+              resource2: Number(settings.upgradeCosts.inhabitant.resource2 || 2),
+              resource2Amount: Number(settings.upgradeCosts.inhabitant.resource2Amount || 30)
+            }
+          }
         };
       } catch (error) {
         console.error('Error loading settlement settings:', error);
@@ -1722,6 +1971,22 @@ pre {
 
 .settings-actions .btn i {
   font-size: 1.1rem;
+}
+
+.upgrade-section {
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 1rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(0, 255, 0, 0.1);
+}
+
+.upgrade-title {
+  color: #00ff00;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.1);
 }
 
 </style>
