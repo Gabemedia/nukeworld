@@ -116,16 +116,118 @@
               Test Speech Settings
             </button>
           </div>
+          <div v-else-if="activeSection === 'settlement'" class="settlement-settings">
+            <h3 class="settings-title">Settlement Settings</h3>
+            
+            <div class="settings-group">
+              <h4 class="group-title">Attack Settings</h4>
+              <div class="form-group">
+                <label>Attack Interval (minutes)</label>
+                <div class="input-group">
+                  <input type="number" v-model.number="settlement.attackInterval" @change="saveToLocalStorage" class="form-control" min="1">
+                  <div class="input-group-append">
+                    <span class="input-group-text">min</span>
+                  </div>
+                </div>
+                <small class="form-text text-muted">How often settlements are attacked</small>
+              </div>
+              
+              <div class="form-group">
+                <label>Attack Chance (%)</label>
+                <div class="input-group">
+                  <input type="number" v-model.number="settlement.attackChance" @change="saveToLocalStorage" class="form-control" min="0" max="100">
+                  <div class="input-group-append">
+                    <span class="input-group-text">%</span>
+                  </div>
+                </div>
+                <small class="form-text text-muted">Chance of being attacked when the interval expires</small>
+              </div>
+            </div>
+            
+            <div class="settings-group">
+              <h4 class="group-title">Health Settings</h4>
+              <div class="form-group">
+                <label>Health Loss Per Hour</label>
+                <div class="input-group">
+                  <input type="number" v-model.number="settlement.healthLossPerHour" @change="saveToLocalStorage" class="form-control" min="0">
+                  <div class="input-group-append">
+                    <span class="input-group-text">HP/h</span>
+                  </div>
+                </div>
+                <small class="form-text text-muted">Base health loss per hour</small>
+              </div>
+              
+              <div class="form-group">
+                <label>Radiation Damage Multiplier</label>
+                <div class="input-group">
+                  <input type="number" v-model.number="settlement.radiationDamageMultiplier" @change="saveToLocalStorage" class="form-control" min="0" step="0.1">
+                  <div class="input-group-append">
+                    <span class="input-group-text">x</span>
+                  </div>
+                </div>
+                <small class="form-text text-muted">Multiplier for radiation damage (1 = normal)</small>
+              </div>
+            </div>
+            
+            <div class="settings-group">
+              <h4 class="group-title">Resource Settings</h4>
+              <div class="form-group">
+                <label>Starting Resources</label>
+                <input type="number" v-model.number="settlement.startingResources" @change="saveToLocalStorage" class="form-control" min="0">
+                <small class="form-text text-muted">Resources given to new settlements</small>
+              </div>
+              
+              <div class="form-group">
+                <label>Max Resources</label>
+                <input type="number" v-model.number="settlement.maxResources" @change="saveToLocalStorage" class="form-control" min="1">
+                <small class="form-text text-muted">Maximum resources a settlement can hold</small>
+              </div>
+            </div>
+            
+            <div class="settings-group">
+              <h4 class="group-title">Health Limits</h4>
+              <div class="form-group">
+                <label>Starting Health</label>
+                <div class="input-group">
+                  <input type="number" v-model.number="settlement.startingHealth" @change="saveToLocalStorage" class="form-control" min="1">
+                  <div class="input-group-append">
+                    <span class="input-group-text">HP</span>
+                  </div>
+                </div>
+                <small class="form-text text-muted">Starting health for new settlements</small>
+              </div>
+              
+              <div class="form-group">
+                <label>Max Health</label>
+                <div class="input-group">
+                  <input type="number" v-model.number="settlement.maxHealth" @change="saveToLocalStorage" class="form-control" min="1">
+                  <div class="input-group-append">
+                    <span class="input-group-text">HP</span>
+                  </div>
+                </div>
+                <small class="form-text text-muted">Maximum health for settlements</small>
+              </div>
+            </div>
+            
+            <div class="settings-actions">
+              <button @click="applySettlementSettings" class="btn btn-success">
+                <i class="fas fa-save"></i> Apply Settings
+              </button>
+              <button @click="resetSectionData('settlement')" class="btn btn-danger">
+                <i class="fas fa-undo"></i> Reset to Default
+              </button>
+            </div>
+          </div>
           <div v-else class="data-navigation">
             <button class="btn btn-outline-primary" @click="prevItem" :disabled="currentIndex === 0">&lt;</button>
             <span>Item {{ currentIndex + 1 }} of {{ getActiveData.length }}</span>
             <button class="btn btn-outline-primary" @click="nextItem" :disabled="currentIndex === getActiveData.length - 1">&gt;</button>
           </div>
-          <div v-if="activeSection !== 'speech'" class="data-content">
+          <div v-if="activeSection !== 'speech' && activeSection !== 'settlement'" class="data-content">
             <pre>{{ JSON.stringify(currentItem, null, 2) }}</pre>
           </div>
         </div>
-        <div class="data-form" v-if="activeSection !== 'speech'">
+        <div class="data-form" v-if="activeSection !== 'speech' && activeSection !== 'settlement'">
           <h3 class="subsection-title">Edit {{ activeSection }}</h3>
           <form @submit.prevent="saveChanges">
             <div class="form-group" v-for="(value, key) in currentItem" :key="key">
@@ -348,7 +450,7 @@ export default {
   data() {
     return {
       activeSection: 'quests',
-      sections: ['quests', 'items', 'story', 'armor', 'aid', 'resources', 'enemies', 'speech'],
+      sections: ['quests', 'items', 'story', 'armor', 'aid', 'resources', 'enemies', 'speech', 'settlement'],
       quests: [],
       items: [],
       story: [],
@@ -356,6 +458,16 @@ export default {
       aid: [],
       resources: [],
       enemies: [],
+      settlement: {
+        attackInterval: 1,
+        healthLossPerHour: 1,
+        radiationDamageMultiplier: 1,
+        startingHealth: 100,
+        maxHealth: 100,
+        startingResources: 0,
+        maxResources: 1000,
+        attackChance: 100
+      },
       currentIndex: 0,
       selectedReward: {
         reward: '',
@@ -707,7 +819,11 @@ export default {
       for (const section of this.sections) {
         const savedData = localStorage.getItem(section);
         if (savedData) {
-          this[section] = JSON.parse(savedData).map(item => this.convertToNumbers(item));
+          if (section === 'settlement') {
+            this[section] = this.convertToNumbers(JSON.parse(savedData));
+          } else {
+            this[section] = JSON.parse(savedData).map(item => this.convertToNumbers(item));
+          }
         } else {
           this.resetSectionData(section);
         }
@@ -802,6 +918,18 @@ export default {
     },
     resetSectionData(section) {
       switch (section) {
+        case 'settlement':
+          this.settlement = {
+            attackInterval: 1,
+            healthLossPerHour: 1,
+            radiationDamageMultiplier: 1,
+            startingHealth: 100,
+            maxHealth: 100,
+            startingResources: 0,
+            maxResources: 1000,
+            attackChance: 100
+          };
+          break;
         case 'quests':
           this.quests = JSON.parse(JSON.stringify(questsData)).map(item => this.convertToNumbers(item));
           break;
@@ -1129,11 +1257,55 @@ export default {
         }, []);
         this.currentItem.playerChoices = choices;
       }
-    }
+    },
+    applySettlementSettings() {
+      // Convert all values to numbers to ensure correct type
+      const settings = {
+        attackInterval: Number(this.settlement.attackInterval),
+        healthLossPerHour: Number(this.settlement.healthLossPerHour),
+        radiationDamageMultiplier: Number(this.settlement.radiationDamageMultiplier),
+        startingHealth: Number(this.settlement.startingHealth),
+        maxHealth: Number(this.settlement.maxHealth),
+        startingResources: Number(this.settlement.startingResources),
+        maxResources: Number(this.settlement.maxResources),
+        attackChance: Number(this.settlement.attackChance)
+      };
+
+      // Save to Vuex store
+      this.$store.commit('settlement/updateSettings', settings);
+      
+      // Save to localStorage
+      localStorage.setItem('settlementSettings', JSON.stringify(settings));
+      
+      alert('Settlement settings have been applied!');
+    },
   },
   mounted() {
     this.loadFromLocalStorage();
     this.initializeSpeechSettings();
+    
+    // Load settlement settings from localStorage or use defaults
+    const savedSettlementSettings = localStorage.getItem('settlementSettings');
+    if (savedSettlementSettings) {
+      try {
+        const settings = JSON.parse(savedSettlementSettings);
+        // Ensure all values are numbers
+        this.settlement = {
+          attackInterval: Number(settings.attackInterval || 1),
+          healthLossPerHour: Number(settings.healthLossPerHour || 1),
+          radiationDamageMultiplier: Number(settings.radiationDamageMultiplier || 1),
+          startingHealth: Number(settings.startingHealth || 100),
+          maxHealth: Number(settings.maxHealth || 100),
+          startingResources: Number(settings.startingResources || 0),
+          maxResources: Number(settings.maxResources || 1000),
+          attackChance: Number(settings.attackChance || 100)
+        };
+      } catch (error) {
+        console.error('Error loading settlement settings:', error);
+        // Use defaults if there's an error
+        this.resetSectionData('settlement');
+      }
+    }
   }
 };
 </script>
@@ -1242,13 +1414,22 @@ export default {
 }
 
 .btn-success {
-  background-color: #28a745;
-  color: #ffffff;
+  background-color: #00ff00;
+  border: none;
+  color: #000;
+}
+
+.btn-success:hover {
+  background-color: #00cc00;
 }
 
 .btn-danger {
-  background-color: #dc3545;
-  color: #ffffff;
+  background-color: #ff0000;
+  border: none;
+}
+
+.btn-danger:hover {
+  background-color: #cc0000;
 }
 
 .btn-info {
@@ -1444,4 +1625,103 @@ pre {
 .choice-item:last-child {
   border-bottom: none;
 }
+
+.settlement-settings {
+  background-color: rgba(0, 255, 0, 0.05);
+  padding: 2rem;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 255, 0, 0.2);
+}
+
+.settings-title {
+  color: #00ff00;
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+}
+
+.settings-group {
+  background-color: rgba(0, 0, 0, 0.3);
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(0, 255, 0, 0.1);
+}
+
+.group-title {
+  color: #00ff00;
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.2);
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group:last-child {
+  margin-bottom: 0;
+}
+
+.form-group label {
+  color: #00ff00;
+  margin-bottom: 0.5rem;
+  display: block;
+  font-weight: 500;
+}
+
+.input-group {
+  display: flex;
+  align-items: stretch;
+}
+
+.input-group .form-control {
+  flex: 1;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.input-group-append {
+  display: flex;
+}
+
+.input-group-text {
+  background-color: rgba(0, 255, 0, 0.1);
+  border: 1px solid #00ff00;
+  border-left: none;
+  color: #00ff00;
+  padding: 0.5rem 1rem;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.form-text {
+  color: rgba(0, 255, 0, 0.7);
+  font-size: 0.8rem;
+  margin-top: 0.3rem;
+}
+
+.settings-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.settings-actions .btn {
+  min-width: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.settings-actions .btn i {
+  font-size: 1.1rem;
+}
+
 </style>

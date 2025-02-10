@@ -22,6 +22,17 @@ const initialState = {
     upgrades: [],
     resources: [],
     position: null
+  },
+  // Add settings with defaults
+  settings: JSON.parse(localStorage.getItem('settlementSettings')) || {
+    attackInterval: 1,
+    healthLossPerHour: 1,
+    radiationDamageMultiplier: 1,
+    startingHealth: 100,
+    maxHealth: 100,
+    startingResources: 0,
+    maxResources: 1000,
+    attackChance: 100
   }
 };
 
@@ -31,6 +42,33 @@ const mutations = {
   setSettlement(state, settlement) {
     state.settlement = { ...state.settlement, ...settlement };
     localStorage.setItem('settlement', JSON.stringify(state.settlement));
+  },
+  
+  updateSettings(state, settings) {
+    // Update settings in state
+    state.settings = {
+      ...state.settings,
+      attackInterval: Number(settings.attackInterval),
+      healthLossPerHour: Number(settings.healthLossPerHour),
+      radiationDamageMultiplier: Number(settings.radiationDamageMultiplier),
+      startingHealth: Number(settings.startingHealth),
+      maxHealth: Number(settings.maxHealth),
+      startingResources: Number(settings.startingResources),
+      maxResources: Number(settings.maxResources),
+      attackChance: Number(settings.attackChance)
+    };
+    
+    // Update settlement maxHealth if needed
+    if (state.settlement.maxHealth !== state.settings.maxHealth) {
+      state.settlement.maxHealth = state.settings.maxHealth;
+      // Ensure health doesn't exceed new maxHealth
+      if (state.settlement.health > state.settings.maxHealth) {
+        state.settlement.health = state.settings.maxHealth;
+      }
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('settlementSettings', JSON.stringify(state.settings));
   },
   
   updateSettlementHealth(state, amount) {
@@ -104,12 +142,12 @@ const mutations = {
 };
 
 const actions = {
-  initializeSettlement({ commit }, position) {
+  initializeSettlement({ commit, state }, position) {
     const settlement = {
       id: uuidv4(),
       level: 1,
-      health: 100,
-      maxHealth: 100,
+      health: state.settings.startingHealth,
+      maxHealth: state.settings.maxHealth,
       inhabitants: 1,
       maxInhabitants: 10,
       defences: 10,
@@ -136,20 +174,23 @@ const actions = {
     const hoursSinceLastUpdate = (now - state.settlement.lastHealthUpdate) / (1000 * 60 * 60);
     
     if (hoursSinceLastUpdate >= 1) {
-      // Lose 1 health per hour + radiation damage
-      const healthLoss = -1 * Math.floor(hoursSinceLastUpdate);
-      const radiationDamage = -1 * Math.floor((state.settlement.radiation / 100) * hoursSinceLastUpdate);
+      // Use settings for health loss calculation
+      const healthLoss = -1 * Math.floor(hoursSinceLastUpdate * state.settings.healthLossPerHour);
+      const radiationDamage = -1 * Math.floor((state.settlement.radiation / 100) * hoursSinceLastUpdate * state.settings.radiationDamageMultiplier);
       commit('updateSettlementHealth', healthLoss + radiationDamage);
     }
     
-    // Check for enemy attacks every minute
+    // Check for enemy attacks using settings
     const minutesSinceLastAttack = state.settlement.lastAttack 
       ? (now - state.settlement.lastAttack) / (1000 * 60)
       : (now - state.settlement.lastHealthUpdate) / (1000 * 60);
     
-    if (minutesSinceLastAttack >= 1) {
-      // 100% chance of attack every minute
-      dispatch('handleEnemyAttack');
+    if (minutesSinceLastAttack >= state.settings.attackInterval) {
+      // Use attack chance from settings
+      const roll = Math.random() * 100;
+      if (roll <= state.settings.attackChance) {
+        dispatch('handleEnemyAttack');
+      }
     }
     
     // Update radiation levels
