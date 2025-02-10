@@ -857,6 +857,10 @@ const actions = {
   cancelCurrentStoryLine({ commit }) {
     commit('cancelStoryLine');
   },
+
+  checkMoney({ state }, amount) {
+    return state.character.money >= amount;
+  },
 };
 
 const store = createStore({

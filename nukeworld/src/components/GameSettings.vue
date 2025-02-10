@@ -236,6 +236,10 @@
                   <label>Defence Increase Amount</label>
                   <input type="number" v-model.number="settlement.upgradeCosts.defences.amount" class="form-control" min="1">
                 </div>
+                <div class="form-group">
+                  <label>Money Cost</label>
+                  <input type="number" v-model.number="settlement.upgradeCosts.defences.moneyCost" class="form-control" min="0" placeholder="Money Cost">
+                </div>
               </div>
 
               <div class="upgrade-section">
@@ -261,6 +265,10 @@
                 <div class="form-group">
                   <label>Power Increase Amount</label>
                   <input type="number" v-model.number="settlement.upgradeCosts.power.amount" class="form-control" min="1">
+                </div>
+                <div class="form-group">
+                  <label>Money Cost</label>
+                  <input type="number" v-model.number="settlement.upgradeCosts.power.moneyCost" class="form-control" min="0" placeholder="Money Cost">
                 </div>
               </div>
 
@@ -300,6 +308,10 @@
                   <label>Power Increase</label>
                   <input type="number" v-model.number="settlement.upgradeCosts.level.powerIncrease" class="form-control" min="1">
                 </div>
+                <div class="form-group">
+                  <label>Money Cost</label>
+                  <input type="number" v-model.number="settlement.upgradeCosts.level.moneyCost" class="form-control" min="0" placeholder="Money Cost">
+                </div>
               </div>
 
               <div class="upgrade-section">
@@ -321,6 +333,10 @@
                     </option>
                   </select>
                   <input type="number" v-model="settlement.upgradeCosts.inhabitant.resource2Amount" class="form-control" min="0" placeholder="Amount">
+                </div>
+                <div class="form-group">
+                  <label>Money Cost</label>
+                  <input type="number" v-model.number="settlement.upgradeCosts.inhabitant.moneyCost" class="form-control" min="0" placeholder="Money Cost">
                 </div>
               </div>
             </div>
@@ -590,14 +606,16 @@ export default {
             resource1Amount: 30,
             resource2: 2,
             resource2Amount: 50,
-            amount: 10
+            amount: 10,
+            moneyCost: 0
           },
           power: {
             resource1: 1,
             resource1Amount: 40,
             resource2: 2,
             resource2Amount: 40,
-            amount: 10
+            amount: 10,
+            moneyCost: 0
           },
           level: {
             resource1: 1,
@@ -607,13 +625,15 @@ export default {
             healthIncrease: 50,
             inhabitantsIncrease: 5,
             defencesIncrease: 25,
-            powerIncrease: 25
+            powerIncrease: 25,
+            moneyCost: 0
           },
           inhabitant: {
             resource1: 1,
             resource1Amount: 50,
             resource2: 2,
-            resource2Amount: 30
+            resource2Amount: 30,
+            moneyCost: 0
           }
         }
       },
@@ -1087,14 +1107,16 @@ export default {
                 resource1Amount: 30,
                 resource2: 2,
                 resource2Amount: 50,
-                amount: 10
+                amount: 10,
+                moneyCost: 0
               },
               power: {
                 resource1: 1,
                 resource1Amount: 40,
                 resource2: 2,
                 resource2Amount: 40,
-                amount: 10
+                amount: 10,
+                moneyCost: 0
               },
               level: {
                 resource1: 1,
@@ -1104,13 +1126,15 @@ export default {
                 healthIncrease: 50,
                 inhabitantsIncrease: 5,
                 defencesIncrease: 25,
-                powerIncrease: 25
+                powerIncrease: 25,
+                moneyCost: 0
               },
               inhabitant: {
                 resource1: 1,
                 resource1Amount: 50,
                 resource2: 2,
-                resource2Amount: 30
+                resource2Amount: 30,
+                moneyCost: 0
               }
             }
           };
@@ -1460,14 +1484,16 @@ export default {
             resource1Amount: Number(this.settlement.upgradeCosts.defences.resource1Amount),
             resource2: Number(this.settlement.upgradeCosts.defences.resource2),
             resource2Amount: Number(this.settlement.upgradeCosts.defences.resource2Amount),
-            amount: Number(this.settlement.upgradeCosts.defences.amount)
+            amount: Number(this.settlement.upgradeCosts.defences.amount),
+            moneyCost: Number(this.settlement.upgradeCosts.defences.moneyCost)
           },
           power: {
             resource1: Number(this.settlement.upgradeCosts.power.resource1),
             resource1Amount: Number(this.settlement.upgradeCosts.power.resource1Amount),
             resource2: Number(this.settlement.upgradeCosts.power.resource2),
             resource2Amount: Number(this.settlement.upgradeCosts.power.resource2Amount),
-            amount: Number(this.settlement.upgradeCosts.power.amount)
+            amount: Number(this.settlement.upgradeCosts.power.amount),
+            moneyCost: Number(this.settlement.upgradeCosts.power.moneyCost)
           },
           level: {
             resource1: Number(this.settlement.upgradeCosts.level.resource1),
@@ -1477,13 +1503,15 @@ export default {
             healthIncrease: Number(this.settlement.upgradeCosts.level.healthIncrease),
             inhabitantsIncrease: Number(this.settlement.upgradeCosts.level.inhabitantsIncrease),
             defencesIncrease: Number(this.settlement.upgradeCosts.level.defencesIncrease),
-            powerIncrease: Number(this.settlement.upgradeCosts.level.powerIncrease)
+            powerIncrease: Number(this.settlement.upgradeCosts.level.powerIncrease),
+            moneyCost: Number(this.settlement.upgradeCosts.level.moneyCost)
           },
           inhabitant: {
             resource1: Number(this.settlement.upgradeCosts.inhabitant.resource1),
             resource1Amount: Number(this.settlement.upgradeCosts.inhabitant.resource1Amount),
             resource2: Number(this.settlement.upgradeCosts.inhabitant.resource2),
-            resource2Amount: Number(this.settlement.upgradeCosts.inhabitant.resource2Amount)
+            resource2Amount: Number(this.settlement.upgradeCosts.inhabitant.resource2Amount),
+            moneyCost: Number(this.settlement.upgradeCosts.inhabitant.moneyCost)
           }
         }
       };
@@ -1522,14 +1550,16 @@ export default {
               resource1Amount: Number(settings.upgradeCosts.defences.resource1Amount || 30),
               resource2: Number(settings.upgradeCosts.defences.resource2 || 2),
               resource2Amount: Number(settings.upgradeCosts.defences.resource2Amount || 50),
-              amount: Number(settings.upgradeCosts.defences.amount || 10)
+              amount: Number(settings.upgradeCosts.defences.amount || 10),
+              moneyCost: Number(settings.upgradeCosts.defences.moneyCost || 0)
             },
             power: {
               resource1: Number(settings.upgradeCosts.power.resource1 || 1),
               resource1Amount: Number(settings.upgradeCosts.power.resource1Amount || 40),
               resource2: Number(settings.upgradeCosts.power.resource2 || 2),
               resource2Amount: Number(settings.upgradeCosts.power.resource2Amount || 40),
-              amount: Number(settings.upgradeCosts.power.amount || 10)
+              amount: Number(settings.upgradeCosts.power.amount || 10),
+              moneyCost: Number(settings.upgradeCosts.power.moneyCost || 0)
             },
             level: {
               resource1: Number(settings.upgradeCosts.level.resource1 || 1),
@@ -1539,13 +1569,15 @@ export default {
               healthIncrease: Number(settings.upgradeCosts.level.healthIncrease || 50),
               inhabitantsIncrease: Number(settings.upgradeCosts.level.inhabitantsIncrease || 5),
               defencesIncrease: Number(settings.upgradeCosts.level.defencesIncrease || 25),
-              powerIncrease: Number(settings.upgradeCosts.level.powerIncrease || 25)
+              powerIncrease: Number(settings.upgradeCosts.level.powerIncrease || 25),
+              moneyCost: Number(settings.upgradeCosts.level.moneyCost || 0)
             },
             inhabitant: {
               resource1: Number(settings.upgradeCosts.inhabitant.resource1 || 1),
               resource1Amount: Number(settings.upgradeCosts.inhabitant.resource1Amount || 50),
               resource2: Number(settings.upgradeCosts.inhabitant.resource2 || 2),
-              resource2Amount: Number(settings.upgradeCosts.inhabitant.resource2Amount || 30)
+              resource2Amount: Number(settings.upgradeCosts.inhabitant.resource2Amount || 30),
+              moneyCost: Number(settings.upgradeCosts.inhabitant.moneyCost || 0)
             }
           }
         };

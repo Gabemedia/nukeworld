@@ -11,7 +11,8 @@
             class="btn btn-success btn-sm"
           >
             Upgrade ({{ settings?.upgradeCosts?.level?.resource1Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.level?.resource1) }}, 
-            {{ settings?.upgradeCosts?.level?.resource2Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.level?.resource2) }})
+            {{ settings?.upgradeCosts?.level?.resource2Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.level?.resource2) }},
+            ${{ settings?.upgradeCosts?.level?.moneyCost || 0 }})
           </button>
         </div>
         <div class="cost-info">Requires: Health > 50% and {{ settlement.level * 5 }} Inhabitants</div>
@@ -32,7 +33,7 @@
         <!-- Left Column -->
         <div class="stats-column">
           <div class="stat-group">
-            <div class="stat-header" :data-cost="`${settings?.upgradeCosts?.inhabitant?.resource1Amount || 0} ${getResourceName(settings?.upgradeCosts?.inhabitant?.resource1)}, ${settings?.upgradeCosts?.inhabitant?.resource2Amount || 0} ${getResourceName(settings?.upgradeCosts?.inhabitant?.resource2)} per Inhabitant`">Population</div>
+            <div class="stat-header" :data-cost="`${settings?.upgradeCosts?.inhabitant?.resource1Amount || 0} ${getResourceName(settings?.upgradeCosts?.inhabitant?.resource1)}, ${settings?.upgradeCosts?.inhabitant?.resource2Amount || 0} ${getResourceName(settings?.upgradeCosts?.inhabitant?.resource2)}, $${settings?.upgradeCosts?.inhabitant?.moneyCost || 0} per Inhabitant`">Population</div>
             <div class="stat-row">
               <span>Inhabitants</span>
               <div class="stat-value">
@@ -78,7 +79,8 @@
                 </button>
               </div>
               <div class="cost-info">{{ settings?.upgradeCosts?.defences?.resource1Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.defences?.resource1) }}, 
-              {{ settings?.upgradeCosts?.defences?.resource2Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.defences?.resource2) }}</div>
+              {{ settings?.upgradeCosts?.defences?.resource2Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.defences?.resource2) }},
+              ${{ settings?.upgradeCosts?.defences?.moneyCost || 0 }}</div>
             </div>
             
             <div class="stat-row">
@@ -94,7 +96,8 @@
                 </button>
               </div>
               <div class="cost-info">{{ settings?.upgradeCosts?.power?.resource1Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.power?.resource1) }}, 
-              {{ settings?.upgradeCosts?.power?.resource2Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.power?.resource2) }}</div>
+              {{ settings?.upgradeCosts?.power?.resource2Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.power?.resource2) }},
+              ${{ settings?.upgradeCosts?.power?.moneyCost || 0 }}</div>
             </div>
           </div>
 
@@ -161,37 +164,46 @@ export default {
       try {
         await this.upgradeSettlement({ type: 'level' });
       } catch (error) {
-        alert('Not enough resources to upgrade level');
+        alert('Not enough resources or money to upgrade level');
       }
     },
     async upgradeDefences() {
       try {
         await this.upgradeSettlement({ type: 'defences' });
       } catch (error) {
-        alert('Not enough resources to upgrade defences');
+        alert('Not enough resources or money to upgrade defences');
       }
     },
     async upgradePower() {
       try {
         await this.upgradeSettlement({ type: 'power' });
       } catch (error) {
-        alert('Not enough resources to upgrade power');
+        alert('Not enough resources or money to upgrade power');
       }
     },
     async addInhabitant() {
       try {
+        const moneyCost = this.settings?.upgradeCosts?.inhabitant?.moneyCost || 0;
+        const hasEnoughMoney = await this.$store.dispatch('checkMoney', moneyCost);
+        if (!hasEnoughMoney) {
+          throw new Error('Not enough money');
+        }
+
         const resources = [
           { id: this.settings.upgradeCosts.inhabitant.resource1, amount: this.settings.upgradeCosts.inhabitant.resource1Amount },
           { id: this.settings.upgradeCosts.inhabitant.resource2, amount: this.settings.upgradeCosts.inhabitant.resource2Amount }
         ];
+
         const hasResources = await this.$store.dispatch('checkRequiredResources', resources);
         if (!hasResources) {
           throw new Error('Not enough resources');
         }
+
+        await this.$store.dispatch('decreaseMoney', moneyCost);
         await this.$store.dispatch('useRequiredResources', resources);
         this.$store.commit('settlement/addInhabitant');
       } catch (error) {
-        alert('Not enough resources to add inhabitant');
+        alert('Not enough resources or money to add inhabitant');
       }
     }
   },

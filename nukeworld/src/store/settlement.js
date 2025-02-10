@@ -39,14 +39,16 @@ const initialState = {
         resource1Amount: 30,
         resource2: 2, // Steel Scrap
         resource2Amount: 50,
-        amount: 10 // Defence increase amount
+        amount: 10, // Defence increase amount
+        moneyCost: 100
       },
       power: {
         resource1: 1, // Wood Scrap
         resource1Amount: 40,
         resource2: 2, // Steel Scrap
         resource2Amount: 40,
-        amount: 10 // Power increase amount
+        amount: 10, // Power increase amount
+        moneyCost: 100
       },
       level: {
         resource1: 1, // Wood Scrap
@@ -56,7 +58,8 @@ const initialState = {
         healthIncrease: 50,
         inhabitantsIncrease: 5,
         defencesIncrease: 25,
-        powerIncrease: 25
+        powerIncrease: 25,
+        moneyCost: 200
       },
       inhabitant: {
         resource1: 1, // Wood Scrap
@@ -271,8 +274,9 @@ const actions = {
     };
   },
   
-  async upgradeSettlement({ commit, dispatch }, { type }) {
+  async upgradeSettlement({ commit, dispatch, state }, { type }) {
     let requiredResources;
+    let moneyCost;
     
     switch(type) {
       case 'defences':
@@ -280,28 +284,40 @@ const actions = {
           { id: state.settings.upgradeCosts.defences.resource1, amount: state.settings.upgradeCosts.defences.resource1Amount },
           { id: state.settings.upgradeCosts.defences.resource2, amount: state.settings.upgradeCosts.defences.resource2Amount }
         ];
+        moneyCost = state.settings.upgradeCosts.defences.moneyCost;
         break;
       case 'power':
         requiredResources = [
           { id: state.settings.upgradeCosts.power.resource1, amount: state.settings.upgradeCosts.power.resource1Amount },
           { id: state.settings.upgradeCosts.power.resource2, amount: state.settings.upgradeCosts.power.resource2Amount }
         ];
+        moneyCost = state.settings.upgradeCosts.power.moneyCost;
         break;
       case 'level':
         requiredResources = [
           { id: state.settings.upgradeCosts.level.resource1, amount: state.settings.upgradeCosts.level.resource1Amount },
           { id: state.settings.upgradeCosts.level.resource2, amount: state.settings.upgradeCosts.level.resource2Amount }
         ];
+        moneyCost = state.settings.upgradeCosts.level.moneyCost;
         break;
       default:
         throw new Error('Invalid upgrade type');
     }
     
+    // Check if player has enough money
+    const hasEnoughMoney = await dispatch('checkMoney', moneyCost, { root: true });
+    if (!hasEnoughMoney) {
+      throw new Error('Not enough money');
+    }
+    
+    // Check if player has enough resources
     const hasResources = await dispatch('checkRequiredResources', requiredResources, { root: true });
     if (!hasResources) {
       throw new Error('Not enough resources');
     }
     
+    // Deduct money and resources
+    await dispatch('decreaseMoney', moneyCost, { root: true });
     await dispatch('useRequiredResources', requiredResources, { root: true });
     
     switch(type) {
