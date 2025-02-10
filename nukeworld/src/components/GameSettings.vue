@@ -584,13 +584,6 @@ export default {
     return {
       activeSection: 'quests',
       sections: ['quests', 'items', 'story', 'armor', 'aid', 'resources', 'enemies', 'speech', 'settlement'],
-      quests: [],
-      items: [],
-      story: [],
-      armor: [],
-      aid: [],
-      resources: [],
-      enemies: [],
       settlement: {
         attackInterval: 1,
         healthLossPerHour: 1,
@@ -637,6 +630,13 @@ export default {
           }
         }
       },
+      quests: [],
+      items: [],
+      story: [],
+      armor: [],
+      aid: [],
+      resources: [],
+      enemies: [],
       currentIndex: 0,
       selectedReward: {
         reward: '',
@@ -650,7 +650,6 @@ export default {
       showAidTemplates: false,
       showArmorTemplates: false,
       showWeaponTemplates: false,
-      // Speech synthesis settings
       speechSettings: {
         enabled: true,
         selectedVoice: null,
