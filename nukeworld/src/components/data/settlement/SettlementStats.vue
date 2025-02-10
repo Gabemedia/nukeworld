@@ -129,6 +129,7 @@
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex';
+import { toast } from "vue3-toastify";
 
 export default {
   name: 'SettlementStats',
@@ -164,21 +165,102 @@ export default {
       try {
         await this.upgradeSettlement({ type: 'level' });
       } catch (error) {
-        alert('Not enough resources or money to upgrade level');
+        const requirements = `
+          <div class="d-flex flex-column align-items-start justify-content-start h-100">
+            <p class="text-left fw-bold mb-1">Cannot Upgrade Level</p>
+            <p class="text-left fw-semi mb-2">Missing requirements:</p>
+            <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.level?.resource1)?.img}`)}" :title="this.getResourceName(this.settings?.upgradeCosts?.level?.resource1)" style="width: 20px;" class="me-2">
+                <span>${this.settings?.upgradeCosts?.level?.resource1Amount || 0} ${this.getResourceName(this.settings?.upgradeCosts?.level?.resource1)}</span>
+              </div>
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.level?.resource2)?.img}`)}" :title="this.getResourceName(this.settings?.upgradeCosts?.level?.resource2)" style="width: 20px;" class="me-2">
+                <span>${this.settings?.upgradeCosts?.level?.resource2Amount || 0} ${this.getResourceName(this.settings?.upgradeCosts?.level?.resource2)}</span>
+              </div>
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
+                <span>$${this.settings?.upgradeCosts?.level?.moneyCost || 0}</span>
+              </div>
+            </div>
+          </div>`;
+
+        toast.error(requirements, {
+          dangerouslyHTMLString: true,
+          autoClose: 5000,
+          hideProgressBar: false,
+          icon: false,
+          toastClassName: 'quest-toast-container',
+          bodyClassName: 'quest-toast-body quest-toast'
+        });
       }
     },
     async upgradeDefences() {
       try {
         await this.upgradeSettlement({ type: 'defences' });
       } catch (error) {
-        alert('Not enough resources or money to upgrade defences');
+        const requirements = `
+          <div class="d-flex flex-column align-items-start justify-content-start h-100">
+            <p class="text-left fw-bold mb-1">Cannot Upgrade Defences</p>
+            <p class="text-left fw-semi mb-2">Missing requirements:</p>
+            <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.defences?.resource1)?.img}`)}" :title="this.getResourceName(this.settings?.upgradeCosts?.defences?.resource1)" style="width: 20px;" class="me-2">
+                <span>${this.settings?.upgradeCosts?.defences?.resource1Amount || 0} ${this.getResourceName(this.settings?.upgradeCosts?.defences?.resource1)}</span>
+              </div>
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.defences?.resource2)?.img}`)}" :title="this.getResourceName(this.settings?.upgradeCosts?.defences?.resource2)" style="width: 20px;" class="me-2">
+                <span>${this.settings?.upgradeCosts?.defences?.resource2Amount || 0} ${this.getResourceName(this.settings?.upgradeCosts?.defences?.resource2)}</span>
+              </div>
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
+                <span>$${this.settings?.upgradeCosts?.defences?.moneyCost || 0}</span>
+              </div>
+            </div>
+          </div>`;
+
+        toast.error(requirements, {
+          dangerouslyHTMLString: true,
+          autoClose: 5000,
+          hideProgressBar: false,
+          icon: false,
+          toastClassName: 'quest-toast-container',
+          bodyClassName: 'quest-toast-body quest-toast'
+        });
       }
     },
     async upgradePower() {
       try {
         await this.upgradeSettlement({ type: 'power' });
       } catch (error) {
-        alert('Not enough resources or money to upgrade power');
+        const requirements = `
+          <div class="d-flex flex-column align-items-start justify-content-start h-100">
+            <p class="text-left fw-bold mb-1">Cannot Upgrade Power</p>
+            <p class="text-left fw-semi mb-2">Missing requirements:</p>
+            <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.power?.resource1)?.img}`)}" :title="this.getResourceName(this.settings?.upgradeCosts?.power?.resource1)" style="width: 20px;" class="me-2">
+                <span>${this.settings?.upgradeCosts?.power?.resource1Amount || 0} ${this.getResourceName(this.settings?.upgradeCosts?.power?.resource1)}</span>
+              </div>
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.power?.resource2)?.img}`)}" :title="this.getResourceName(this.settings?.upgradeCosts?.power?.resource2)" style="width: 20px;" class="me-2">
+                <span>${this.settings?.upgradeCosts?.power?.resource2Amount || 0} ${this.getResourceName(this.settings?.upgradeCosts?.power?.resource2)}</span>
+              </div>
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
+                <span>$${this.settings?.upgradeCosts?.power?.moneyCost || 0}</span>
+              </div>
+            </div>
+          </div>`;
+
+        toast.error(requirements, {
+          dangerouslyHTMLString: true,
+          autoClose: 5000,
+          hideProgressBar: false,
+          icon: false,
+          toastClassName: 'quest-toast-container',
+          bodyClassName: 'quest-toast-body quest-toast'
+        });
       }
     },
     async addInhabitant() {
@@ -203,16 +285,38 @@ export default {
         await this.$store.dispatch('useRequiredResources', resources);
         this.$store.commit('settlement/addInhabitant');
       } catch (error) {
-        alert('Not enough resources or money to add inhabitant');
+        const requirements = `
+          <div class="d-flex flex-column align-items-start justify-content-start h-100">
+            <p class="text-left fw-bold mb-1">Cannot Add Inhabitant</p>
+            <p class="text-left fw-semi mb-2">Missing requirements:</p>
+            <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.inhabitant?.resource1)?.img}`)}" :title="this.getResourceName(this.settings?.upgradeCosts?.inhabitant?.resource1)" style="width: 20px;" class="me-2">
+                <span>${this.settings?.upgradeCosts?.inhabitant?.resource1Amount || 0} ${this.getResourceName(this.settings?.upgradeCosts?.inhabitant?.resource1)}</span>
+              </div>
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.inhabitant?.resource2)?.img}`)}" :title="this.getResourceName(this.settings?.upgradeCosts?.inhabitant?.resource2)" style="width: 20px;" class="me-2">
+                <span>${this.settings?.upgradeCosts?.inhabitant?.resource2Amount || 0} ${this.getResourceName(this.settings?.upgradeCosts?.inhabitant?.resource2)}</span>
+              </div>
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
+                <span>$${this.settings?.upgradeCosts?.inhabitant?.moneyCost || 0}</span>
+              </div>
+            </div>
+          </div>`;
+
+        toast.error(requirements, {
+          dangerouslyHTMLString: true,
+          autoClose: 5000,
+          hideProgressBar: false,
+          icon: false,
+          toastClassName: 'quest-toast-container',
+          bodyClassName: 'quest-toast-body quest-toast'
+        });
       }
     }
-  },
-  data() {
-    return {
-      showCosts: false
-    }
   }
-};
+}
 </script>
 
 <style scoped>
@@ -371,4 +475,4 @@ export default {
   text-align: right;
   width: 100%;
 }
-</style> 
+</style>
