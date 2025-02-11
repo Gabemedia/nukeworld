@@ -1,5 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import enemies from './enemy';
+import { toast } from 'vue3-toastify';
+import encounterIcon from '@/assets/interface/icons/encounter.png';
 
 // Load initial state from localStorage
 const initialState = {
@@ -258,6 +260,62 @@ const actions = {
       const totalDamage = healthLoss + radiationDamage;
       commit('updateSettlementHealth', totalDamage);
       commit('updateSettlementLastHealthUpdate', now);
+
+      // Check if settlement is dead
+      if (state.settlement.health <= 0) {
+        // Clear settlement data
+        commit('setSettlement', {
+          id: null,
+          level: 1,
+          health: 100,
+          maxHealth: 100,
+          inhabitants: 0,
+          maxInhabitants: 10,
+          defences: 0,
+          maxDefences: 100,
+          power: 0,
+          maxPower: 100,
+          radiation: 0,
+          maxRadiation: 100,
+          lastHealthUpdate: null,
+          lastRadiationUpdate: null,
+          lastAttack: null,
+          currentEnemyId: null,
+          upgrades: [],
+          resources: [],
+          position: null
+        });
+        
+        // Remove marker and clear localStorage
+        dispatch('updateSettlementMarker', null, { root: true });
+        localStorage.removeItem('settlement');
+        
+        // Close modal
+        commit('setSettlementModalOpen', false, { root: true });
+
+        // Show toast
+        const defeatMessage = `
+          <div class="d-flex flex-column align-items-start justify-content-start h-100">
+            <p class="text-left fw-bold mb-1">Settlement Lost!</p>
+            <p class="text-left fw-semi mb-2">Your settlement was destroyed due to lack of maintenance</p>
+            <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+              <img src="${encounterIcon}" title="Settlement" style="width: 20px;" class="me-2">
+              <span>Settlement was removed</span>
+            </div>
+          </div>
+        `;
+
+        toast.error(defeatMessage, {
+          dangerouslyHTMLString: true,
+          autoClose: 5000,
+          hideProgressBar: false,
+          icon: false,
+          toastClassName: 'quest-toast-container',
+          bodyClassName: 'quest-toast-body quest-toast'
+        });
+
+        return; // Stop further processing
+      }
     }
     
     // Check for enemy attacks using settings
