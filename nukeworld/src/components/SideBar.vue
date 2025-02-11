@@ -1,5 +1,23 @@
 <template>
   <div>
+    <!-- Add confirmation modal -->
+    <div v-if="isSettlementConfirmationModalOpen" class="modal" tabindex="-1" @click.self="closeConfirmationModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Confirm Settlement Placement</h5>
+            <button type="button" class="btn-close" @click="closeConfirmationModal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p>It costs 20 Wood & Steel Scrap to place a settlement. Do you want to continue?</p>
+            <div class="button-group">
+              <button @click="confirmPlaceSettlement" class="btn btn-primary">Yes</button>
+              <button @click="closeConfirmationModal" class="btn btn-secondary">No</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Mobile Offcanvas -->
     <div class="offcanvas offcanvas-start w-25 d-md-none" tabindex="-1" id="sidebarOffcanvas">
       <div class="offcanvas-header">
@@ -103,19 +121,61 @@ export default {
     hasNewStory() {
       return this.$store.getters.availableStoryLines.length > 0;
     },
+    woodScrap() {
+      return this.$store.state.inventory?.resources?.[1] || 0;
+    },
+    steelScrap() {
+      return this.$store.state.inventory?.resources?.[2] || 0;
+    },
   },
   data() {
     return {
       sidebarOpen: false,
+      isSettlementConfirmationModalOpen: false,
     };
   },
   methods: {
-    ...mapActions(['attemptPlaceSettlement']),
+    ...mapActions(['attemptPlaceSettlement', 'checkRequiredResources', 'useRequiredResources']),
     toggleSidebar() {
       this.sidebarOpen = !this.sidebarOpen;
     },
-    openSettlementModal() {
-      this.$store.commit('setSettlementModalOpen', true);
+    async openSettlementModal() {
+      if (this.settlementMarker) {
+        this.$store.commit('setSettlementModalOpen', true);
+      } else {
+        const requiredResources = [{ id: 1, amount: 20 }, { id: 2, amount: 20 }];
+        const hasEnoughResources = await this.checkRequiredResources(requiredResources);
+        
+        if (hasEnoughResources) {
+          this.isSettlementConfirmationModalOpen = true;
+        } else {
+          alert('You don\'t have enough resources to place a settlement. You need 20 Wood & Steel Scrap.');
+        }
+      }
+    },
+    closeConfirmationModal() {
+      this.isSettlementConfirmationModalOpen = false;
+    },
+    async confirmPlaceSettlement() {
+      try {
+        const requiredResources = [{ id: 1, amount: 20 }, { id: 2, amount: 20 }];
+        await this.useRequiredResources(requiredResources);
+        
+        // Initialize settlement in store
+        await this.$store.dispatch('settlement/initializeSettlement', { lat: 600, lng: 960 });
+        
+        // Update marker
+        await this.updateSettlementMarker({
+          latlng: { lat: 600, lng: 960 },
+          name: ''
+        });
+        
+        this.closeConfirmationModal();
+        this.$store.commit('setSettlementModalOpen', true);
+      } catch (error) {
+        console.error('Error placing settlement:', error);
+        alert('Failed to place settlement. Please try again.');
+      }
     },
   },
 };
@@ -299,5 +359,104 @@ export default {
     width: 35px;
     height: 35px;
   }
+}
+
+/* Add confirmation modal styles */
+.modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  z-index: 1050;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-dialog {
+  max-width: 500px;
+  width: 90%;
+  margin: 1.75rem auto;
+}
+
+@media (max-width: 576px) {
+  .modal-dialog {
+    width: 95%;
+    margin: 1rem auto;
+  }
+}
+
+.modal-content {
+  background-color: #1a1a1a;
+  border: 2px solid #00ff00;
+  border-radius: 10px;
+  color: #fff;
+}
+
+.modal-header {
+  border-bottom: 1px solid #00ff00;
+  padding: 0.75rem 1rem;
+}
+
+.modal-title {
+  color: #00ff00;
+  font-weight: bold;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px #00ff00;
+  font-size: 1rem;
+}
+
+.modal-body {
+  padding: 1rem;
+}
+
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.btn-close {
+  background: transparent;
+  border: none;
+  color: #00ff00;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.btn-close:hover {
+  color: #00cc00;
+}
+
+.btn-primary {
+  background-color: #00ff00;
+  color: #000000;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #00cc00;
+}
+
+.btn-secondary {
+  background-color: #333;
+  color: #fff;
+  border: 1px solid #00ff00;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  background-color: #00ff00;
+  color: #000;
 }
 </style>
