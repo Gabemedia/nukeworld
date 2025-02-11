@@ -299,7 +299,7 @@ const actions = {
 
     // Record the attack and set current enemy
     commit('recordAttack');
-    commit('setCurrentEnemyId', enemy.id, { root: true });
+    commit('setCurrentEnemyId', enemy.id);
 
     return {
       attack: getters.settlementAttackPower,
