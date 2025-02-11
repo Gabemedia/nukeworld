@@ -86,7 +86,7 @@
             <p>It costs 20 Wood & Steel Scrap to place a settlement.</p>
             <p class="fw-semibold">Do you want to continue?</p>
             <div class="button-group">
-              <button @click="closeConfirmationModal" class="btn btn-primary">Yes</button>
+              <button @click="confirmPlaceSettlement" class="btn btn-primary">Yes</button>
               <button @click="cancelPlaceSettlement" class="btn btn-secondary">No</button>
             </div>
           </div>

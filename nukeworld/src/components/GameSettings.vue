@@ -1075,11 +1075,11 @@ export default {
       switch (section) {
         case 'settlement':
           this.settlement = {
-            attackInterval: 1,
-            healthLossPerSecond: 1,
-            radiationDamageMultiplier: 1,
-            startingHealth: 100,
-            maxHealth: 100,
+            attackInterval: 10,
+            healthLossPerSecond: 0,
+            radiationDamageMultiplier: 100,
+            startingHealth: 1000,
+            maxHealth: 1000,
             attackChance: 100,
             upgradeCosts: {
               defences: {

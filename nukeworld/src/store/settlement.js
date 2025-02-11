@@ -28,9 +28,9 @@ const initialState = {
   },
   // Add settings with defaults
   settings: JSON.parse(localStorage.getItem('settlementSettings')) || {
-    attackInterval: 1, // Now in seconds
+    attackInterval: 30, // Now in seconds
     healthLossPerSecond: 1, // Changed from per minute
-    radiationDamageMultiplier: 1,
+    radiationDamageMultiplier: 10,
     startingHealth: 100,
     maxHealth: 100,
     startingResources: 0,
