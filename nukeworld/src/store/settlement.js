@@ -19,6 +19,7 @@ const initialState = {
     lastHealthUpdate: null,
     lastRadiationUpdate: null,
     lastAttack: null,
+    currentEnemyId: null,
     upgrades: [],
     resources: [],
     position: null
@@ -214,7 +215,8 @@ const actions = {
       maxRadiation: 100,
       lastHealthUpdate: Date.now(),
       lastRadiationUpdate: Date.now(),
-      lastAttack: null,
+      lastAttack: Date.now(),
+      currentEnemyId: null,
       upgrades: [],
       resources: [],
       position
@@ -259,16 +261,17 @@ const actions = {
     }
     
     // Check for enemy attacks using settings
-    const lastAttack = Number(state.settlement.lastAttack) || lastHealthUpdate;
+    const lastAttack = Number(state.settlement.lastAttack) || now;
     const secondsSinceLastAttack = (now - lastAttack) / 1000;
     const attackInterval = Number(state.settings.attackInterval) || 30; // Default to 30 seconds if not set
     
-    // Only try to start battle if we're not already in one
+    // Only try to start battle if we're not already in one and enough time has passed
     if (!state.settlement.currentEnemyId && secondsSinceLastAttack >= attackInterval) {
       console.log('Checking for attack:', {
         secondsSinceLastAttack,
         attackInterval,
-        attackChance: state.settings.attackChance
+        attackChance: state.settings.attackChance,
+        lastAttack: new Date(lastAttack).toLocaleString()
       });
       
       // Use attack chance from settings
@@ -295,7 +298,12 @@ const actions = {
   async handleEnemyAttack({ commit, getters }) {
     // Get a random enemy
     const enemy = enemies[Math.floor(Math.random() * enemies.length)];
-    if (!enemy) return;
+    if (!enemy) {
+      console.error('No enemies found!');
+      return;
+    }
+
+    console.log('Starting attack with enemy:', enemy);
 
     // Record the attack and set current enemy
     commit('recordAttack');

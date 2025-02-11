@@ -98,9 +98,9 @@ export default {
   computed: {
     ...mapState('settlement', ['settlement']),
     ...mapGetters('settlement', ['settlementAttackPower', 'settlementDefencePower']),
-    ...mapState(['currentEnemyId']),
     currentEnemy() {
-      return this.$store.getters.currentEnemy;
+      if (!this.settlement.currentEnemyId) return null;
+      return require('@/store/enemy').default.find(e => e.id === this.settlement.currentEnemyId);
     }
   },
   watch: {
@@ -229,6 +229,7 @@ export default {
         lastHealthUpdate: null,
         lastRadiationUpdate: null,
         lastAttack: null,
+        currentEnemyId: null,
         upgrades: [],
         resources: [],
         position: null
@@ -242,7 +243,6 @@ export default {
       
       // Close modals
       this.$store.commit('setSettlementModalOpen', false);
-      this.$store.commit('setEnemyEncounterOpen', false);
       
       // Show defeat toast
       this.showDefeatToast();

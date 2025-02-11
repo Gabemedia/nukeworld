@@ -107,7 +107,7 @@ export default {
     SettlementBattle
   },
   computed: {
-    ...mapState(['settlementMarker', 'isSettlementModalOpen', 'currentEnemyId']),
+    ...mapState(['settlementMarker', 'isSettlementModalOpen']),
     ...mapState('settlement', ['settlement']),
     woodScrap() {
       return this.$store.state.inventory?.resources?.[1] || 0;
@@ -116,12 +116,11 @@ export default {
       return this.$store.state.inventory?.resources?.[2] || 0;
     },
     currentEnemy() {
-      if (!this.currentEnemyId) return null;
-      return this.$store.state.enemies?.find(e => e.id === this.currentEnemyId) || 
-             require('@/store/enemy').default.find(e => e.id === this.currentEnemyId);
+      if (!this.settlement.currentEnemyId) return null;
+      return require('@/store/enemy').default.find(e => e.id === this.settlement.currentEnemyId);
     },
     isUnderAttack() {
-      return this.currentEnemyId !== null;
+      return this.settlement.currentEnemyId !== null;
     }
   },
   data() {
@@ -293,7 +292,7 @@ export default {
       }
       
       // Clear current enemy
-      this.$store.commit('setCurrentEnemyId', null);
+      this.$store.commit('settlement/setCurrentEnemyId', null);
     },
     startSettlementUpdates() {
       // Clear any existing interval
