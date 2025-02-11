@@ -118,7 +118,15 @@ const mutations = {
   },
   
   updateSettlementHealth(state, amount) {
-    state.settlement.health = Math.max(0, Math.min(state.settlement.maxHealth, state.settlement.health + amount));
+    // Ensure current health is a number
+    const currentHealth = Number(state.settlement.health) || 0;
+    // Ensure amount is a number
+    const validAmount = Number(amount) || 0;
+    // Ensure maxHealth is a number
+    const maxHealth = Number(state.settlement.maxHealth) || 100;
+    
+    // Calculate new health
+    state.settlement.health = Math.max(0, Math.min(maxHealth, currentHealth + validAmount));
     state.settlement.lastHealthUpdate = Date.now();
     localStorage.setItem('settlement', JSON.stringify(state.settlement));
   },
@@ -219,45 +227,53 @@ const actions = {
   async updateSettlement({ commit, state, dispatch }) {
     // Health decay over time - per minute
     const now = Date.now();
-    const minutesSinceLastUpdate = (now - state.settlement.lastHealthUpdate) / (1000 * 60);
+    
+    // Ensure we have valid timestamps
+    const lastHealthUpdate = Number(state.settlement.lastHealthUpdate) || now;
+    const lastRadiationUpdate = Number(state.settlement.lastRadiationUpdate) || now;
+    
+    // Calculate minutes since last health update
+    const minutesSinceLastUpdate = (now - lastHealthUpdate) / (1000 * 60);
     
     if (minutesSinceLastUpdate >= 1) {
-      // Base health loss per minute
-      const healthLoss = -1 * Math.floor(minutesSinceLastUpdate * state.settings.healthLossPerMinute);
+      // Ensure we have valid numbers for calculations
+      const healthLossPerMinute = Number(state.settings.healthLossPerMinute) || 0;
+      const radiationDamageMultiplier = Number(state.settings.radiationDamageMultiplier) || 1;
+      const radiation = Number(state.settlement.radiation) || 0;
       
-      // Radiation damage calculation:
-      // - radiation level is 0-100%
-      // - damage is based on radiation percentage
-      // - multiplied by the radiationDamageMultiplier setting
-      // - calculated per minute
-      const radiationPercentage = state.settlement.radiation / 100;
+      // Base health loss per minute
+      const healthLoss = -1 * Math.floor(minutesSinceLastUpdate * healthLossPerMinute);
+      
+      // Radiation damage calculation
+      const radiationPercentage = radiation / 100;
       const radiationDamage = -1 * Math.floor(
         radiationPercentage * 
-        state.settings.healthLossPerMinute * 
-        state.settings.radiationDamageMultiplier * 
+        healthLossPerMinute * 
+        radiationDamageMultiplier * 
         minutesSinceLastUpdate
       );
       
       // Apply both health loss and radiation damage
-      commit('updateSettlementHealth', healthLoss + radiationDamage);
+      const totalDamage = healthLoss + radiationDamage;
+      commit('updateSettlementHealth', totalDamage);
       commit('updateSettlementLastHealthUpdate', now);
     }
     
     // Check for enemy attacks using settings
-    const minutesSinceLastAttack = state.settlement.lastAttack 
-      ? (now - state.settlement.lastAttack) / (1000 * 60)
-      : (now - state.settlement.lastHealthUpdate) / (1000 * 60);
+    const lastAttack = Number(state.settlement.lastAttack) || lastHealthUpdate;
+    const minutesSinceLastAttack = (now - lastAttack) / (1000 * 60);
     
-    if (minutesSinceLastAttack >= state.settings.attackInterval) {
+    if (minutesSinceLastAttack >= Number(state.settings.attackInterval)) {
       // Use attack chance from settings
+      const attackChance = Number(state.settings.attackChance) || 0;
       const roll = Math.random() * 100;
-      if (roll <= state.settings.attackChance) {
+      if (roll <= attackChance) {
         dispatch('handleEnemyAttack');
       }
     }
     
     // Update radiation levels - per second
-    const secondsSinceLastRadiation = (now - state.settlement.lastRadiationUpdate) / 1000;
+    const secondsSinceLastRadiation = (now - lastRadiationUpdate) / 1000;
     if (secondsSinceLastRadiation >= 1) {
       const radiationChange = Math.floor(Math.random() * 10) - 5; // -5 to +5
       commit('updateSettlementRadiation', radiationChange);

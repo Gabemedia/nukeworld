@@ -147,14 +147,14 @@
             <div class="settings-group">
               <h4 class="group-title">Health Settings</h4>
               <div class="form-group">
-                <label>Health Loss Per Hour</label>
+                <label>Health Loss Per Minute</label>
                 <div class="input-group">
-                  <input type="number" v-model.number="settlement.healthLossPerHour" @change="saveToLocalStorage" class="form-control" min="0">
+                  <input type="number" v-model.number="settlement.healthLossPerMinute" @change="saveToLocalStorage" class="form-control" min="0">
                   <div class="input-group-append">
-                    <span class="input-group-text">HP/h</span>
+                    <span class="input-group-text">HP/m</span>
                   </div>
                 </div>
-                <small class="form-text text-muted">Base health loss per hour</small>
+                <small class="form-text text-muted">Base health loss per minute</small>
               </div>
               
               <div class="form-group">
@@ -571,7 +571,7 @@ export default {
       sections: ['quests', 'items', 'story', 'armor', 'aid', 'resources', 'enemies', 'speech', 'settlement'],
       settlement: {
         attackInterval: 1,
-        healthLossPerHour: 1,
+        healthLossPerMinute: 1,
         radiationDamageMultiplier: 1,
         startingHealth: 100,
         maxHealth: 100,
@@ -1076,7 +1076,7 @@ export default {
         case 'settlement':
           this.settlement = {
             attackInterval: 1,
-            healthLossPerHour: 1,
+            healthLossPerMinute: 1,
             radiationDamageMultiplier: 1,
             startingHealth: 100,
             maxHealth: 100,
@@ -1451,7 +1451,7 @@ export default {
       // Convert all values to numbers to ensure correct type
       const settings = {
         attackInterval: Number(this.settlement.attackInterval),
-        healthLossPerHour: Number(this.settlement.healthLossPerHour),
+        healthLossPerMinute: Number(this.settlement.healthLossPerMinute),
         radiationDamageMultiplier: Number(this.settlement.radiationDamageMultiplier),
         startingHealth: Number(this.settlement.startingHealth),
         maxHealth: Number(this.settlement.maxHealth),
@@ -1515,7 +1515,7 @@ export default {
         // Ensure all values are numbers
         this.settlement = {
           attackInterval: Number(settings.attackInterval || 1),
-          healthLossPerHour: Number(settings.healthLossPerHour || 1),
+          healthLossPerMinute: Number(settings.healthLossPerMinute || 1),
           radiationDamageMultiplier: Number(settings.radiationDamageMultiplier || 1),
           startingHealth: Number(settings.startingHealth || 100),
           maxHealth: Number(settings.maxHealth || 100),
