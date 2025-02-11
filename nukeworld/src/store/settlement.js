@@ -25,8 +25,8 @@ const initialState = {
   },
   // Add settings with defaults
   settings: JSON.parse(localStorage.getItem('settlementSettings')) || {
-    attackInterval: 1,
-    healthLossPerMinute: 1,
+    attackInterval: 1, // Now in seconds
+    healthLossPerSecond: 1, // Changed from per minute
     radiationDamageMultiplier: 1,
     startingHealth: 100,
     maxHealth: 100,
@@ -94,7 +94,7 @@ const mutations = {
     state.settings = {
       ...state.settings,
       attackInterval: Number(settings.attackInterval),
-      healthLossPerMinute: Number(settings.healthLossPerMinute),
+      healthLossPerSecond: Number(settings.healthLossPerSecond),
       radiationDamageMultiplier: Number(settings.radiationDamageMultiplier),
       startingHealth: Number(settings.startingHealth),
       maxHealth: Number(settings.maxHealth),
@@ -225,32 +225,31 @@ const actions = {
   },
   
   async updateSettlement({ commit, state, dispatch }) {
-    // Health decay over time - per minute
     const now = Date.now();
     
     // Ensure we have valid timestamps
     const lastHealthUpdate = Number(state.settlement.lastHealthUpdate) || now;
     const lastRadiationUpdate = Number(state.settlement.lastRadiationUpdate) || now;
     
-    // Calculate minutes since last health update
-    const minutesSinceLastUpdate = (now - lastHealthUpdate) / (1000 * 60);
+    // Calculate seconds since last health update
+    const secondsSinceLastUpdate = (now - lastHealthUpdate) / 1000;
     
-    if (minutesSinceLastUpdate >= 1) {
+    if (secondsSinceLastUpdate >= 1) {
       // Ensure we have valid numbers for calculations
-      const healthLossPerMinute = Number(state.settings.healthLossPerMinute) || 0;
+      const healthLossPerSecond = Number(state.settings.healthLossPerSecond) || 0;
       const radiationDamageMultiplier = Number(state.settings.radiationDamageMultiplier) || 1;
       const radiation = Number(state.settlement.radiation) || 0;
       
-      // Base health loss per minute
-      const healthLoss = -1 * Math.floor(minutesSinceLastUpdate * healthLossPerMinute);
+      // Base health loss per second
+      const healthLoss = -1 * Math.floor(secondsSinceLastUpdate * healthLossPerSecond);
       
       // Radiation damage calculation
       const radiationPercentage = radiation / 100;
       const radiationDamage = -1 * Math.floor(
         radiationPercentage * 
-        healthLossPerMinute * 
+        healthLossPerSecond * 
         radiationDamageMultiplier * 
-        minutesSinceLastUpdate
+        secondsSinceLastUpdate
       );
       
       // Apply both health loss and radiation damage
@@ -261,14 +260,26 @@ const actions = {
     
     // Check for enemy attacks using settings
     const lastAttack = Number(state.settlement.lastAttack) || lastHealthUpdate;
-    const minutesSinceLastAttack = (now - lastAttack) / (1000 * 60);
+    const secondsSinceLastAttack = (now - lastAttack) / 1000;
+    const attackInterval = Number(state.settings.attackInterval) || 30; // Default to 30 seconds if not set
     
-    if (minutesSinceLastAttack >= Number(state.settings.attackInterval)) {
+    // Only try to start battle if we're not already in one
+    if (!state.settlement.currentEnemyId && secondsSinceLastAttack >= attackInterval) {
+      console.log('Checking for attack:', {
+        secondsSinceLastAttack,
+        attackInterval,
+        attackChance: state.settings.attackChance
+      });
+      
       // Use attack chance from settings
       const attackChance = Number(state.settings.attackChance) || 0;
       const roll = Math.random() * 100;
+      
+      console.log('Attack roll:', roll, 'needs to be <=', attackChance);
+      
       if (roll <= attackChance) {
-        dispatch('handleEnemyAttack');
+        console.log('Starting attack!');
+        await dispatch('handleEnemyAttack');
       }
     }
     
