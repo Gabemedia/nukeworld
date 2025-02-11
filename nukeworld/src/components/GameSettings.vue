@@ -147,14 +147,14 @@
             <div class="settings-group">
               <h4 class="group-title">Health Settings</h4>
               <div class="form-group">
-                <label>Health Loss Per Second</label>
+                <label>Health Loss Per Minute</label>
                 <div class="input-group">
-                  <input type="number" v-model.number="settlement.healthLossPerSecond" @change="saveToLocalStorage" class="form-control" min="0">
+                  <input type="number" v-model.number="settlement.healthLossPerMinute" @change="saveToLocalStorage" class="form-control" min="0">
                   <div class="input-group-append">
-                    <span class="input-group-text">HP/s</span>
+                    <span class="input-group-text">HP/m</span>
                   </div>
                 </div>
-                <small class="form-text text-muted">Base health loss per second</small>
+                <small class="form-text text-muted">Base health loss per minute (60 = 1 damage per second)</small>
               </div>
               
               <div class="form-group">
@@ -570,7 +570,7 @@ export default {
       activeSection: 'quests',
       sections: ['quests', 'items', 'story', 'armor', 'aid', 'resources', 'enemies', 'speech', 'settlement'],
       settlement: {
-        attackInterval: 1,
+        attackInterval: 120,
         healthLossPerSecond: 1,
         radiationDamageMultiplier: 1,
         startingHealth: 100,
@@ -579,25 +579,25 @@ export default {
         upgradeCosts: {
           defences: {
             resource1: 1,
-            resource1Amount: 30,
+            resource1Amount: 1,
             resource2: 2,
-            resource2Amount: 50,
+            resource2Amount: 1,
             amount: 10,
             moneyCost: 0
           },
           power: {
             resource1: 1,
-            resource1Amount: 40,
+            resource1Amount: 1,
             resource2: 2,
-            resource2Amount: 40,
+            resource2Amount: 1,
             amount: 10,
             moneyCost: 0
           },
           level: {
             resource1: 1,
-            resource1Amount: 100,
+            resource1Amount: 1,
             resource2: 2,
-            resource2Amount: 100,
+            resource2Amount: 1,
             healthIncrease: 50,
             inhabitantsIncrease: 5,
             defencesIncrease: 25,
@@ -606,9 +606,9 @@ export default {
           },
           inhabitant: {
             resource1: 1,
-            resource1Amount: 50,
+            resource1Amount: 1,
             resource2: 2,
-            resource2Amount: 30,
+            resource2Amount: 1,
             moneyCost: 0
           }
         }
@@ -1075,34 +1075,34 @@ export default {
       switch (section) {
         case 'settlement':
           this.settlement = {
-            attackInterval: 10,
-            healthLossPerSecond: 0,
-            radiationDamageMultiplier: 100,
-            startingHealth: 1000,
-            maxHealth: 1000,
+            attackInterval: 120,
+            healthLossPerMinute: 60, // 60 damage per minute = 1 per second
+            radiationDamageMultiplier: 10,
+            startingHealth: 100,
+            maxHealth: 100,
             attackChance: 100,
             upgradeCosts: {
               defences: {
                 resource1: 1,
-                resource1Amount: 30,
+                resource1Amount: 1,
                 resource2: 2,
-                resource2Amount: 50,
+                resource2Amount: 1,
                 amount: 10,
                 moneyCost: 0
               },
               power: {
                 resource1: 1,
-                resource1Amount: 40,
+                resource1Amount: 1,
                 resource2: 2,
-                resource2Amount: 40,
+                resource2Amount: 1,
                 amount: 10,
                 moneyCost: 0
               },
               level: {
                 resource1: 1,
-                resource1Amount: 100,
+                resource1Amount: 1,
                 resource2: 2,
-                resource2Amount: 100,
+                resource2Amount: 1,
                 healthIncrease: 50,
                 inhabitantsIncrease: 5,
                 defencesIncrease: 25,
@@ -1111,9 +1111,9 @@ export default {
               },
               inhabitant: {
                 resource1: 1,
-                resource1Amount: 50,
+                resource1Amount: 1,
                 resource2: 2,
-                resource2Amount: 30,
+                resource2Amount: 1,
                 moneyCost: 0
               }
             }

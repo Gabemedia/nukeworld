@@ -70,5 +70,23 @@ export default [
     "defense": 18,
     "exp": 150,
     "money": 70
+  },
+  {
+    "id": 9,
+    "name": "CEO of the Company",
+    "enemyHealth": 2500,
+    "attack": 222,
+    "defense": 188,
+    "exp": 1500,
+    "money": 700
+  },
+  {
+    "id": 10,
+    "name": "CEO of the Company",
+    "enemyHealth": 4000,
+    "attack": 500,
+    "defense": 250,
+    "exp": 4000,
+    "money": 1000
   }
 ];

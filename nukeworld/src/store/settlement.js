@@ -28,8 +28,8 @@ const initialState = {
   },
   // Add settings with defaults
   settings: JSON.parse(localStorage.getItem('settlementSettings')) || {
-    attackInterval: 30, // Now in seconds
-    healthLossPerSecond: 1, // Changed from per minute
+    attackInterval: 120, // Now in seconds
+    healthLossPerMinute: 60, // Damage per minute
     radiationDamageMultiplier: 10,
     startingHealth: 100,
     maxHealth: 100,
@@ -39,25 +39,25 @@ const initialState = {
     upgradeCosts: {
       defences: {
         resource1: 1, // Wood Scrap
-        resource1Amount: 30,
+        resource1Amount: 1,
         resource2: 2, // Steel Scrap
-        resource2Amount: 50,
+        resource2Amount: 1,
         amount: 10, // Defence increase amount
         moneyCost: 100
       },
       power: {
         resource1: 1, // Wood Scrap
-        resource1Amount: 40,
+        resource1Amount: 1,
         resource2: 2, // Steel Scrap
-        resource2Amount: 40,
+        resource2Amount: 1,
         amount: 10, // Power increase amount
         moneyCost: 100
       },
       level: {
         resource1: 1, // Wood Scrap
-        resource1Amount: 100,
+        resource1Amount: 1,
         resource2: 2, // Steel Scrap
-        resource2Amount: 100,
+        resource2Amount: 1,
         healthIncrease: 50,
         inhabitantsIncrease: 5,
         defencesIncrease: 25,
@@ -66,9 +66,9 @@ const initialState = {
       },
       inhabitant: {
         resource1: 1, // Wood Scrap
-        resource1Amount: 50,
+        resource1Amount: 1,
         resource2: 2, // Steel Scrap
-        resource2Amount: 30
+        resource2Amount: 1
       }
     }
   }
@@ -97,7 +97,7 @@ const mutations = {
     state.settings = {
       ...state.settings,
       attackInterval: Number(settings.attackInterval),
-      healthLossPerSecond: Number(settings.healthLossPerSecond),
+      healthLossPerMinute: Number(settings.healthLossPerMinute),
       radiationDamageMultiplier: Number(settings.radiationDamageMultiplier),
       startingHealth: Number(settings.startingHealth),
       maxHealth: Number(settings.maxHealth),
@@ -235,25 +235,25 @@ const actions = {
     const lastHealthUpdate = Number(state.settlement.lastHealthUpdate) || now;
     const lastRadiationUpdate = Number(state.settlement.lastRadiationUpdate) || now;
     
-    // Calculate seconds since last health update
-    const secondsSinceLastUpdate = (now - lastHealthUpdate) / 1000;
+    // Calculate minutes since last health update
+    const minutesSinceLastUpdate = (now - lastHealthUpdate) / (1000 * 60);
     
-    if (secondsSinceLastUpdate >= 1) {
+    // Update every minute
+    if (minutesSinceLastUpdate >= 1) {
       // Ensure we have valid numbers for calculations
-      const healthLossPerSecond = Number(state.settings.healthLossPerSecond) || 0;
+      const healthLossPerMinute = Number(state.settings.healthLossPerMinute) || 0;
       const radiationDamageMultiplier = Number(state.settings.radiationDamageMultiplier) || 1;
       const radiation = Number(state.settlement.radiation) || 0;
       
-      // Base health loss per second
-      const healthLoss = -1 * Math.floor(secondsSinceLastUpdate * healthLossPerSecond);
+      // Base health loss per minute
+      const healthLoss = -1 * healthLossPerMinute;
       
       // Radiation damage calculation
       const radiationPercentage = radiation / 100;
       const radiationDamage = -1 * Math.floor(
         radiationPercentage * 
-        healthLossPerSecond * 
-        radiationDamageMultiplier * 
-        secondsSinceLastUpdate
+        healthLossPerMinute * 
+        radiationDamageMultiplier
       );
       
       // Apply both health loss and radiation damage
