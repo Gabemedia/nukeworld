@@ -83,9 +83,10 @@
             <button type="button" class="btn-close" @click="closeConfirmationModal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <p>It costs 20 Wood & Steel Scrap to place a settlement. Do you want to continue?</p>
+            <p>It costs 20 Wood & Steel Scrap to place a settlement.</p>
+            <p class="fw-semibold">Do you want to continue?</p>
             <div class="button-group">
-              <button @click="confirmPlaceSettlement" class="btn btn-primary">Yes</button>
+              <button @click="closeConfirmationModal" class="btn btn-primary">Yes</button>
               <button @click="cancelPlaceSettlement" class="btn btn-secondary">No</button>
             </div>
           </div>

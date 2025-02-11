@@ -5,14 +5,14 @@
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Confirm Settlement Placement</h5>
+            <h5 class="modal-title">Settlement Placement</h5>
             <button type="button" class="btn-close" @click="closeConfirmationModal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <p>It costs 20 Wood & Steel Scrap to place a settlement. Do you want to continue?</p>
+            <p>It costs 20 Wood & Steel Scrap to place a settlement.</p>
+            <p class="fw-semibold">Click anywhere on the map to confirm the location.</p>
             <div class="button-group">
-              <button @click="confirmPlaceSettlement" class="btn btn-primary">Yes</button>
-              <button @click="closeConfirmationModal" class="btn btn-secondary">No</button>
+              <button @click="closeConfirmationModal" class="btn btn-primary">OK</button>
             </div>
           </div>
         </div>
@@ -143,39 +143,11 @@ export default {
       if (this.settlementMarker) {
         this.$store.commit('setSettlementModalOpen', true);
       } else {
-        const requiredResources = [{ id: 1, amount: 20 }, { id: 2, amount: 20 }];
-        const hasEnoughResources = await this.checkRequiredResources(requiredResources);
-        
-        if (hasEnoughResources) {
-          this.isSettlementConfirmationModalOpen = true;
-        } else {
-          alert('You don\'t have enough resources to place a settlement. You need 20 Wood & Steel Scrap.');
-        }
+        this.isSettlementConfirmationModalOpen = true;
       }
     },
     closeConfirmationModal() {
       this.isSettlementConfirmationModalOpen = false;
-    },
-    async confirmPlaceSettlement() {
-      try {
-        const requiredResources = [{ id: 1, amount: 20 }, { id: 2, amount: 20 }];
-        await this.useRequiredResources(requiredResources);
-        
-        // Initialize settlement in store
-        await this.$store.dispatch('settlement/initializeSettlement', { lat: 600, lng: 960 });
-        
-        // Update marker
-        await this.updateSettlementMarker({
-          latlng: { lat: 600, lng: 960 },
-          name: ''
-        });
-        
-        this.closeConfirmationModal();
-        this.$store.commit('setSettlementModalOpen', true);
-      } catch (error) {
-        console.error('Error placing settlement:', error);
-        alert('Failed to place settlement. Please try again.');
-      }
     },
   },
 };
