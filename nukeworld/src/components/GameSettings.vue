@@ -170,21 +170,6 @@
             </div>
             
             <div class="settings-group">
-              <h4 class="group-title">Resource Settings</h4>
-              <div class="form-group">
-                <label>Starting Resources</label>
-                <input type="number" v-model.number="settlement.startingResources" @change="saveToLocalStorage" class="form-control" min="0">
-                <small class="form-text text-muted">Resources given to new settlements</small>
-              </div>
-              
-              <div class="form-group">
-                <label>Max Resources</label>
-                <input type="number" v-model.number="settlement.maxResources" @change="saveToLocalStorage" class="form-control" min="1">
-                <small class="form-text text-muted">Maximum resources a settlement can hold</small>
-              </div>
-            </div>
-            
-            <div class="settings-group">
               <h4 class="group-title">Health Limits</h4>
               <div class="form-group">
                 <label>Starting Health</label>
@@ -590,8 +575,6 @@ export default {
         radiationDamageMultiplier: 1,
         startingHealth: 100,
         maxHealth: 100,
-        startingResources: 0,
-        maxResources: 1000,
         attackChance: 100,
         upgradeCosts: {
           defences: {
@@ -1097,8 +1080,6 @@ export default {
             radiationDamageMultiplier: 1,
             startingHealth: 100,
             maxHealth: 100,
-            startingResources: 0,
-            maxResources: 1000,
             attackChance: 100,
             upgradeCosts: {
               defences: {
@@ -1474,8 +1455,6 @@ export default {
         radiationDamageMultiplier: Number(this.settlement.radiationDamageMultiplier),
         startingHealth: Number(this.settlement.startingHealth),
         maxHealth: Number(this.settlement.maxHealth),
-        startingResources: Number(this.settlement.startingResources),
-        maxResources: Number(this.settlement.maxResources),
         attackChance: Number(this.settlement.attackChance),
         upgradeCosts: {
           defences: {
@@ -1540,8 +1519,6 @@ export default {
           radiationDamageMultiplier: Number(settings.radiationDamageMultiplier || 1),
           startingHealth: Number(settings.startingHealth || 100),
           maxHealth: Number(settings.maxHealth || 100),
-          startingResources: Number(settings.startingResources || 0),
-          maxResources: Number(settings.maxResources || 1000),
           attackChance: Number(settings.attackChance || 100),
           upgradeCosts: {
             defences: {

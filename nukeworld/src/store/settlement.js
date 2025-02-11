@@ -26,7 +26,7 @@ const initialState = {
   // Add settings with defaults
   settings: JSON.parse(localStorage.getItem('settlementSettings')) || {
     attackInterval: 1,
-    healthLossPerHour: 1,
+    healthLossPerMinute: 1,
     radiationDamageMultiplier: 1,
     startingHealth: 100,
     maxHealth: 100,
@@ -79,12 +79,22 @@ const mutations = {
     localStorage.setItem('settlement', JSON.stringify(state.settlement));
   },
   
+  updateSettlementLastHealthUpdate(state, timestamp) {
+    state.settlement.lastHealthUpdate = timestamp;
+    localStorage.setItem('settlement', JSON.stringify(state.settlement));
+  },
+  
+  updateSettlementLastRadiationUpdate(state, timestamp) {
+    state.settlement.lastRadiationUpdate = timestamp;
+    localStorage.setItem('settlement', JSON.stringify(state.settlement));
+  },
+  
   updateSettings(state, settings) {
     // Update settings in state
     state.settings = {
       ...state.settings,
       attackInterval: Number(settings.attackInterval),
-      healthLossPerHour: Number(settings.healthLossPerHour),
+      healthLossPerMinute: Number(settings.healthLossPerMinute),
       radiationDamageMultiplier: Number(settings.radiationDamageMultiplier),
       startingHealth: Number(settings.startingHealth),
       maxHealth: Number(settings.maxHealth),
@@ -207,15 +217,30 @@ const actions = {
   },
   
   async updateSettlement({ commit, state, dispatch }) {
-    // Health decay over time
+    // Health decay over time - per minute
     const now = Date.now();
-    const hoursSinceLastUpdate = (now - state.settlement.lastHealthUpdate) / (1000 * 60 * 60);
+    const minutesSinceLastUpdate = (now - state.settlement.lastHealthUpdate) / (1000 * 60);
     
-    if (hoursSinceLastUpdate >= 1) {
-      // Use settings for health loss calculation
-      const healthLoss = -1 * Math.floor(hoursSinceLastUpdate * state.settings.healthLossPerHour);
-      const radiationDamage = -1 * Math.floor((state.settlement.radiation / 100) * hoursSinceLastUpdate * state.settings.radiationDamageMultiplier);
+    if (minutesSinceLastUpdate >= 1) {
+      // Base health loss per minute
+      const healthLoss = -1 * Math.floor(minutesSinceLastUpdate * state.settings.healthLossPerMinute);
+      
+      // Radiation damage calculation:
+      // - radiation level is 0-100%
+      // - damage is based on radiation percentage
+      // - multiplied by the radiationDamageMultiplier setting
+      // - calculated per minute
+      const radiationPercentage = state.settlement.radiation / 100;
+      const radiationDamage = -1 * Math.floor(
+        radiationPercentage * 
+        state.settings.healthLossPerMinute * 
+        state.settings.radiationDamageMultiplier * 
+        minutesSinceLastUpdate
+      );
+      
+      // Apply both health loss and radiation damage
       commit('updateSettlementHealth', healthLoss + radiationDamage);
+      commit('updateSettlementLastHealthUpdate', now);
     }
     
     // Check for enemy attacks using settings
@@ -231,11 +256,12 @@ const actions = {
       }
     }
     
-    // Update radiation levels
-    const hoursSinceLastRadiation = (now - state.settlement.lastRadiationUpdate) / (1000 * 60 * 60);
-    if (hoursSinceLastRadiation >= 1) {
+    // Update radiation levels - per second
+    const secondsSinceLastRadiation = (now - state.settlement.lastRadiationUpdate) / 1000;
+    if (secondsSinceLastRadiation >= 1) {
       const radiationChange = Math.floor(Math.random() * 10) - 5; // -5 to +5
       commit('updateSettlementRadiation', radiationChange);
+      commit('updateSettlementLastRadiationUpdate', now);
     }
   },
   

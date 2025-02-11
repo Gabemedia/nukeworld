@@ -301,20 +301,20 @@ export default {
         clearInterval(this.updateInterval);
       }
       
-      // Wait 10 seconds before starting updates
+      // Wait 1 second before starting updates
       setTimeout(() => {
         // Start new update interval
         this.updateInterval = setInterval(() => {
           if (this.settlement && this.settlement.id) {
             this.updateSettlement();
           }
-        }, 60000); // Update every minute
+        }, 1000); // Update every second
         
-        // Do first update after 10 seconds
+        // Do first update after 1 second
         if (this.settlement && this.settlement.id) {
           this.updateSettlement();
         }
-      }, 10000); // Wait 10 seconds
+      }, 1000); // Wait 1 second
     },
     openLogModal() {
       this.isLogModalOpen = true;
