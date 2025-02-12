@@ -74,19 +74,109 @@ export default [
   {
     "id": 9,
     "name": "CEO of the Company",
-    "enemyHealth": 2500,
-    "attack": 222,
-    "defense": 188,
+    "enemyHealth": 400,
+    "attack": 53,
+    "defense": 120,
     "exp": 1500,
     "money": 700
   },
   {
     "id": 10,
-    "name": "CEO of the Company",
-    "enemyHealth": 4000,
+    "name": "Mark Zuckerberg",
+    "enemyHealth": 120,
     "attack": 500,
-    "defense": 250,
+    "defense": 80,
     "exp": 4000,
     "money": 1000
+  },
+  {
+    "id": 11,
+    "name": "Mutant Bear",
+    "enemyHealth": 800,
+    "attack": 45,
+    "defense": 30,
+    "exp": 300,
+    "money": 150
+  },
+  {
+    "id": 12,
+    "name": "Radioactive Spider",
+    "enemyHealth": 150,
+    "attack": 85,
+    "defense": 15,
+    "exp": 200,
+    "money": 100
+  },
+  {
+    "id": 13,
+    "name": "Cyber Hound",
+    "enemyHealth": 250,
+    "attack": 65,
+    "defense": 40,
+    "exp": 275,
+    "money": 180
+  },
+  {
+    "id": 14,
+    "name": "Wasteland Bandit",
+    "enemyHealth": 300,
+    "attack": 55,
+    "defense": 35,
+    "exp": 225,
+    "money": 300
+  },
+  {
+    "id": 15,
+    "name": "Toxic Scorpion",
+    "enemyHealth": 180,
+    "attack": 95,
+    "defense": 25,
+    "exp": 350,
+    "money": 200
+  },
+  {
+    "id": 16,
+    "name": "Robot Sentinel",
+    "enemyHealth": 600,
+    "attack": 75,
+    "defense": 60,
+    "exp": 450,
+    "money": 400
+  },
+  {
+    "id": 17,
+    "name": "Mutant Vulture",
+    "enemyHealth": 220,
+    "attack": 70,
+    "defense": 20,
+    "exp": 280,
+    "money": 160
+  },
+  {
+    "id": 18,
+    "name": "Scrap Golem",
+    "enemyHealth": 1000,
+    "attack": 40,
+    "defense": 100,
+    "exp": 600,
+    "money": 500
+  },
+  {
+    "id": 19,
+    "name": "Plasma Ghost",
+    "enemyHealth": 200,
+    "attack": 120,
+    "defense": 10,
+    "exp": 400,
+    "money": 350
+  },
+  {
+    "id": 20,
+    "name": "Nuclear Dragon",
+    "enemyHealth": 1500,
+    "attack": 150,
+    "defense": 80,
+    "exp": 1000,
+    "money": 800
   }
 ];

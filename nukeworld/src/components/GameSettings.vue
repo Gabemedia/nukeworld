@@ -570,12 +570,12 @@ export default {
       activeSection: 'quests',
       sections: ['quests', 'items', 'story', 'armor', 'aid', 'resources', 'enemies', 'speech', 'settlement'],
       settlement: {
-        attackInterval: 120,
+        attackInterval: 240,
         healthLossPerSecond: 1,
-        radiationDamageMultiplier: 1,
+        radiationDamageMultiplier: 3,
         startingHealth: 100,
         maxHealth: 100,
-        attackChance: 100,
+        attackChance: 0.50,
         upgradeCosts: {
           defences: {
             resource1: 1,
@@ -1075,12 +1075,12 @@ export default {
       switch (section) {
         case 'settlement':
           this.settlement = {
-            attackInterval: 120,
-            healthLossPerMinute: 60, // 60 damage per minute = 1 per second
-            radiationDamageMultiplier: 10,
+            attackInterval: 240,
+            healthLossPerSecond: 1,
+            radiationDamageMultiplier: 3,
             startingHealth: 100,
             maxHealth: 100,
-            attackChance: 100,
+            attackChance: 0.50,
             upgradeCosts: {
               defences: {
                 resource1: 1,

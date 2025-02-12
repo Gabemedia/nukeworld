@@ -28,14 +28,14 @@ const initialState = {
   },
   // Add settings with defaults
   settings: JSON.parse(localStorage.getItem('settlementSettings')) || {
-    attackInterval: 120, // Now in seconds
-    healthLossPerMinute: 60, // Damage per minute
-    radiationDamageMultiplier: 10,
+    attackInterval: 240, // Now in seconds
+    healthLossPerSecond: 1, // Damage per second
+    radiationDamageMultiplier: 3,
     startingHealth: 100,
     maxHealth: 100,
     startingResources: 0,
     maxResources: 1000,
-    attackChance: 100,
+    attackChance: 0.50,
     upgradeCosts: {
       defences: {
         resource1: 1, // Wood Scrap
@@ -97,7 +97,7 @@ const mutations = {
     state.settings = {
       ...state.settings,
       attackInterval: Number(settings.attackInterval),
-      healthLossPerMinute: Number(settings.healthLossPerMinute),
+      healthLossPerSecond: Number(settings.healthLossPerSecond),
       radiationDamageMultiplier: Number(settings.radiationDamageMultiplier),
       startingHealth: Number(settings.startingHealth),
       maxHealth: Number(settings.maxHealth),
@@ -169,6 +169,8 @@ const mutations = {
   upgradeLevel(state) {
     state.settlement.level++;
     state.settlement.maxHealth += state.settings.upgradeCosts.level.healthIncrease;
+    // Restore health to new maximum when leveling up
+    state.settlement.health = state.settlement.maxHealth;
     state.settlement.maxInhabitants += state.settings.upgradeCosts.level.inhabitantsIncrease;
     state.settlement.maxDefences += state.settings.upgradeCosts.level.defencesIncrease;
     state.settlement.maxPower += state.settings.upgradeCosts.level.powerIncrease;
@@ -235,24 +237,24 @@ const actions = {
     const lastHealthUpdate = Number(state.settlement.lastHealthUpdate) || now;
     const lastRadiationUpdate = Number(state.settlement.lastRadiationUpdate) || now;
     
-    // Calculate minutes since last health update
-    const minutesSinceLastUpdate = (now - lastHealthUpdate) / (1000 * 60);
+    // Calculate seconds since last health update
+    const secondsSinceLastUpdate = (now - lastHealthUpdate) / 1000;
     
-    // Update every minute
-    if (minutesSinceLastUpdate >= 1) {
+    // Update every 20 minutes (1200 seconds)
+    if (secondsSinceLastUpdate >= 1200) {
       // Ensure we have valid numbers for calculations
-      const healthLossPerMinute = Number(state.settings.healthLossPerMinute) || 0;
+      const healthLossPerSecond = Number(state.settings.healthLossPerSecond) || 0;
       const radiationDamageMultiplier = Number(state.settings.radiationDamageMultiplier) || 1;
       const radiation = Number(state.settlement.radiation) || 0;
       
-      // Base health loss per minute
-      const healthLoss = -1 * healthLossPerMinute;
+      // Base health loss per second
+      const healthLoss = -1 * healthLossPerSecond;
       
       // Radiation damage calculation
       const radiationPercentage = radiation / 100;
       const radiationDamage = -1 * Math.floor(
         radiationPercentage * 
-        healthLossPerMinute * 
+        healthLossPerSecond * 
         radiationDamageMultiplier
       );
       
@@ -325,31 +327,48 @@ const actions = {
     
     // Only try to start battle if we're not already in one and enough time has passed
     if (!state.settlement.currentEnemyId && secondsSinceLastAttack >= attackInterval) {
-      console.log('Checking for attack:', {
-        secondsSinceLastAttack,
-        attackInterval,
-        attackChance: state.settings.attackChance,
-        lastAttack: new Date(lastAttack).toLocaleString()
-      });
-      
       // Use attack chance from settings
       const attackChance = Number(state.settings.attackChance) || 0;
       const roll = Math.random() * 100;
       
-      console.log('Attack roll:', roll, 'needs to be <=', attackChance);
-      
       if (roll <= attackChance) {
-        console.log('Starting attack!');
         await dispatch('handleEnemyAttack');
       }
     }
     
     // Update radiation levels - per second
-    const secondsSinceLastRadiation = (now - lastRadiationUpdate) / 1000;
+    const secondsSinceLastRadiation = (now - lastRadiationUpdate) / 500;
     if (secondsSinceLastRadiation >= 1) {
-      const radiationChange = Math.floor(Math.random() * 10) - 5; // -5 to +5
+      const radiationChange = Math.floor(Math.random() * 21) - 10; // Gives -10 to +10
       commit('updateSettlementRadiation', radiationChange);
       commit('updateSettlementLastRadiationUpdate', now);
+
+      // Apply radiation damage if radiation is high (95% or more)
+      if (state.settlement.radiation >= 95) {
+        const radiationDamage = -1 * state.settings.healthLossPerSecond * 2; // Double damage when radiation is critical
+        commit('updateSettlementHealth', radiationDamage);
+        
+        // Show warning toast about critical radiation
+        const radiationWarning = `
+          <div class="d-flex flex-column align-items-start justify-content-start h-100">
+            <p class="text-left fw-bold mb-1">Critical Radiation Levels!</p>
+            <p class="text-left fw-semi mb-2">Your settlement is taking heavy damage from radiation</p>
+            <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+              <img src="${encounterIcon}" title="Settlement" style="width: 20px;" class="me-2">
+              <span>Settlement health is dropping rapidly</span>
+            </div>
+          </div>
+        `;
+
+        toast.warning(radiationWarning, {
+          dangerouslyHTMLString: true,
+          autoClose: 5000,
+          hideProgressBar: false,
+          icon: false,
+          toastClassName: 'quest-toast-container',
+          bodyClassName: 'quest-toast-body quest-toast'
+        });
+      }
     }
   },
   
@@ -357,11 +376,8 @@ const actions = {
     // Get a random enemy
     const enemy = enemies[Math.floor(Math.random() * enemies.length)];
     if (!enemy) {
-      console.error('No enemies found!');
       return;
     }
-
-    console.log('Starting attack with enemy:', enemy);
 
     // Record the attack and set current enemy
     commit('recordAttack');
@@ -380,7 +396,6 @@ const actions = {
   startSettlementBattle({ getters }, { enemyId }) {
     const enemy = enemies.find(e => e.id === enemyId);
     if (!enemy) {
-      console.error('Enemy not found:', enemyId);
       return null;
     }
     return {
