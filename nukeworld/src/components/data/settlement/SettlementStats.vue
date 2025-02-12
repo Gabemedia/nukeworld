@@ -15,7 +15,6 @@
             ${{ settings?.upgradeCosts?.level?.moneyCost || 0 }})
           </button>
         </div>
-        <div class="cost-info">Requires: Health > 50% and {{ settlement.level * 5 }} Inhabitants</div>
         <div class="health-display">
           <div class="progress">
             <div 
@@ -65,9 +64,12 @@
         <!-- Right Column -->
         <div class="stats-column">
           <div class="stat-group">
-            <div class="stat-header">Infrastructure</div>
+            <div class="stat-header" :data-cost="`${settings?.upgradeCosts?.defences?.resource1Amount || 0} ${getResourceName(settings?.upgradeCosts?.defences?.resource1)}, ${settings?.upgradeCosts?.defences?.resource2Amount || 0} ${getResourceName(settings?.upgradeCosts?.defences?.resource2)}, $${settings?.upgradeCosts?.defences?.moneyCost || 0}`">Infrastructure</div>
             <div class="stat-row">
               <div class="stat-label">Defence</div>
+              <div class="cost-info">{{ settings?.upgradeCosts?.defences?.resource1Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.defences?.resource1) }}, 
+              {{ settings?.upgradeCosts?.defences?.resource2Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.defences?.resource2) }},
+              ${{ settings?.upgradeCosts?.defences?.moneyCost || 0 }}</div>
               <div class="stat-value">
                 {{ settlement.defences }}/{{ settlement.maxDefences }}
                 <button 
@@ -78,13 +80,13 @@
                   +
                 </button>
               </div>
-              <div class="cost-info">{{ settings?.upgradeCosts?.defences?.resource1Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.defences?.resource1) }}, 
-              {{ settings?.upgradeCosts?.defences?.resource2Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.defences?.resource2) }},
-              ${{ settings?.upgradeCosts?.defences?.moneyCost || 0 }}</div>
             </div>
             
             <div class="stat-row">
               <div class="stat-label">Power</div>
+              <div class="cost-info">{{ settings?.upgradeCosts?.power?.resource1Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.power?.resource1) }}, 
+              {{ settings?.upgradeCosts?.power?.resource2Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.power?.resource2) }},
+              ${{ settings?.upgradeCosts?.power?.moneyCost || 0 }}</div>
               <div class="stat-value">
                 {{ settlement.power }}/{{ settlement.maxPower }}
                 <button 
@@ -95,9 +97,6 @@
                   +
                 </button>
               </div>
-              <div class="cost-info">{{ settings?.upgradeCosts?.power?.resource1Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.power?.resource1) }}, 
-              {{ settings?.upgradeCosts?.power?.resource2Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.power?.resource2) }},
-              ${{ settings?.upgradeCosts?.power?.moneyCost || 0 }}</div>
             </div>
           </div>
 
@@ -411,6 +410,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.2rem;
+  padding: 3px 0;
   font-size: 0.9rem;
 }
 
@@ -433,6 +433,8 @@ export default {
 .radiation-value .progress {
   height: 20px;
   margin: 0;
+  background-color: #1a1a1a;
+  border: 1px solid #00ff00;
 }
 
 .btn-xs {
@@ -458,21 +460,33 @@ export default {
 
 .cost-info {
   color: #888;
-  font-size: 0.65rem;
-  margin-bottom: 1rem;
+  font-size: 0.6rem;
   font-style: italic;
+  margin-top: 0.2rem;
+  margin-left: 0.5rem;
+  text-align: left;
+  width: 100%;
+  font-weight: bold;
 }
 
 .stat-label {
   color: #00ff00;
 }
 
-.cost-info {
-  color: #888;
-  font-size: 0.8rem;
-  font-style: italic;
-  margin-top: 0.2rem;
-  text-align: right;
-  width: 100%;
+@media (max-width: 576px) {
+  .stats-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .stat-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .stat-value {
+    width: 100%;
+    justify-content: space-between;
+  }
 }
 </style>
