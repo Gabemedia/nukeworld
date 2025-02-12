@@ -137,25 +137,29 @@ export default {
     settlement: {
       immediate: true,
       handler(newSettlement) {
+        console.log('Settlement changed:', newSettlement); // Debug log
         if (newSettlement?.id) {
           // Load attack logs when settlement is loaded
           const savedLogs = localStorage.getItem('settlementAttackLogs');
+          console.log('Loaded saved logs:', savedLogs); // Debug log
           if (savedLogs) {
             try {
               this.attackLogs = JSON.parse(savedLogs);
+              console.log('Parsed attack logs:', this.attackLogs); // Debug log
             } catch (error) {
               console.error('Error parsing saved logs:', error);
             }
           }
         } else {
+          console.log('Clearing attack logs'); // Debug log
           this.attackLogs = [];
           localStorage.removeItem('settlementAttackLogs');
         }
       }
     },
     attackLogs: {
-      handler() {
-        // Watch for changes in attack logs
+      handler(newLogs) {
+        console.log('Attack logs changed:', newLogs); // Debug log
       },
       deep: true
     }
@@ -348,7 +352,7 @@ export default {
 }
 
 .modal-dialog {
-  max-width: 500px;
+  max-width: 800px;
   width: 90%;
   margin: 1.75rem auto;
 }
