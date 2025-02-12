@@ -10,9 +10,15 @@
             :disabled="!canUpgradeLevel"
             class="btn btn-success btn-sm"
           >
-            Upgrade ({{ settings?.upgradeCosts?.level?.resource1Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.level?.resource1) }}, 
-            {{ settings?.upgradeCosts?.level?.resource2Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.level?.resource2) }},
-            ${{ settings?.upgradeCosts?.level?.moneyCost || 0 }})
+            Upgrade
+            <span class="upgrade-cost">
+              <span>{{ settings?.upgradeCosts?.level?.resource1Amount || 0 }}</span>
+              <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.level?.resource1)?.img}`)" :alt="getResourceName(settings?.upgradeCosts?.level?.resource1)" class="resource-icon">
+              <span>{{ settings?.upgradeCosts?.level?.resource2Amount || 0 }}</span>
+              <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.level?.resource2)?.img}`)" :alt="getResourceName(settings?.upgradeCosts?.level?.resource2)" class="resource-icon">
+              <span>${{ settings?.upgradeCosts?.level?.moneyCost || 0 }}</span>
+              <img src="@/assets/interface/icons/money.png" alt="Money" class="resource-icon">
+            </span>
           </button>
         </div>
         <div class="health-display">
@@ -35,6 +41,14 @@
             <div class="stat-header" :data-cost="`${settings?.upgradeCosts?.inhabitant?.resource1Amount || 0} ${getResourceName(settings?.upgradeCosts?.inhabitant?.resource1)}, ${settings?.upgradeCosts?.inhabitant?.resource2Amount || 0} ${getResourceName(settings?.upgradeCosts?.inhabitant?.resource2)}, $${settings?.upgradeCosts?.inhabitant?.moneyCost || 0} per Inhabitant`">Population</div>
             <div class="stat-row">
               <span>Inhabitants</span>
+              <div class="cost-info">
+                <span>{{ settings?.upgradeCosts?.inhabitant?.resource1Amount || 0 }}</span>
+                <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.inhabitant?.resource1)?.img}`)" :alt="getResourceName(settings?.upgradeCosts?.inhabitant?.resource1)" class="resource-icon">
+                <span>{{ settings?.upgradeCosts?.inhabitant?.resource2Amount || 0 }}</span>
+                <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.inhabitant?.resource2)?.img}`)" :alt="getResourceName(settings?.upgradeCosts?.inhabitant?.resource2)" class="resource-icon">
+                <span>${{ settings?.upgradeCosts?.inhabitant?.moneyCost || 0 }}</span>
+                <img src="@/assets/interface/icons/money.png" alt="Money" class="resource-icon">
+              </div>
               <div class="stat-value">
                 {{ settlement.inhabitants }}/{{ settlement.maxInhabitants }}
                 <button 
@@ -67,9 +81,14 @@
             <div class="stat-header" :data-cost="`${settings?.upgradeCosts?.defences?.resource1Amount || 0} ${getResourceName(settings?.upgradeCosts?.defences?.resource1)}, ${settings?.upgradeCosts?.defences?.resource2Amount || 0} ${getResourceName(settings?.upgradeCosts?.defences?.resource2)}, $${settings?.upgradeCosts?.defences?.moneyCost || 0}`">Infrastructure</div>
             <div class="stat-row">
               <div class="stat-label">Defence</div>
-              <div class="cost-info">{{ settings?.upgradeCosts?.defences?.resource1Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.defences?.resource1) }}, 
-              {{ settings?.upgradeCosts?.defences?.resource2Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.defences?.resource2) }},
-              ${{ settings?.upgradeCosts?.defences?.moneyCost || 0 }}</div>
+              <div class="cost-info">
+                <span>{{ settings?.upgradeCosts?.defences?.resource1Amount || 0 }}</span>
+                <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.defences?.resource1)?.img}`)" :alt="getResourceName(settings?.upgradeCosts?.defences?.resource1)" class="resource-icon">
+                <span>{{ settings?.upgradeCosts?.defences?.resource2Amount || 0 }}</span>
+                <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.defences?.resource2)?.img}`)" :alt="getResourceName(settings?.upgradeCosts?.defences?.resource2)" class="resource-icon">
+                <span>${{ settings?.upgradeCosts?.defences?.moneyCost || 0 }}</span>
+                <img src="@/assets/interface/icons/money.png" alt="Money" class="resource-icon">
+              </div>
               <div class="stat-value">
                 {{ settlement.defences }}/{{ settlement.maxDefences }}
                 <button 
@@ -84,9 +103,14 @@
             
             <div class="stat-row">
               <div class="stat-label">Power</div>
-              <div class="cost-info">{{ settings?.upgradeCosts?.power?.resource1Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.power?.resource1) }}, 
-              {{ settings?.upgradeCosts?.power?.resource2Amount || 0 }} {{ getResourceName(settings?.upgradeCosts?.power?.resource2) }},
-              ${{ settings?.upgradeCosts?.power?.moneyCost || 0 }}</div>
+              <div class="cost-info">
+                <span>{{ settings?.upgradeCosts?.power?.resource1Amount || 0 }}</span>
+                <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.power?.resource1)?.img}`)" :alt="getResourceName(settings?.upgradeCosts?.power?.resource1)" class="resource-icon">
+                <span>{{ settings?.upgradeCosts?.power?.resource2Amount || 0 }}</span>
+                <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.power?.resource2)?.img}`)" :alt="getResourceName(settings?.upgradeCosts?.power?.resource2)" class="resource-icon">
+                <span>${{ settings?.upgradeCosts?.power?.moneyCost || 0 }}</span>
+                <img src="@/assets/interface/icons/money.png" alt="Money" class="resource-icon">
+              </div>
               <div class="stat-value">
                 {{ settlement.power }}/{{ settlement.maxPower }}
                 <button 
@@ -467,6 +491,15 @@ export default {
   text-align: left;
   width: 100%;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.resource-icon {
+  width: 12px;
+  height: 12px;
+  object-fit: contain;
 }
 
 .stat-label {
@@ -488,5 +521,12 @@ export default {
     width: 100%;
     justify-content: space-between;
   }
+}
+
+.upgrade-cost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  margin-left: 0.3rem;
 }
 </style>
