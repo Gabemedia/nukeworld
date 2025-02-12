@@ -50,6 +50,10 @@ export default {
   background-color: rgba(0, 0, 0, 0.4);
 }
 
+.modal-body {
+  padding: 1rem!important;
+}
+
 .modal-content {
   background-color: #fefefe;
   margin: 15% auto;

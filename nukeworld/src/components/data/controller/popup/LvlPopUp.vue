@@ -168,7 +168,7 @@ export default {
 }
 
 .modal-body {
-    padding: 20px;
+    padding: 1rem!important;
     text-align: center;
 }
 

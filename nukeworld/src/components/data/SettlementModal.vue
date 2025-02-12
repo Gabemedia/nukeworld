@@ -16,16 +16,12 @@
               <SettlementBattle @battle-ended="onBattleEnded" />
             </div>
             <div v-else>
-              <SettlementStats />
+              <SettlementStats @open-log="openLogModal" />
             </div>
           </div>
           <div class="modal-footer">
             <template v-if="settlementMarker">
               <button @click="confirmRemoveSettlement" class="btn btn-danger">Remove Settlement</button>
-              <button @click="openLogModal" class="btn btn-success">View Attack Log</button>
-            </template>
-            <template v-else>
-              <p>You haven't placed a settlement yet.</p>
             </template>
             <button type="button" class="btn btn-secondary" @click="closeSettlementModal">Close</button>
           </div>

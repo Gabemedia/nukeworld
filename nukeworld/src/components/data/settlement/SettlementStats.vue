@@ -146,6 +146,46 @@
           </div>
         </div>
       </div>
+
+      <!-- Action Buttons -->
+      <div class="stat-group mt-4 p-0">
+        <div class="action-buttons m-0">
+          <button 
+            @click="healSettlement" 
+            class="btn btn-success"
+            :class="{ 'btn-active': canHealSettlement }"
+            :disabled="!canHealSettlement"
+          >
+            <span class="btn-text">Heal Settlement</span>
+            <span class="cost-info">
+              <span>100</span>
+              <img src="@/assets/interface/icons/money.png" alt="Money" class="resource-icon">
+            </span>
+          </button>
+
+          <button 
+            @click="reduceRadiation" 
+            class="btn btn-success"
+            :class="{ 'btn-active': !settlement.radiationReductionActive && settlement.radiation > 0 }"
+            :disabled="settlement.radiation === 0 || settlement.radiationReductionActive"
+          >
+            <span class="btn-text">Reduce Radiation</span>
+            <span class="cost-info">
+              <span>1</span>
+              <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === 1)?.img}`)" alt="Wood" class="resource-icon">
+              <span>1</span>
+              <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === 2)?.img}`)" alt="Steel" class="resource-icon">
+            </span>
+          </button>
+
+          <button 
+            @click="$emit('open-log')" 
+            class="btn btn-success btn-active"
+          >
+            <span class="btn-text">View Attack Log</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -156,6 +196,7 @@ import { toast } from "vue3-toastify";
 
 export default {
   name: 'SettlementStats',
+  emits: ['open-log'],
   computed: {
     ...mapState('settlement', ['settlement', 'settings']),
     ...mapState(['resources']),
@@ -173,6 +214,20 @@ export default {
       return (resourceId) => {
         const resource = this.resources.find(r => r.id === resourceId);
         return resource ? resource.name : 'Unknown Resource';
+      }
+    },
+    canHealSettlement() {
+      return this.settlement.health < this.settlement.maxHealth && this.$store.state.character.money >= 100;
+    }
+  },
+  watch: {
+    'settlement.health': {
+      immediate: true,
+      handler() {
+        // Force re-evaluation of canHealSettlement when health changes
+        this.$nextTick(() => {
+          this.$forceUpdate();
+        });
       }
     }
   },
@@ -337,6 +392,123 @@ export default {
           bodyClassName: 'quest-toast-body quest-toast'
         });
       }
+    },
+    async healSettlement() {
+      try {
+        await this.$store.dispatch('settlement/healSettlementAction', {
+          amount: 50,
+          cost: 100
+        });
+        
+        const successMessage = `
+          <div class="d-flex flex-column align-items-start justify-content-start h-100">
+            <p class="text-left fw-bold mb-1">Settlement Healed!</p>
+            <p class="text-left fw-semi mb-2">Your settlement was healed for 50 HP</p>
+            <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+              <img src="${require('@/assets/interface/icons/money.png')}" title="Cost" style="width: 20px;" class="me-2">
+              <span>-100 money spent</span>
+            </div>
+          </div>
+        `;
+        
+        toast.success(successMessage, {
+          dangerouslyHTMLString: true,
+          autoClose: 3000,
+          hideProgressBar: false,
+          icon: false,
+          toastClassName: 'quest-toast-container',
+          bodyClassName: 'quest-toast-body quest-toast'
+        });
+      } catch (error) {
+        const errorMessage = `
+          <div class="d-flex flex-column align-items-start justify-content-start h-100">
+            <p class="text-left fw-bold mb-1">Cannot Heal Settlement</p>
+            <p class="text-left fw-semi mb-2">Not enough money!</p>
+            <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+              <img src="${require('@/assets/interface/icons/money.png')}" title="Required" style="width: 20px;" class="me-2">
+              <span>100 money required</span>
+            </div>
+          </div>
+        `;
+
+        toast.error(errorMessage, {
+          dangerouslyHTMLString: true,
+          autoClose: 3000,
+          hideProgressBar: false,
+          icon: false,
+          toastClassName: 'quest-toast-container',
+          bodyClassName: 'quest-toast-body quest-toast'
+        });
+      }
+    },
+    
+    async reduceRadiation() {
+      try {
+        // Check resources
+        const resources = [
+          { id: 1, amount: 1 }, // 1 Wood
+          { id: 2, amount: 1 }  // 1 Steel
+        ];
+
+        const hasResources = await this.$store.dispatch('checkRequiredResources', resources);
+        if (!hasResources) {
+          throw new Error('Not enough resources');
+        }
+
+        // Use resources
+        await this.$store.dispatch('useRequiredResources', resources);
+        
+        // Start radiation reduction
+        await this.$store.commit('settlement/startRadiationReduction');
+        
+        const successMessage = `
+          <div class="d-flex flex-column align-items-start justify-content-start h-100">
+            <p class="text-left fw-bold mb-1">Radiation Reduction Started!</p>
+            <p class="text-left fw-semi mb-2">Duration: 5 minutes</p>
+            <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+              <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === 1)?.img}`)}" title="Wood Used" style="width: 20px;" class="me-2">
+              <span>1 Wood used</span>
+            </div>
+            <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+              <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === 2)?.img}`)}" title="Steel Used" style="width: 20px;" class="me-2">
+              <span>1 Steel used</span>
+            </div>
+          </div>
+        `;
+        
+        toast.success(successMessage, {
+          dangerouslyHTMLString: true,
+          autoClose: 3000,
+          hideProgressBar: false,
+          icon: false,
+          toastClassName: 'quest-toast-container',
+          bodyClassName: 'quest-toast-body quest-toast'
+        });
+      } catch (error) {
+        const errorMessage = `
+          <div class="d-flex flex-column align-items-start justify-content-start h-100">
+            <p class="text-left fw-bold mb-1">Cannot Reduce Radiation</p>
+            <p class="text-left fw-semi mb-2">Not enough resources!</p>
+            <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+              <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === 1)?.img}`)}" title="Wood Required" style="width: 20px;" class="me-2">
+              <span>1 Wood required</span>
+            </div>
+            <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+              <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === 2)?.img}`)}" title="Steel Required" style="width: 20px;" class="me-2">
+              <span>1 Steel required</span>
+            </div>
+          </div>
+        `;
+
+        toast.error(errorMessage, {
+          dangerouslyHTMLString: true,
+          autoClose: 3000,
+          hideProgressBar: false,
+          icon: false,
+          toastClassName: 'quest-toast-container',
+          bodyClassName: 'quest-toast-body quest-toast'
+        });
+      }
     }
   }
 }
@@ -369,7 +541,7 @@ export default {
 }
 
 .level-badge {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: bold;
   color: #00ff00;
   text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
@@ -411,7 +583,7 @@ export default {
 .stat-header {
   color: #00ff00;
   font-weight: bold;
-  font-size: 1rem;
+  font-size: 0.8rem;
   margin-bottom: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -483,7 +655,7 @@ export default {
 }
 
 .cost-info {
-  color: #888;
+  color: #fff;
   font-size: 0.6rem;
   font-style: italic;
   margin-top: 0.2rem;
@@ -528,5 +700,112 @@ export default {
   align-items: center;
   gap: 0.2rem;
   margin-left: 0.3rem;
+}
+
+.action-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+}
+
+.action-buttons .btn {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 255, 0, 0.1);
+  border: 1px solid #00ff00;
+  color: #00ff00;
+  font-size: 0.7rem;
+  padding: 0.3rem;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 1px;
+  transition: all 0.2s ease;
+  min-height: 45px;
+  text-align: center;
+}
+
+.action-buttons .btn.btn-active {
+  background-color: #00ff00;
+  color: #000;
+  border-color: #00ff00;
+}
+
+.action-buttons .btn.btn-active:hover:not(:disabled) {
+  background-color: #00cc00;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 255, 0, 0.3);
+}
+
+.action-buttons .btn:disabled {
+  background-color: rgba(0, 255, 0, 0.05);
+  border-color: rgba(0, 255, 0, 0.2);
+  color: rgba(0, 255, 0, 0.3);
+  cursor: not-allowed;
+}
+
+.btn-text {
+  font-size: 0.7rem;
+  margin-bottom: 0.1rem;
+}
+
+.btn-subtext {
+  font-size: 0.6rem;
+  opacity: 0.8;
+  font-weight: normal;
+}
+
+.cost-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  margin-top: 0.1rem;
+  font-size: 0.65rem;
+  padding: 0.1rem 0.3rem;
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.2);
+  width: auto;
+}
+
+.resource-icon {
+  width: 12px;
+  height: 12px;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
+@media (max-width: 768px) {
+  .action-buttons {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.2rem;
+  }
+  
+  .action-buttons .btn {
+    min-height: 40px;
+    padding: 0.2rem;
+    font-size: 0.65rem;
+  }
+
+  .btn-text {
+    font-size: 0.65rem;
+  }
+
+  .btn-subtext {
+    font-size: 0.55rem;
+  }
+
+  .cost-info {
+    font-size: 0.6rem;
+    padding: 0.1rem 0.2rem;
+  }
+
+  .resource-icon {
+    width: 10px;
+    height: 10px;
+  }
 }
 </style>

@@ -199,6 +199,21 @@ const mutations = {
   setCurrentEnemyId(state, enemyId) {
     state.settlement.currentEnemyId = enemyId;
     localStorage.setItem('settlement', JSON.stringify(state.settlement));
+  },
+  
+  healSettlement(state, amount) {
+    const healAmount = Number(amount) || 0;
+    state.settlement.health = Math.min(state.settlement.maxHealth, state.settlement.health + healAmount);
+    localStorage.setItem('settlement', JSON.stringify(state.settlement));
+  },
+  
+  startRadiationReduction(state) {
+    // Store the start time of radiation reduction
+    state.settlement.radiationReductionStart = Date.now();
+    state.settlement.radiationReductionActive = true;
+    // Initial reduction
+    state.settlement.radiation = Math.max(0, state.settlement.radiation - 10);
+    localStorage.setItem('settlement', JSON.stringify(state.settlement));
   }
 };
 
@@ -323,7 +338,7 @@ const actions = {
     // Check for enemy attacks using settings
     const lastAttack = Number(state.settlement.lastAttack) || now;
     const secondsSinceLastAttack = (now - lastAttack) / 1000;
-    const attackInterval = Number(state.settings.attackInterval) || 30; // Default to 30 seconds if not set
+    const attackInterval = Number(state.settings.attackInterval) || 30;
     
     // Only try to start battle if we're not already in one and enough time has passed
     if (!state.settlement.currentEnemyId && secondsSinceLastAttack >= attackInterval) {
@@ -339,7 +354,24 @@ const actions = {
     // Update radiation levels - per second
     const secondsSinceLastRadiation = (now - lastRadiationUpdate) / 500;
     if (secondsSinceLastRadiation >= 1) {
-      const radiationChange = Math.floor(Math.random() * 21) - 10; // Gives -10 to +10
+      let radiationChange = Math.floor(Math.random() * 21) - 10; // Base change (-10 to +10)
+      
+      // Check if radiation reduction is active
+      if (state.settlement.radiationReductionActive) {
+        const reductionStartTime = Number(state.settlement.radiationReductionStart);
+        const timeSinceReductionStart = (now - reductionStartTime) / 1000; // in seconds
+        
+        if (timeSinceReductionStart <= 300) { // 5 minutes = 300 seconds
+          // During reduction period, bias towards reduction
+          radiationChange = Math.min(radiationChange, -5); // Ensure at least -5 reduction
+        } else {
+          // After 5 minutes, clear the reduction state
+          state.settlement.radiationReductionActive = false;
+          state.settlement.radiationReductionStart = null;
+          localStorage.setItem('settlement', JSON.stringify(state.settlement));
+        }
+      }
+      
       commit('updateSettlementRadiation', radiationChange);
       commit('updateSettlementLastRadiationUpdate', now);
 
@@ -465,6 +497,32 @@ const actions = {
         commit('upgradeLevel');
         break;
     }
+  },
+  
+  async healSettlementAction({ commit, dispatch, state }, { amount, cost }) {
+    // Ensure we have valid numbers
+    const healAmount = Number(amount) || 0;
+    const healCost = Number(cost) || 0;
+    
+    // Check if healing is needed
+    if (state.settlement.health >= state.settlement.maxHealth) {
+      throw new Error('Settlement is already at full health');
+    }
+    
+    // Check if player has enough money
+    const hasEnoughMoney = await dispatch('checkMoney', healCost, { root: true });
+    if (!hasEnoughMoney) {
+      throw new Error('Not enough money');
+    }
+    
+    // Deduct money first
+    await dispatch('decreaseMoney', healCost, { root: true });
+    
+    // Then heal settlement
+    commit('healSettlement', healAmount);
+    
+    // Save to localStorage
+    localStorage.setItem('settlement', JSON.stringify(state.settlement));
   }
 };
 

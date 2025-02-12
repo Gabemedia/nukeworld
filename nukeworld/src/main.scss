@@ -53,6 +53,10 @@ body {
   }
 }
 
+.modal-dialog{
+  scale: 0.9;
+}
+
 div.modal-content {
   //background-color: #f8f8f8!important;
   background-color: rgba(0, 0, 0, 0.8)!important;
@@ -61,6 +65,7 @@ div.modal-content {
 .modal-body {
   //background-color: #f8f8f8!important;
   color: #fff;
+  padding: 0px!important;
 }
 
 .modal-footer{

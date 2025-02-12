@@ -199,7 +199,7 @@ export default {
 .shop-modal-body {
   position: relative;
   flex: 1 1 auto;
-  padding: 1rem;
+  padding: 1rem!important;
   max-height: 70vh;
   overflow-y: auto;
 }
