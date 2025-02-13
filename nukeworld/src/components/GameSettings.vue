@@ -887,7 +887,9 @@ export default {
       }
     },
     getNextId() {
-      const ids = this.getActiveData.map(item => item.id);
+      // Get all existing IDs and ensure they are numbers
+      const ids = this.getActiveData.map(item => Number(item.id) || 0);
+      // Find the highest ID and add 1
       return ids.length > 0 ? Math.max(...ids) + 1 : 0;
     },
     updateIds() {
@@ -1144,9 +1146,13 @@ export default {
       localStorage.removeItem(section);
     },
     handleTemplateSelect(template) {
+      const newId = this.getNextId();
+      console.log('Creating new story with ID:', newId);
+      
       const newStory = {
+        id: newId,
         ...template.template,
-        id: this.getNextId()
+        playerChoices: []
       };
       
       this.getActiveData.push(newStory);
@@ -1155,9 +1161,12 @@ export default {
       this.showStoryTemplates = false;
     },
     handleQuestTemplateSelect(template) {
+      const newId = this.getNextId();
+      console.log('Creating new quest with ID:', newId);
+      
       const newQuest = {
+        id: newId,
         ...template.template,
-        id: this.getNextId(),
         lat: 350 + Math.random() * 450,
         lon: 300 + Math.random() * 1300
       };

@@ -42,7 +42,7 @@ export default {
   name: 'CreditsRoll',
   data() {
     return {
-      version: '0.1.7.9',
+      version: '0.1.8.0',
     }
   },
   methods: {

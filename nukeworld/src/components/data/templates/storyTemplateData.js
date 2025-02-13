@@ -1,6 +1,6 @@
 export const storyTemplateData = [
   {
-    id: 'basic-dialog',
+    templateId: 'basic-dialog',
     name: 'Basic Dialog Story',
     category: 'basic',
     difficulty: 'easy',

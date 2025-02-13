@@ -65,11 +65,11 @@ export default [
       "resourceRewards": [
         {
           "id": 1,
-          "amount": 500
+          "amount": 50
         },
         {
           "id": 2,
-          "amount": 500
+          "amount": 50
         }
       ],
       "weaponRewards": [],
@@ -128,7 +128,12 @@ export default [
     "levelRequirement": 1,
     "completed": false,
     "requiredStoryLineId": 1,
-    "playerChoices": [],
+    "playerChoices": [
+      "What do you need from me?",
+      "I have them ready right here.",
+      "I´m not gonna waste my Resources to help you.",
+      "Thanks! End conversation"
+    ],
     "steps": [
       {
         "npcMessage": "It's time to establish a new Settlement, we have grown tried of the life down in The Underground Tunnel. We need to get started... ",
@@ -161,7 +166,7 @@ export default [
         ]
       },
       {
-        "npcMessage": "Fantastic! Your help is invaluable. Here's your reward: 20,000 experience points!",
+        "npcMessage": "Fantastic! Your help is invaluable. Here is your reward!",
         "playerOptions": [
           {
             "text": "Thanks! End conversation",
@@ -171,12 +176,16 @@ export default [
       }
     ],
     "reward": {
-      "exp": 2000,
-      "money": 200,
+      "exp": 5000,
+      "money": 500,
       "resourceRewards": [],
       "weaponRewards": [],
       "armorRewards": [],
-      "aidRewards": []
+      "aidRewards": [
+        {
+          "id": 1
+        }
+      ]
     },
     "alwaysGiveReward": false
   },
@@ -186,7 +195,12 @@ export default [
     "levelRequirement": 1,
     "completed": false,
     "requiredStoryLineId": 1,
-    "playerChoices": [],
+    "playerChoices": [
+      "I'll take care of it",
+      "I'm ready to fight",
+      "I need to prepare first",
+      "Thank you"
+    ],
     "requiredEnemyDefeat": {
       "id": 1,
       "count": 1
@@ -231,14 +245,14 @@ export default [
       }
     ],
     "reward": {
-      "exp": 10,
-      "money": 5,
+      "exp": 500,
+      "money": 50,
       "resourceRewards": [],
       "weaponRewards": [],
       "armorRewards": [],
       "aidRewards": [
         {
-          "id": 2
+          "id": 1
         }
       ]
     },
@@ -250,7 +264,12 @@ export default [
     "levelRequirement": 3,
     "completed": false,
     "requiredStoryLineId": 3,
-    "playerChoices": [],
+    "playerChoices": [
+      "Tell me more",
+      "Start the mission",
+      "Sounds too dangerous",
+      "Thank you"
+    ],
     "requiredEnemyDefeat": {
       "id": 2,
       "count": 1
@@ -295,16 +314,12 @@ export default [
       }
     ],
     "reward": {
-      "exp": 750,
-      "money": 500,
+      "exp": 500,
+      "money": 150,
       "resourceRewards": [
         {
           "id": 1,
           "amount": 5
-        },
-        {
-          "id": 2,
-          "amount": 2
         }
       ],
       "weaponRewards": [
@@ -327,10 +342,15 @@ export default [
     "levelRequirement": 3,
     "completed": false,
     "requiredStoryLineId": 1,
-    "playerChoices": [],
+    "playerChoices": [
+      "Sure, what do you need?",
+      "No...",
+      "Yes, I can do that",
+      "No, I don't have the time"
+    ],
     "steps": [
       {
-        "npcMessage": "Hey survivor! I've got a simple delivery for you to do. Can you help me out?",
+        "npcMessage": "Hey survivor! I've got a delivery task for you. Can you help me?",
         "playerOptions": [
           {
             "text": "Sure, what do you need?",
@@ -347,7 +367,7 @@ export default [
         ]
       },
       {
-        "npcMessage": "I need you to collect 5 Wood Scraps for me. Can you do that?",
+        "npcMessage": "I need you to collect 5 Wood Scraps for me?",
         "playerOptions": [
           {
             "text": "Yes, I can do that",
@@ -374,29 +394,21 @@ export default [
       "count": 0
     },
     "reward": {
-      "exp": 1000,
-      "money": 250,
+      "exp": 500,
+      "money": 150,
       "resourceRewards": [
         {
-          "id": 5,
-          "amount": 1
+          "id": 2,
+          "amount": 2
         }
       ],
-      "weaponRewards": [
-        {
-          "id": 2
-        }
-      ],
+      "weaponRewards": [],
       "armorRewards": [
         {
           "id": 3
         }
       ],
-      "aidRewards": [
-        {
-          "id": 1
-        }
-      ]
+      "aidRewards": []
     },
     "alwaysGiveReward": false
   },
@@ -406,13 +418,17 @@ export default [
     "levelRequirement": 5,
     "completed": false,
     "requiredStoryLineId": 4,
-    "playerChoices": [],
+    "playerChoices": [
+      "OMG ITS... HUGE!!! KILL IT!!!",
+      "Run Run Run...",
+      "We just learn to help each other!"
+    ],
     "steps": [
       {
         "npcMessage": "THE GIANT RADBETTLE IS BACK!",
         "playerOptions": [
           {
-            "text": "OMG ITS... HUGE!!! KILL IT EVERYONE",
+            "text": "OMG ITS... HUGE!!! KILL IT!!!",
             "nextId": null,
             "requiredResources": [],
             "giveReward": false,
@@ -422,7 +438,7 @@ export default [
             }
           },
           {
-            "text": "I am just gonna go over here annnd...",
+            "text": "Run Run Run...",
             "nextId": null,
             "requiredResources": [],
             "giveReward": false,
@@ -434,7 +450,7 @@ export default [
         "npcMessage": "Thank you Survivor!",
         "playerOptions": [
           {
-            "text": "We just learn to help eachother!",
+            "text": "We just learn to help each other!",
             "nextId": null,
             "requiredResources": [],
             "giveReward": true,
@@ -448,12 +464,12 @@ export default [
       "count": 1
     },
     "reward": {
-      "exp": 4000,
-      "money": 825,
+      "exp": 2500,
+      "money": 500,
       "resourceRewards": [
         {
           "id": 1,
-          "amount": 1
+          "amount": 5
         },
         {
           "id": 2,
@@ -463,14 +479,10 @@ export default [
       "weaponRewards": [],
       "armorRewards": [
         {
-          "id": 6
-        }
-      ],
-      "aidRewards": [
-        {
           "id": 2
         }
-      ]
+      ],
+      "aidRewards": []
     },
     "alwaysGiveReward": false
   }

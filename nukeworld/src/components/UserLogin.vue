@@ -51,7 +51,7 @@ export default {
         name: '',
       },
       showSuccessMessage: false,
-      version: '0.1.7.9',
+      version: '0.1.8.0',
       showFullscreenDialog: false,
     };
   },

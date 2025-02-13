@@ -1,6 +1,6 @@
 export const questTemplateData = [
   {
-    id: 'basic-quest',
+    templateId: 'basic-quest',
     name: 'Basic Supply Quest',
     category: 'basic',
     difficulty: 'easy',

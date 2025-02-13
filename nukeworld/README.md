@@ -336,6 +336,58 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
   - Added error handling for voice synthesis
   - Improved voice consistency across components
 
+### Version 0.1.8.0 (12-02-2025)
+
+**ID & Template System:**
+- Fixed issue with ID generation in GameSettings for new templates
+- Fixed template handling in GameSettings.vue to ensure proper ID assignment
+- Fixed ID placement in object creation to be consistent with existing data structure
+- Fixed issue where template IDs were being overwritten by spread operator
+- Fixed issue where some templates were using string IDs instead of numeric
+- Fixed issue with ID generation in story and quest templates
+- Ensured proper ID sequence when creating new items through templates
+- Ensured proper ID generation sequence across all template types
+- Ensured consistent ID format across all game data
+- Updated template data structure in questTemplateData.js and storyTemplateData.js
+- Updated all template handlers to follow consistent ID assignment pattern
+- Added proper ID validation in getNextId method
+- Improved logging for debugging template creation
+- Improved error handling in template creation process
+
+**Modal & UI Improvements:**
+- Standardized modal styles across all components
+- Updated modal header, body, and footer padding for consistency
+- Updated button styles in modal footers
+- Improved modal content layout and spacing
+- Improved modal backdrop opacity and animation
+- Improved modal close button positioning and styling
+- Improved modal content organization and hierarchy
+- Improved modal content padding and margin consistency
+- Enhanced modal responsiveness on mobile devices
+- Enhanced modal title styling and text shadow effects
+- Enhanced modal accessibility with proper ARIA labels
+- Added consistent border colors and styles to modals
+- Added consistent hover effects for modal buttons
+- Added consistent transition effects for modal animations
+- Fixed modal scrolling issues on smaller screens
+- Fixed modal stacking issues when multiple modals are open
+- Fixed modal header alignment and title spacing
+
+**Settlement & Radiation System:**
+- Fixed settlement stats display and resource usage
+- Fixed toast notifications in reduceRadiation to match game style
+- Fixed resource icon display in settlement radiation toasts
+- Updated settlement radiation reduction to use proper resource icons
+- Improved settlement modal padding to 1rem
+- Improved error handling for insufficient resources in radiation reduction
+- Enhanced visual feedback when reducing settlement radiation
+- Added proper toast styling for radiation reduction success/failure messages
+
+**Level-Up & Progress System:**
+- Fixed level-up popup styling to match other modals
+- Enhanced level-up rewards display and animations 
+- Added consistent progress bar styling across modals
+
 ## Getting Started
 To get started with NukeWorld, follow these steps:
 
