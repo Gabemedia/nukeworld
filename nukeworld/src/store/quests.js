@@ -444,34 +444,5 @@ export default [
     "lat": 415.0698031999426,
     "lon": 1078.113264360958,
     "img": "acid_rain"
-  },
-  {
-    "name": "New Exploration Quest",
-    "desc": "Explore a dangerous area for valuable resources.",
-    "exp": 2500,
-    "money": 250,
-    "duration": 45000,
-    "progress": 0,
-    "state": "not-started",
-    "claimed": false,
-    "disabled": false,
-    "reward": [
-      2,
-      2,
-      3,
-      4
-    ],
-    "rewardChance": 0.1,
-    "armorReward": [
-      2,
-      3,
-      4
-    ],
-    "armorRewardChance": 0.05,
-    "levelRequirement": 1,
-    "img": "highway",
-    "id": 14,
-    "lat": 604.0355679372634,
-    "lon": 1147.0266039703497
   }
 ];
