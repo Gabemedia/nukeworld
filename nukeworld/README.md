@@ -388,6 +388,9 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Enhanced level-up rewards display and animations 
 - Added consistent progress bar styling across modals
 
+### Version 0.1.8.1 (16-07-2025)
+- 
+
 ## Getting Started
 To get started with NukeWorld, follow these steps:
 

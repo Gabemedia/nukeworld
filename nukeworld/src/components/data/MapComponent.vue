@@ -1,6 +1,6 @@
 <template>
   <div class="map-container">
-    <l-map ref="map" :zoom="currentZoom" :center="center" :options="mapOptions" @click="onMapClick">
+    <l-map ref="map" :zoom="currentZoom" :center="center" :options="mapOptions" @click="onMapClick" @mousemove="onMapMouseMove" @mouseout="onMapMouseOut">
       <l-image-overlay :url="mapImageUrl" :bounds="mapBounds" :opacity="1"></l-image-overlay>
       <l-rectangle :bounds="playableArea" :color="'transperant'" :weight="2" :fill="false" />
       <l-marker
@@ -21,6 +21,10 @@
       </l-marker>
 
     </l-map>
+    <!-- Vis musens koordinater som en boks ved musen -->
+    <div v-if="mouseCoords && mouseScreen" class="mouse-coords-floating" :style="{ left: mouseScreen.x + 15 + 'px', top: mouseScreen.y + 15 + 'px' }">
+      X: {{ mouseCoords.lng.toFixed(0) }}, Y: {{ mouseCoords.lat.toFixed(0) }}
+    </div>
     <div v-if="showModal" class="modal" tabindex="-1" @click.self="closeModal">
       <div class="modal-dialog">
         <div class="modal-content">
@@ -74,7 +78,7 @@ export default {
         attributionControl: false,
         scrollWheelZoom: false,
         doubleClickZoom: false,
-        dragging: true,
+        dragging: true, // Kortet kan trækkes rundt (standard)
         crs: L.CRS.Simple,
         maxBounds: [[230, 230], [930, 1700]],
         maxBoundsViscosity: 1.0
@@ -89,6 +93,8 @@ export default {
       selectedMarker: null,
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
+      mouseCoords: null, // Her gemmes musens koordinater
+      mouseScreen: null, // Her gemmes musens skærmposition
     };
   },
   computed: {
@@ -235,6 +241,21 @@ export default {
     onQuestUpdated(updatedQuest) {
       this.updateQuest(updatedQuest);
       this.selectedQuest = { ...updatedQuest };
+    },
+    onMapMouseMove(event) {
+      // For CRS.Simple svarer lat/lng til x/y
+      this.mouseCoords = event.latlng;
+      // Find musens position relativt til vinduet
+      if (event.originalEvent) {
+        this.mouseScreen = {
+          x: event.originalEvent.clientX,
+          y: event.originalEvent.clientY
+        };
+      }
+    },
+    onMapMouseOut() {
+      this.mouseCoords = null;
+      this.mouseScreen = null;
     },
   },
 };
@@ -437,5 +458,29 @@ export default {
     height: 42px;
     line-height: 42px;
   }
+}
+.mouse-coords {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 15px;
+  z-index: 1000;
+  min-width: 180px;
+}
+.mouse-coords-floating {
+  position: fixed;
+  pointer-events: none;
+  background: rgba(0,0,0,0.85);
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 15px;
+  z-index: 99999;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
 }
 </style>
