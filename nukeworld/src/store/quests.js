@@ -10,26 +10,13 @@ export default [
     "state": "not-started",
     "claimed": false,
     "disabled": false,
-    "reward": [
-      1,
-      1,
-      1,
-      1,
-      2,
-      2,
-      3
-    ],
+    "reward": [1, 1, 1, 1, 2, 2, 3],
     "rewardChance": 0.055,
-    "armorReward": [
-      1,
-      1,
-      1,
-      2
-    ],
+    "armorReward": [1, 1, 1, 2],
     "armorRewardChance": 0.025,
     "levelRequirement": 1,
-    "lat": 539.7513037388919,
-    "lon": 887.9123598579757,
+    "lat": 470,
+    "lon": 850,
     "img": "settlement_supplies"
   },
   {
@@ -43,25 +30,13 @@ export default [
     "state": "not-started",
     "claimed": false,
     "disabled": false,
-    "reward": [
-      3,
-      1,
-      1,
-      2
-    ],
+    "reward": [3, 1, 1, 2],
     "rewardChance": 0.1,
-    "armorReward": [
-      1,
-      1,
-      1,
-      2,
-      2,
-      3
-    ],
+    "armorReward": [1, 1, 1, 2, 2, 3],
     "armorRewardChance": 0.1,
     "levelRequirement": 2,
-    "lat": 443.6058302383243,
-    "lon": 595.9267881227183,
+    "lat": 455,
+    "lon": 900,
     "img": "search_location"
   },
   {
@@ -75,26 +50,13 @@ export default [
     "state": "not-started",
     "claimed": false,
     "disabled": false,
-    "reward": [
-      2,
-      2,
-      2,
-      3,
-      4,
-      1
-    ],
+    "reward": [2, 2, 2, 3, 4, 1],
     "rewardChance": 0.05,
-    "armorReward": [
-      1,
-      2,
-      2,
-      3,
-      1
-    ],
+    "armorReward": [1, 2, 2, 3, 1],
     "armorRewardChance": 0.01,
     "levelRequirement": 3,
-    "lat": 431.20445333692595,
-    "lon": 1505.115364599656,
+    "lat": 440,
+    "lon": 950,
     "img": "clock_tower"
   },
   {
@@ -108,32 +70,13 @@ export default [
     "state": "not-started",
     "claimed": false,
     "disabled": false,
-    "reward": [
-      2,
-      2,
-      2,
-      3,
-      4,
-      3,
-      3,
-      1,
-      6,
-      7
-    ],
+    "reward": [2, 2, 2, 3, 4, 3, 3, 1, 6, 7],
     "rewardChance": 0.7,
-    "armorReward": [
-      1,
-      1,
-      2,
-      2,
-      3,
-      4,
-      6
-    ],
+    "armorReward": [1, 1, 2, 2, 3, 4, 6],
     "armorRewardChance": 0.02,
     "levelRequirement": 4,
-    "lat": 577.1120006637091,
-    "lon": 405.3674957006255,
+    "lat": 425,
+    "lon": 1000,
     "img": "strange_noises"
   },
   {
@@ -147,27 +90,13 @@ export default [
     "state": "not-started",
     "claimed": false,
     "disabled": false,
-    "reward": [
-      4,
-      5,
-      2,
-      1,
-      1,
-      1
-    ],
+    "reward": [4, 5, 2, 1, 1, 1],
     "rewardChance": 0.03,
-    "armorReward": [
-      2,
-      1,
-      1,
-      1,
-      4,
-      3
-    ],
+    "armorReward": [2, 1, 1, 1, 4, 3],
     "armorRewardChance": 0.01,
     "levelRequirement": 5,
-    "lat": 741.0071055888336,
-    "lon": 1581.5410583527942,
+    "lat": 410,
+    "lon": 1050,
     "img": "library_cleanup"
   },
   {
@@ -181,30 +110,13 @@ export default [
     "state": "not-started",
     "claimed": false,
     "disabled": false,
-    "reward": [
-      6,
-      7,
-      2,
-      2,
-      1,
-      1,
-      1,
-      1
-    ],
+    "reward": [6, 7, 2, 2, 1, 1, 1, 1],
     "rewardChance": 0.02,
-    "armorReward": [
-      3,
-      2,
-      2,
-      1,
-      1,
-      1,
-      1
-    ],
+    "armorReward": [3, 2, 2, 1, 1, 1, 1],
     "armorRewardChance": 0.06,
     "levelRequirement": 7,
-    "lat": 397.75944603183245,
-    "lon": 898.0748849299532,
+    "lat": 395,
+    "lon": 1100,
     "img": "supply_run"
   },
   {
@@ -218,26 +130,13 @@ export default [
     "state": "not-started",
     "claimed": false,
     "disabled": false,
-    "reward": [
-      2,
-      6,
-      1,
-      1
-    ],
+    "reward": [2, 6, 1, 1],
     "rewardChance": 0.08,
-    "armorReward": [
-      4,
-      2,
-      1,
-      1,
-      1,
-      1,
-      2
-    ],
+    "armorReward": [4, 2, 1, 1, 1, 1, 2],
     "armorRewardChance": 0.03,
     "levelRequirement": 7,
-    "lat": 666.2673346912874,
-    "lon": 765.9514857772996,
+    "lat": 380,
+    "lon": 1150,
     "img": "library_cleanup_2"
   },
   {
@@ -251,31 +150,13 @@ export default [
     "state": "not-started",
     "claimed": false,
     "disabled": false,
-    "reward": [
-      4,
-      7,
-      2,
-      1,
-      1,
-      1,
-      2,
-      2
-    ],
+    "reward": [4, 7, 2, 1, 1, 1, 2, 2],
     "rewardChance": 0.15,
-    "armorReward": [
-      3,
-      4,
-      5,
-      1,
-      1,
-      1,
-      2,
-      2
-    ],
+    "armorReward": [3, 4, 5, 1, 1, 1, 2, 2],
     "armorRewardChance": 0.1,
     "levelRequirement": 9,
-    "lat": 435.6223827928487,
-    "lon": 640.5184618239955,
+    "lat": 365,
+    "lon": 1200,
     "img": "radioactive_wasteland"
   },
   {
@@ -289,24 +170,13 @@ export default [
     "state": "not-started",
     "claimed": false,
     "disabled": false,
-    "reward": [
-      2,
-      1,
-      1,
-      3,
-      5,
-      5
-    ],
+    "reward": [2, 1, 1, 3, 5, 5],
     "rewardChance": 0.05,
-    "armorReward": [
-      5,
-      3,
-      1
-    ],
+    "armorReward": [5, 3, 1],
     "armorRewardChance": 0.02,
     "levelRequirement": 10,
-    "lat": 453.9046136197555,
-    "lon": 337.24037159852486,
+    "lat": 350,
+    "lon": 1250,
     "img": "overgrown_village"
   },
   {
@@ -320,30 +190,13 @@ export default [
     "state": "not-started",
     "claimed": false,
     "disabled": false,
-    "reward": [
-      3,
-      1,
-      1,
-      3,
-      5,
-      7
-    ],
+    "reward": [3, 1, 1, 3, 5, 7],
     "rewardChance": 0.7,
-    "armorReward": [
-      5,
-      3,
-      3,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1
-    ],
+    "armorReward": [5, 3, 3, 1, 1, 1, 1, 1, 1],
     "armorRewardChance": 0.45,
     "levelRequirement": 12,
-    "lat": 603.0567069681547,
-    "lon": 1303.9951754454275,
+    "lat": 470,
+    "lon": 875,
     "img": "supply_shipment"
   },
   {
@@ -357,30 +210,13 @@ export default [
     "state": "not-started",
     "claimed": false,
     "disabled": false,
-    "reward": [
-      3,
-      1,
-      1,
-      3,
-      5,
-      7
-    ],
+    "reward": [3, 1, 1, 3, 5, 7],
     "rewardChance": 0.25,
-    "armorReward": [
-      5,
-      3,
-      3,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1
-    ],
+    "armorReward": [5, 3, 3, 1, 1, 1, 1, 1, 1],
     "armorRewardChance": 0.75,
     "levelRequirement": 15,
-    "lat": 763.911934267905,
-    "lon": 1582.1162100102758,
+    "lat": 455,
+    "lon": 925,
     "img": "atlantic_city"
   },
   {
@@ -394,25 +230,13 @@ export default [
     "state": "not-started",
     "claimed": false,
     "disabled": false,
-    "reward": [
-      21,
-      21,
-      21,
-      21,
-      20
-    ],
+    "reward": [21, 21, 21, 21, 20],
     "rewardChance": 0.05,
-    "armorReward": [
-      11,
-      11,
-      11,
-      11,
-      10
-    ],
+    "armorReward": [11, 11, 11, 11, 10],
     "armorRewardChance": 0.05,
     "levelRequirement": 15,
-    "lat": 514.3955416614195,
-    "lon": 899.4427564846104,
+    "lat": 440,
+    "lon": 975,
     "img": "warehouse_stashes"
   },
   {
@@ -426,23 +250,13 @@ export default [
     "state": "not-started",
     "claimed": false,
     "disabled": false,
-    "reward": [
-      3,
-      1,
-      2,
-      1
-    ],
+    "reward": [3, 1, 2, 1],
     "rewardChance": 0.2,
-    "armorReward": [
-      1,
-      2,
-      1,
-      3
-    ],
+    "armorReward": [1, 2, 1, 3],
     "armorRewardChance": 0.2,
     "levelRequirement": 17,
-    "lat": 415.0698031999426,
-    "lon": 1078.113264360958,
+    "lat": 425,
+    "lon": 1125,
     "img": "acid_rain"
   }
 ];

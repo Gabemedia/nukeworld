@@ -2,80 +2,93 @@
   <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="openModal">
     <img class="sidebar-icon" :src="require(`@/assets/interface/icons/shop.png`)" title="Player Shop">
   </button>
-  <div v-if="showModal" class="modal" tabindex="-1" @click.self="closeModal">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Big´n´Small Shop</h5>
-          <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
+
+  <div v-if="showModal" class="shop-modal" tabindex="-1" @click.self="closeModal">
+    <div class="shop-dialog">
+      <div class="shop-content">
+        <div class="shop-header">
+          <div class="shop-title-wrapper">
+            <img class="shop-logo" :src="require(`@/assets/interface/icons/shop.png`)" alt="Shop Icon">
+            <h5 class="shop-title">Big´n´Small Shop</h5>
+          </div>
+          <div class="player-money">
+        <img :src="require('@/assets/interface/icons/money.png')" alt="Money">
+        <span>{{ character.money }}</span>
+        <button class="close-button" @click="closeModal">&times;</button>
+      </div>
         </div>
-        <div class="modal-body shop-modal-body">
-          <div class="shop">
-            <div class="shop-section">
-              <h6 class="mb-2 text-uppercase fw-bold">Weapons</h6>
-              <div class="shop-items">
-                <div v-for="weapon in availableWeapons" :key="weapon.id" 
-                    class="shop-item" 
-                    @click="buyItem(weapon, 'weapons')" 
-                    @mouseover="showItemInfo(weapon)"
-                    @mouseleave="hideItemInfo"
-                    :ref="'item-weapons-' + weapon.id">
-                  <img :src="require(`@/assets/interface/icons/weapons/${weapon.img}`)" :alt="weapon.name" />
-                  <div class="price-box">{{ weapon.price }}</div>
-                  <div v-if="hoveredItem === weapon" class="item-info">
-                    <p class="mb-1 fw-bold small">Name: {{ weapon.name }}</p>
-                    <p class="mb-1 small">Attack: {{ weapon.attack }}</p>
-                    <p class="mb-1 small">Defence: {{ weapon.defence }}</p>
-                    <p class="mb-1 small">Description: {{ weapon.desc }}</p>
-                    <p class="mb-1 small">Price: {{ weapon.price }}</p>
-                  </div>
+
+        <div class="shop-tabs">
+          <button 
+            v-for="category in ['weapons', 'armor', 'aid', 'resources', 'premium']" 
+            :key="category"
+            class="tab-button"
+            :class="{ active: activeCategory === category }"
+            @click="changeCategory(category)"
+          >
+            <img :src="require(`@/assets/interface/icons/${category === 'weapons' ? 'gun' : category === 'armor' ? 'shield' : category === 'aid' ? 'medkit' : category === 'premium' ? 'premium/donate' : 'resources/ammunition'}.png`)" :alt="category">
+            {{ category.toUpperCase() }}
+            <span class="item-count">
+              {{ getAvailableItems(category).length }}
+            </span>
+          </button>
+        </div>
+
+        <div class="shop-container">
+          <div class="shop-content-grid">
+            <div class="shop-items">
+              <div class="items-grid">
+                <div v-for="item in getAvailableItems(activeCategory)" 
+                     :key="item.id"
+                     class="item-slot"
+                     :class="{ 'can-afford': character.money >= item.price, 'selected': hoveredItem === item }"
+                     @click="showItemInfo(item)"
+                     :ref="'item-' + activeCategory + '-' + item.id">
+                  <img :src="getImagePath(item)" :alt="item.name">
                 </div>
               </div>
             </div>
-            <div class="shop-section">
-              <h6 class="mb-2 text-uppercase fw-bold">Armor</h6>
-              <div class="shop-items">
-                <div v-for="armor in availableArmor" :key="armor.id" 
-                    class="shop-item" 
-                    @click="buyItem(armor, 'armor')" 
-                    @mouseover="showItemInfo(armor)"
-                    @mouseleave="hideItemInfo"
-                    :ref="'item-armor-' + armor.id">
-                  <img :src="require(`@/assets/interface/icons/armor/${armor.img}`)" :alt="armor.name" />
-                  <div class="price-box">{{ armor.price }}</div>
-                  <div v-if="hoveredItem === armor" class="item-info">
-                    <p class="mb-1 fw-bold small">Name: {{ armor.name }}</p>
-                    <p class="mb-1 small">Defence: {{ armor.defence }}</p>
-                    <p class="mb-1 small">Description: {{ armor.desc }}</p>
-                    <p class="mb-1 small">Price: {{ armor.price }}</p>
+
+            <div class="info-panel">
+              <div v-if="hoveredItem" class="item-details" :class="activeCategory">
+                <h3>{{ hoveredItem.name }}</h3>
+                <div class="stats">
+                  <div v-if="hoveredItem.attack" class="stat">
+                    <img :src="require('@/assets/interface/icons/gun.png')" alt="Attack">
+                    <span>Attack: {{ hoveredItem.attack }}</span>
+                  </div>
+                  <div v-if="hoveredItem.defence" class="stat">
+                    <img :src="require('@/assets/interface/icons/shield.png')" alt="Defense">
+                    <span>Defense: {{ hoveredItem.defence }}</span>
+                  </div>
+                  <div v-if="hoveredItem.health" class="stat">
+                    <img :src="require('@/assets/interface/icons/medkit.png')" alt="Health">
+                    <span>Health: +{{ hoveredItem.health }}</span>
+                  </div>
+                  <div v-if="activeCategory === 'resources'" class="stat">
+                    <img :src="getImagePath(hoveredItem)" :alt="hoveredItem.name">
+                    <span>Resource</span>
                   </div>
                 </div>
+                <p class="description">{{ hoveredItem.desc }}</p>
+                <div class="price-info">
+                  <img :src="require('@/assets/interface/icons/money.png')" alt="Money">
+                  <span>Price: {{ hoveredItem.price }}</span>
+                </div>
+                <button 
+                  class="buy-button" 
+                  @click="buyItem(hoveredItem, activeCategory)"
+                  :disabled="character.money < hoveredItem.price"
+                  :class="{ 'can-afford': character.money >= hoveredItem.price }">
+                  <span v-if="character.money >= hoveredItem.price">Buy Item</span>
+                  <span v-else>Can't Afford</span>
+                </button>
               </div>
-            </div>
-            <div class="shop-section">
-              <h6 class="mb-2 text-uppercase fw-bold">Aid</h6>
-              <div class="shop-items">
-                <div v-for="aid in availableAid" :key="aid.id" 
-                    class="shop-item" 
-                    @click="buyItem(aid, 'aid')" 
-                    @mouseover="showItemInfo(aid)"
-                    @mouseleave="hideItemInfo"
-                    :ref="'item-aid-' + aid.id">
-                  <img :src="require(`@/assets/interface/icons/aid/${aid.img}`)" :alt="aid.name" />
-                  <div class="price-box">{{ aid.price }}</div>
-                  <div v-if="hoveredItem === aid" class="item-info">
-                    <p class="mb-1 fw-bold small">Name: {{ aid.name }}</p>
-                    <p class="mb-1 small">Health: {{ aid.health }}</p>
-                    <p class="mb-1 small">Description: {{ aid.desc }}</p>
-                    <p class="mb-1 small">Price: {{ aid.price }}</p>
-                  </div>
-                </div>
+              <div v-else class="item-details-placeholder">
+                <p>Select an item to view details</p>
               </div>
             </div>
           </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" @click="closeModal">Close</button>
         </div>
       </div>
     </div>
@@ -87,63 +100,96 @@ import { mapState, mapActions } from 'vuex';
 
 export default {
   name: 'PlayerShop',
-  
   data() {
     return {
       showModal: false,
       hoveredItem: null,
+      activeCategory: 'weapons'
     };
   },
   computed: {
-    ...mapState(['character', 'items', 'armor', 'aid']),
+    ...mapState(['character', 'items', 'armor', 'aid', 'resources', 'premium']),
     availableWeapons() {
-      return this.items.filter(item => item.price !== -1);
+      return this.items.filter(item => item.price !== -1 && item.id !== 0);
     },
     availableArmor() {
-      return this.armor.filter(item => item.price !== -1);
+      return this.armor.filter(item => item.price !== -1 && item.id !== 0);
     },
     availableAid() {
-      return this.aid.filter(item => item.price !== -1);
+      return this.aid.filter(item => item.price !== -1 && item.id !== 0);
     },
+    availableResources() {
+      return this.resources.filter(item => item.price !== -1 && item.id !== 0);
+    },
+    availablePremium() {
+      return this.premium.filter(item => item.price !== -1 && item.id !== 0);
+    }
   },
   methods: {
-    ...mapActions(['addItemToWeapons', 'addItemToArmor', 'addItemToAid', 'decreaseMoney']),
+    ...mapActions(['addItemToWeapons', 'addItemToArmor', 'addItemToAid', 'addResource', 'addItemToPremium', 'decreaseMoney']),
+    getAvailableItems(category) {
+      switch(category) {
+        case 'weapons': return this.availableWeapons;
+        case 'armor': return this.availableArmor;
+        case 'aid': return this.availableAid;
+        case 'resources': return this.availableResources;
+        case 'premium': return this.availablePremium;
+        default: return [];
+      }
+    },
+    getImagePath(item) {
+      if (item.img.includes('hl_')) {
+        const fileName = item.img.toLowerCase();
+        return require(`@/assets/interface/icons/helmets/${fileName}`);
+      }
+      if (this.activeCategory === 'resources') {
+        return require(`@/assets/interface/icons/resources/${item.img}`);
+      }
+      if (this.activeCategory === 'premium') {
+        return require(`@/assets/interface/icons/premium/${item.img}`);
+      }
+      return require(`@/assets/interface/icons/${this.activeCategory}/${item.img}`);
+    },
+    changeCategory(category) {
+      this.activeCategory = category;
+      this.hoveredItem = null; // Clear hovered item when changing category
+    },
     openModal() {
       this.showModal = true;
     },
     closeModal() {
       this.showModal = false;
+      this.hoveredItem = null;
     },
     buyItem(item, category) {
       const price = parseInt(item.price);
       if (this.character.money >= price) {
         if (category === 'weapons' && this.character.weapons.length < 6) {
           this.addItemToWeapons(item.id);
+          this.decreaseMoney(price);
+          this.animatePurchase(item.id, category);
         } else if (category === 'armor' && this.character.armor.length < 6) {
           this.addItemToArmor(item.id);
+          this.decreaseMoney(price);
+          this.animatePurchase(item.id, category);
         } else if (category === 'aid' && this.character.aid.length < 6) {
           this.addItemToAid(item.id);
+          this.decreaseMoney(price);
+          this.animatePurchase(item.id, category);
+        } else if (category === 'resources') {
+          this.addResource(item.id);
+          this.decreaseMoney(price);
+          this.animatePurchase(item.id, category);
+        } else if (category === 'premium' && (this.character.premium || []).length < 6) {
+          this.addItemToPremium(item.id);
+          this.decreaseMoney(price);
+          this.animatePurchase(item.id, category);
         } else {
-          alert('You can only have a maximum of 6 items in each category.');
-          return;
+          this.showError('Inventory full! Maximum 6 items per category.');
         }
-        this.decreaseMoney(price);
-        this.$nextTick(() => {
-          const itemElement = this.$refs[`item-${category}-${item.id}`][0];
-          itemElement.classList.add('pull-out');
-          setTimeout(() => {
-            itemElement.classList.remove('pull-out');
-          }, 500);
-        });
       } else {
-        this.$nextTick(() => {
-          const itemElement = this.$refs[`item-${category}-${item.id}`][0];
-          itemElement.classList.add('shake');
-          setTimeout(() => {
-            itemElement.classList.remove('shake');
-          }, 500);
-        });
-        alert('Not enough money to buy this item.');
+        this.showError('Not enough money!');
+        this.animateError(item.id, category);
       }
     },
     showItemInfo(item) {
@@ -152,23 +198,37 @@ export default {
     hideItemInfo() {
       this.hoveredItem = null;
     },
-  },
+    animatePurchase(itemId, category) {
+      const element = this.$refs[`item-${category}-${itemId}`][0];
+      element.classList.add('purchase-success');
+      setTimeout(() => element.classList.remove('purchase-success'), 500);
+    },
+    animateError(itemId, category) {
+      const element = this.$refs[`item-${category}-${itemId}`][0];
+      element.classList.add('purchase-error');
+      setTimeout(() => element.classList.remove('purchase-error'), 500);
+    },
+    showError(message) {
+      // You can implement a toast or other notification system here
+      alert(message);
+    }
+  }
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .modal {
   display: flex;
   align-items: center;
   justify-content: center;
   position: fixed;
-  z-index: 1050;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
   overflow: auto;
   background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
 }
 
 .modal-dialog {
@@ -185,7 +245,7 @@ export default {
 
 .modal-header {
   border-bottom: 1px solid #00ff00;
-  padding: 0.75rem 1rem;
+  padding: 1rem;
 }
 
 .modal-title {
@@ -196,134 +256,503 @@ export default {
   font-size: 1rem;
 }
 
-.shop-modal-body {
+.modal-body {
   position: relative;
   flex: 1 1 auto;
   padding: 1rem!important;
   max-height: 70vh;
   overflow-y: auto;
+  color: #fff;
 }
 
 .modal-footer {
   border-top: 1px solid #00ff00;
-  padding: 0.75rem;
+  padding: 1rem;
 }
 
-.btn-secondary {
-  background-color: #333;
-  color: #fff;
-  border: 1px solid #00ff00;
-  transition: all 0.3s ease;
-  font-size: 0.9rem;
-}
 
-.btn-secondary:hover {
-  background-color: #00ff00;
-  color: #000;
-}
-
-.shop-section {
-  margin-bottom: 15px;
-}
-
-.shop-section h6 {
-  color: #00ff00;
-  margin-bottom: 0.5rem;
-  line-height: 1.2;
-  text-align: left;
-  font-size: 0.9rem;
-}
-
-.shop-items {
+.shop-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: start;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
 }
 
-.shop-item {
-  width: calc(25% - 8px);
-  height: 80px;
-  background-color: rgba(0, 255, 0, 0.1);
-  border: 1px solid #00ff00;
-  border-radius: 5px;
+.shop-dialog {
+  background: rgba(0, 0, 0, 0.9);
+  border: 2px solid #2a2a2a;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 1200px;
+  max-height: 90vh;
+  position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+}
+
+.shop-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+}
+
+.shop-header {
+  display: flex;
   align-items: center;
-  cursor: pointer;
-  position: relative;
-  padding: 5px;
+  justify-content: space-between;
+  gap: 5px;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #2a2a2a;
+  padding-bottom: 10px;
 }
 
-.shop-item img {
-  max-width: 70%;
-  max-height: 70%;
-  object-fit: contain;
+.shop-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.price-box {
-  margin-top: 2px;
-  padding: 1px 3px;
-  background-color: #000;
-  border: 1px solid #00ff00;
-  border-radius: 3px;
-  font-size: 0.7rem;
+.shop-logo {
+  width: 24px;
+  height: 24px;
+}
+
+.shop-title {
   color: #00ff00;
+  margin: 0;
+  font-size: 16px;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
 }
 
-.item-info {
-  position: absolute;
-  top: 100%;
-  left: 68.5%;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.8);
-  padding: 10px;
-  border-radius: 5px;
-  z-index: 1;
-  width: 250px;
-  text-align: left;
-  color: #fff;
-  font-size: 0.8rem;
-  border: 1px solid #00ff00;
-  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
-}
+.player-money {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background: rgba(255, 255, 0, 0.1);
+  border: 1px solid #ffff00;
+  border-radius: 4px;
+  color: #ffff00;
+  font-size: 14px;
 
-.item-info p {
-  margin-bottom: 2px;
-}
-
-@keyframes shake {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-3px); }
-  50% { transform: translateX(3px); }
-  75% { transform: translateX(-3px); }
-  100% { transform: translateX(0); }
-}
-
-.shake {
-  animation: shake 0.3s;
-}
-
-@keyframes pullOut {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
-}
-
-.pull-out {
-  animation: pullOut 0.3s;
-}
-
-@media (max-width: 768px) {
-  .shop-item {
-    width: calc(33.33% - 8px);
+  img {
+    width: 16px;
+    height: 16px;
   }
 }
 
-@media (max-width: 576px) {
-  .shop-item {
-    width: calc(50% - 8px);
+.close-button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0 8px;
+  margin-left: auto;
+  
+  &:hover {
+    color: #ff0000;
+  }
+}
+
+.shop-tabs {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #2a2a2a;
+  padding-bottom: 10px;
+}
+
+.tab-button {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: #888;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  position: relative;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  img {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background: #222;
+    color: #fff;
+  }
+
+  &.active {
+    background: #333;
+    color: #00ff00;
+    border-color: #00ff00;
+  }
+
+  .item-count {
+    display: inline-block;
+    background: #333;
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 12px;
+    margin-left: 8px;
+  }
+}
+
+.shop-container {
+  flex: 1;
+  min-height: 0;
+  margin-top: 15px;
+}
+
+.shop-content-grid {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 20px;
+  height: 100%;
+  max-height: calc(90vh - 140px); // Subtracting header + tabs height
+}
+
+.shop-items {
+  overflow-y: auto;
+  padding-right: 10px;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 4px;
+    
+    &:hover {
+      background: #444;
+    }
+  }
+}
+
+.items-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 15px;
+  padding: 5px;
+}
+
+.info-panel {
+  background: rgba(26, 26, 26, 0.95);
+  border: 1px solid #333;
+  border-radius: 6px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 4px;
+    
+    &:hover {
+      background: #444;
+    }
+  }
+}
+
+.item-details {
+  padding: 15px;
+  height: 100%;
+
+  &.weapons { border-left: 2px solid rgba(255, 68, 68, 0.3); }
+  &.armor { border-left: 2px solid rgba(68, 68, 255, 0.3); }
+  &.aid { border-left: 2px solid rgba(255, 255, 68, 0.3); }
+  &.resources { border-left: 2px solid rgba(68, 255, 68, 0.3); }
+  &.premium { border-left: 2px solid rgba(255, 215, 0, 0.3); }
+
+  h3 {
+    color: #00ff00;
+    font-size: 18px;
+    margin: 0 0 15px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  .stats {
+    margin-bottom: 15px;
+  }
+
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    font-size: 14px;
+
+    img {
+      width: 18px;
+      height: 18px;
+    }
+
+    span {
+      color: #fff;
+      &:last-child {
+        color: #00ff00;
+        text-shadow: 0 0 8px rgba(0, 255, 0, 0.3);
+      }
+    }
+  }
+
+  .description {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 15px;
+    line-height: 1.6;
+  }
+
+  .price-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: #ffff00;
+    font-size: 16px;
+
+    img {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+.item-details-placeholder {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+  padding: 20px;
+  text-align: center;
+}
+
+.item-slot {
+  width: 80px;
+  height: 80px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: #00ff00;
+    box-shadow: 0 4px 12px rgba(0, 255, 0, 0.2);
+  }
+
+  &.can-afford {
+    border-color: #00ff00;
+    background: rgba(0, 255, 0, 0.1);
+  }
+
+  &.selected {
+    border-color: #00ff00;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+  }
+
+  img {
+    max-width: 80%;
+    max-height: 80%;
+    transition: transform 0.2s ease;
+    image-rendering: pixelated;
+    z-index: 1;
+  }
+
+  &:hover img {
+    transform: scale(1.1);
+  }
+}
+
+.buy-button {
+  width: 100%;
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: rgba(26, 26, 26, 0.95);
+  color: #ff4444;
+  border: 1px solid #ff4444;
+
+  &.can-afford {
+    background: rgba(0, 255, 0, 0.1);
+    color: #00ff00;
+    border-color: #00ff00;
+
+    &:hover {
+      background: #00ff00;
+      color: #000;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 255, 0, 0.2);
+    }
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+}
+
+@keyframes purchaseSuccess {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); background: rgba(0, 255, 0, 0.2); }
+  100% { transform: scale(1); }
+}
+
+@keyframes purchaseError {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+  100% { transform: translateX(0); }
+}
+
+.purchase-success {
+  animation: purchaseSuccess 0.5s ease;
+}
+
+.purchase-error {
+  animation: purchaseError 0.3s ease;
+}
+
+@media (max-width: 1024px) {
+  .shop-content-grid {
+    grid-template-columns: 1fr 250px;
+  }
+
+  .items-grid {
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 12px;
+  }
+
+  .item-slot {
+    width: 70px;
+    height: 70px;
+  }
+}
+
+@media (max-width: 768px) {
+  .shop-dialog {
+    padding: 10px;
+    max-height: 100vh;
+    width: 100%;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .shop-content-grid {
+    grid-template-columns: 1fr;
+    max-height: calc(100vh - 120px);
+  }
+
+  .shop-items {
+    max-height: 60vh;
+  }
+
+  .info-panel {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    max-height: 40vh;
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+  }
+
+  .items-grid {
+    grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
+    gap: 10px;
+  }
+
+  .item-slot {
+    width: 65px;
+    height: 65px;
+  }
+
+  .item-overlay {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .item-price {
+    font-size: 11px;
+
+    img {
+      width: 12px;
+      height: 12px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .shop-content {
+    padding: 10px;
+  }
+
+  .items-grid {
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 8px;
+  }
+
+  .item-slot {
+    width: 60px;
+    height: 60px;
+  }
+
+  .info-panel {
+    max-height: 50vh;
+  }
+
+  .item-price {
+    font-size: 10px;
+
+    img {
+      width: 10px;
+      height: 10px;
+    }
   }
 }
 </style>

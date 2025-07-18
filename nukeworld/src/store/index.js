@@ -7,6 +7,7 @@ import items from './items';
 import armor from './armor';
 import aid from './aid';
 import resources from './ressources';
+import premium from './premium.js';
 import enemies from './enemy';
 import settlement from './settlement';
 
@@ -27,7 +28,9 @@ const state = reactive({
     equippedWeapons: [],
     armor: [], 
     equippedArmor: null,
+    aid: [],
     resources: [],
+    premium: [],
   },
   quests: reactive(JSON.parse(localStorage.getItem('quests')) || defaultQuests),
   storyLines: reactive(JSON.parse(localStorage.getItem('storyLines')) || defaultStoryLines),
@@ -38,12 +41,33 @@ const state = reactive({
   armor,
   aid,
   resources,
+  premium,
   mapBounds: null,
   markers: [],
   currentBattleStoryLineId: null,
   currentBattleStepIndex: null,
   currentEnemyId: null,
   defeatedEnemies: {},
+  userSettings: {
+    music: (() => {
+      try {
+        const saved = localStorage.getItem('musicSettings');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          // Ensure the parsed object has the required properties
+          return {
+            enabled: typeof parsed.enabled === 'boolean' ? parsed.enabled : true,
+            volume: typeof parsed.volume === 'number' ? parsed.volume : 0.5
+          };
+        }
+        return { enabled: true, volume: 0.5 };
+      } catch (error) {
+        console.error('Error loading music settings:', error);
+        return { enabled: true, volume: 0.5 };
+      }
+    })(),
+    isDeveloperMode: false
+  }
 });
 
 
@@ -97,19 +121,7 @@ const mutations = {
   },
   deleteCharacter(state, character) {
     state.characters = state.characters.filter(ch => ch.email !== character.email);
-  },
-
-  assignRandomCoordinates(state) {
-    const playableArea = [
-      [350, 300], [800, 1600]
-    ];
-    state.quests.forEach((quest) => {
-      const lat = Math.random() * (playableArea[1][0] - playableArea[0][0]) + playableArea[0][0];
-      const lon = Math.random() * (playableArea[1][1] - playableArea[0][1]) + playableArea[0][1];
-      quest.lat = lat;
-      quest.lon = lon;
-    });
-  },  
+  }, 
 
   addMarker(state, marker) {
     state.markers.push(marker);
@@ -320,11 +332,76 @@ const mutations = {
       }
     }
   },
+
+  sellResource(state, resourceUuid) {
+    const resourceIndex = state.character.resources.findIndex(item => item.uuid === resourceUuid);
+    if (resourceIndex !== -1) {
+      const soldItem = state.character.resources[resourceIndex];
+      if (soldItem.price !== '-1') {
+        state.character.resources.splice(resourceIndex, 1);
+        state.character.money += Math.floor(parseInt(soldItem.price) * 0.1);
+      }
+    }
+  },
+
+  sellResourceStack(state, stack) {
+    if (!Array.isArray(stack)) return;
+    
+    let totalValue = 0;
+    stack.forEach(resource => {
+      const resourceIndex = state.character.resources.findIndex(item => item.uuid === resource.uuid);
+      if (resourceIndex !== -1) {
+        const soldItem = state.character.resources[resourceIndex];
+        if (soldItem.price !== '-1') {
+          state.character.resources.splice(resourceIndex, 1);
+          totalValue += parseInt(soldItem.price);
+        }
+      }
+    });
+    
+    state.character.money += Math.floor(totalValue * 0.1);
+  },
+
+  sellAid(state, itemUuid) {
+    const itemIndex = state.character.aid.findIndex(item => item.uuid === itemUuid);
+    if (itemIndex !== -1) {
+      const soldItem = state.character.aid[itemIndex];
+      if (soldItem.price !== '-1') {
+        state.character.aid.splice(itemIndex, 1);
+        state.character.money += Math.floor(parseInt(soldItem.price) * 0.1);
+      }
+    }
+  },
+  sellPremium(state, itemUuid) {
+    if (!state.character.premium) {
+      state.character.premium = [];
+      return;
+    }
+    const itemIndex = state.character.premium.findIndex(item => item.uuid === itemUuid);
+    if (itemIndex !== -1) {
+      const soldItem = state.character.premium[itemIndex];
+      if (soldItem.price !== '-1') {
+        state.character.premium.splice(itemIndex, 1);
+        state.character.money += Math.floor(parseInt(soldItem.price) * 0.1);
+      }
+    }
+  },
+
   addItemToAid(state, itemId) {
     const item = state.aid.find(i => i.id === itemId);
     if (item) {
       const newItem = { ...item, uuid: uuidv4() };
       state.character.aid.push(newItem);
+    }
+  },
+  addItemToPremium(state, itemId) {
+    const item = state.premium.find(i => i.id === itemId);
+    if (item) {
+      const newItem = { ...item, uuid: uuidv4() };
+      if (!state.character.premium) {
+        state.character.premium = [];
+      }
+      state.character.premium.push(newItem);
     }
   },
   setFirstAidItem(state, item) {
@@ -377,6 +454,27 @@ const mutations = {
   cancelStoryLine(state) {
     state.currentStoryLineId = null;
   },
+  updateMusicSettings(state, { enabled, volume }) {
+    // Ensure we have valid values
+    const validEnabled = typeof enabled === 'boolean' ? enabled : true;
+    const validVolume = typeof volume === 'number' && volume >= 0 && volume <= 1 ? volume : 0.5;
+    
+    state.userSettings.music.enabled = validEnabled;
+    state.userSettings.music.volume = validVolume;
+    
+    // Save to localStorage
+    try {
+      localStorage.setItem('musicSettings', JSON.stringify({
+        enabled: validEnabled,
+        volume: validVolume
+      }));
+    } catch (error) {
+      console.error('Error saving music settings to localStorage:', error);
+    }
+  },
+  toggleDeveloperMode(state) {
+    state.userSettings.isDeveloperMode = !state.userSettings.isDeveloperMode;
+  }
 };
 
 const actions = {
@@ -392,12 +490,13 @@ const actions = {
       health: 100,
       maxExp: 2500,
       money: 0,
-      weapons: [state.items[0]],
-      equippedWeapons: [state.items[0]],
-      armor: [state.armor[0]],
-      equippedArmor: state.armor[0],
-      aid: [],
-      resources: [],
+        weapons: [state.items[0]],
+  equippedWeapons: [state.items[0]],
+  armor: [state.armor[0]],
+  equippedArmor: state.armor[0],
+  aid: [],
+  resources: [],
+  premium: [],
     };
     commit('addCharacter', newCharacter);
     commit('updateCharacter', newCharacter);
@@ -582,13 +681,7 @@ const actions = {
   resetQuests({ state, commit }) {
     state.quests.forEach((quest) => {
       if (quest.state === 'completed') {
-        const playableArea = [
-          [270, 270], [850, 1650]
-        ];
-        const lat = Math.random() * (playableArea[1][0] - playableArea[0][0]) + playableArea[0][0];
-        const lon = Math.random() * (playableArea[1][1] - playableArea[0][1]) + playableArea[0][1];
-        
-        commit('resetQuest', { ...quest, lat, lon });
+        commit('resetQuest');
       }
     });
     localStorage.setItem('quests', JSON.stringify(state.quests));
@@ -606,7 +699,9 @@ const actions = {
       equippedWeapons: [state.items[0]],
       armor: [state.armor[0]],
       equippedArmor: state.armor[0],
+      aid: [],
       resources: [],
+      premium: [],
       currentStoryLine: null,
       currentStoryStep: null,
     });
@@ -796,12 +891,30 @@ const actions = {
     commit('sellArmor', itemUuid);
   },
 
+  sellResource({ commit }, resourceUuid) {
+    commit('sellResource', resourceUuid);
+  },
+
+  sellResourceStack({ commit }, stack) {
+    commit('sellResourceStack', stack);
+  },
+
+  sellAid({ commit }, itemUuid) {
+    commit('sellAid', itemUuid);
+  },
+  sellPremium({ commit }, itemUuid) {
+    commit('sellPremium', itemUuid);
+  },
+
   useAid({ commit }, itemUuid) {
     commit('useAid', itemUuid);
   },
 
   addItemToAid({ commit }, itemId) {
     commit('addItemToAid', itemId);
+  },
+  addItemToPremium({ commit }, itemId) {
+    commit('addItemToPremium', itemId);
   },
 
   addItemToWeapons({ commit }, itemId) {
@@ -874,7 +987,6 @@ const store = createStore({
 });
 
 // Remove settlement watcher initialization
-store.commit('assignRandomCoordinates');
 store.dispatch('initializeQuests');
 store.dispatch('autoResetQuests');
 

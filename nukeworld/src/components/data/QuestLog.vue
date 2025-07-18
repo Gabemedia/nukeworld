@@ -1,23 +1,25 @@
 <template>
-  <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="toggleModal">
+  <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="openModal">
     <img class="sidebar-icon" :src="require(`@/assets/interface/icons/quests.png`)" title="Quest Log">
   </button>
-  <div v-if="showModal" class="modal mt-2" tabindex="-1" @click.self="closeModal">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Quest Log</h5>
-          <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
+  
+  <div v-if="showModal" class="shop-modal" tabindex="-1" @click.self="closeModal">
+    <div class="shop-dialog">
+      <div class="shop-content">
+        <div class="shop-header">
+          <div class="shop-title-wrapper">
+            <img class="shop-logo" :src="require(`@/assets/interface/icons/quests.png`)" alt="Quest Log Icon">
+            <h5 class="shop-title">Quest Log</h5>
+          </div>
+          <div class="player-money">
+            <img :src="require('@/assets/interface/icons/money.png')" alt="Money">
+            <span>{{ $store.state.character.money }}</span>
+            <button class="close-button" @click="closeModal">&times;</button>
+          </div>
         </div>
+        
         <div class="modal-body">
           <QuestTabs />
-        </div>
-        <div class="modal-footer">
-          <div class="reset-quests" @click="confirmResetQuests">
-            <span>Reset Quests</span>
-            <img class="icon-reload" :src="require(`@/assets/interface/icons/reload.png`)" title="Reset Quests (Cost: 2500)">
-          </div>
-          <button type="button" class="btn btn-secondary" @click="closeModal">Close</button>
         </div>
       </div>
     </div>
@@ -40,8 +42,8 @@ export default {
   },
   methods: {
     ...mapActions(['resetQuests', 'decreaseMoney']),
-    toggleModal() {
-      this.showModal = !this.showModal;
+    openModal() {
+      this.showModal = true;
     },
     closeModal() {
       this.showModal = false;
@@ -66,102 +68,182 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.modal {
+.shop-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
-  position: fixed;
-  z-index: 1050;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
 }
 
-.modal-dialog {
-  max-width: 500px;
+.shop-dialog {
+  background: rgba(0, 0, 0, 0.9);
+  border: 2px solid #2a2a2a;
+  border-radius: 8px;
   width: 90%;
-  margin: 1.75rem auto;
+  max-width: 1200px;
+  max-height: 90vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
-.modal-content {
-  background-color: #1a1a1a;
-  border: 2px solid #00ff00;
-  border-radius: 10px;
+.shop-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
 }
 
-.modal-header {
-  border-bottom: 1px solid #00ff00;
-  padding: 1rem;
+.shop-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #2a2a2a;
+  padding: 15px 15px 10px 15px;
 }
 
-.modal-title {
+.shop-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.shop-logo {
+  width: 24px;
+  height: 24px;
+}
+
+.shop-title {
   color: #00ff00;
-  font-weight: bold;
-  text-transform: uppercase;
-  text-shadow: 0 0 10px #00ff00;
-  font-size: 1rem;
+  margin: 0;
+  font-size: 16px;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.player-money {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background: rgba(255, 255, 0, 0.1);
+  border: 1px solid #ffff00;
+  border-radius: 4px;
+  color: #ffff00;
+  font-size: 14px;
+
+  img {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0 8px;
+  margin-left: auto;
+  
+  &:hover {
+    color: #ff0000;
+  }
 }
 
 .modal-body {
   position: relative;
   flex: 1 1 auto;
-  padding: 1rem;
-  max-height: 70vh;
-  overflow-y: auto;
-  color: #fff;
+  padding: 0 15px;
+  height: calc(90vh - 150px);
+  overflow: hidden;
 }
 
 .modal-footer {
-  border-top: 1px solid #00ff00;
-  padding: 1rem;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-}
-
-.btn-secondary {
-  background-color: #333;
-  color: #fff;
-  border: 1px solid #00ff00;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background-color: #00ff00;
-    color: #000;
-  }
+  padding: 15px;
+  border-top: 2px solid #2a2a2a;
+  margin-top: 15px;
 }
 
 .reset-quests {
   display: flex;
   align-items: center;
+  gap: 8px;
   cursor: pointer;
   color: #00ff00;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
+  font-size: 14px;
+  padding: 8px 16px;
+  border: 1px solid #00ff00;
+  border-radius: 4px;
+  background: rgba(0, 255, 0, 0.1);
+  transition: all 0.2s ease;
 
   &:hover {
-    color: #fff;
+    background: rgba(0, 255, 0, 0.2);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 255, 0, 0.2);
+  }
+
+  .icon-reload {
+    width: 16px;
+    height: 16px;
   }
 }
 
-.icon-reload {
-  width: 18px;
-  margin-left: 5px;
-  transition: opacity 0.3s ease;
-  filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%);
+@media (max-width: 768px) {
+  .shop-dialog {
+    padding: 10px;
+    max-height: 100vh;
+    width: 100%;
+    margin: 0;
+    border-radius: 0;
+  }
 
-  &:hover {
-    opacity: 0.8;
+  .modal-body {
+    height: calc(100vh - 150px);
+  }
+
+  .shop-header {
+    padding: 10px 10px 8px 10px;
+  }
+
+  .modal-body {
+    padding: 0 10px;
+  }
+
+  .modal-footer {
+    padding: 10px;
   }
 }
 
-@media (max-width: 576px) {
-  .modal-dialog {
-    width: 95%;
-    margin: 1rem auto;
+@media (max-width: 480px) {
+  .shop-header {
+    padding: 8px 8px 6px 8px;
+  }
+
+  .modal-body {
+    padding: 0 8px;
+  }
+
+  .modal-footer {
+    padding: 8px;
+  }
+
+  .reset-quests {
+    font-size: 12px;
+    padding: 6px 12px;
   }
 }
 </style>
+

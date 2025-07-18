@@ -36,6 +36,10 @@ import GameOver from './data/GameOver.vue';
 import LvlPopUp from './data/controller/popup/LvlPopUp.vue';
 import { mapState } from 'vuex';
 
+// Get all music files from the music directory
+const musicFiles = require.context('@/assets/music', false, /\.mp3$/);
+const playlist = musicFiles.keys().map(key => require('@/assets/music' + key.slice(1)));
+
 export default {
   name: 'GameWorld',
   components: {
@@ -52,6 +56,10 @@ export default {
     return {
       showModal: false,
       windowWidth: window.innerWidth,
+      audio: null,
+      currentTrackIndex: 0,
+      playlist: playlist,
+      currentTrackName: ''
     };
   },
   computed: {
@@ -75,6 +83,9 @@ export default {
         return require('@/assets/maps/nukemap4.webp');
       }
     },
+    musicSettings() {
+      return this.$store.state.userSettings?.music || { enabled: true, volume: 0.5 };
+    }
   },
   watch: {
     'character.health': function (newHealth) {
@@ -97,6 +108,28 @@ export default {
         });
       }
     },
+    'musicSettings.enabled': {
+      handler(newValue) {
+        if (this.audio && this.musicSettings) {
+          if (newValue) {
+            this.audio.play().catch(error => {
+              console.error('Error playing audio when enabled:', error);
+            });
+          } else {
+            this.audio.pause();
+          }
+        }
+      },
+      immediate: true
+    },
+    'musicSettings.volume': {
+      handler(newValue) {
+        if (this.audio && this.musicSettings) {
+          this.audio.volume = newValue || 0.5;
+        }
+      },
+      immediate: true
+    },
     windowWidth() {
       this.updateUIScale();
     },
@@ -111,9 +144,19 @@ export default {
       event_label: 'Game World Loaded',
       character_level: this.character.level
     });
+
+    // Initialize music
+    this.initializeMusic();
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.handleResize);
+
+    // Clean up audio
+    if (this.audio) {
+      this.audio.pause();
+      this.audio.removeEventListener('ended', () => {});
+      this.audio = null;
+    }
   },
   methods: {
     openModal() {
@@ -133,12 +176,70 @@ export default {
     updateUIScale() {
       // Vi behøver ikke at gøre noget her, da skaleringen håndteres i template
     },
+
+    initializeMusic() {
+      if (!this.audio) {
+        this.audio = new Audio();
+        this.audio.volume = this.musicSettings.volume || 0.5;
+        
+        // Play next track when current one ends
+        this.audio.addEventListener('ended', () => {
+          // Shuffle to next track
+          this.currentTrackIndex = Math.floor(Math.random() * this.playlist.length);
+          this.audio.src = this.playlist[this.currentTrackIndex];
+          // Extract filename from path for display
+          this.currentTrackName = this.playlist[this.currentTrackIndex].split('/').pop().replace('.mp3', '');
+          
+          if (this.musicSettings && this.musicSettings.enabled) {
+            this.audio.play().catch(error => {
+              console.error('Error playing audio:', error);
+              // Try next track if current fails
+              this.playNextTrack();
+            });
+          }
+        });
+
+        // Set initial track
+        this.currentTrackIndex = Math.floor(Math.random() * this.playlist.length);
+        this.audio.src = this.playlist[this.currentTrackIndex];
+        this.currentTrackName = this.playlist[this.currentTrackIndex].split('/').pop().replace('.mp3', '');
+        
+        // Only start playing if music is enabled
+        if (this.musicSettings && this.musicSettings.enabled) {
+          this.audio.play().catch(error => {
+            console.error('Error playing initial audio:', error);
+            // Try next track if current fails
+            this.playNextTrack();
+          });
+        }
+      }
+    },
+
+    playNextTrack() {
+      if (this.playlist.length > 0) {
+        this.currentTrackIndex = (this.currentTrackIndex + 1) % this.playlist.length;
+        this.audio.src = this.playlist[this.currentTrackIndex];
+        this.currentTrackName = this.playlist[this.currentTrackIndex].split('/').pop().replace('.mp3', '');
+        
+        if (this.musicSettings && this.musicSettings.enabled) {
+          this.audio.play().catch(error => {
+            console.error('Error playing audio:', error);
+            // Try next track if current fails
+            this.playNextTrack();
+          });
+        }
+      }
+    }
   },
   created() {
-    const savedCharacter = JSON.parse(localStorage.getItem('character'));
-    if (savedCharacter) {
-      console.log('Loaded character from localStorage:', savedCharacter);
-      this.$store.commit('updateCharacter', savedCharacter);
+    try {
+      const savedCharacter = JSON.parse(localStorage.getItem('character'));
+      if (savedCharacter) {
+        console.log('Loaded character from localStorage:', savedCharacter);
+        this.$store.commit('updateCharacter', savedCharacter);
+      }
+    } catch (error) {
+      console.error('Error loading character from localStorage:', error);
     }
   },
 };

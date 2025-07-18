@@ -68,11 +68,11 @@ export default {
   },
   data() {
     return {
-      center: [600, 960],
+      center: [500, 1000],
       playableArea: [
-        [350, 300], [800, 1600]
+        [350, 300], [1080, 1920]
       ],
-      mapBounds: [[230, 230], [930, 1700]],
+      mapBounds: [[230, 230], [1080, 1920]],
       mapOptions: {
         zoomControl: false,
         attributionControl: false,
@@ -80,7 +80,7 @@ export default {
         doubleClickZoom: false,
         dragging: true, // Kortet kan trækkes rundt (standard)
         crs: L.CRS.Simple,
-        maxBounds: [[230, 230], [930, 1700]],
+        maxBounds: [[230, 230], [1080, 1920]],
         maxBoundsViscosity: 1.0
       },
       settlementIcon: L.icon({
@@ -104,7 +104,7 @@ export default {
       return this.character.level || 1;
     },
     currentZoom() {
-      if (this.windowWidth <= 1440) return 1;
+      if (this.windowWidth <= 1440) return 0;
       if (this.windowWidth <= 1920) return 2;
       if (this.windowWidth <= 2880) return 3;
       if (this.windowWidth <= 3840) return 4;

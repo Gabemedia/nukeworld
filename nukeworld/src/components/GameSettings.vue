@@ -1,83 +1,55 @@
 <template>
   <div class="settings-container">
-    <StoryTemplates 
-      v-if="showStoryTemplates"
-      :show="showStoryTemplates"
-      @close="showStoryTemplates = false"
-      @select-template="handleTemplateSelect"
-    />
-    
-    <QuestTemplates 
-      v-if="showQuestTemplates"
-      :show="showQuestTemplates"
-      @close="showQuestTemplates = false"
-      @select-template="handleQuestTemplateSelect"
-    />
-    
-    <EnemyTemplates 
-      v-if="showEnemyTemplates"
-      :show="showEnemyTemplates"
-      @close="showEnemyTemplates = false"
-      @select-template="handleEnemyTemplateSelect"
-    />
-    
-    <ResourceTemplates 
-      v-if="showResourceTemplates"
-      :show="showResourceTemplates"
-      @close="showResourceTemplates = false"
-      @select-template="handleResourceTemplateSelect"
-    />
-    
-    <AidTemplates 
-      v-if="showAidTemplates"
-      :show="showAidTemplates"
-      @close="showAidTemplates = false"
-      @select-template="handleAidTemplateSelect"
-    />
-    
-    <ArmorTemplates 
-      v-if="showArmorTemplates"
-      :show="showArmorTemplates"
-      @close="showArmorTemplates = false"
-      @select-template="handleArmorTemplateSelect"
-    />
-    
-    <WeaponTemplates 
-      v-if="showWeaponTemplates"
-      :show="showWeaponTemplates"
-      @close="showWeaponTemplates = false"
-      @select-template="handleWeaponTemplateSelect"
-    />
-    
     <div class="settings-content">
       <div class="settings-header">
         <h1 class="game-title">Settings</h1>
-        <button @click="goToMainMenu" class="btn btn-outline-primary me-2 mt-2">Back to Main Menu</button>
-      </div>
-      <div class="settings-menu">
-        <button 
-          class="btn btn-outline-primary" 
-          v-for="section in sections" 
-          :key="section" 
-          @click="changeSection(section)"
-          :class="{ active: activeSection === section }"
-        >
-          {{ section }}
-        </button>
+        <div class="header-buttons">
+          <button 
+            class="btn" 
+            :class="isDeveloperMode ? 'btn-outline-warning' : 'btn-outline-primary'"
+            @click="toggleDeveloperMode"
+          >
+            {{ isDeveloperMode ? 'Switch to User Mode' : 'Switch to Developer Mode' }}
+          </button>
+          <button @click="goToMainMenu" class="btn btn-outline-primary ms-2">Back to Main Menu</button>
+        </div>
       </div>
 
-      <div class="action-buttons">
-        <button type="button" class="btn btn-success" @click="addNewItem">Add New</button>
-        <button type="button" class="btn btn-primary" @click="saveChanges">Save Changes</button>
-        <button type="button" class="btn btn-danger" @click="deleteItem">Delete</button>
-        <button type="button" class="btn btn-info" @click="exportChanges">Export {{ activeSection }}</button>
-        <button type="button" class="btn btn-warning" @click="resetData">Reset Data</button>
-      </div>
+      <!-- User Settings Section -->
+      <div v-if="!isDeveloperMode" class="user-settings">
+        <h2 class="section-title">User Settings</h2>
+        
+        <!-- Music Settings -->
+        <div class="settings-group">
+          <h3 class="group-title">Music Settings</h3>
+          <div class="form-group">
+            <label class="form-check-label">
+              <input 
+                type="checkbox" 
+                v-model="musicEnabled" 
+                class="form-check-input"
+              >
+              Enable Music
+            </label>
+          </div>
+          
+          <div class="form-group" v-if="musicEnabled">
+            <label>Volume ({{ musicVolume }})</label>
+            <input 
+              type="range" 
+              v-model.number="musicVolume" 
+              min="0" 
+              max="1" 
+              step="0.1" 
+              class="form-control"
+            >
+          </div>
+        </div>
 
-      <div class="data-container">
-        <div class="data-display">
-          <h3 class="subsection-title">{{ activeSection }} Data</h3>
-          <div v-if="activeSection === 'speech'" class="speech-settings">
+        <!-- Speech Settings -->
+        <div class="settings-group">
+          <h3 class="group-title">Speech Settings</h3>
+          <div class="speech-settings">
             <div class="form-group">
               <label class="form-check-label">
                 <input type="checkbox" v-model="speechSettings.enabled" @change="updateSpeechSettings" class="form-check-input">
@@ -116,418 +88,487 @@
               Test Speech Settings
             </button>
           </div>
-          <div v-else-if="activeSection === 'settlement'" class="settlement-settings">
-            <h3 class="settings-title">Settlement Settings</h3>
-            
-            <div class="settings-group">
-              <h4 class="group-title">Attack Settings</h4>
-              <div class="form-group">
-                <label>Attack Interval (seconds)</label>
-                <div class="input-group">
-                  <input type="number" v-model.number="settlement.attackInterval" @change="saveToLocalStorage" class="form-control" min="1">
-                  <div class="input-group-append">
-                    <span class="input-group-text">sec</span>
-                  </div>
-                </div>
-                <small class="form-text text-muted">How often settlements are attacked</small>
-              </div>
-              
-              <div class="form-group">
-                <label>Attack Chance (%)</label>
-                <div class="input-group">
-                  <input type="number" v-model.number="settlement.attackChance" @change="saveToLocalStorage" class="form-control" min="0" max="100">
-                  <div class="input-group-append">
-                    <span class="input-group-text">%</span>
-                  </div>
-                </div>
-                <small class="form-text text-muted">Chance of being attacked when the interval expires</small>
-              </div>
-            </div>
-            
-            <div class="settings-group">
-              <h4 class="group-title">Health Settings</h4>
-              <div class="form-group">
-                <label>Health Loss Per Minute</label>
-                <div class="input-group">
-                  <input type="number" v-model.number="settlement.healthLossPerMinute" @change="saveToLocalStorage" class="form-control" min="0">
-                  <div class="input-group-append">
-                    <span class="input-group-text">HP/m</span>
-                  </div>
-                </div>
-                <small class="form-text text-muted">Base health loss per minute (60 = 1 damage per second)</small>
-              </div>
-              
-              <div class="form-group">
-                <label>Radiation Damage Multiplier</label>
-                <div class="input-group">
-                  <input type="number" v-model.number="settlement.radiationDamageMultiplier" @change="saveToLocalStorage" class="form-control" min="0" step="0.1">
-                  <div class="input-group-append">
-                    <span class="input-group-text">x</span>
-                  </div>
-                </div>
-                <small class="form-text text-muted">Multiplier for radiation damage (1 = normal)</small>
-              </div>
-            </div>
-            
-            <div class="settings-group">
-              <h4 class="group-title">Health Limits</h4>
-              <div class="form-group">
-                <label>Starting Health</label>
-                <div class="input-group">
-                  <input type="number" v-model.number="settlement.startingHealth" @change="saveToLocalStorage" class="form-control" min="1">
-                  <div class="input-group-append">
-                    <span class="input-group-text">HP</span>
-                  </div>
-                </div>
-                <small class="form-text text-muted">Starting health for new settlements</small>
-              </div>
-              
-              <div class="form-group">
-                <label>Max Health</label>
-                <div class="input-group">
-                  <input type="number" v-model.number="settlement.maxHealth" @change="saveToLocalStorage" class="form-control" min="1">
-                  <div class="input-group-append">
-                    <span class="input-group-text">HP</span>
-                  </div>
-                </div>
-                <small class="form-text text-muted">Maximum health for settlements</small>
-              </div>
-            </div>
-
-            <div class="settings-group">
-              <h4 class="group-title">Upgrade Costs</h4>
-              
-              <div class="upgrade-section">
-                <h5 class="upgrade-title">Defence Upgrade</h5>
-                <div class="form-group">
-                  <label>Resource Type 1</label>
-                  <select v-model="settlement.upgradeCosts.defences.resource1" class="form-control">
-                    <option v-for="resource in availableResources" :key="resource.id" :value="resource.id">
-                      {{ resource.name }}
-                    </option>
-                  </select>
-                  <input type="number" v-model="settlement.upgradeCosts.defences.resource1Amount" class="form-control" min="0" placeholder="Amount">
-                </div>
-                <div class="form-group">
-                  <label>Resource Type 2</label>
-                  <select v-model="settlement.upgradeCosts.defences.resource2" class="form-control">
-                    <option v-for="resource in availableResources" :key="resource.id" :value="resource.id">
-                      {{ resource.name }}
-                    </option>
-                  </select>
-                  <input type="number" v-model="settlement.upgradeCosts.defences.resource2Amount" class="form-control" min="0" placeholder="Amount">
-                </div>
-                <div class="form-group">
-                  <label>Defence Increase Amount</label>
-                  <input type="number" v-model.number="settlement.upgradeCosts.defences.amount" class="form-control" min="1">
-                </div>
-                <div class="form-group">
-                  <label>Money Cost</label>
-                  <input type="number" v-model.number="settlement.upgradeCosts.defences.moneyCost" class="form-control" min="0" placeholder="Money Cost">
-                </div>
-              </div>
-
-              <div class="upgrade-section">
-                <h5 class="upgrade-title">Power Upgrade</h5>
-                <div class="form-group">
-                  <label>Resource Type 1</label>
-                  <select v-model="settlement.upgradeCosts.power.resource1" class="form-control">
-                    <option v-for="resource in availableResources" :key="resource.id" :value="resource.id">
-                      {{ resource.name }}
-                    </option>
-                  </select>
-                  <input type="number" v-model="settlement.upgradeCosts.power.resource1Amount" class="form-control" min="0" placeholder="Amount">
-                </div>
-                <div class="form-group">
-                  <label>Resource Type 2</label>
-                  <select v-model="settlement.upgradeCosts.power.resource2" class="form-control">
-                    <option v-for="resource in availableResources" :key="resource.id" :value="resource.id">
-                      {{ resource.name }}
-                    </option>
-                  </select>
-                  <input type="number" v-model="settlement.upgradeCosts.power.resource2Amount" class="form-control" min="0" placeholder="Amount">
-                </div>
-                <div class="form-group">
-                  <label>Power Increase Amount</label>
-                  <input type="number" v-model.number="settlement.upgradeCosts.power.amount" class="form-control" min="1">
-                </div>
-                <div class="form-group">
-                  <label>Money Cost</label>
-                  <input type="number" v-model.number="settlement.upgradeCosts.power.moneyCost" class="form-control" min="0" placeholder="Money Cost">
-                </div>
-              </div>
-
-              <div class="upgrade-section">
-                <h5 class="upgrade-title">Level Upgrade</h5>
-                <div class="form-group">
-                  <label>Resource Type 1</label>
-                  <select v-model="settlement.upgradeCosts.level.resource1" class="form-control">
-                    <option v-for="resource in availableResources" :key="resource.id" :value="resource.id">
-                      {{ resource.name }}
-                    </option>
-                  </select>
-                  <input type="number" v-model="settlement.upgradeCosts.level.resource1Amount" class="form-control" min="0" placeholder="Amount">
-                </div>
-                <div class="form-group">
-                  <label>Resource Type 2</label>
-                  <select v-model="settlement.upgradeCosts.level.resource2" class="form-control">
-                    <option v-for="resource in availableResources" :key="resource.id" :value="resource.id">
-                      {{ resource.name }}
-                    </option>
-                  </select>
-                  <input type="number" v-model="settlement.upgradeCosts.level.resource2Amount" class="form-control" min="0" placeholder="Amount">
-                </div>
-                <div class="form-group">
-                  <label>Health Increase</label>
-                  <input type="number" v-model.number="settlement.upgradeCosts.level.healthIncrease" class="form-control" min="1">
-                </div>
-                <div class="form-group">
-                  <label>Inhabitants Increase</label>
-                  <input type="number" v-model.number="settlement.upgradeCosts.level.inhabitantsIncrease" class="form-control" min="1">
-                </div>
-                <div class="form-group">
-                  <label>Defences Increase</label>
-                  <input type="number" v-model.number="settlement.upgradeCosts.level.defencesIncrease" class="form-control" min="1">
-                </div>
-                <div class="form-group">
-                  <label>Power Increase</label>
-                  <input type="number" v-model.number="settlement.upgradeCosts.level.powerIncrease" class="form-control" min="1">
-                </div>
-                <div class="form-group">
-                  <label>Money Cost</label>
-                  <input type="number" v-model.number="settlement.upgradeCosts.level.moneyCost" class="form-control" min="0" placeholder="Money Cost">
-                </div>
-              </div>
-
-              <div class="upgrade-section">
-                <h5 class="upgrade-title">Inhabitant Cost</h5>
-                <div class="form-group">
-                  <label>Resource Type 1</label>
-                  <select v-model="settlement.upgradeCosts.inhabitant.resource1" class="form-control">
-                    <option v-for="resource in availableResources" :key="resource.id" :value="resource.id">
-                      {{ resource.name }}
-                    </option>
-                  </select>
-                  <input type="number" v-model="settlement.upgradeCosts.inhabitant.resource1Amount" class="form-control" min="0" placeholder="Amount">
-                </div>
-                <div class="form-group">
-                  <label>Resource Type 2</label>
-                  <select v-model="settlement.upgradeCosts.inhabitant.resource2" class="form-control">
-                    <option v-for="resource in availableResources" :key="resource.id" :value="resource.id">
-                      {{ resource.name }}
-                    </option>
-                  </select>
-                  <input type="number" v-model="settlement.upgradeCosts.inhabitant.resource2Amount" class="form-control" min="0" placeholder="Amount">
-                </div>
-                <div class="form-group">
-                  <label>Money Cost</label>
-                  <input type="number" v-model.number="settlement.upgradeCosts.inhabitant.moneyCost" class="form-control" min="0" placeholder="Money Cost">
-                </div>
-              </div>
-            </div>
-            
-            <div class="settings-actions">
-              <button @click="applySettlementSettings" class="btn btn-success">
-                <i class="fas fa-save"></i> Apply Settings
-              </button>
-              <button @click="resetSectionData('settlement')" class="btn btn-danger">
-                <i class="fas fa-undo"></i> Reset to Default
-              </button>
-            </div>
-          </div>
-          <div v-else class="data-navigation">
-            <button class="btn btn-outline-primary" @click="prevItem" :disabled="currentIndex === 0">&lt;</button>
-            <span>Item {{ currentIndex + 1 }} of {{ getActiveData.length }}</span>
-            <button class="btn btn-outline-primary" @click="nextItem" :disabled="currentIndex === getActiveData.length - 1">&gt;</button>
-          </div>
-          <div v-if="activeSection !== 'speech' && activeSection !== 'settlement'" class="data-content">
-            <pre>{{ JSON.stringify(currentItem, null, 2) }}</pre>
-          </div>
         </div>
-        <div class="data-form" v-if="activeSection !== 'speech' && activeSection !== 'settlement'">
-          <h3 class="subsection-title">Edit {{ activeSection }}</h3>
-          <form @submit.prevent="saveChanges">
-            <div class="form-group" v-for="(value, key) in currentItem" :key="key">
-              <label :for="key">{{ key }}</label>
-              <template v-if="activeSection === 'quests' && (key === 'reward' || key === 'armorReward')">
-                <div class="reward-list">
-                  <div v-for="(itemId, index) in currentItem[key]" :key="index" class="reward-item">
-                    {{ getItemName(key, itemId) }}
-                    <button @click="removeReward(key, index)" class="btn btn-danger btn-sm">Remove</button>
-                  </div>
-                </div>
-                <select v-model.number="selectedReward[key]" class="form-control">
-                  <option value="">Select a reward</option>
-                  <option v-for="option in getItemOptions(key)" :key="option.id" :value="option.id">
-                    {{ option.name }}
+      </div>
+
+      <!-- Developer Settings Section -->
+      <div v-else class="developer-settings">
+        <h2 class="section-title">Developer Settings</h2>
+        <div class="settings-menu">
+          <button 
+            class="btn btn-outline-primary" 
+            v-for="section in sections" 
+            :key="section" 
+            @click="changeSection(section)"
+            :class="{ active: activeSection === section }"
+          >
+            {{ section }}
+          </button>
+        </div>
+
+        <div class="action-buttons">
+          <button type="button" class="btn btn-success" @click="addNewItem">Add New</button>
+          <button type="button" class="btn btn-primary" @click="saveChanges">Save Changes</button>
+          <button type="button" class="btn btn-danger" @click="deleteItem">Delete</button>
+          <button type="button" class="btn btn-info" @click="exportChanges">Export {{ activeSection }}</button>
+          <button type="button" class="btn btn-warning" @click="resetData">Reset Data</button>
+        </div>
+
+        <div class="data-container">
+          <div class="data-display">
+            <h3 class="subsection-title">{{ activeSection }} Data</h3>
+            <div v-if="activeSection === 'speech'" class="speech-settings">
+              <div class="form-group">
+                <label class="form-check-label">
+                  <input type="checkbox" v-model="speechSettings.enabled" @change="updateSpeechSettings" class="form-check-input">
+                  Enable Speech Synthesis
+                </label>
+              </div>
+              
+              <div class="form-group" v-if="speechSettings.enabled">
+                <label>Voice Selection</label>
+                <select v-model="speechSettings.selectedVoice" @change="updateSpeechSettings" class="form-control">
+                  <option v-for="voice in speechSettings.availableVoices" :key="voice.voiceURI" :value="voice">
+                    {{ voice.name }} ({{ voice.lang }})
                   </option>
                 </select>
-                <button @click="addReward(key)" class="btn btn-primary btn-sm">Add reward</button>
-              </template>
-              <template v-else-if="activeSection === 'story' && key === 'requiredEnemyDefeat'">
-                <div class="enemy-defeat-container">
-                  <div class="row">
-                    <div class="col-md-8">
-                      <label class="form-label">Required Enemy:</label>
-                      <select v-model.number="getOrCreateEnemyDefeat(currentItem[key]).id" class="form-control">
-                        <option value="">Select an enemy</option>
-                        <option v-for="enemy in enemies" :key="enemy.id" :value="enemy.id">
-                          {{ enemy.name }}
-                        </option>
-                      </select>
-                    </div>
-                    <div class="col-md-4">
-                      <label class="form-label">Count:</label>
-                      <input v-model.number="getOrCreateEnemyDefeat(currentItem[key]).count" class="form-control" type="number" min="0" placeholder="Number of defeats">
+              </div>
+              
+              <div class="form-group" v-if="speechSettings.enabled">
+                <label>Volume ({{ speechSettings.volume }})</label>
+                <input type="range" v-model="speechSettings.volume" @change="updateSpeechSettings" 
+                       min="0" max="1" step="0.1" class="form-control">
+              </div>
+              
+              <div class="form-group" v-if="speechSettings.enabled">
+                <label>Speech Rate ({{ speechSettings.rate }})</label>
+                <input type="range" v-model="speechSettings.rate" @change="updateSpeechSettings"
+                       min="0.1" max="2" step="0.1" class="form-control">
+              </div>
+              
+              <div class="form-group" v-if="speechSettings.enabled">
+                <label>Pitch ({{ speechSettings.pitch }})</label>
+                <input type="range" v-model="speechSettings.pitch" @change="updateSpeechSettings"
+                       min="0.1" max="2" step="0.1" class="form-control">
+              </div>
+              
+              <button @click="testSpeechSettings" class="btn btn-primary" v-if="speechSettings.enabled">
+                Test Speech Settings
+              </button>
+            </div>
+            <div v-else-if="activeSection === 'settlement'" class="settlement-settings">
+              <h3 class="settings-title">Settlement Settings</h3>
+              
+              <div class="settings-group">
+                <h4 class="group-title">Attack Settings</h4>
+                <div class="form-group">
+                  <label>Attack Interval (seconds)</label>
+                  <div class="input-group">
+                    <input type="number" v-model.number="settlement.attackInterval" @change="saveToLocalStorage" class="form-control" min="1">
+                    <div class="input-group-append">
+                      <span class="input-group-text">sec</span>
                     </div>
                   </div>
+                  <small class="form-text text-muted">How often settlements are attacked</small>
                 </div>
-              </template>
-              <template v-else-if="activeSection === 'story' && key === 'steps'">
-                <div class="story-steps-container">
-                  <div v-for="(step, stepIndex) in ensureArray(currentItem[key])" :key="stepIndex" class="story-step mb-4">
-                    <div class="step-header">
-                      <h4 class="step-title">Step {{ stepIndex + 1 }}</h4>
-                      <button v-if="stepIndex > 0" @click="removeStep(stepIndex)" class="btn btn-danger btn-sm">Remove Step</button>
+                
+                <div class="form-group">
+                  <label>Attack Chance (%)</label>
+                  <div class="input-group">
+                    <input type="number" v-model.number="settlement.attackChance" @change="saveToLocalStorage" class="form-control" min="0" max="100">
+                    <div class="input-group-append">
+                      <span class="input-group-text">%</span>
                     </div>
-                    
-                    <div class="step-content">
-                      <div class="npc-message mb-3">
-                        <label class="form-label">NPC Message:</label>
-                        <textarea v-model="step.npcMessage" class="form-control" rows="2" placeholder="Enter NPC's message"></textarea>
+                  </div>
+                  <small class="form-text text-muted">Chance of being attacked when the interval expires</small>
+                </div>
+              </div>
+              
+              <div class="settings-group">
+                <h4 class="group-title">Health Settings</h4>
+                <div class="form-group">
+                  <label>Health Loss Per Minute</label>
+                  <div class="input-group">
+                    <input type="number" v-model.number="settlement.healthLossPerMinute" @change="saveToLocalStorage" class="form-control" min="0">
+                    <div class="input-group-append">
+                      <span class="input-group-text">HP/m</span>
+                    </div>
+                  </div>
+                  <small class="form-text text-muted">Base health loss per minute (60 = 1 damage per second)</small>
+                </div>
+                
+                <div class="form-group">
+                  <label>Radiation Damage Multiplier</label>
+                  <div class="input-group">
+                    <input type="number" v-model.number="settlement.radiationDamageMultiplier" @change="saveToLocalStorage" class="form-control" min="0" step="0.1">
+                    <div class="input-group-append">
+                      <span class="input-group-text">x</span>
+                    </div>
+                  </div>
+                  <small class="form-text text-muted">Multiplier for radiation damage (1 = normal)</small>
+                </div>
+              </div>
+              
+              <div class="settings-group">
+                <h4 class="group-title">Health Limits</h4>
+                <div class="form-group">
+                  <label>Starting Health</label>
+                  <div class="input-group">
+                    <input type="number" v-model.number="settlement.startingHealth" @change="saveToLocalStorage" class="form-control" min="1">
+                    <div class="input-group-append">
+                      <span class="input-group-text">HP</span>
+                    </div>
+                  </div>
+                  <small class="form-text text-muted">Starting health for new settlements</small>
+                </div>
+                
+                <div class="form-group">
+                  <label>Max Health</label>
+                  <div class="input-group">
+                    <input type="number" v-model.number="settlement.maxHealth" @change="saveToLocalStorage" class="form-control" min="1">
+                    <div class="input-group-append">
+                      <span class="input-group-text">HP</span>
+                    </div>
+                  </div>
+                  <small class="form-text text-muted">Maximum health for settlements</small>
+                </div>
+              </div>
+
+              <div class="settings-group">
+                <h4 class="group-title">Upgrade Costs</h4>
+                
+                <div class="upgrade-section">
+                  <h5 class="upgrade-title">Defence Upgrade</h5>
+                  <div class="form-group">
+                    <label>Resource Type 1</label>
+                    <select v-model="settlement.upgradeCosts.defences.resource1" class="form-control">
+                      <option v-for="resource in availableResources" :key="resource.id" :value="resource.id">
+                        {{ resource.name }}
+                      </option>
+                    </select>
+                    <input type="number" v-model="settlement.upgradeCosts.defences.resource1Amount" class="form-control" min="0" placeholder="Amount">
+                  </div>
+                  <div class="form-group">
+                    <label>Resource Type 2</label>
+                    <select v-model="settlement.upgradeCosts.defences.resource2" class="form-control">
+                      <option v-for="resource in availableResources" :key="resource.id" :value="resource.id">
+                        {{ resource.name }}
+                      </option>
+                    </select>
+                    <input type="number" v-model="settlement.upgradeCosts.defences.resource2Amount" class="form-control" min="0" placeholder="Amount">
+                  </div>
+                  <div class="form-group">
+                    <label>Defence Increase Amount</label>
+                    <input type="number" v-model.number="settlement.upgradeCosts.defences.amount" class="form-control" min="1">
+                  </div>
+                  <div class="form-group">
+                    <label>Money Cost</label>
+                    <input type="number" v-model.number="settlement.upgradeCosts.defences.moneyCost" class="form-control" min="0" placeholder="Money Cost">
+                  </div>
+                </div>
+
+                <div class="upgrade-section">
+                  <h5 class="upgrade-title">Power Upgrade</h5>
+                  <div class="form-group">
+                    <label>Resource Type 1</label>
+                    <select v-model="settlement.upgradeCosts.power.resource1" class="form-control">
+                      <option v-for="resource in availableResources" :key="resource.id" :value="resource.id">
+                        {{ resource.name }}
+                      </option>
+                    </select>
+                    <input type="number" v-model="settlement.upgradeCosts.power.resource1Amount" class="form-control" min="0" placeholder="Amount">
+                  </div>
+                  <div class="form-group">
+                    <label>Resource Type 2</label>
+                    <select v-model="settlement.upgradeCosts.power.resource2" class="form-control">
+                      <option v-for="resource in availableResources" :key="resource.id" :value="resource.id">
+                        {{ resource.name }}
+                      </option>
+                    </select>
+                    <input type="number" v-model="settlement.upgradeCosts.power.resource2Amount" class="form-control" min="0" placeholder="Amount">
+                  </div>
+                  <div class="form-group">
+                    <label>Power Increase Amount</label>
+                    <input type="number" v-model.number="settlement.upgradeCosts.power.amount" class="form-control" min="1">
+                  </div>
+                  <div class="form-group">
+                    <label>Money Cost</label>
+                    <input type="number" v-model.number="settlement.upgradeCosts.power.moneyCost" class="form-control" min="0" placeholder="Money Cost">
+                  </div>
+                </div>
+
+                <div class="upgrade-section">
+                  <h5 class="upgrade-title">Level Upgrade</h5>
+                  <div class="form-group">
+                    <label>Resource Type 1</label>
+                    <select v-model="settlement.upgradeCosts.level.resource1" class="form-control">
+                      <option v-for="resource in availableResources" :key="resource.id" :value="resource.id">
+                        {{ resource.name }}
+                      </option>
+                    </select>
+                    <input type="number" v-model="settlement.upgradeCosts.level.resource1Amount" class="form-control" min="0" placeholder="Amount">
+                  </div>
+                  <div class="form-group">
+                    <label>Resource Type 2</label>
+                    <select v-model="settlement.upgradeCosts.level.resource2" class="form-control">
+                      <option v-for="resource in availableResources" :key="resource.id" :value="resource.id">
+                        {{ resource.name }}
+                      </option>
+                    </select>
+                    <input type="number" v-model="settlement.upgradeCosts.level.resource2Amount" class="form-control" min="0" placeholder="Amount">
+                  </div>
+                  <div class="form-group">
+                    <label>Health Increase</label>
+                    <input type="number" v-model.number="settlement.upgradeCosts.level.healthIncrease" class="form-control" min="1">
+                  </div>
+                  <div class="form-group">
+                    <label>Inhabitants Increase</label>
+                    <input type="number" v-model.number="settlement.upgradeCosts.level.inhabitantsIncrease" class="form-control" min="1">
+                  </div>
+                  <div class="form-group">
+                    <label>Defences Increase</label>
+                    <input type="number" v-model.number="settlement.upgradeCosts.level.defencesIncrease" class="form-control" min="1">
+                  </div>
+                  <div class="form-group">
+                    <label>Power Increase</label>
+                    <input type="number" v-model.number="settlement.upgradeCosts.level.powerIncrease" class="form-control" min="1">
+                  </div>
+                  <div class="form-group">
+                    <label>Money Cost</label>
+                    <input type="number" v-model.number="settlement.upgradeCosts.level.moneyCost" class="form-control" min="0" placeholder="Money Cost">
+                  </div>
+                </div>
+
+                <div class="upgrade-section">
+                  <h5 class="upgrade-title">Inhabitant Cost</h5>
+                  <div class="form-group">
+                    <label>Resource Type 1</label>
+                    <select v-model="settlement.upgradeCosts.inhabitant.resource1" class="form-control">
+                      <option v-for="resource in availableResources" :key="resource.id" :value="resource.id">
+                        {{ resource.name }}
+                      </option>
+                    </select>
+                    <input type="number" v-model="settlement.upgradeCosts.inhabitant.resource1Amount" class="form-control" min="0" placeholder="Amount">
+                  </div>
+                  <div class="form-group">
+                    <label>Resource Type 2</label>
+                    <select v-model="settlement.upgradeCosts.inhabitant.resource2" class="form-control">
+                      <option v-for="resource in availableResources" :key="resource.id" :value="resource.id">
+                        {{ resource.name }}
+                      </option>
+                    </select>
+                    <input type="number" v-model="settlement.upgradeCosts.inhabitant.resource2Amount" class="form-control" min="0" placeholder="Amount">
+                  </div>
+                  <div class="form-group">
+                    <label>Money Cost</label>
+                    <input type="number" v-model.number="settlement.upgradeCosts.inhabitant.moneyCost" class="form-control" min="0" placeholder="Money Cost">
+                  </div>
+                </div>
+              </div>
+              
+              <div class="settings-actions">
+                <button @click="applySettlementSettings" class="btn btn-success">
+                  <i class="fas fa-save"></i> Apply Settings
+                </button>
+                <button @click="resetSectionData('settlement')" class="btn btn-danger">
+                  <i class="fas fa-undo"></i> Reset to Default
+                </button>
+              </div>
+            </div>
+            <div v-else class="data-navigation">
+              <button class="btn btn-outline-primary" @click="prevItem" :disabled="currentIndex === 0">&lt;</button>
+              <span>Item {{ currentIndex + 1 }} of {{ getActiveData.length }}</span>
+              <button class="btn btn-outline-primary" @click="nextItem" :disabled="currentIndex === getActiveData.length - 1">&gt;</button>
+            </div>
+            <div v-if="activeSection !== 'speech' && activeSection !== 'settlement'" class="data-content">
+              <pre>{{ JSON.stringify(currentItem, null, 2) }}</pre>
+            </div>
+          </div>
+          <div class="data-form" v-if="activeSection !== 'speech' && activeSection !== 'settlement'">
+            <h3 class="subsection-title">Edit {{ activeSection }}</h3>
+            <form @submit.prevent="saveChanges">
+              <div class="form-group" v-for="(value, key) in currentItem" :key="key">
+                <label :for="key">{{ key }}</label>
+                <template v-if="activeSection === 'quests' && (key === 'reward' || key === 'armorReward')">
+                  <div class="reward-list">
+                    <div v-for="(itemId, index) in currentItem[key]" :key="index" class="reward-item">
+                      {{ getItemName(key, itemId) }}
+                      <button @click="removeReward(key, index)" class="btn btn-danger btn-sm">Remove</button>
+                    </div>
+                  </div>
+                  <select v-model.number="selectedReward[key]" class="form-control">
+                    <option value="">Select a reward</option>
+                    <option v-for="option in getItemOptions(key)" :key="option.id" :value="option.id">
+                      {{ option.name }}
+                    </option>
+                  </select>
+                  <button @click="addReward(key)" class="btn btn-primary btn-sm">Add reward</button>
+                </template>
+                <template v-else-if="activeSection === 'story' && key === 'requiredEnemyDefeat'">
+                  <div class="enemy-defeat-container">
+                    <div class="row">
+                      <div class="col-md-8">
+                        <label class="form-label">Required Enemy:</label>
+                        <select v-model.number="getOrCreateEnemyDefeat(currentItem[key]).id" class="form-control">
+                          <option value="">Select an enemy</option>
+                          <option v-for="enemy in enemies" :key="enemy.id" :value="enemy.id">
+                            {{ enemy.name }}
+                          </option>
+                        </select>
+                      </div>
+                      <div class="col-md-4">
+                        <label class="form-label">Count:</label>
+                        <input v-model.number="getOrCreateEnemyDefeat(currentItem[key]).count" class="form-control" type="number" min="0" placeholder="Number of defeats">
+                      </div>
+                    </div>
+                  </div>
+                </template>
+                <template v-else-if="activeSection === 'story' && key === 'steps'">
+                  <div class="story-steps-container">
+                    <div v-for="(step, stepIndex) in ensureArray(currentItem[key])" :key="stepIndex" class="story-step mb-4">
+                      <div class="step-header">
+                        <h4 class="step-title">Step {{ stepIndex + 1 }}</h4>
+                        <button v-if="stepIndex > 0" @click="removeStep(stepIndex)" class="btn btn-danger btn-sm">Remove Step</button>
                       </div>
                       
-                      <div class="player-options">
-                        <h5 class="options-title mb-2">Player Options</h5>
-                        <div v-for="(option, optionIndex) in ensureArray(step.playerOptions)" :key="optionIndex" class="player-option mb-3">
-                          <div class="option-header d-flex justify-content-between align-items-center mb-2">
-                            <h6 class="option-number mb-0">Option {{ optionIndex + 1 }}</h6>
-                            <button v-if="step.playerOptions.length > 1" @click="removePlayerOption(stepIndex, optionIndex)" class="btn btn-danger btn-sm">Remove Option</button>
-                          </div>
-                          
-                          <div class="option-content">
-                            <div class="mb-2">
-                              <label class="form-label">Option Text:</label>
-                              <input v-model="option.text" class="form-control" placeholder="Enter player's response">
+                      <div class="step-content">
+                        <div class="npc-message mb-3">
+                          <label class="form-label">NPC Message:</label>
+                          <textarea v-model="step.npcMessage" class="form-control" rows="2" placeholder="Enter NPC's message"></textarea>
+                        </div>
+                        
+                        <div class="player-options">
+                          <h5 class="options-title mb-2">Player Options</h5>
+                          <div v-for="(option, optionIndex) in ensureArray(step.playerOptions)" :key="optionIndex" class="player-option mb-3">
+                            <div class="option-header d-flex justify-content-between align-items-center mb-2">
+                              <h6 class="option-number mb-0">Option {{ optionIndex + 1 }}</h6>
+                              <button v-if="step.playerOptions.length > 1" @click="removePlayerOption(stepIndex, optionIndex)" class="btn btn-danger btn-sm">Remove Option</button>
                             </div>
                             
-                            <div class="mb-2">
-                              <label class="form-label">Next Step ID:</label>
-                              <input v-model.number="option.nextId" class="form-control" type="number" placeholder="Enter next step ID or leave empty for end">
-                            </div>
-                            
-                            <div class="option-actions d-flex gap-2 mb-2">
-                              <div class="form-check">
-                                <input type="checkbox" v-model="option.giveReward" :id="'giveReward-' + stepIndex + '-' + optionIndex" class="form-check-input">
-                                <label class="form-check-label" :for="'giveReward-' + stepIndex + '-' + optionIndex">Give Reward</label>
+                            <div class="option-content">
+                              <div class="mb-2">
+                                <label class="form-label">Option Text:</label>
+                                <input v-model="option.text" class="form-control" placeholder="Enter player's response">
                               </div>
                               
-                              <div class="form-check">
-                                <input type="checkbox" 
-                                       v-model="option.action" 
-                                       :true-value="'startEnemyBattle'" 
-                                       :false-value="null" 
-                                       :id="'action-' + stepIndex + '-' + optionIndex" 
-                                       class="form-check-input"
-                                       @change="handleActionChange(option)">
-                                <label class="form-check-label" :for="'action-' + stepIndex + '-' + optionIndex">Start Enemy Battle</label>
-                              </div>
-                            </div>
-                            
-                            <div v-if="option.action === 'startEnemyBattle'" class="mb-2">
-                              <label class="form-label">Select Enemy:</label>
-                              <select 
-                                v-model.number="getOrCreateActionParams(option).enemyId" 
-                                class="form-control">
-                                <option value="">Select an enemy</option>
-                                <option v-for="enemy in enemies" :key="enemy.id" :value="enemy.id">
-                                  {{ enemy.name }}
-                                </option>
-                              </select>
-                            </div>
-                            
-                            <div class="required-resources">
-                              <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h6 class="mb-0">Required Resources</h6>
-                                <button @click="addRequiredResource(option)" class="btn btn-primary btn-sm">Add Resource</button>
+                              <div class="mb-2">
+                                <label class="form-label">Next Step ID:</label>
+                                <input v-model.number="option.nextId" class="form-control" type="number" placeholder="Enter next step ID or leave empty for end">
                               </div>
                               
-                              <div v-for="(resource, resourceIndex) in ensureArray(option.requiredResources)" :key="resourceIndex" class="resource-item mb-2">
-                                <div class="d-flex gap-2">
-                                  <select v-model.number="resource.id" class="form-control">
-                                    <option value="">Select resource</option>
-                                    <option v-for="resourceOption in resources" :key="resourceOption.id" :value="resourceOption.id">
-                                      {{ resourceOption.name }}
-                                    </option>
-                                  </select>
-                                  <input v-model.number="resource.amount" class="form-control" type="number" min="1" placeholder="Amount">
-                                  <button @click="removeRequiredResource(option, resourceIndex)" class="btn btn-danger btn-sm">Remove</button>
+                              <div class="option-actions d-flex gap-2 mb-2">
+                                <div class="form-check">
+                                  <input type="checkbox" v-model="option.giveReward" :id="'giveReward-' + stepIndex + '-' + optionIndex" class="form-check-input">
+                                  <label class="form-check-label" :for="'giveReward-' + stepIndex + '-' + optionIndex">Give Reward</label>
+                                </div>
+                                
+                                <div class="form-check">
+                                  <input type="checkbox" 
+                                         v-model="option.action" 
+                                         :true-value="'startEnemyBattle'" 
+                                         :false-value="null" 
+                                         :id="'action-' + stepIndex + '-' + optionIndex" 
+                                         class="form-check-input"
+                                         @change="handleActionChange(option)">
+                                  <label class="form-check-label" :for="'action-' + stepIndex + '-' + optionIndex">Start Enemy Battle</label>
+                                </div>
+                              </div>
+                              
+                              <div v-if="option.action === 'startEnemyBattle'" class="mb-2">
+                                <label class="form-label">Select Enemy:</label>
+                                <select 
+                                  v-model.number="getOrCreateActionParams(option).enemyId" 
+                                  class="form-control">
+                                  <option value="">Select an enemy</option>
+                                  <option v-for="enemy in enemies" :key="enemy.id" :value="enemy.id">
+                                    {{ enemy.name }}
+                                  </option>
+                                </select>
+                              </div>
+                              
+                              <div class="required-resources">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                  <h6 class="mb-0">Required Resources</h6>
+                                  <button @click="addRequiredResource(option)" class="btn btn-primary btn-sm">Add Resource</button>
+                                </div>
+                                
+                                <div v-for="(resource, resourceIndex) in ensureArray(option.requiredResources)" :key="resourceIndex" class="resource-item mb-2">
+                                  <div class="d-flex gap-2">
+                                    <select v-model.number="resource.id" class="form-control">
+                                      <option value="">Select resource</option>
+                                      <option v-for="resourceOption in resources" :key="resourceOption.id" :value="resourceOption.id">
+                                        {{ resourceOption.name }}
+                                      </option>
+                                    </select>
+                                    <input v-model.number="resource.amount" class="form-control" type="number" min="1" placeholder="Amount">
+                                    <button @click="removeRequiredResource(option, resourceIndex)" class="btn btn-danger btn-sm">Remove</button>
+                                  </div>
                                 </div>
                               </div>
                             </div>
                           </div>
+                          <button @click="addPlayerOption(stepIndex)" class="btn btn-primary btn-sm">Add Player Option</button>
                         </div>
-                        <button @click="addPlayerOption(stepIndex)" class="btn btn-primary btn-sm">Add Player Option</button>
                       </div>
                     </div>
+                    <button @click="addStep" class="btn btn-primary">Add New Step</button>
                   </div>
-                  <button @click="addStep" class="btn btn-primary">Add New Step</button>
-                </div>
-              </template>
-              <template v-else-if="activeSection === 'story' && key === 'reward'">
-                <div class="story-reward-container">
-                  <div class="basic-rewards mb-3">
-                    <div class="row">
-                      <div class="col-md-6">
-                        <label class="form-label">Experience:</label>
-                        <input v-model.number="currentItem[key].exp" class="form-control" type="number" min="0" placeholder="Experience points">
+                </template>
+                <template v-else-if="activeSection === 'story' && key === 'reward'">
+                  <div class="story-reward-container">
+                    <div class="basic-rewards mb-3">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <label class="form-label">Experience:</label>
+                          <input v-model.number="currentItem[key].exp" class="form-control" type="number" min="0" placeholder="Experience points">
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label">Money:</label>
+                          <input v-model.number="currentItem[key].money" class="form-control" type="number" min="0" placeholder="Money amount">
+                        </div>
                       </div>
-                      <div class="col-md-6">
-                        <label class="form-label">Money:</label>
-                        <input v-model.number="currentItem[key].money" class="form-control" type="number" min="0" placeholder="Money amount">
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div v-for="rewardKey in ['resourceRewards', 'weaponRewards', 'armorRewards', 'aidRewards']" :key="rewardKey" class="reward-section mb-3">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                      <h6 class="mb-0">{{ formatRewardTitle(rewardKey) }}</h6>
-                      <button @click="addRewardItem(rewardKey)" class="btn btn-primary btn-sm">Add {{ formatRewardTitle(rewardKey, true) }}</button>
                     </div>
                     
-                    <div v-for="(reward, index) in ensureArray(currentItem[key][rewardKey])" :key="index" class="reward-item mb-2">
-                      <div class="d-flex gap-2">
-                        <select v-model.number="reward.id" class="form-control">
-                          <option value="">Select {{ formatRewardTitle(rewardKey, true) }}</option>
-                          <option v-for="option in getRewardOptions(rewardKey)" :key="option.id" :value="option.id">
-                            {{ option.name }}
-                          </option>
-                        </select>
-                        <input v-if="rewardKey === 'resourceRewards'" 
-                               v-model.number="reward.amount" class="form-control" type="number" min="1" placeholder="Amount">
-                        <button @click="removeRewardItem(rewardKey, index)" class="btn btn-danger btn-sm">Remove</button>
+                    <div v-for="rewardKey in ['resourceRewards', 'weaponRewards', 'armorRewards', 'aidRewards']" :key="rewardKey" class="reward-section mb-3">
+                      <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 class="mb-0">{{ formatRewardTitle(rewardKey) }}</h6>
+                        <button @click="addRewardItem(rewardKey)" class="btn btn-primary btn-sm">Add {{ formatRewardTitle(rewardKey, true) }}</button>
+                      </div>
+                      
+                      <div v-for="(reward, index) in ensureArray(currentItem[key][rewardKey])" :key="index" class="reward-item mb-2">
+                        <div class="d-flex gap-2">
+                          <select v-model.number="reward.id" class="form-control">
+                            <option value="">Select {{ formatRewardTitle(rewardKey, true) }}</option>
+                            <option v-for="option in getRewardOptions(rewardKey)" :key="option.id" :value="option.id">
+                              {{ option.name }}
+                            </option>
+                          </select>
+                          <input v-if="rewardKey === 'resourceRewards'" 
+                                 v-model.number="reward.amount" class="form-control" type="number" min="1" placeholder="Amount">
+                          <button @click="removeRewardItem(rewardKey, index)" class="btn btn-danger btn-sm">Remove</button>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </template>
-              <template v-else-if="key === 'playerChoices'">
-                <div class="player-choices-container mb-3">
-                  <label class="form-label">Player Choices (Auto-generated)</label>
-                  <div class="choices-list">
-                    <div v-for="(choice, index) in currentItem[key]" :key="index" class="choice-item">
-                      {{ choice }}
+                </template>
+                <template v-else-if="key === 'playerChoices'">
+                  <div class="player-choices-container mb-3">
+                    <label class="form-label">Player Choices (Auto-generated)</label>
+                    <div class="choices-list">
+                      <div v-for="(choice, index) in currentItem[key]" :key="index" class="choice-item">
+                        {{ choice }}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </template>
-              <input v-else-if="key === 'id'" v-model.number="currentItem[key]" class="form-control" readonly>
-              <input v-else-if="isNumeric(key)" v-model.number="currentItem[key]" class="form-control">
-              <input v-else-if="typeof value !== 'object' && typeof value !== 'boolean'" :id="key" v-model="currentItem[key]" class="form-control">
-              <textarea v-else-if="typeof value === 'object' && key !== 'reward' && key !== 'armorReward' && key !== 'requiredEnemyDefeat' && key !== 'steps'" :id="key" v-model="currentItem[key]" class="form-control" rows="3"></textarea>
-              <input v-else-if="typeof value === 'boolean'" type="checkbox" :id="key" v-model="currentItem[key]" class="form-check-input">
-            </div>
-          </form>
+                </template>
+                <input v-else-if="key === 'id'" v-model.number="currentItem[key]" class="form-control" readonly>
+                <input v-else-if="isNumeric(key)" v-model.number="currentItem[key]" class="form-control">
+                <input v-else-if="typeof value !== 'object' && typeof value !== 'boolean'" :id="key" v-model="currentItem[key]" class="form-control">
+                <textarea v-else-if="typeof value === 'object' && key !== 'reward' && key !== 'armorReward' && key !== 'requiredEnemyDefeat' && key !== 'steps'" :id="key" v-model="currentItem[key]" class="form-control" rows="3"></textarea>
+                <input v-else-if="typeof value === 'boolean'" type="checkbox" :id="key" v-model="currentItem[key]" class="form-check-input">
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>
@@ -640,10 +681,38 @@ export default {
         rate: 1.0,
         pitch: 1.0,
         availableVoices: []
-      },
+      }
     };
   },
   computed: {
+    isDeveloperMode() {
+      return this.$store.state.userSettings.isDeveloperMode;
+    },
+    musicEnabled: {
+      get() {
+        return this.$store.state.userSettings?.music?.enabled ?? true;
+      },
+      set(value) {
+        this.$store.commit('updateMusicSettings', {
+          enabled: value,
+          volume: this.musicVolume
+        });
+      }
+    },
+    musicVolume: {
+      get() {
+        return this.$store.state.userSettings?.music?.volume ?? 0.5;
+      },
+      set(value) {
+        this.$store.commit('updateMusicSettings', {
+          enabled: this.musicEnabled,
+          volume: value
+        });
+      }
+    },
+    ...mapState({
+      storeMusicSettings: state => state.userSettings?.music || { enabled: true, volume: 0.5 }
+    }),
     ...mapState(['resources']),
     getActiveData() {
       return this.activeSection === 'speech' ? [] : this[this.activeSection];
@@ -1166,9 +1235,8 @@ export default {
       
       const newQuest = {
         id: newId,
-        ...template.template,
-        lat: 350 + Math.random() * 450,
-        lon: 300 + Math.random() * 1300
+        ...template.template
+        // Ingen tilfældig lat/lon tildeling - kun brug værdier fra template
       };
       
       this.getActiveData.push(newQuest);
@@ -1511,6 +1579,10 @@ export default {
       
       alert('Settlement settings have been applied!');
     },
+    toggleDeveloperMode() {
+      this.$store.commit('toggleDeveloperMode');
+    },
+
   },
   mounted() {
     this.loadFromLocalStorage();
@@ -2004,6 +2076,16 @@ pre {
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid rgba(0, 255, 0, 0.1);
+}
+
+.mode-toggle {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.user-settings {
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 </style>

@@ -1,15 +1,50 @@
 <template>
   <div>
-    <div v-if="isSettlementModalOpen" class="modal" tabindex="-1" @click.self="closeSettlementModal">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <div class="modal-title-container">
-              <h5 class="modal-title">
+    <!-- Initial Settlement Placement Modal -->
+    <div v-if="showPlacementModal" class="shop-modal" tabindex="-1" @click.self="closePlacementModal">
+      <div class="shop-dialog">
+        <div class="shop-content">
+          <div class="shop-header">
+            <div class="shop-title-wrapper">
+              <img class="shop-logo" :src="require(`@/assets/interface/icons/settlement.png`)" alt="Settlement Icon">
+              <h5 class="shop-title">SETTLEMENT PLACEMENT</h5>
+            </div>
+            <button class="close-button" @click="closePlacementModal">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="resource-requirements">
+              <div class="resource-item">
+                <img :src="require('@/assets/interface/icons/resources/wood_scrap.png')" alt="Wood Scrap">
+                <span>20 Wood Scrap</span>
+              </div>
+              <div class="resource-item">
+                <img :src="require('@/assets/interface/icons/resources/steel_scrap.png')" alt="Steel Scrap">
+                <span>20 Steel Scrap</span>
+              </div>
+            </div>
+            <div class="message-container">
+              <p class="message-text">It costs 20 Wood & Steel Scrap to place a settlement.</p>
+              <p class="instruction-text">Click anywhere on the map to confirm the location.</p>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" @click="closePlacementModal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="isSettlementModalOpen" class="shop-modal" tabindex="-1" @click.self="closeSettlementModal">
+      <div class="shop-dialog">
+        <div class="shop-content">
+          <div class="shop-header">
+            <div class="shop-title-wrapper">
+              <img class="shop-logo" :src="require(`@/assets/interface/icons/settlement.png`)" alt="Settlement Icon">
+              <h5 class="shop-title">
                 Settlement: {{ settlementMarker?.latlng ? `${settlementMarker.latlng.lat.toFixed(2)}, ${settlementMarker.latlng.lng.toFixed(2)}` : 'Not placed' }}
               </h5>
             </div>
-            <button type="button" class="btn-close" @click="closeSettlementModal" aria-label="Close"></button>
+            <button class="close-button" @click="closeSettlementModal">&times;</button>
           </div>
           <div class="modal-body">
             <div v-if="isUnderAttack" class="mb-4">
@@ -30,36 +65,37 @@
     </div>
 
     <!-- Log Modal -->
-    <div v-if="isLogModalOpen" class="modal" tabindex="-1" @click.self="closeLogModal">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Settlement Attack Log</h5>
-            <button type="button" class="btn-close" @click="closeLogModal" aria-label="Close"></button>
+    <div v-if="isLogModalOpen" class="shop-modal" tabindex="-1" @click.self="closeLogModal">
+      <div class="shop-dialog">
+        <div class="shop-content">
+          <div class="shop-header">
+            <div class="shop-title-wrapper">
+              <img class="shop-logo" :src="require(`@/assets/interface/icons/settlement.png`)" alt="Settlement Icon">
+              <h5 class="shop-title">Settlement Attack Log</h5>
+            </div>
+            <button class="close-button" @click="closeLogModal">&times;</button>
           </div>
-          <div class="modal-body">
-            <div class="log-container">
-              <div v-for="(log, index) in attackLogs" :key="index" class="log-entry">
-                <span class="log-time">{{ new Date(log.time).toLocaleString() }}</span>
-                <div class="log-details">
-                  <div class="enemy-info">
-                    Enemy: <span class="enemy-name">{{ log.enemy.name }}</span> (Level {{ log.enemy.level }})
-                  </div>
-                  <div class="battle-stats">
-                    <span class="stat">Health: {{ log.enemy.enemyHealth }}</span>
-                    <span class="stat">Attack: {{ log.enemy.attack }}</span>
-                    <span class="stat">Defense: {{ log.enemy.defense }}</span>
-                  </div>
-                  <div class="battle-result">
-                    <span class="damage">Damage Dealt: {{ log.damageDealt }}</span>
-                    <span class="damage">Damage Taken: {{ log.damageTaken }}</span>
-                    <span :class="log.survived ? 'result-success' : 'result-failure'">
-                      {{ log.survived ? 'Victory!' : 'Defeat' }}
-                    </span>
-                  </div>
-                  <div class="rewards" v-if="log.survived">
-                    Rewards: {{ log.enemy.exp }} EXP, {{ log.enemy.money }} Money
-                  </div>
+          <div class="log-container">
+            <div v-for="(log, index) in attackLogs" :key="index" class="log-entry">
+              <span class="log-time">{{ new Date(log.time).toLocaleString() }}</span>
+              <div class="log-details">
+                <div class="enemy-info">
+                  Enemy: <span class="enemy-name">{{ log.enemy.name }}</span> (Level {{ log.enemy.level }})
+                </div>
+                <div class="battle-stats">
+                  <span class="stat">Health: {{ log.enemy.enemyHealth }}</span>
+                  <span class="stat">Attack: {{ log.enemy.attack }}</span>
+                  <span class="stat">Defense: {{ log.enemy.defense }}</span>
+                </div>
+                <div class="battle-result">
+                  <span class="damage">Damage Dealt: {{ log.damageDealt }}</span>
+                  <span class="damage">Damage Taken: {{ log.damageTaken }}</span>
+                  <span :class="log.survived ? 'result-success' : 'result-failure'">
+                    {{ log.survived ? 'Victory!' : 'Defeat' }}
+                  </span>
+                </div>
+                <div class="rewards" v-if="log.survived">
+                  Rewards: {{ log.enemy.exp }} EXP, {{ log.enemy.money }} Money
                 </div>
               </div>
             </div>
@@ -71,19 +107,33 @@
       </div>
     </div>
 
-    <div v-if="isSettlementConfirmationModalOpen" class="modal" tabindex="-1" @click.self="closeConfirmationModal">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Confirm Settlement Placement</h5>
-            <button type="button" class="btn-close" @click="closeConfirmationModal" aria-label="Close"></button>
+    <!-- Confirmation Modal -->
+    <div v-if="isSettlementConfirmationModalOpen" class="shop-modal" tabindex="-1" @click.self="closeConfirmationModal">
+      <div class="shop-dialog confirmation-dialog">
+        <div class="shop-content">
+          <div class="shop-header">
+            <div class="shop-title-wrapper">
+              <img class="shop-logo" :src="require(`@/assets/interface/icons/settlement.png`)" alt="Settlement Icon">
+              <h5 class="shop-title">Confirm Settlement Placement</h5>
+            </div>
+            <button class="close-button" @click="closeConfirmationModal">&times;</button>
           </div>
-          <div class="modal-body">
-            <p>It costs 20 Wood & Steel Scrap to place a settlement.</p>
-            <p class="fw-semibold">Do you want to continue?</p>
+          <div class="confirmation-body">
+            <div class="resource-requirements">
+              <div class="resource-item">
+                <img :src="require('@/assets/interface/icons/resources/wood_scrap.png')" alt="Wood Scrap">
+                <span>20 Wood Scrap</span>
+              </div>
+              <div class="resource-item">
+                <img :src="require('@/assets/interface/icons/resources/steel_scrap.png')" alt="Steel Scrap">
+                <span>20 Steel Scrap</span>
+              </div>
+            </div>
+            <p class="confirmation-text">It costs 20 Wood & Steel Scrap to place a settlement.</p>
+            <p class="instruction-text">Click anywhere on the map to confirm the location.</p>
             <div class="button-group">
-              <button @click="confirmPlaceSettlement" class="btn btn-primary">Yes</button>
-              <button @click="cancelPlaceSettlement" class="btn btn-secondary">No</button>
+              <button @click="confirmPlaceSettlement" class="btn btn-primary">Confirm Placement</button>
+              <button @click="cancelPlaceSettlement" class="btn btn-secondary">Cancel</button>
             </div>
           </div>
         </div>
@@ -122,6 +172,7 @@ export default {
   },
   data() {
     return {
+      showPlacementModal: false,
       isSettlementConfirmationModalOpen: false,
       isLogModalOpen: false,
       pendingSettlementLocation: null,
@@ -313,6 +364,12 @@ export default {
     },
     closeLogModal() {
       this.isLogModalOpen = false;
+    },
+    showInitialPlacement() {
+      this.showPlacementModal = true;
+    },
+    closePlacementModal() {
+      this.showPlacementModal = false;
     }
   },
   mounted() {
@@ -328,80 +385,112 @@ export default {
 };
 </script>
 
-<style scoped>
-.modal {
+<style scoped lang="scss">
+.shop-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
-  position: fixed;
-  z-index: 1050;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
 }
 
-.modal-dialog {
-  max-width: 800px;
+.shop-dialog {
+  background: rgba(0, 0, 0, 0.9);
+  border: 2px solid #2a2a2a;
+  border-radius: 8px;
   width: 90%;
-  margin: 1.75rem auto;
-}
-
-.modal-content {
-  background-color: #1a1a1a;
-  border: 2px solid #00ff00;
-  border-radius: 10px;
-  color: #fff;
-}
-
-.modal-header {
-  border-bottom: 1px solid #00ff00;
-  padding: 0.75rem 1rem;
-}
-
-.modal-title-container {
+  max-width: 1000px;
+  max-height: 90vh;
+  position: relative;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
 }
 
-.modal-title {
-  color: #00ff00;
-  font-weight: bold;
-  text-transform: uppercase;
-  text-shadow: 0 0 10px #00ff00;
-  font-size: 1rem;
-}
-
-.settlement-stats-header {
+.shop-content {
+  height: 100%;
   display: flex;
-  gap: 1rem;
-  font-size: 0.9rem;
-  color: #00ff00;
+  flex-direction: column;
+  padding: 15px;
 }
 
-.stat-item {
-  background: rgba(0, 255, 0, 0.1);
-  padding: 0.25rem 0.5rem;
-  border-radius: 3px;
-  border: 1px solid #00ff00;
+.shop-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #2a2a2a;
+  padding-bottom: 10px;
+}
+
+.shop-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.shop-logo {
+  width: 24px;
+  height: 24px;
+}
+
+.shop-title {
+  color: #00ff00;
+  margin: 0;
+  font-size: 16px;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0 8px;
+  
+  &:hover {
+    color: #ff0000;
+  }
 }
 
 .modal-body {
   position: relative;
   flex: 1 1 auto;
   padding: 1rem;
-  max-height: 80vh;
+  max-height: 70vh;
   overflow-y: auto;
+  color: #fff;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 4px;
+    
+    &:hover {
+      background: #444;
+    }
+  }
 }
 
 .modal-footer {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  border-top: 1px solid #00ff00;
+  border-top: 1px solid #2a2a2a;
   padding: 0.75rem;
 }
 
@@ -419,67 +508,54 @@ export default {
 .btn-primary {
   background-color: #00ff00;
   color: #000000;
-}
 
-.btn-primary:hover {
-  background-color: #00cc00;
+  &:hover {
+    background-color: #00cc00;
+  }
 }
 
 .btn-secondary {
   background-color: #333;
   color: #fff;
   border: 1px solid #00ff00;
-}
 
-.btn-secondary:hover {
-  background-color: #00ff00;
-  color: #000;
+  &:hover {
+    background-color: #00ff00;
+    color: #000;
+  }
 }
 
 .btn-danger {
   background-color: #ff0000;
   color: #ffffff;
-}
 
-.btn-danger:hover {
-  background-color: #cc0000;
-}
-
-.button-group {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 1rem;
-}
-
-.btn-close {
-  background: transparent;
-  border: none;
-  color: #00ff00;
-  font-size: 1.5rem;
-  cursor: pointer;
-}
-
-.btn-close:hover {
-  color: #00cc00;
-}
-
-@media (max-width: 576px) {
-  .modal-dialog {
-    width: 95%;
-    margin: 1rem auto;
+  &:hover {
+    background-color: #cc0000;
   }
 }
 
-.attack-log {
-  border: 1px solid #00ff00;
-  border-radius: 5px;
-  padding: 1rem;
-  margin-top: 1rem;
-}
-
 .log-container {
-  max-height: 200px;
+  max-height: 60vh;
   overflow-y: auto;
+  padding: 15px;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 4px;
+    
+    &:hover {
+      background: #444;
+    }
+  }
 }
 
 .log-entry {
@@ -487,6 +563,7 @@ export default {
   border-bottom: 1px solid #00ff00;
   background: rgba(0, 0, 0, 0.3);
   margin-bottom: 0.5rem;
+  border-radius: 4px;
 }
 
 .log-time {
@@ -515,18 +592,21 @@ export default {
   display: flex;
   gap: 1rem;
   color: #888;
+  flex-wrap: wrap;
 }
 
 .stat {
   background: rgba(0, 255, 0, 0.1);
   padding: 0.2rem 0.5rem;
   border-radius: 3px;
+  border: 1px solid rgba(0, 255, 0, 0.2);
 }
 
 .battle-result {
   display: flex;
   gap: 1rem;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .damage {
@@ -546,5 +626,264 @@ export default {
 .rewards {
   color: #00ff00;
   font-style: italic;
+}
+
+.confirmation-body {
+  padding: 15px;
+  color: #fff;
+  text-align: center;
+
+  p {
+    margin-bottom: 15px;
+  }
+
+  .button-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+  }
+}
+
+.confirmation-dialog {
+  max-width: 500px;
+  min-height: 300px;
+}
+
+.confirmation-body {
+  padding: 20px;
+  color: #fff;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: center;
+  min-height: 200px;
+
+  .resource-requirements {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 10px;
+  }
+
+  .resource-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0, 255, 0, 0.1);
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: 1px solid rgba(0, 255, 0, 0.2);
+
+    img {
+      width: 24px;
+      height: 24px;
+      image-rendering: pixelated;
+    }
+
+    span {
+      color: #00ff00;
+      font-weight: bold;
+    }
+  }
+
+  .confirmation-text {
+    font-size: 1.1rem;
+    color: #fff;
+    margin: 0;
+  }
+
+  .instruction-text {
+    font-size: 1rem;
+    color: #00ff00;
+    margin: 0;
+    font-style: italic;
+  }
+
+  .button-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 10px;
+
+    .btn {
+      min-width: 150px;
+      padding: 10px 20px;
+    }
+  }
+}
+
+.message-container {
+  text-align: center;
+  margin: 20px 0;
+  padding: 20px;
+  background: rgba(0, 255, 0, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(0, 255, 0, 0.1);
+}
+
+.message-text {
+  font-size: 1.1rem;
+  color: #fff;
+  margin-bottom: 15px;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.instruction-text {
+  font-size: 1rem;
+  color: #00ff00;
+  margin: 0;
+  font-style: italic;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.resource-requirements {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.resource-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 255, 0, 0.1);
+  padding: 10px 15px;
+  border-radius: 5px;
+  border: 1px solid rgba(0, 255, 0, 0.2);
+
+  img {
+    width: 24px;
+    height: 24px;
+    image-rendering: pixelated;
+  }
+
+  span {
+    color: #00ff00;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+  }
+}
+
+@media (max-width: 768px) {
+  .shop-dialog {
+    padding: 10px;
+    max-height: 100vh;
+    width: 100%;
+    margin: 0;
+    border-radius: 0;
+  }
+
+  .modal-body {
+    max-height: calc(100vh - 120px);
+  }
+
+  .log-container {
+    max-height: calc(100vh - 180px);
+  }
+
+  .battle-stats,
+  .battle-result {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .stat {
+    width: 100%;
+    text-align: center;
+  }
+
+  .confirmation-dialog {
+    width: 95%;
+    min-height: auto;
+  }
+
+  .confirmation-body {
+    padding: 15px;
+    min-height: 150px;
+
+    .resource-requirements {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .resource-item {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .confirmation-text,
+    .instruction-text {
+      font-size: 0.9rem;
+    }
+
+    .button-group {
+      flex-direction: column;
+      width: 100%;
+
+      .btn {
+        width: 100%;
+      }
+    }
+  }
+
+  .message-container {
+    padding: 15px;
+    margin: 15px 0;
+  }
+
+  .message-text {
+    font-size: 1rem;
+  }
+
+  .instruction-text {
+    font-size: 0.9rem;
+  }
+
+  .resource-requirements {
+    flex-direction: column;
+    gap: 10px;
+    margin: 15px 0;
+  }
+
+  .resource-item {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .shop-content {
+    padding: 10px;
+  }
+
+  .shop-title {
+    font-size: 14px;
+  }
+
+  .log-entry {
+    padding: 0.75rem;
+  }
+
+  .enemy-info {
+    font-size: 1rem;
+  }
+
+  .button-group {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .message-container {
+    padding: 10px;
+    margin: 10px 0;
+  }
+
+  .message-text,
+  .instruction-text {
+    font-size: 0.9rem;
+  }
 }
 </style>

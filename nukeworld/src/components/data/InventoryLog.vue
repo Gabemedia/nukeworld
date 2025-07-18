@@ -2,18 +2,22 @@
   <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="openModal">
     <img class="sidebar-icon" :src="require(`@/assets/interface/icons/inventory.png`)" title="Inventory Log">
   </button>
-  <div v-if="showModal" class="modal" tabindex="-1" @click.self="closeModal">
-    <div class="modal-dialog modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Inventory</h5>
-          <button type="button" class="btn-close" @click="closeModal" aria-label="Close"></button>
+  <div v-if="showModal" class="shop-modal" tabindex="-1" @click.self="closeModal">
+    <div class="shop-dialog">
+      <div class="shop-content">
+        <div class="shop-header">
+          <div class="shop-title-wrapper">
+            <img class="shop-logo" :src="require(`@/assets/interface/icons/inventory.png`)" alt="Inventory Icon">
+            <h5 class="shop-title">Character Inventory</h5>
+          </div>
+          <div class="player-money">
+            <img :src="require('@/assets/interface/icons/money.png')" alt="Money">
+            <span>{{ character.money }}</span>
+            <button class="close-button" @click="closeModal">&times;</button>
+          </div>
         </div>
         <div class="modal-body">
-          <InventoryStash />
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" @click="closeModal">Close</button>
+          <InventoryStash @close-modal="closeModal" />
         </div>
       </div>
     </div>
@@ -22,6 +26,7 @@
 
 <script>
 import InventoryStash from './InventoryStash.vue';
+import { mapState } from 'vuex';
 
 export default {
   components: {
@@ -31,6 +36,9 @@ export default {
     return {
       showModal: false,
     };
+  },
+  computed: {
+    ...mapState(['character']),
   },
   methods: {
     openModal() {
@@ -44,75 +52,122 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.modal {
+.shop-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
-  position: fixed;
-  z-index: 1050;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
 }
 
-.modal-dialog {
-  max-width: 500px;
+.shop-dialog {
+  background: rgba(0, 0, 0, 0.9);
+  border: 2px solid #2a2a2a;
+  border-radius: 8px;
   width: 90%;
-  margin: 1.75rem auto;
+  max-width: 1200px;
+  max-height: 90vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
 
-.modal-content {
-  background-color: #1a1a1a;
-  border: 2px solid #00ff00;
-  border-radius: 10px;
+.shop-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
 }
 
-.modal-header {
-  border-bottom: 1px solid #00ff00;
-  padding: 1rem;
+.shop-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #2a2a2a;
+  padding-bottom: 10px;
 }
 
-.modal-title {
+.shop-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.shop-logo {
+  width: 24px;
+  height: 24px;
+}
+
+.shop-title {
   color: #00ff00;
-  font-weight: bold;
-  text-transform: uppercase;
-  text-shadow: 0 0 10px #00ff00;
-  font-size: 1rem;
+  margin: 0;
+  font-size: 16px;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.player-money {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background: rgba(255, 255, 0, 0.1);
+  border: 1px solid #ffff00;
+  border-radius: 4px;
+  color: #ffff00;
+  font-size: 14px;
+
+  img {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.close-button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0 8px;
+  margin-left: auto;
+  
+  &:hover {
+    color: #ff0000;
+  }
 }
 
 .modal-body {
   position: relative;
   flex: 1 1 auto;
-  padding: 1rem!important;
-  max-height: 70vh;
-  overflow-y: auto;
-  color: #fff;
+  padding: 0;
+  height: calc(90vh - 70px);
+  overflow: hidden;
 }
 
-.modal-footer {
-  border-top: 1px solid #00ff00;
-  padding: 1rem;
-}
+@media (max-width: 768px) {
+  .shop-dialog {
+    padding: 10px;
+    max-height: 100vh;
+    width: 100%;
+    margin: 0;
+    border-radius: 0;
+  }
 
-.btn-secondary {
-  background-color: #333;
-  color: #fff;
-  border: 1px solid #00ff00;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background-color: #00ff00;
-    color: #000;
+  .modal-body {
+    height: calc(100vh - 70px);
   }
 }
 
-@media (max-width: 576px) {
-  .modal-dialog {
-    width: 95%;
-    margin: 1rem auto;
+@media (max-width: 480px) {
+  .shop-content {
+    padding: 10px;
   }
 }
 </style>

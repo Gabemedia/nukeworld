@@ -9,9 +9,21 @@
             <button type="button" class="btn-close" @click="closeConfirmationModal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <p>It costs 20 Wood & Steel Scrap to place a settlement.</p>
-            <p class="fw-semibold">Click anywhere on the map to confirm the location.</p>
-            <div class="button-group">
+            <div class="resource-requirements">
+              <div class="resource-item">
+                <img :src="require('@/assets/interface/icons/resources/wood_scrap.png')" alt="Wood Scrap">
+                <span>20 Wood Scrap</span>
+              </div>
+              <div class="resource-item">
+                <img :src="require('@/assets/interface/icons/resources/steel_scrap.png')" alt="Steel Scrap">
+                <span>20 Steel Scrap</span>
+              </div>
+            </div>
+            <div class="message-container">
+              <p class="message-text">It costs 20 Wood & Steel Scrap to place a settlement.</p>
+              <p class="instruction-text">Click anywhere on the map to confirm the location.</p>
+            </div>
+            <div class="button-group pb-2">
               <button @click="closeConfirmationModal" class="btn btn-primary">OK</button>
             </div>
           </div>
@@ -153,7 +165,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .sidebar {
   position: absolute;
   top: 0;
@@ -430,5 +442,116 @@ export default {
 .btn-secondary:hover {
   background-color: #00ff00;
   color: #000;
+}
+
+.message-container {
+  text-align: center;
+  margin: 20px 0;
+  padding: 20px;
+  background: rgba(0, 255, 0, 0.05);
+  border-radius: 8px;
+  border: 1px solid rgba(0, 255, 0, 0.1);
+}
+
+.message-text {
+  font-size: 1.1rem;
+  color: #fff;
+  margin-bottom: 15px;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.instruction-text {
+  font-size: 1rem;
+  color: #00ff00;
+  margin: 0;
+  font-style: italic;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.resource-requirements {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 20px 0;
+}
+
+.resource-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(0, 255, 0, 0.1);
+  padding: 10px 15px;
+  border-radius: 5px;
+  border: 1px solid rgba(0, 255, 0, 0.2);
+
+  img {
+    width: 24px;
+    height: 24px;
+    image-rendering: pixelated;
+  }
+
+  span {
+    color: #00ff00;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+  }
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+
+  .btn {
+    min-width: 150px;
+    padding: 10px 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .message-container {
+    padding: 15px;
+    margin: 15px 0;
+  }
+
+  .message-text {
+    font-size: 1rem;
+  }
+
+  .instruction-text {
+    font-size: 0.9rem;
+  }
+
+  .resource-requirements {
+    flex-direction: column;
+    gap: 10px;
+    margin: 15px 0;
+  }
+
+  .resource-item {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .button-group {
+    margin-top: 15px;
+    
+    .btn {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .message-container {
+    padding: 10px;
+    margin: 10px 0;
+  }
+
+  .message-text,
+  .instruction-text {
+    font-size: 0.9rem;
+  }
 }
 </style>

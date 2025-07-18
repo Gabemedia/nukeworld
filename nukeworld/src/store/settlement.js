@@ -36,6 +36,12 @@ const initialState = {
     startingResources: 0,
     maxResources: 1000,
     attackChance: 0.50,
+    placementCosts: {
+      resource1: 1, // Wood Scrap
+      resource1Amount: 20,
+      resource2: 2, // Steel Scrap
+      resource2Amount: 20,
+    },
     upgradeCosts: {
       defences: {
         resource1: 1, // Wood Scrap
@@ -104,6 +110,7 @@ const mutations = {
       startingResources: Number(settings.startingResources),
       maxResources: Number(settings.maxResources),
       attackChance: Number(settings.attackChance),
+      placementCosts: settings.placementCosts || state.settings.placementCosts,
       upgradeCosts: settings.upgradeCosts || state.settings.upgradeCosts
     };
     

@@ -389,7 +389,61 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Added consistent progress bar styling across modals
 
 ### Version 0.1.8.1 (16-07-2025)
-- 
+- Removed all automatic quest coordinate generation to ensure quest markers use static coordinates
+- Fixed quest marker display by using only predefined coordinates from quests.js
+- Removed random coordinate assignment in resetQuests and template creation
+- Ensured quest coordinates remain consistent after quest reset or completion
+- Improved map marker reliability by using only static quest locations
+- Enhanced quest system stability by removing dynamic coordinate generation
+- Fixed issue where quest markers would sometimes not appear on the map
+- Optimized quest location handling for better performance
+- Updated quest templates to preserve original quest coordinates
+- Improved code maintainability by removing redundant coordinate generation logic
+- Updated all quest coordinates to be within specific ranges:
+- Optimized quest placement for better game balance and exploration
+- Enhanced quest distribution across the game map
+- Improved quest accessibility and discovery flow
+
+### Version 0.1.8.2 (17-07-2025)
+- Added user and developer sections in GameSettings
+- Added music controls in user settings:
+  - Music on/off toggle
+  - Volume control slider
+  - Settings persist in localStorage
+- Improved music system in GameWorld:
+  - Dynamic loading of all MP3 files from music folder
+  - Random shuffle playlist
+  - Automatic play next track
+  - Error handling with fallback
+  - Volume and on/off state sync with settings
+- Fixed ESC key functionality to work with music controls
+- Moved developer mode toggle to header section
+- Improved settings layout and organization
+- Enhanced user experience with better settings categorization
+- Added proper error handling for audio playback
+- Optimized music system performance
+- Maintained all existing functionality while adding new features
+- Updated all quest coordinates in quests.js to fit new map dimensions:
+  - lon coordinates now range from 850-1250
+  - lat coordinates now range from 3500
+  - quest distribution across the game map for better exploration
+- Optimized quest marker placement for improved accessibility
+- Maintained all existing quest functionality while adapting to new coordinate ranges
+- Improved quest accessibility and discovery flow
+
+### Version 0.1.8.3 (18-07-2025)
+- Modernized and unified UI styling across multiple components for consistent RPG experience
+- Updated QuestTabs.vue and QuestDialog.vue to match modern styling used in PlayerShop.vue, InventoryLog.vue, and InventoryStash.vue
+- Replaced old Bootstrap modal structure with modern modal layout in QuestLog.vue and StoryLog.vue
+- Enhanced QuestDialog.vue with improved conversation layout and RPG-style visual elements
+- Removed specific character names (Todd Wimsey) from dialog system while maintaining avatar icons and visual elements
+- Added proper content wrappers and padding to prevent content from going to modal edges
+- Improved mobile responsiveness and consistent spacing across all dialog components
+- Enhanced visual feedback with hover effects, animations, and RPG-style elements
+- Maintained all existing functionality including speech synthesis, resource checking, and story progression
+- Fixed layout issues with "Reset Quests" button overflow in QuestLog.vue
+- Optimized modal structure for better user experience and visual consistency
+
 
 ## Getting Started
 To get started with NukeWorld, follow these steps:
