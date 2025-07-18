@@ -37,6 +37,9 @@ const state = reactive({
   currentStoryLineId: JSON.parse(localStorage.getItem('currentStoryLineId')) || null,
   settlementMarker: JSON.parse(localStorage.getItem('settlementMarker')) || null,
   isSettlementModalOpen: false,
+  isLootboxModalOpen: false,
+  currentLootboxRewards: [],
+  currentLootboxName: '',
   items,
   armor,
   aid,
@@ -70,6 +73,70 @@ const state = reactive({
   }
 });
 
+
+// Helper function to generate random rewards
+const generateRandomReward = (state) => {
+  const categories = ['weapons', 'armor', 'aid', 'resources'];
+  const randomCategory = categories[Math.floor(Math.random() * categories.length)];
+  
+  switch (randomCategory) {
+    case 'weapons': {
+      const availableWeapons = state.items.filter(item => item.price !== -1 && item.id !== 0);
+      if (availableWeapons.length > 0) {
+        const randomWeapon = availableWeapons[Math.floor(Math.random() * availableWeapons.length)];
+        return {
+          type: 'weapon',
+          item: { ...randomWeapon, uuid: uuidv4() },
+          category: 'weapons'
+        };
+      }
+      break;
+    }
+    case 'armor': {
+      const availableArmor = state.armor.filter(item => item.price !== -1 && item.id !== 0);
+      if (availableArmor.length > 0) {
+        const randomArmor = availableArmor[Math.floor(Math.random() * availableArmor.length)];
+        return {
+          type: 'armor',
+          item: { ...randomArmor, uuid: uuidv4() },
+          category: 'armor'
+        };
+      }
+      break;
+    }
+    case 'aid': {
+      const availableAid = state.aid.filter(item => item.price !== -1 && item.id !== 0);
+      if (availableAid.length > 0) {
+        const randomAid = availableAid[Math.floor(Math.random() * availableAid.length)];
+        return {
+          type: 'aid',
+          item: { ...randomAid, uuid: uuidv4() },
+          category: 'aid'
+        };
+      }
+      break;
+    }
+    case 'resources': {
+      const availableResources = state.resources.filter(item => item.price !== -1 && item.id !== 0);
+      if (availableResources.length > 0) {
+        const randomResource = availableResources[Math.floor(Math.random() * availableResources.length)];
+        return {
+          type: 'resource',
+          item: { ...randomResource, uuid: uuidv4() },
+          category: 'resources'
+        };
+      }
+      break;
+    }
+  }
+  
+  // Fallback: give money
+  return {
+    type: 'money',
+    amount: Math.floor(Math.random() * 50) + 10,
+    category: 'money'
+  };
+};
 
 const getters = {
   characterById: (state) => (id) => state.characters.find((ch) => ch.id === id),
@@ -277,6 +344,15 @@ const mutations = {
   setSettlementModalOpen(state, isOpen) {
     state.isSettlementModalOpen = isOpen;
   },
+  setLootboxModalOpen(state, isOpen) {
+    state.isLootboxModalOpen = isOpen;
+  },
+  setCurrentLootboxRewards(state, rewards) {
+    state.currentLootboxRewards = rewards;
+  },
+  setCurrentLootboxName(state, name) {
+    state.currentLootboxName = name;
+  },
 
   addItemToWeapons(state, itemId) {
     const item = state.items.find(i => i.id === itemId);
@@ -403,6 +479,33 @@ const mutations = {
       }
       state.character.premium.push(newItem);
     }
+  },
+  openLootbox(state, lootboxUuid) {
+    const lootboxIndex = state.character.premium.findIndex(item => item.uuid === lootboxUuid);
+    if (lootboxIndex !== -1) {
+      const lootbox = state.character.premium[lootboxIndex];
+      if (lootbox.type === 'lootbox' && lootbox.lootbox) {
+        // Remove the lootbox from inventory
+        state.character.premium.splice(lootboxIndex, 1);
+        
+        // Set the lootbox name
+        state.currentLootboxName = lootbox.name;
+        
+        // Generate random rewards based on lootbox count
+        const rewards = [];
+        for (let i = 0; i < lootbox.lootbox; i++) {
+          const reward = generateRandomReward(state);
+          if (reward) {
+            rewards.push(reward);
+          }
+        }
+        
+        // Set the rewards in state
+        state.currentLootboxRewards = rewards;
+        return rewards;
+      }
+    }
+    return [];
   },
   setFirstAidItem(state, item) {
     if (state.character.aid.length > 0) {
@@ -973,6 +1076,27 @@ const actions = {
 
   checkMoney({ state }, amount) {
     return state.character.money >= amount;
+  },
+  openLootboxAction({ commit, state }, lootboxUuid) {
+    // 1. Open lootbox and get rewards
+    commit('openLootbox', lootboxUuid);
+    // 2. Add rewards to inventory
+    const rewards = state.currentLootboxRewards || [];
+    rewards.forEach(reward => {
+      if (reward.type === 'weapon') {
+        state.character.weapons.push(reward.item);
+      } else if (reward.type === 'armor') {
+        state.character.armor.push(reward.item);
+      } else if (reward.type === 'aid') {
+        state.character.aid.push(reward.item);
+      } else if (reward.type === 'resource') {
+        state.character.resources.push(reward.item);
+      } else if (reward.type === 'money') {
+        state.character.money += reward.amount;
+      }
+    });
+    // 3. Show modal with rewards
+    commit('setLootboxModalOpen', true);
   },
 };
 

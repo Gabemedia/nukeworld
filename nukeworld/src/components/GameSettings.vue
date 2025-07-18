@@ -1329,52 +1329,87 @@ export default {
       this.showWeaponTemplates = false;
     },
     initializeSpeechSettings() {
+      let voicesLoaded = false;
+      
       const loadVoices = () => {
-        const voices = window.speechSynthesis.getVoices();
+        if (voicesLoaded) return; // Prevent infinite loop
         
-        // Filter for English voices only
-        const englishVoices = voices.filter(voice => 
-          voice.lang.startsWith('en-')
-        );
+        // Check if speechSynthesis is available
+        if (typeof window.speechSynthesis === 'undefined') {
+          console.warn('Speech synthesis not available in GameSettings');
+          voicesLoaded = true;
+          return;
+        }
         
-        // Remove duplicates by voiceURI
-        const uniqueVoices = Array.from(new Map(englishVoices.map(voice => [voice.voiceURI, voice])).values());
-        
-        // Sort voices to prioritize Karen first
-        const sortedVoices = uniqueVoices.sort((a, b) => {
-          // Karen should always be first
-          if (a.name === 'Karen') return -1;
-          if (b.name === 'Karen') return 1;
-          return 0;
-        });
-        
-        this.speechSettings.availableVoices = sortedVoices;
-        
-        // Set default voice if none is selected
-        if (!this.speechSettings.selectedVoice && sortedVoices.length > 0) {
-          // Try to find Karen first
-          let defaultVoice = sortedVoices.find(v => v.name === 'Karen');
+        try {
+          const voices = window.speechSynthesis.getVoices();
           
-          // If Karen not found, use any English voice
-          if (!defaultVoice) {
-            defaultVoice = sortedVoices[0];
+          // Filter for English voices only
+          const englishVoices = voices.filter(voice => 
+            voice.lang.startsWith('en-')
+          );
+          
+          // Remove duplicates by voiceURI
+          const uniqueVoices = Array.from(new Map(englishVoices.map(voice => [voice.voiceURI, voice])).values());
+          
+          // Sort voices to prioritize Daniel first (clear male voice)
+          const sortedVoices = uniqueVoices.sort((a, b) => {
+            // Daniel should always be first
+            if (a.name === 'Daniel') return -1;
+            if (b.name === 'Daniel') return 1;
+            return 0;
+          });
+          
+          this.speechSettings.availableVoices = sortedVoices;
+          
+          // Load saved settings first
+          this.loadSpeechSettings();
+          
+          // Set default voice if none is selected
+          if (!this.speechSettings.selectedVoice && sortedVoices.length > 0) {
+            // Try to find Daniel first (clear male voice)
+            let defaultVoice = sortedVoices.find(v => v.name === 'Daniel');
+            
+            // If Daniel not found, try other clear male voices
+            if (!defaultVoice) {
+              defaultVoice = sortedVoices.find(v => 
+                v.name.toLowerCase().includes('daniel') || 
+                v.name.toLowerCase().includes('alex') ||
+                v.name.toLowerCase().includes('david') ||
+                v.name.toLowerCase().includes('james') ||
+                v.name.toLowerCase().includes('john') ||
+                v.name.toLowerCase().includes('michael') ||
+                v.name.toLowerCase().includes('robert') ||
+                v.name.toLowerCase().includes('thomas') ||
+                v.name.toLowerCase().includes('mark') ||
+                v.name.toLowerCase().includes('peter') ||
+                v.name.toLowerCase().includes('william')
+              );
+            }
+            
+            // If still no male voice found, use any English voice
+            if (!defaultVoice) {
+              defaultVoice = sortedVoices[0];
+            }
+            
+            this.speechSettings.selectedVoice = defaultVoice;
+            this.saveSpeechSettings();
           }
           
-          this.speechSettings.selectedVoice = defaultVoice;
-          this.saveSpeechSettings();
+          voicesLoaded = true;
+        } catch (error) {
+          console.error('Error loading voices in GameSettings:', error);
+          voicesLoaded = true; // Prevent infinite retries
         }
       };
 
       // Initial load of voices
       loadVoices();
 
-      // Some browsers need the onvoiceschanged event
-      if (window.speechSynthesis.onvoiceschanged !== undefined) {
+      // Some browsers need the onvoiceschanged event - but don't override if already set
+      if (window.speechSynthesis && window.speechSynthesis.onvoiceschanged !== undefined) {
         window.speechSynthesis.onvoiceschanged = loadVoices;
       }
-
-      // Load saved settings
-      this.loadSpeechSettings();
     },
     saveSpeechSettings() {
       const settings = {
@@ -1395,9 +1430,10 @@ export default {
         this.speechSettings.rate = settings.rate;
         this.speechSettings.pitch = settings.pitch;
         
-        // Restore selected voice if available
+        // Restore selected voice if available - use all available voices
         if (settings.selectedVoiceURI) {
-          const voice = this.speechSettings.availableVoices.find(v => v.voiceURI === settings.selectedVoiceURI);
+          const allVoices = window.speechSynthesis.getVoices();
+          const voice = allVoices.find(v => v.voiceURI === settings.selectedVoiceURI);
           if (voice) {
             this.speechSettings.selectedVoice = voice;
           }

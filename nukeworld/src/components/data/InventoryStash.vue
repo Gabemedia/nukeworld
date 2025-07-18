@@ -108,6 +108,7 @@
                 <img :src="require('@/assets/interface/icons/money.png')" alt="Money">
                 <span>{{ Math.floor(item.price * 0.1) }}</span>
               </button>
+
             </div>
           </div>
         </div>
@@ -202,6 +203,14 @@
                 Sell Item
               </button>
 
+              <!-- Open Box Button for Premium -->
+              <button 
+                v-if="activeTab === 'premium' && hoveredItem.type === 'lootbox'"
+                class="action-button open-box-action"
+                @click="openLootbox(hoveredItem.uuid)">
+                Open Box
+              </button>
+
               <!-- Sell Button for Premium -->
               <button 
                 v-if="activeTab === 'premium' && hoveredItem.price !== -1"
@@ -217,14 +226,23 @@
         </div>
       </div>
     </div>
+    <!-- Lootbox Modal -->
+    <LootboxModal
+      v-if="isLootboxModalOpen"
+      :rewards="currentLootboxRewards"
+      :lootboxName="currentLootboxName"
+      @close="closeLootboxModal"
+    />
   </div>
 </template>
 
 <script>
 import { mapActions, mapState } from 'vuex';
+import LootboxModal from './LootboxModal.vue';
 
 export default {
   name: 'InventoryStash',
+  components: { LootboxModal },
   data() {
     return {
       hoveredItem: null,
@@ -232,7 +250,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(['character']),
+    ...mapState(['character', 'isLootboxModalOpen', 'currentLootboxRewards', 'currentLootboxName']),
     weapons() {
       const handsWeapon = this.character.weapons.find(weapon => weapon.name === 'Hands');
       if (handsWeapon) {
@@ -300,17 +318,14 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['equipWeapon', 'sellWeapon', 'equipArmor', 'sellArmor', 'useAid', 'sellResource', 'sellAid', 'sellResourceStack', 'sellPremium']),
-    
+    ...mapActions(['equipWeapon', 'sellWeapon', 'equipArmor', 'sellArmor', 'useAid', 'sellResource', 'sellAid', 'sellResourceStack', 'sellPremium', 'openLootboxAction']),
     changeTab(type) {
       this.activeTab = type;
       this.hoveredItem = null; // Clear active item when changing tabs
     },
-
     sellResourceStack(stack) {
       this.$store.dispatch('sellResourceStack', stack);
     },
-
     toggleEquipWeapon(itemUuid) {
       this.equipWeapon(itemUuid);
     },
@@ -333,6 +348,15 @@ export default {
       // This method will be called by parent component
       this.$emit('close-modal');
     },
+    // Åbn lootbox og vis modal
+    openLootbox(lootboxUuid) {
+      this.openLootboxAction(lootboxUuid);
+    },
+    closeLootboxModal() {
+      this.$store.commit('setLootboxModalOpen', false);
+      this.$store.commit('setCurrentLootboxRewards', []);
+      this.$store.commit('setCurrentLootboxName', '');
+    }
   },
 };
 </script>
@@ -685,6 +709,18 @@ export default {
     }
   }
 
+  &.open-box-action {
+    color: #00ff00;
+    border: 1px solid #00ff00;
+
+    &:hover {
+      background: #00ff00;
+      color: #000;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 255, 0, 0.2);
+    }
+  }
+
   &.sell-action {
     color: #ff4444;
     border: 1px solid #ff4444;
@@ -871,4 +907,6 @@ export default {
     font-size: 12px;
   }
 }
+
+
 </style>

@@ -11,10 +11,12 @@
             <img class="shop-logo" :src="require(`@/assets/interface/icons/quests.png`)" alt="Quest Log Icon">
             <h5 class="shop-title">Quest Log</h5>
           </div>
-          <div class="player-money">
-            <img :src="require('@/assets/interface/icons/money.png')" alt="Money">
-            <span>{{ $store.state.character.money }}</span>
-            <button class="close-button" @click="closeModal">&times;</button>
+          <div class="header-controls">
+            <div class="player-money">
+              <img :src="require('@/assets/interface/icons/money.png')" alt="Money">
+              <span>{{ $store.state.character.money }}</span>
+              <button class="close-button" @click="closeModal">&times;</button>
+            </div>
           </div>
         </div>
         
@@ -128,6 +130,12 @@ export default {
   text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
 }
 
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .player-money {
   display: flex;
   align-items: center;
@@ -142,6 +150,31 @@ export default {
   img {
     width: 16px;
     height: 16px;
+  }
+}
+
+.shop-button {
+  background: #00ff00;
+  color: #000;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  height: 48px; /* Match the height of player-money box */
+  width: 48px;
+  img {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background-color: #00cc00;
   }
 }
 

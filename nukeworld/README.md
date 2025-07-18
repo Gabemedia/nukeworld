@@ -443,6 +443,10 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Maintained all existing functionality including speech synthesis, resource checking, and story progression
 - Fixed layout issues with "Reset Quests" button overflow in QuestLog.vue
 - Optimized modal structure for better user experience and visual consistency
+- Removed shop buttons from InventoryLog.vue and QuestLog.vue modal headers to simplify UI
+- Cleaned up unused shop button methods and CSS styling from modal components
+- Improved modal header layout by removing unnecessary shop button elements
+- Streamlined modal controls to focus on essential functionality (close button and player money display)
 
 
 ## Getting Started

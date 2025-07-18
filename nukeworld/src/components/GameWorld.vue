@@ -113,7 +113,7 @@ export default {
         if (this.audio && this.musicSettings) {
           if (newValue) {
             this.audio.play().catch(error => {
-              console.error('Error playing audio when enabled:', error);
+              console.warn('Audio autoplay blocked by browser policy:', error);
             });
           } else {
             this.audio.pause();
@@ -147,6 +147,9 @@ export default {
 
     // Initialize music
     this.initializeMusic();
+    
+    // Add user interaction listener to enable audio
+    this.addUserInteractionListener();
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.handleResize);
@@ -192,9 +195,8 @@ export default {
           
           if (this.musicSettings && this.musicSettings.enabled) {
             this.audio.play().catch(error => {
-              console.error('Error playing audio:', error);
-              // Try next track if current fails
-              this.playNextTrack();
+              console.warn('Audio autoplay blocked by browser policy:', error);
+              // Don't retry on autoplay errors
             });
           }
         });
@@ -204,12 +206,11 @@ export default {
         this.audio.src = this.playlist[this.currentTrackIndex];
         this.currentTrackName = this.playlist[this.currentTrackIndex].split('/').pop().replace('.mp3', '');
         
-        // Only start playing if music is enabled
+        // Only start playing if music is enabled - but don't force autoplay
         if (this.musicSettings && this.musicSettings.enabled) {
           this.audio.play().catch(error => {
-            console.error('Error playing initial audio:', error);
-            // Try next track if current fails
-            this.playNextTrack();
+            console.warn('Audio autoplay blocked by browser policy:', error);
+            // Don't retry on autoplay errors
           });
         }
       }
@@ -223,12 +224,30 @@ export default {
         
         if (this.musicSettings && this.musicSettings.enabled) {
           this.audio.play().catch(error => {
-            console.error('Error playing audio:', error);
-            // Try next track if current fails
-            this.playNextTrack();
+            console.warn('Audio autoplay blocked by browser policy:', error);
+            // Don't retry on autoplay errors
           });
         }
       }
+    },
+    
+    addUserInteractionListener() {
+      const enableAudio = () => {
+        if (this.audio && this.musicSettings && this.musicSettings.enabled) {
+          this.audio.play().catch(error => {
+            console.warn('Audio autoplay blocked by browser policy:', error);
+          });
+        }
+        // Remove listeners after first interaction
+        document.removeEventListener('click', enableAudio);
+        document.removeEventListener('keydown', enableAudio);
+        document.removeEventListener('touchstart', enableAudio);
+      };
+      
+      // Add listeners for user interaction
+      document.addEventListener('click', enableAudio, { once: true });
+      document.addEventListener('keydown', enableAudio, { once: true });
+      document.addEventListener('touchstart', enableAudio, { once: true });
     }
   },
   created() {

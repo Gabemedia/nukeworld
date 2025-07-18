@@ -18,6 +18,7 @@
           <div class="conversation-box npc-box">
             <div class="speaker-avatar">
               <img class="sidebar-icon" :src="require(`@/assets/interface/icons/encounter.png`)" title="NPC">
+              <div class="speaker-badge">NPC</div>
             </div>
             <div class="message-box npc-message">
               <div class="message-content">
@@ -49,6 +50,7 @@
             </div>
             <div class="speaker-avatar player-avatar">
               <img class="sidebar-icon" :src="require(`@/assets/interface/icons/player.png`)" title="Player">
+              <div class="speaker-badge">YOU</div>
             </div>
           </div>
         </div>
@@ -112,21 +114,31 @@ export default {
     const speechRate = ref(1.0);
     const speechPitch = ref(1.0);
     const dialogSystem = ref(null);
+    let voicesLoaded = false;
 
-    // Load available voices
+    // Load available voices - only once to prevent conflicts
     const loadVoices = () => {
-      availableVoices.value = speechSynthesis.getVoices();
-      if (availableVoices.value.length > 0) {
-        // Default to first English voice, fallback to first available
-        selectedVoice.value = availableVoices.value.find(voice => voice.lang.includes('en')) || availableVoices.value[0];
+      if (voicesLoaded) return; // Prevent infinite loop
+      
+      try {
+        availableVoices.value = speechSynthesis.getVoices();
+        if (availableVoices.value.length > 0) {
+          // Default to first English voice, fallback to first available
+          selectedVoice.value = availableVoices.value.find(voice => voice.lang.includes('en')) || availableVoices.value[0];
+        }
+        voicesLoaded = true;
+      } catch (error) {
+        console.error('Error loading voices in QuestDialog:', error);
+        voicesLoaded = true; // Prevent infinite retries
       }
     };
 
-    // Initial voice loading
-    loadVoices();
-    if (speechSynthesis.onvoiceschanged !== undefined) {
-      speechSynthesis.onvoiceschanged = loadVoices;
+    // Initial voice loading - only if voices are available
+    if (speechSynthesis && speechSynthesis.getVoices().length > 0) {
+      loadVoices();
     }
+    
+    // Don't set onvoiceschanged here to avoid conflicts with main.js and GameSettings.vue
 
     const toggleStoryLineDetails = (storyLineId) => {
       expandedStoryLines.value[storyLineId] = !expandedStoryLines.value[storyLineId];
@@ -319,6 +331,12 @@ export default {
       
       if (!this.currentStoryStep?.npcMessage) return;
       
+      // Check if speech synthesis is available
+      if (typeof window.speechSynthesis === 'undefined') {
+        console.warn('Speech synthesis not available');
+        return;
+      }
+      
       // Get speech settings from localStorage
       const speechSettings = JSON.parse(localStorage.getItem('speechSettings') || '{}');
       if (!speechSettings.enabled) return;
@@ -337,9 +355,26 @@ export default {
         selectedVoice = voices.find(voice => voice.voiceURI === speechSettings.selectedVoiceURI);
       }
       
-      // If no saved voice found, try to find Karen
+      // If no saved voice found, try to find Daniel (clear male voice)
       if (!selectedVoice) {
-        selectedVoice = voices.find(voice => voice.name === 'Karen');
+        selectedVoice = voices.find(voice => voice.name === 'Daniel');
+      }
+      
+      // If Daniel not found, try other clear male voices
+      if (!selectedVoice) {
+        selectedVoice = voices.find(voice => 
+          voice.name.toLowerCase().includes('daniel') || 
+          voice.name.toLowerCase().includes('alex') ||
+          voice.name.toLowerCase().includes('david') ||
+          voice.name.toLowerCase().includes('james') ||
+          voice.name.toLowerCase().includes('john') ||
+          voice.name.toLowerCase().includes('michael') ||
+          voice.name.toLowerCase().includes('robert') ||
+          voice.name.toLowerCase().includes('thomas') ||
+          voice.name.toLowerCase().includes('mark') ||
+          voice.name.toLowerCase().includes('peter') ||
+          voice.name.toLowerCase().includes('william')
+        );
       }
       
       // If still no voice found, try any English voice
@@ -555,6 +590,18 @@ export default {
   align-items: center;
   gap: 5px;
   min-width: 60px;
+}
+
+.speaker-badge {
+  font-size: 0.7rem;
+  color: #00ff00;
+  font-weight: bold;
+  text-align: center;
+  text-shadow: 0 0 4px rgba(0, 255, 0, 0.3);
+  background: rgba(0, 255, 0, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(0, 255, 0, 0.3);
 }
 
 .player-avatar .sidebar-icon {

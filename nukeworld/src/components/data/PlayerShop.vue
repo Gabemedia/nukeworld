@@ -125,6 +125,12 @@ export default {
       return this.premium.filter(item => item.price !== -1 && item.id !== 0);
     }
   },
+  mounted() {
+    // No complex event system needed - just use simple methods like other components
+  },
+  beforeUnmount() {
+    // No cleanup needed
+  },
   methods: {
     ...mapActions(['addItemToWeapons', 'addItemToArmor', 'addItemToAid', 'addResource', 'addItemToPremium', 'decreaseMoney']),
     getAvailableItems(category) {
@@ -345,6 +351,30 @@ export default {
   img {
     width: 16px;
     height: 16px;
+  }
+}
+
+.shop-button {
+  background: #00ff00;
+  color: #000;
+  border: none;
+  border-radius: 4px;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  img {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background-color: #00cc00;
   }
 }
 
