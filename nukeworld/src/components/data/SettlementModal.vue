@@ -404,7 +404,7 @@ export default {
   border: 2px solid #2a2a2a;
   border-radius: 8px;
   width: 90%;
-  max-width: 1000px;
+  max-width: 1200px;
   max-height: 90vh;
   position: relative;
   display: flex;

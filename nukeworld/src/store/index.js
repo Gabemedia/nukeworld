@@ -178,7 +178,7 @@ const getters = {
 
   // SPECIAL system getters for bonuses
   totalAttackBonus: (state) => {
-    const strengthBonus = Math.floor(state.character.special.strength / 2);
+    const strengthBonus = state.character.special.strength; // 1:1 ratio - each Strength point = +1 Attack
     const perkBonus = state.character.activePerks
       .filter(p => p.effect.type === 'damage')
       .reduce((sum, p) => sum + p.effect.value, 0);
@@ -186,7 +186,7 @@ const getters = {
   },
 
   totalDefenseBonus: (state) => {
-    const enduranceBonus = Math.floor(state.character.special.endurance / 3);
+    const enduranceBonus = state.character.special.endurance; // 1:1 ratio - each Endurance point = +1 Defense
     return enduranceBonus;
   },
 

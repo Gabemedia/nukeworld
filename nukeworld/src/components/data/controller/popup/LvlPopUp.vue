@@ -33,11 +33,11 @@ export default {
     props: {
         title: {
             type: String,
-            default: 'Congratulations!'
+            default: 'You have leveled up!'
         },
         desc: {
             type: String,
-            default: 'You have leveled up!'
+            default: ''
         }
     },
     emits: ['popup-closed'], 

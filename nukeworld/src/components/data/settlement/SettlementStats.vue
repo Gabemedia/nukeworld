@@ -1,193 +1,320 @@
 <template>
-  <div class="settlement-stats">
-    <!-- Main Stats -->
-    <div class="main-stats">
-      <div class="header-stats">
-        <div class="level-display">
-          <span class="level-badge">Level {{ settlement.level }}</span>
+  <div class="settlement-stats-container">
+    <!-- Header matching PlayerShop style -->
+        <!-- Tabs matching InventoryStash style -->
+        <div class="settlement-tabs">
           <button 
-            @click="upgradeLevel" 
-            :disabled="!canUpgradeLevel"
-            class="btn btn-success btn-sm"
+            v-for="tab in ['overview', 'management', 'actions']" 
+            :key="tab"
+            class="tab-button"
+            :class="{ active: activeTab === tab }"
+            @click="changeTab(tab)"
           >
-            Upgrade
-            <span class="upgrade-cost">
-              <span>{{ settings?.upgradeCosts?.level?.resource1Amount || 0 }}</span>
-              <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.level?.resource1)?.img}`)" :alt="getResourceName(settings?.upgradeCosts?.level?.resource1)" class="resource-icon">
-              <span>{{ settings?.upgradeCosts?.level?.resource2Amount || 0 }}</span>
-              <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.level?.resource2)?.img}`)" :alt="getResourceName(settings?.upgradeCosts?.level?.resource2)" class="resource-icon">
-              <span>${{ settings?.upgradeCosts?.level?.moneyCost || 0 }}</span>
-              <img src="@/assets/interface/icons/money.png" alt="Money" class="resource-icon">
-            </span>
+            <img :src="require(`@/assets/interface/icons/${tab === 'overview' ? 'settlement' : tab === 'management' ? 'exp' : 'settings'}.png`)" :alt="tab">
+            {{ tab.toUpperCase() }}
           </button>
         </div>
-        <div class="health-display">
-          <div class="progress">
-            <div 
-              class="progress-bar" 
-              :class="getHealthBarClass()"
-              :style="{ width: (settlement.health / settlement.maxHealth * 100) + '%' }"
-            >
-              {{ settlement.health }}/{{ settlement.maxHealth }} HP
-            </div>
-          </div> 
-        </div>
-      </div>
 
-      <div class="stats-container">
-        <!-- Left Column -->
-        <div class="stats-column">
-          <div class="stat-group">
-            <div class="stat-header" :data-cost="`${settings?.upgradeCosts?.inhabitant?.resource1Amount || 0} ${getResourceName(settings?.upgradeCosts?.inhabitant?.resource1)}, ${settings?.upgradeCosts?.inhabitant?.resource2Amount || 0} ${getResourceName(settings?.upgradeCosts?.inhabitant?.resource2)}, $${settings?.upgradeCosts?.inhabitant?.moneyCost || 0} per Inhabitant`">Population</div>
-            <div class="stat-row">
-              <span>Inhabitants</span>
-              <div class="cost-info">
-                <span>{{ settings?.upgradeCosts?.inhabitant?.resource1Amount || 0 }}</span>
-                <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.inhabitant?.resource1)?.img}`)" :alt="getResourceName(settings?.upgradeCosts?.inhabitant?.resource1)" class="resource-icon">
-                <span>{{ settings?.upgradeCosts?.inhabitant?.resource2Amount || 0 }}</span>
-                <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.inhabitant?.resource2)?.img}`)" :alt="getResourceName(settings?.upgradeCosts?.inhabitant?.resource2)" class="resource-icon">
-                <span>${{ settings?.upgradeCosts?.inhabitant?.moneyCost || 0 }}</span>
-                <img src="@/assets/interface/icons/money.png" alt="Money" class="resource-icon">
-              </div>
-              <div class="stat-value">
-                {{ settlement.inhabitants }}/{{ settlement.maxInhabitants }}
-                <button 
-                  @click="addInhabitant" 
-                  :disabled="settlement.inhabitants >= settlement.maxInhabitants"
-                  class="btn btn-success btn-xs"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-          </div>
+        <!-- Content Grid matching PlayerShop structure -->
+        <div class="settlement-container">
+          <div class="settlement-content-grid">
+            <!-- Left Panel - Stats Grid (matching items grid) -->
+            <div class="settlement-stats-items">
+              <!-- Overview Tab -->
+              <div v-show="activeTab === 'overview'" class="stats-grid">
+                <!-- Settlement Health Card -->
+                <div class="stat-card main-health-card">
+                  <div class="card-header">
+                    <img :src="require('@/assets/interface/icons/aid/medkit.png')" alt="Health">
+                    <h4>Settlement Health</h4>
+                  </div>
+                  <div class="health-section">
+                    <div class="health-bar-large">
+                      <div class="health-fill settlement-main-health" 
+                           :style="{ width: (settlement.health / settlement.maxHealth * 100) + '%' }">
+                      </div>
+                      <span class="health-text">{{ settlement.health }}/{{ settlement.maxHealth }}</span>
+                    </div>
+                  </div>
+                </div>
 
-          <div class="stat-group">
-            <div class="stat-header">Combat Stats</div>
-            <div class="stat-row">
-              <span>Attack Power</span>
-              <div class="stat-value highlight">{{ settlementAttackPower }}</div>
-            </div>
-            <div class="stat-row">
-              <span>Defence Power</span>
-              <div class="stat-value highlight">{{ settlementDefencePower }}</div>
-            </div>
-          </div>
-        </div>
+                <!-- Combat Stats Card -->
+                <div class="stat-card combat-card">
+                  <div class="card-header">
+                    <img :src="require('@/assets/interface/icons/gun.png')" alt="Combat">
+                    <h4>Combat Stats</h4>
+                  </div>
+                  <div class="stat-list">
+                    <div class="stat-item">
+                      <img :src="require('@/assets/interface/icons/gun.png')" alt="Attack">
+                      <span>Attack Power: {{ settlementAttackPower }}</span>
+                    </div>
+                    <div class="stat-item">
+                      <img :src="require('@/assets/interface/icons/shield.png')" alt="Defense">
+                      <span>Defence Power: {{ settlementDefencePower }}</span>
+                    </div>
+                  </div>
+                </div>
 
-        <!-- Right Column -->
-        <div class="stats-column">
-          <div class="stat-group">
-            <div class="stat-header" :data-cost="`${settings?.upgradeCosts?.defences?.resource1Amount || 0} ${getResourceName(settings?.upgradeCosts?.defences?.resource1)}, ${settings?.upgradeCosts?.defences?.resource2Amount || 0} ${getResourceName(settings?.upgradeCosts?.defences?.resource2)}, $${settings?.upgradeCosts?.defences?.moneyCost || 0}`">Infrastructure</div>
-            <div class="stat-row">
-              <div class="stat-label">Defence</div>
-              <div class="cost-info">
-                <span>{{ settings?.upgradeCosts?.defences?.resource1Amount || 0 }}</span>
-                <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.defences?.resource1)?.img}`)" :alt="getResourceName(settings?.upgradeCosts?.defences?.resource1)" class="resource-icon">
-                <span>{{ settings?.upgradeCosts?.defences?.resource2Amount || 0 }}</span>
-                <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.defences?.resource2)?.img}`)" :alt="getResourceName(settings?.upgradeCosts?.defences?.resource2)" class="resource-icon">
-                <span>${{ settings?.upgradeCosts?.defences?.moneyCost || 0 }}</span>
-                <img src="@/assets/interface/icons/money.png" alt="Money" class="resource-icon">
-              </div>
-              <div class="stat-value">
-                {{ settlement.defences }}/{{ settlement.maxDefences }}
-                <button 
-                  @click="upgradeDefences" 
-                  :disabled="settlement.defences >= settlement.maxDefences"
-                  class="btn btn-success btn-xs"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-            
-            <div class="stat-row">
-              <div class="stat-label">Power</div>
-              <div class="cost-info">
-                <span>{{ settings?.upgradeCosts?.power?.resource1Amount || 0 }}</span>
-                <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.power?.resource1)?.img}`)" :alt="getResourceName(settings?.upgradeCosts?.power?.resource1)" class="resource-icon">
-                <span>{{ settings?.upgradeCosts?.power?.resource2Amount || 0 }}</span>
-                <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.power?.resource2)?.img}`)" :alt="getResourceName(settings?.upgradeCosts?.power?.resource2)" class="resource-icon">
-                <span>${{ settings?.upgradeCosts?.power?.moneyCost || 0 }}</span>
-                <img src="@/assets/interface/icons/money.png" alt="Money" class="resource-icon">
-              </div>
-              <div class="stat-value">
-                {{ settlement.power }}/{{ settlement.maxPower }}
-                <button 
-                  @click="upgradePower" 
-                  :disabled="settlement.power >= settlement.maxPower"
-                  class="btn btn-success btn-xs"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-          </div>
+                <!-- Population Card -->
+                <div class="stat-card population-card">
+                  <div class="card-header">
+                    <img :src="require('@/assets/interface/icons/player.png')" alt="Population">
+                    <h4>Population</h4>
+                  </div>
+                  <div class="stat-list">
+                    <div class="stat-item">
+                      <img :src="require('@/assets/interface/icons/player.png')" alt="Inhabitants">
+                      <span>Inhabitants: {{ settlement.inhabitants }}/{{ settlement.maxInhabitants }}</span>
+                    </div>
+                  </div>
+                </div>
 
-          <div class="stat-group">
-            <div class="stat-header">Environment</div>
-            <div class="stat-row">
-              <span>Radiation</span>
-              <div class="radiation-value">
-                <div class="progress">
-                  <div 
-                    class="progress-bar bg-warning" 
-                    :style="{ width: (settlement.radiation / settlement.maxRadiation * 100) + '%' }"
-                  >
-                    {{ settlement.radiation }}%
+                <!-- Environment Card -->
+                <div class="stat-card environment-card">
+                  <div class="card-header">
+                    <img :src="require('@/assets/interface/icons/resources/gasoline.png')" alt="Environment">
+                    <h4>Environment</h4>
+                  </div>
+                  <div class="stat-list">
+                    <div class="stat-item radiation-item">
+                      <img :src="require('@/assets/interface/icons/resources/gasoline.png')" alt="Radiation">
+                      <div class="radiation-display">
+                        <span>Radiation: {{ settlement.radiation }}%</span>
+                        <div class="radiation-bar">
+                          <div class="radiation-fill" 
+                               :style="{ width: (settlement.radiation / settlement.maxRadiation * 100) + '%' }">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="stat-item" v-if="settlement.lastAttack">
+                      <img :src="require('@/assets/interface/icons/encounter.png')" alt="Last Attack">
+                      <span>Last Attack: {{ formatLastAttack }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Management Tab -->
+              <div v-show="activeTab === 'management'" class="stats-grid">
+                <!-- Level Upgrade Card -->
+                <div class="stat-card upgrade-card">
+                  <div class="card-header">
+                    <img :src="require('@/assets/interface/icons/exp.png')" alt="Level">
+                    <h4>Settlement Level</h4>
+                  </div>
+                  <div class="upgrade-section">
+                    <div class="current-level">Level {{ settlement.level }}</div>
+                    <button 
+                      @click="upgradeLevel" 
+                      :disabled="!canUpgradeLevel"
+                      class="upgrade-button"
+                      :class="{ 'can-upgrade': canUpgradeLevel }"
+                    >
+                      <span>Upgrade Settlement</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Population Management Card -->
+                <div class="stat-card management-card">
+                  <div class="card-header">
+                    <img :src="require('@/assets/interface/icons/player.png')" alt="Population">
+                    <h4>Population Management</h4>
+                  </div>
+                  <div class="management-section">
+                    <div class="stat-row">
+                      <span>Inhabitants: {{ settlement.inhabitants }}/{{ settlement.maxInhabitants }}</span>
+                      <button 
+                        @click="addInhabitant" 
+                        :disabled="settlement.inhabitants >= settlement.maxInhabitants"
+                        class="increment-button"
+                        :class="{ 'can-use': settlement.inhabitants < settlement.maxInhabitants }"
+                      >
+                        Add +1
+                      </button>
+                    </div>
+                    <div class="cost-display">
+                      <span>Cost: {{ settings?.upgradeCosts?.inhabitant?.resource1Amount || 0 }}</span>
+                      <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.inhabitant?.resource1)?.img}`)" alt="Wood" class="resource-icon">
+                      <span>{{ settings?.upgradeCosts?.inhabitant?.resource2Amount || 0 }}</span>
+                      <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.inhabitant?.resource2)?.img}`)" alt="Steel" class="resource-icon">
+                      <span>${{ settings?.upgradeCosts?.inhabitant?.moneyCost || 0 }}</span>
+                      <img :src="require('@/assets/interface/icons/money.png')" alt="Money" class="resource-icon">
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Infrastructure Management Cards -->
+                <div class="stat-card management-card">
+                  <div class="card-header">
+                    <img :src="require('@/assets/interface/icons/shield.png')" alt="Defense">
+                    <h4>Defense Management</h4>
+                  </div>
+                  <div class="management-section">
+                    <div class="stat-row">
+                      <span>Defense: {{ settlement.defences }}/{{ settlement.maxDefences }}</span>
+                      <button 
+                        @click="upgradeDefences" 
+                        :disabled="settlement.defences >= settlement.maxDefences"
+                        class="increment-button"
+                        :class="{ 'can-use': settlement.defences < settlement.maxDefences }"
+                      >
+                        Upgrade +1
+                      </button>
+                    </div>
+                    <div class="cost-display">
+                      <span>Cost: {{ settings?.upgradeCosts?.defences?.resource1Amount || 0 }}</span>
+                      <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.defences?.resource1)?.img}`)" alt="Wood" class="resource-icon">
+                      <span>{{ settings?.upgradeCosts?.defences?.resource2Amount || 0 }}</span>
+                      <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.defences?.resource2)?.img}`)" alt="Steel" class="resource-icon">
+                      <span>${{ settings?.upgradeCosts?.defences?.moneyCost || 0 }}</span>
+                      <img :src="require('@/assets/interface/icons/money.png')" alt="Money" class="resource-icon">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="stat-card management-card">
+                  <div class="card-header">
+                    <img :src="require('@/assets/interface/icons/resources/fuel.png')" alt="Power">
+                    <h4>Power Management</h4>
+                  </div>
+                  <div class="management-section">
+                    <div class="stat-row">
+                      <span>Power: {{ settlement.power }}/{{ settlement.maxPower }}</span>
+                      <button 
+                        @click="upgradePower" 
+                        :disabled="settlement.power >= settlement.maxPower"
+                        class="increment-button"
+                        :class="{ 'can-use': settlement.power < settlement.maxPower }"
+                      >
+                        Upgrade +1
+                      </button>
+                    </div>
+                    <div class="cost-display">
+                      <span>Cost: {{ settings?.upgradeCosts?.power?.resource1Amount || 0 }}</span>
+                      <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.power?.resource1)?.img}`)" alt="Wood" class="resource-icon">
+                      <span>{{ settings?.upgradeCosts?.power?.resource2Amount || 0 }}</span>
+                      <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.power?.resource2)?.img}`)" alt="Steel" class="resource-icon">
+                      <span>${{ settings?.upgradeCosts?.power?.moneyCost || 0 }}</span>
+                      <img :src="require('@/assets/interface/icons/money.png')" alt="Money" class="resource-icon">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Actions Tab -->
+              <div v-show="activeTab === 'actions'" class="stats-grid">
+                <div class="action-cards">
+                  <div class="action-card heal-card" 
+                       :class="{ 'can-use': canHealSettlement }"
+                       @click="canHealSettlement ? healSettlement() : null">
+                    <div class="action-icon">
+                      <img :src="require('@/assets/interface/icons/aid/medkit.png')" alt="Heal">
+                    </div>
+                    <div class="action-info">
+                      <h4>Heal Settlement</h4>
+                      <p>Restore 50 HP</p>
+                      <div class="action-cost">
+                        <span>100</span>
+                        <img :src="require('@/assets/interface/icons/money.png')" alt="Money" class="resource-icon">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="action-card radiation-card" 
+                       :class="{ 'can-use': !settlement.radiationReductionActive && settlement.radiation > 0 }"
+                       @click="(!settlement.radiationReductionActive && settlement.radiation > 0) ? reduceRadiation() : null">
+                    <div class="action-icon">
+                      <img :src="require('@/assets/interface/icons/resources/gasoline.png')" alt="Radiation">
+                    </div>
+                    <div class="action-info">
+                      <h4>Reduce Radiation</h4>
+                      <p>Cleanse environment</p>
+                      <div class="action-cost">
+                        <span>1</span>
+                        <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === 1)?.img}`)" alt="Wood" class="resource-icon">
+                        <span>1</span>
+                        <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === 2)?.img}`)" alt="Steel" class="resource-icon">
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="action-card log-card can-use" @click="$emit('open-log')">
+                    <div class="action-icon">
+                      <img :src="require('@/assets/interface/icons/quests.png')" alt="Log">
+                    </div>
+                    <div class="action-info">
+                      <h4>View Attack Log</h4>
+                      <p>Battle history</p>
+                      <div class="action-cost">Free</div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="stat-row" v-if="settlement.lastAttack">
-              <span>Last Attack</span>
-              <div class="stat-value">{{ formatLastAttack }}</div>
-            </div>
+
+            <!-- Right Panel - Info Panel (matching PlayerShop info-panel) -->
+            <div class="info-panel">
+              <div class="settlement-info-section">
+                <h3>Settlement Information</h3>
+                <div class="info-stats">
+                  <div class="info-item">
+                    <img :src="require('@/assets/interface/icons/settlement.png')" alt="Level">
+                    <span>Level {{ settlement.level }} Settlement</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Quick Actions -->
+              <div class="quick-actions-section">
+                <div class="quick-action-buttons">
+                  <button 
+                    @click="healSettlement" 
+                    class="quick-action-btn heal-btn"
+                    :class="{ 'can-use': canHealSettlement }"
+                    :disabled="!canHealSettlement"
+                  >
+                    <img :src="require('@/assets/interface/icons/aid/medkit.png')" alt="Heal">
+                    <span>Heal (100💰)</span>
+                  </button>
+
+                  <button 
+                    @click="reduceRadiation" 
+                    class="quick-action-btn radiation-btn"
+                    :class="{ 'can-use': !settlement.radiationReductionActive && settlement.radiation > 0 }"
+                    :disabled="settlement.radiation === 0 || settlement.radiationReductionActive"
+                  >
+                    <img :src="require('@/assets/interface/icons/resources/gasoline.png')" alt="Radiation">
+                    <span>Clean (1🪵1⚙️)</span>
+                  </button>
+
+                  <button 
+                    @click="$emit('open-log')" 
+                    class="quick-action-btn log-btn can-use"
+                  >
+                    <img :src="require('@/assets/interface/icons/quests.png')" alt="Log">
+                    <span>View Log</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Settlement Status -->
+              <div class="status-section">
+                <div class="status-info">
+                  <div class="status-item" :class="{ 'status-good': settlement.health > 50, 'status-warning': settlement.health <= 50 && settlement.health > 25, 'status-danger': settlement.health <= 25 }">
+                    <span>Health: {{ settlement.health > 75 ? 'Excellent' : settlement.health > 50 ? 'Good' : settlement.health > 25 ? 'Poor' : 'Critical' }}</span>
+                  </div>
+                  <div class="status-item" :class="{ 'status-good': settlement.radiation < 25, 'status-warning': settlement.radiation >= 25 && settlement.radiation < 75, 'status-danger': settlement.radiation >= 75 }">
+                    <span>Radiation: {{ settlement.radiation < 25 ? 'Safe' : settlement.radiation < 75 ? 'Moderate' : 'Dangerous' }}</span>
+                  </div>
+                </div>
+              </div>
           </div>
         </div>
       </div>
-
-      <!-- Action Buttons -->
-      <div class="stat-group mt-4 p-0">
-        <div class="action-buttons m-0">
-          <button 
-            @click="healSettlement" 
-            class="btn btn-success"
-            :class="{ 'btn-active': canHealSettlement }"
-            :disabled="!canHealSettlement"
-          >
-            <span class="btn-text">Heal Settlement</span>
-            <span class="cost-info">
-              <span>100</span>
-              <img src="@/assets/interface/icons/money.png" alt="Money" class="resource-icon">
-            </span>
-          </button>
-
-          <button 
-            @click="reduceRadiation" 
-            class="btn btn-success"
-            :class="{ 'btn-active': !settlement.radiationReductionActive && settlement.radiation > 0 }"
-            :disabled="settlement.radiation === 0 || settlement.radiationReductionActive"
-          >
-            <span class="btn-text">Reduce Radiation</span>
-            <span class="cost-info">
-              <span>1</span>
-              <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === 1)?.img}`)" alt="Wood" class="resource-icon">
-              <span>1</span>
-              <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === 2)?.img}`)" alt="Steel" class="resource-icon">
-            </span>
-          </button>
-
-          <button 
-            @click="$emit('open-log')" 
-            class="btn btn-success btn-active"
-          >
-            <span class="btn-text">View Attack Log</span>
-          </button>
-        </div>
-      </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -197,6 +324,11 @@ import { toast } from "vue3-toastify";
 export default {
   name: 'SettlementStats',
   emits: ['open-log'],
+  data() {
+    return {
+      activeTab: 'overview'
+    };
+  },
   computed: {
     ...mapState('settlement', ['settlement', 'settings']),
     ...mapState(['resources']),
@@ -233,11 +365,8 @@ export default {
   },
   methods: {
     ...mapActions('settlement', ['upgradeSettlement']),
-    getHealthBarClass() {
-      const healthPercent = (this.settlement.health / this.settlement.maxHealth) * 100;
-      if (healthPercent > 66) return 'bg-success';
-      if (healthPercent > 33) return 'bg-warning';
-      return 'bg-danger';
+    changeTab(tab) {
+      this.activeTab = tab;
     },
     async upgradeLevel() {
       try {
@@ -249,11 +378,11 @@ export default {
             <p class="text-left fw-semi mb-2">Missing requirements:</p>
             <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
               <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.level?.resource1)?.img}`)}" :title="this.getResourceName(this.settings?.upgradeCosts?.level?.resource1)" style="width: 20px;" class="me-2">
+                <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.level?.resource1)?.img}`)}" title="${this.getResourceName(this.settings?.upgradeCosts?.level?.resource1)}" style="width: 20px;" class="me-2">
                 <span>${this.settings?.upgradeCosts?.level?.resource1Amount || 0} ${this.getResourceName(this.settings?.upgradeCosts?.level?.resource1)}</span>
               </div>
               <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.level?.resource2)?.img}`)}" :title="this.getResourceName(this.settings?.upgradeCosts?.level?.resource2)" style="width: 20px;" class="me-2">
+                <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.level?.resource2)?.img}`)}" title="${this.getResourceName(this.settings?.upgradeCosts?.level?.resource2)}" style="width: 20px;" class="me-2">
                 <span>${this.settings?.upgradeCosts?.level?.resource2Amount || 0} ${this.getResourceName(this.settings?.upgradeCosts?.level?.resource2)}</span>
               </div>
               <div class="d-flex align-items-start justify-content-start reward-info mb-2">
@@ -283,11 +412,11 @@ export default {
             <p class="text-left fw-semi mb-2">Missing requirements:</p>
             <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
               <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.defences?.resource1)?.img}`)}" :title="this.getResourceName(this.settings?.upgradeCosts?.defences?.resource1)" style="width: 20px;" class="me-2">
+                <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.defences?.resource1)?.img}`)}" title="${this.getResourceName(this.settings?.upgradeCosts?.defences?.resource1)}" style="width: 20px;" class="me-2">
                 <span>${this.settings?.upgradeCosts?.defences?.resource1Amount || 0} ${this.getResourceName(this.settings?.upgradeCosts?.defences?.resource1)}</span>
               </div>
               <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.defences?.resource2)?.img}`)}" :title="this.getResourceName(this.settings?.upgradeCosts?.defences?.resource2)" style="width: 20px;" class="me-2">
+                <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.defences?.resource2)?.img}`)}" title="${this.getResourceName(this.settings?.upgradeCosts?.defences?.resource2)}" style="width: 20px;" class="me-2">
                 <span>${this.settings?.upgradeCosts?.defences?.resource2Amount || 0} ${this.getResourceName(this.settings?.upgradeCosts?.defences?.resource2)}</span>
               </div>
               <div class="d-flex align-items-start justify-content-start reward-info mb-2">
@@ -317,11 +446,11 @@ export default {
             <p class="text-left fw-semi mb-2">Missing requirements:</p>
             <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
               <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.power?.resource1)?.img}`)}" :title="this.getResourceName(this.settings?.upgradeCosts?.power?.resource1)" style="width: 20px;" class="me-2">
+                <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.power?.resource1)?.img}`)}" title="${this.getResourceName(this.settings?.upgradeCosts?.power?.resource1)}" style="width: 20px;" class="me-2">
                 <span>${this.settings?.upgradeCosts?.power?.resource1Amount || 0} ${this.getResourceName(this.settings?.upgradeCosts?.power?.resource1)}</span>
               </div>
               <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.power?.resource2)?.img}`)}" :title="this.getResourceName(this.settings?.upgradeCosts?.power?.resource2)" style="width: 20px;" class="me-2">
+                <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.power?.resource2)?.img}`)}" title="${this.getResourceName(this.settings?.upgradeCosts?.power?.resource2)}" style="width: 20px;" class="me-2">
                 <span>${this.settings?.upgradeCosts?.power?.resource2Amount || 0} ${this.getResourceName(this.settings?.upgradeCosts?.power?.resource2)}</span>
               </div>
               <div class="d-flex align-items-start justify-content-start reward-info mb-2">
@@ -369,11 +498,11 @@ export default {
             <p class="text-left fw-semi mb-2">Missing requirements:</p>
             <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
               <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.inhabitant?.resource1)?.img}`)}" :title="this.getResourceName(this.settings?.upgradeCosts?.inhabitant?.resource1)" style="width: 20px;" class="me-2">
+                <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.inhabitant?.resource1)?.img}`)}" title="${this.getResourceName(this.settings?.upgradeCosts?.inhabitant?.resource1)}" style="width: 20px;" class="me-2">
                 <span>${this.settings?.upgradeCosts?.inhabitant?.resource1Amount || 0} ${this.getResourceName(this.settings?.upgradeCosts?.inhabitant?.resource1)}</span>
               </div>
               <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-                <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.inhabitant?.resource2)?.img}`)}" :title="this.getResourceName(this.settings?.upgradeCosts?.inhabitant?.resource2)" style="width: 20px;" class="me-2">
+                <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.inhabitant?.resource2)?.img}`)}" title="${this.getResourceName(this.settings?.upgradeCosts?.inhabitant?.resource2)}" style="width: 20px;" class="me-2">
                 <span>${this.settings?.upgradeCosts?.inhabitant?.resource2Amount || 0} ${this.getResourceName(this.settings?.upgradeCosts?.inhabitant?.resource2)}</span>
               </div>
               <div class="d-flex align-items-start justify-content-start reward-info mb-2">
@@ -514,298 +643,613 @@ export default {
 }
 </script>
 
-<style scoped>
-.settlement-stats {
-  color: #00ff00;
-  padding: 1rem;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.main-stats {
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid #00ff00;
-  border-radius: 10px;
-  padding: 1rem;
-}
-
-.header-stats {
-  margin-bottom: 1.5rem;
-}
-
-.level-display {
+<style scoped lang="scss">
+/* Container Structure matching modal content */
+.settlement-stats-container {
+  background: rgba(0, 0, 0, 0.9);
+  border: 2px solid #2a2a2a;
+  border-radius: 8px;
+  padding: 15px;
+  color: #fff;
+  height: 100%;
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+}
+
+.settlement-stats-header {
+  display: flex;
   align-items: center;
-  margin-bottom: 0.5rem;
+  justify-content: space-between;
+  gap: 5px;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #2a2a2a;
+  padding-bottom: 10px;
+}
+
+.settlement-stats-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.settlement-stats-logo {
+  width: 24px;
+  height: 24px;
+}
+
+.settlement-stats-title {
+  color: #00ff00;
+  margin: 0;
+  font-size: 16px;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.settlement-level-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  color: #fff;
 }
 
 .level-badge {
-  font-size: 1rem;
+  background: #333;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
   font-weight: bold;
-  color: #00ff00;
-  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
 }
 
-.health-display .progress {
-  height: 25px;
-  background-color: #1a1a1a;
-  border: 1px solid #00ff00;
-}
-
-.health-display .progress-bar {
+.health-info {
   display: flex;
   align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  text-shadow: 1px 1px 1px rgba(0,0,0,0.5);
+  gap: 5px;
+  font-size: 12px;
+
+  img {
+    width: 14px;
+    height: 14px;
+  }
 }
 
-.stats-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
-}
 
-.stats-column {
+
+/* Tabs matching InventoryStash style */
+.settlement-tabs {
   display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  gap: 5px;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #2a2a2a;
+  padding-bottom: 10px;
 }
 
-.stat-group {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(0, 255, 0, 0.3);
-  border-radius: 5px;
-  padding: 0.8rem;
-}
-
-.stat-header {
-  color: #00ff00;
-  font-weight: bold;
-  font-size: 0.8rem;
-  margin-bottom: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  display: flex;
-  flex-direction: column;
-}
-
-.stat-header::after {
-  content: attr(data-cost);
+.tab-button {
+  background: #1a1a1a;
+  border: 1px solid #333;
   color: #888;
-  font-size: 0.65rem;
-  font-style: italic;
-  text-transform: none;
-  letter-spacing: normal;
-  margin-top: 0.2rem;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  img {
+    width: 16px;
+    height: 16px;
+  }
+
+  &:hover {
+    background: #222;
+    color: #fff;
+  }
+
+  &.active {
+    background: #333;
+    color: #00ff00;
+    border-color: #00ff00;
+  }
+}
+
+.settlement-container {
+  flex: 1;
+  min-height: 0;
+  margin-top: 15px;
+}
+
+.settlement-content-grid {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 20px;
+  height: 100%;
+  max-height: calc(90vh - 140px);
+}
+
+.settlement-stats-items {
+  overflow-y: auto;
+  padding-right: 10px;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 4px;
+    
+    &:hover {
+      background: #444;
+    }
+  }
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 15px;
+  padding: 5px;
+}
+
+.stat-card {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 6px;
+  padding: 15px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: #00ff00;
+    box-shadow: 0 4px 12px rgba(0, 255, 0, 0.2);
+  }
+
+  &.main-health-card { border-left: 3px solid #00ff00; }
+  &.combat-card { border-left: 3px solid #ff4444; }
+  &.population-card { border-left: 3px solid #1e90ff; }
+  &.environment-card { border-left: 3px solid #ffa500; }
+  &.upgrade-card { border-left: 3px solid #ffd700; }
+  &.management-card { border-left: 3px solid #9370db; }
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 10px;
+
+  img {
+    width: 20px;
+    height: 20px;
+  }
+
+  h4 {
+    color: #00ff00;
+    font-size: 14px;
+    margin: 0;
+    text-transform: uppercase;
+  }
+}
+
+.health-section {
+  margin-top: 10px;
+}
+
+.health-bar-large {
+  height: 24px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #333;
+  position: relative;
+}
+
+.health-fill {
+  height: 100%;
+  border-radius: 12px;
+  transition: width 0.3s ease;
+
+  &.settlement-main-health {
+    background: linear-gradient(90deg, #00ff00, #00cc00);
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.3);
+  }
+}
+
+.health-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-weight: bold;
+  font-size: 12px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.stat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #ccc;
+
+  img {
+    width: 14px;
+    height: 14px;
+  }
+
+  &.radiation-item {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+}
+
+.radiation-display {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.radiation-bar {
+  height: 12px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #333;
+}
+
+.radiation-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff6b35, #ff4500);
+  border-radius: 6px;
+  transition: width 0.3s ease;
+}
+
+.upgrade-section, .management-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.current-level {
+  font-size: 18px;
+  font-weight: bold;
+  color: #00ff00;
+  text-align: center;
 }
 
 .stat-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.2rem;
-  padding: 3px 0;
-  font-size: 0.9rem;
+  margin-bottom: 8px;
+  font-size: 12px;
 }
 
-.stat-value {
+.upgrade-button, .increment-button {
+  background: rgba(26, 26, 26, 0.95);
+  border: 1px solid #444;
+  color: #888;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 11px;
+  font-weight: bold;
+
+  &.can-upgrade, &.can-use {
+    border-color: #00ff00;
+    color: #00ff00;
+    background: rgba(0, 255, 0, 0.1);
+
+    &:hover {
+      background: #00ff00;
+      color: #000;
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 255, 0, 0.2);
+    }
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.cost-display {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-}
+  gap: 4px;
+  font-size: 10px;
+  color: #aaa;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
 
-.highlight {
-  color: #ffff00;
-  font-weight: bold;
-}
-
-.radiation-value {
-  flex: 1;
-  margin-left: 1rem;
-}
-
-.radiation-value .progress {
-  height: 20px;
-  margin: 0;
-  background-color: #1a1a1a;
-  border: 1px solid #00ff00;
-}
-
-.btn-xs {
-  padding: 0.1rem 0.3rem;
-  font-size: 0.8rem;
-  min-width: 24px;
-}
-
-.btn-success {
-  background-color: #00ff00;
-  border: none;
-  color: #000;
-}
-
-.btn-success:hover:not(:disabled) {
-  background-color: #00cc00;
-}
-
-.btn-success:disabled {
-  background-color: #004400;
-  opacity: 0.5;
-}
-
-.cost-info {
-  color: #fff;
-  font-size: 0.6rem;
-  font-style: italic;
-  margin-top: 0.2rem;
-  margin-left: 0.5rem;
-  text-align: left;
-  width: 100%;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-}
-
-.resource-icon {
-  width: 12px;
-  height: 12px;
-  object-fit: contain;
-}
-
-.stat-label {
-  color: #00ff00;
-}
-
-@media (max-width: 576px) {
-  .stats-container {
-    grid-template-columns: 1fr;
-  }
-  
-  .stat-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-  
-  .stat-value {
-    width: 100%;
-    justify-content: space-between;
+  .resource-icon {
+    width: 12px;
+    height: 12px;
   }
 }
 
-.upgrade-cost {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.2rem;
-  margin-left: 0.3rem;
-}
-
-.action-buttons {
+.action-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 0.3rem;
-  margin-top: 0.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
 }
 
-.action-buttons .btn {
-  position: relative;
+.action-card {
+  background: #1a1a1a;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  &.can-use {
+    border-color: #00ff00;
+    color: #00ff00;
+
+    &:hover {
+      background: rgba(0, 255, 0, 0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 255, 0, 0.2);
+    }
+  }
+
+  &:not(.can-use) {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .action-icon {
+    img {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  .action-info {
+    h4 {
+      margin: 0 0 4px 0;
+      font-size: 12px;
+      color: inherit;
+    }
+
+    p {
+      margin: 0 0 6px 0;
+      font-size: 10px;
+      color: #aaa;
+    }
+  }
+
+  .action-cost {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+
+    .resource-icon {
+      width: 12px;
+      height: 12px;
+    }
+  }
+}
+
+/* Info Panel matching PlayerShop.vue structure */
+.info-panel {
+  background: rgba(26, 26, 26, 0.95);
+  border: 1px solid #333;
+  border-radius: 6px;
+  height: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: rgba(0, 255, 0, 0.1);
-  border: 1px solid #00ff00;
-  color: #00ff00;
-  font-size: 0.7rem;
-  padding: 0.3rem;
-  text-transform: uppercase;
-  font-weight: bold;
-  letter-spacing: 1px;
-  transition: all 0.2s ease;
-  min-height: 45px;
-  text-align: center;
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 4px;
+    
+    &:hover {
+      background: #444;
+    }
+  }
 }
 
-.action-buttons .btn.btn-active {
-  background-color: #00ff00;
-  color: #000;
-  border-color: #00ff00;
+.settlement-info-section, .quick-actions-section, .status-section {
+  padding: 15px;
+
+  h3, h4 {
+    color: #00ff00;
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+
+  h4 {
+    font-size: 12px;
+  }
 }
 
-.action-buttons .btn.btn-active:hover:not(:disabled) {
-  background-color: #00cc00;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 255, 0, 0.3);
+.info-stats, .status-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.action-buttons .btn:disabled {
-  background-color: rgba(0, 255, 0, 0.05);
-  border-color: rgba(0, 255, 0, 0.2);
-  color: rgba(0, 255, 0, 0.3);
-  cursor: not-allowed;
-}
-
-.btn-text {
-  font-size: 0.7rem;
-  margin-bottom: 0.1rem;
-}
-
-.btn-subtext {
-  font-size: 0.6rem;
-  opacity: 0.8;
-  font-weight: normal;
-}
-
-.cost-info {
+.info-item {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.2rem;
-  margin-top: 0.1rem;
-  font-size: 0.65rem;
-  padding: 0.1rem 0.3rem;
-  border-radius: 3px;
-  background: rgba(0, 0, 0, 0.2);
-  width: auto;
+  gap: 8px;
+  font-size: 12px;
+  color: #fff;
+
+  img {
+    width: 14px;
+    height: 14px;
+  }
 }
 
-.resource-icon {
-  width: 12px;
-  height: 12px;
-  object-fit: contain;
-  vertical-align: middle;
+.quick-action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.quick-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: rgba(26, 26, 26, 0.95);
+  border: 1px solid #444;
+  color: #888;
+
+  img {
+    width: 14px;
+    height: 14px;
+  }
+
+  &.can-use:not(:disabled) {
+    border-color: #00ff00;
+    color: #00ff00;
+
+    &:hover {
+      background: rgba(0, 255, 0, 0.1);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0, 255, 0, 0.2);
+    }
+  }
+
+  &.heal-btn.can-use {
+    border-color: #28a745;
+    color: #28a745;
+
+    &:hover {
+      background: rgba(40, 167, 69, 0.1);
+      box-shadow: 0 2px 6px rgba(40, 167, 69, 0.2);
+    }
+  }
+
+  &.radiation-btn.can-use {
+    border-color: #ff6b35;
+    color: #ff6b35;
+
+    &:hover {
+      background: rgba(255, 107, 53, 0.1);
+      box-shadow: 0 2px 6px rgba(255, 107, 53, 0.2);
+    }
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+}
+
+.status-item {
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: bold;
+
+  &.status-good {
+    background: rgba(40, 167, 69, 0.2);
+    color: #28a745;
+  }
+
+  &.status-warning {
+    background: rgba(255, 193, 7, 0.2);
+    color: #ffc107;
+  }
+
+  &.status-danger {
+    background: rgba(220, 53, 69, 0.2);
+    color: #dc3545;
+  }
+}
+
+@media (max-width: 1024px) {
+  .settlement-content-grid {
+    grid-template-columns: 1fr 250px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
 }
 
 @media (max-width: 768px) {
-  .action-buttons {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.2rem;
-  }
-  
-  .action-buttons .btn {
-    min-height: 40px;
-    padding: 0.2rem;
-    font-size: 0.65rem;
+  .settlement-stats-container {
+    padding: 10px;
   }
 
-  .btn-text {
-    font-size: 0.65rem;
+  .settlement-content-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
   }
 
-  .btn-subtext {
-    font-size: 0.55rem;
+  .settlement-tabs {
+    overflow-x: auto;
+    padding-bottom: 5px;
+    -webkit-overflow-scrolling: touch;
   }
 
-  .cost-info {
-    font-size: 0.6rem;
-    padding: 0.1rem 0.2rem;
+  .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 
-  .resource-icon {
-    width: 10px;
-    height: 10px;
+  .action-cards {
+    grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 480px) {
+  .settlement-stats-container {
+    padding: 8px;
+  }
+
+  .settlement-stats-header {
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .settlement-level-info {
+    gap: 10px;
+  }
+ }
 </style>

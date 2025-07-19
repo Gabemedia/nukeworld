@@ -23,12 +23,20 @@
         </div>
         <div class="quest-rewards">
           <div class="reward">
-            <img :src="require(`@/assets/interface/icons/exp.png`)" title="Exp">
-            <span>{{ quest.exp }}</span>
+            <img :src="require(`@/assets/interface/icons/exp.png`)" title="Experience with SPECIAL bonus">
+            <span>{{ quest.displayExpReward || quest.exp }}
+              <span v-if="quest.hasExpBonus" class="bonus-indicator">
+                (+{{ (quest.displayExpReward || quest.exp) - quest.exp }})
+              </span>
+            </span>
           </div>
           <div class="reward">
-            <img :src="require(`@/assets/interface/icons/money.png`)" title="Money">
-            <span>{{ quest.money }}</span>
+            <img :src="require(`@/assets/interface/icons/money.png`)" title="Money with SPECIAL bonus">
+            <span>{{ quest.displayMoneyReward || quest.money }}
+              <span v-if="quest.hasMoneyBonus" class="bonus-indicator">
+                (+{{ (quest.displayMoneyReward || quest.money) - quest.money }})
+              </span>
+            </span>
           </div>
           <div v-if="hasWeaponReward(quest)" class="reward">
             <img :src="require('@/assets/interface/icons/gun.png')" :title="'Weapon Reward Chance: ' + (quest.rewardChance * 100) + '%'">
@@ -124,11 +132,11 @@ export default {
         <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
           <div class="d-flex align-items-start justify-content-start reward-info mb-2">
             <img src="${require('@/assets/interface/icons/exp.png')}" title="Exp" style="width: 20px;" class="me-2">
-            <span>${actualExpGained} exp${actualExpGained !== quest.exp ? ` (${quest.exp} + SPECIAL bonus)` : ''}</span>
+            <span>${actualExpGained} exp${actualExpGained !== quest.exp ? `` : ''}</span>
           </div>
           <div class="d-flex align-items-start justify-content-start reward-info mb-1">
             <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
-            <span>${actualMoneyGained} money${actualMoneyGained !== quest.money ? ` (${quest.money} + SPECIAL bonus)` : ''}</span>
+            <span>${actualMoneyGained} money${actualMoneyGained !== quest.money ? `` : ''}</span>
           </div>
         `;
       
@@ -327,6 +335,13 @@ export default {
   font-size: 0.8rem;
   margin-top: 10px;
   text-align: center;
+}
+
+.bonus-indicator {
+  font-size: 0.7rem;
+  color: #00ff00;
+  margin-left: 3px;
+  font-weight: bold;
 }
 
 @media (max-width: 768px) {

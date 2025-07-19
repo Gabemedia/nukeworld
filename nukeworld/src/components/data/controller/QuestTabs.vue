@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapGetters } from 'vuex';
 import QuestList from './QuestList.vue';
 
 export default {
@@ -39,6 +39,7 @@ export default {
   },
   computed: {
     ...mapState(['quests', 'character']),
+    ...mapGetters(['experienceMultiplier', 'moneyMultiplier']),
     filteredQuests() {
       return this.quests.filter(quest => 
         quest.levelRequirement <= this.character.level &&
@@ -46,16 +47,29 @@ export default {
       );
     },
     activeQuests() {
+      let quests = [];
       switch (this.activeTab) {
         case 'available':
-          return this.filteredQuests.filter(quest => quest.state === 'not-started');
+          quests = this.filteredQuests.filter(quest => quest.state === 'not-started');
+          break;
         case 'active':
-          return this.filteredQuests.filter(quest => quest.state === 'in-progress');
+          quests = this.filteredQuests.filter(quest => quest.state === 'in-progress');
+          break;
         case 'ready':
-          return this.filteredQuests.filter(quest => quest.state === 'ready-to-claim');
+          quests = this.filteredQuests.filter(quest => quest.state === 'ready-to-claim');
+          break;
         default:
-          return [];
+          quests = [];
       }
+      
+      // Add SPECIAL bonus calculations to each quest for display
+      return quests.map(quest => ({
+        ...quest,
+        displayExpReward: this.getDisplayExpReward(quest),
+        displayMoneyReward: this.getDisplayMoneyReward(quest),
+        hasExpBonus: this.getDisplayExpReward(quest) > quest.exp,
+        hasMoneyBonus: this.getDisplayMoneyReward(quest) > quest.money
+      }));
     },
   },
   methods: {
@@ -82,6 +96,24 @@ export default {
           return 0;
       }
     },
+    getDisplayExpReward(quest) {
+      if (quest.state === 'completed' && quest.actualExpGained) {
+        return quest.actualExpGained;
+      }
+      if (quest.state === 'not-started' || quest.state === 'in-progress') {
+        return Math.floor(quest.exp * (this.experienceMultiplier || 1));
+      }
+      return quest.exp || 0;
+    },
+    getDisplayMoneyReward(quest) {
+      if (quest.state === 'completed' && quest.actualMoneyGained) {
+        return quest.actualMoneyGained;
+      }
+      if (quest.state === 'not-started' || quest.state === 'in-progress') {
+        return Math.floor(quest.money * (this.moneyMultiplier || 1));
+      }
+      return quest.money || 0;
+    }
   },
 };
 </script>

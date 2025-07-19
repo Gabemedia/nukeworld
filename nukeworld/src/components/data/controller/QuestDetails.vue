@@ -13,12 +13,12 @@
       <div class="quest-info">
         <div class="quest-rewards">
           <div class="reward">
-            <img :src="require(`@/assets/interface/icons/exp.png`)" title="Exp">
-            <span>{{ localQuest.exp }}</span>
+            <img :src="require(`@/assets/interface/icons/exp.png`)" title="Experience with SPECIAL bonus">
+            <span>{{ getDisplayExpReward(localQuest) }}</span>
           </div>
           <div class="reward">
-            <img :src="require(`@/assets/interface/icons/money.png`)" title="Money">
-            <span>{{ localQuest.money }}</span>
+            <img :src="require(`@/assets/interface/icons/money.png`)" title="Money with SPECIAL bonus">
+            <span>{{ getDisplayMoneyReward(localQuest) }}</span>
           </div>
           <div v-if="hasWeaponReward(localQuest)" class="reward">
             <img :src="require('@/assets/interface/icons/gun.png')" :title="'Weapon Reward Chance: ' + (localQuest.rewardChance * 100) + '%'">
@@ -62,7 +62,7 @@
 
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 import { toast } from "vue3-toastify";
 import confetti from 'canvas-confetti';
 
@@ -80,6 +80,7 @@ export default {
   },
   computed: {
     ...mapState(['character']),
+    ...mapGetters(['experienceMultiplier', 'moneyMultiplier']),
   },
   watch: {
     quest: {
@@ -144,11 +145,11 @@ export default {
         <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
           <div class="d-flex align-items-start justify-content-start reward-info mb-2">
             <img src="${require('@/assets/interface/icons/exp.png')}" title="Exp" style="width: 20px;" class="me-2">
-            <span>${actualExpGained} exp${actualExpGained !== quest.exp ? ` (${quest.exp} + SPECIAL bonus)` : ''}</span>
+            <span>${actualExpGained} exp${actualExpGained !== quest.exp ? ` ` : ''}</span>
           </div>
           <div class="d-flex align-items-start justify-content-start reward-info mb-1">
             <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
-            <span>${actualMoneyGained} money${actualMoneyGained !== quest.money ? ` (${quest.money} + SPECIAL bonus)` : ''}</span>
+            <span>${actualMoneyGained} money${actualMoneyGained !== quest.money ? ` ` : ''}</span>
           </div>
         `;
       
@@ -218,6 +219,25 @@ export default {
       const minutes = Math.floor(totalSeconds / 60);
       const seconds = totalSeconds % 60;
       return `${minutes} min ${seconds} sec`;
+    },
+    // Simplified display methods that show correct values without complex bonus logic
+    getDisplayExpReward(quest) {
+      if (quest.state === 'completed' && quest.actualExpGained) {
+        return quest.actualExpGained;
+      }
+      if (quest.state === 'not-started' || quest.state === 'in-progress') {
+        return Math.floor(quest.exp * (this.experienceMultiplier || 1));
+      }
+      return quest.exp || 0;
+    },
+    getDisplayMoneyReward(quest) {
+      if (quest.state === 'completed' && quest.actualMoneyGained) {
+        return quest.actualMoneyGained;
+      }
+      if (quest.state === 'not-started' || quest.state === 'in-progress') {
+        return Math.floor(quest.money * (this.moneyMultiplier || 1));
+      }
+      return quest.money || 0;
     },
   },
 };
@@ -356,6 +376,13 @@ export default {
   font-size: 1.2rem;
   text-align: center;
   padding: 20px;
+}
+
+.bonus-indicator {
+  font-size: 0.7rem;
+  color: #00ff00;
+  margin-left: 5px;
+  font-weight: bold;
 }
 
 @media (max-width: 768px) {
