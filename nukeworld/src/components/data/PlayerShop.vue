@@ -41,7 +41,7 @@
                 <div v-for="item in getAvailableItems(activeCategory)" 
                      :key="item.id"
                      class="item-slot"
-                     :class="{ 'can-afford': character.money >= item.price, 'selected': hoveredItem === item }"
+                     :class="{ 'can-afford': character.money >= Math.floor(item.price * shopPriceMultiplier), 'selected': hoveredItem === item }"
                      @click="showItemInfo(item)"
                      :ref="'item-' + activeCategory + '-' + item.id">
                   <img :src="getImagePath(item)" :alt="item.name">
@@ -73,14 +73,16 @@
                 <p class="description">{{ hoveredItem.desc }}</p>
                 <div class="price-info">
                   <img :src="require('@/assets/interface/icons/money.png')" alt="Money">
-                  <span>Price: {{ hoveredItem.price }}</span>
+                  <span>Price: {{ Math.floor(hoveredItem.price * shopPriceMultiplier) }} 
+                    <span v-if="shopPriceMultiplier < 1" class="discount-text">({{ Math.floor(hoveredItem.price) }} -{{ Math.floor((1 - shopPriceMultiplier) * 100) }}%)</span>
+                  </span>
                 </div>
                 <button 
                   class="buy-button" 
                   @click="buyItem(hoveredItem, activeCategory)"
-                  :disabled="character.money < hoveredItem.price"
-                  :class="{ 'can-afford': character.money >= hoveredItem.price }">
-                  <span v-if="character.money >= hoveredItem.price">Buy Item</span>
+                  :disabled="character.money < Math.floor(hoveredItem.price * shopPriceMultiplier)"
+                  :class="{ 'can-afford': character.money >= Math.floor(hoveredItem.price * shopPriceMultiplier) }">
+                  <span v-if="character.money >= Math.floor(hoveredItem.price * shopPriceMultiplier)">Buy Item</span>
                   <span v-else>Can't Afford</span>
                 </button>
               </div>
@@ -96,7 +98,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'PlayerShop',
@@ -109,6 +111,7 @@ export default {
   },
   computed: {
     ...mapState(['character', 'items', 'armor', 'aid', 'resources', 'premium']),
+    ...mapGetters(['shopPriceMultiplier']),
     availableWeapons() {
       return this.items.filter(item => item.price !== -1 && item.id !== 0);
     },
@@ -168,7 +171,7 @@ export default {
       this.hoveredItem = null;
     },
     buyItem(item, category) {
-      const price = parseInt(item.price);
+      const price = Math.floor(parseInt(item.price) * this.shopPriceMultiplier);
       if (this.character.money >= price) {
         if (category === 'weapons' && this.character.weapons.length < 6) {
           this.addItemToWeapons(item.id);
@@ -576,6 +579,12 @@ export default {
     img {
       width: 20px;
       height: 20px;
+    }
+    
+    .discount-text {
+      color: #00ff00;
+      font-size: 12px;
+      font-weight: bold;
     }
   }
 }

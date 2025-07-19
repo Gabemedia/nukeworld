@@ -67,6 +67,13 @@
           </div>
 
           <div class="menu-item">
+            <div class="menu-button">SPECIAL</div>
+            <div class="icon-box">
+              <SpecialManager />
+            </div>
+          </div>
+
+          <div class="menu-item">
             <div class="menu-button">SETTLEMENT</div>
             <div class="icon-box" @click="openSettlementModal">
               <img :src="require('@/assets/interface/icons/settlement.png')" alt="Settlement">
@@ -98,6 +105,10 @@
           <PlayerShop />
         </li>
         <li class="nav-item mx-2">
+          <div class="nav-item-name price-box">SPECIAL</div>
+          <SpecialManager />
+        </li>
+        <li class="nav-item mx-2">
           <div class="nav-item-name price-box">Settlement</div>
           <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="openSettlementModal">
             <img class="sidebar-icon" :src="require(`@/assets/interface/icons/settlement.png`)" title="Settlement">
@@ -119,6 +130,7 @@ import QuestLog from './data/QuestLog.vue';
 import InventoryLog from './data/InventoryLog.vue';
 import StoryLog from './data/StoryLog.vue';
 import PlayerShop from './data/PlayerShop.vue';
+import SpecialManager from './data/SpecialManager.vue';
 
 export default {
   name: 'SideBar',
@@ -127,6 +139,7 @@ export default {
     InventoryLog,
     StoryLog,
     PlayerShop,
+    SpecialManager,
   },
   computed: {
     ...mapState(['settlementMarker']),

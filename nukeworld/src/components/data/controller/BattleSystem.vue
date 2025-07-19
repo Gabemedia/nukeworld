@@ -14,11 +14,11 @@
       <div class="player-equipment d-flex justify-content-between align-items-center">
         <div class="equipment-item">
           <img :src="require('@/assets/interface/icons/gun.png')" alt="Weapon" class="icon">
-          <span class="ms-2">{{ equippedWeapon ? equippedWeapon.name : 'None' }}: {{ equippedWeapon ? equippedWeapon.attack : 0 }}</span>
+          <span class="ms-2">{{ equippedWeapon ? equippedWeapon.name : 'None' }}: {{ (equippedWeapon ? equippedWeapon.attack : 0) + totalAttackBonus }} ({{ equippedWeapon ? equippedWeapon.attack : 0 }}+{{ totalAttackBonus }})</span>
         </div>
         <div class="equipment-item">
           <img :src="require('@/assets/interface/icons/shield.png')" alt="Armor" class="icon me-2">
-          <span>{{ equippedArmor ? equippedArmor.name : 'None' }}: {{ equippedArmor ? equippedArmor.defence : 0 }}</span>
+          <span>{{ equippedArmor ? equippedArmor.name : 'None' }}: {{ (equippedArmor ? equippedArmor.defence : 0) + totalDefenseBonus }} ({{ equippedArmor ? equippedArmor.defence : 0 }}+{{ totalDefenseBonus }})</span>
         </div>
       </div>
     </div>
@@ -86,7 +86,16 @@ export default {
   },
   computed: {
     ...mapState(['character']),
-    ...mapGetters(['currentEnemy', 'currentStoryLine']),
+    ...mapGetters([
+      'currentEnemy', 
+      'currentStoryLine', 
+      'totalAttackBonus', 
+      'totalDefenseBonus', 
+      'criticalHitChance', 
+      'dodgeChance',
+      'experienceMultiplier',
+      'moneyMultiplier'
+    ]),
     equippedWeapon() {
       return this.character.equippedWeapons[0];
     },
@@ -160,14 +169,27 @@ export default {
     },
     attack() {
       if (this.equippedWeapon && this.enemy) {
-        const playerDamage = this.calculateDamage(this.equippedWeapon.attack, this.enemy.defense);
+        // Calculate base damage with SPECIAL bonus
+        const baseDamage = this.equippedWeapon.attack + this.totalAttackBonus;
+        
+        // Check for critical hit
+        const critRoll = Math.random();
+        const isCritical = critRoll <= this.criticalHitChance;
+        
+        // Apply critical multiplier if critical hit
+        let finalDamage = isCritical ? Math.floor(baseDamage * 1.5) : baseDamage;
+        
+        // Apply enemy defense
+        finalDamage = this.calculateDamage(finalDamage, this.enemy.defense);
+        
         const dodgeChance = Math.random();
         
         if (dodgeChance <= this.enemy.defense / 100) {
           this.addToLog(`The ${this.enemy.name} dodged your attack!`, 'dodge-action');
         } else {
-          this.enemy.enemyHealth = Math.max(this.enemy.enemyHealth - playerDamage, 0);
-          this.addToLog(`You attacked the ${this.enemy.name} with your ${this.equippedWeapon.name} for ${playerDamage} damage.`, 'player-action');
+          this.enemy.enemyHealth = Math.max(this.enemy.enemyHealth - finalDamage, 0);
+          const critText = isCritical ? ' (CRITICAL HIT!)' : '';
+          this.addToLog(`You attacked the ${this.enemy.name} with your ${this.equippedWeapon.name} for ${finalDamage} damage${critText}`, 'player-action');
         }
 
         if (this.enemy.enemyHealth <= 0) {
@@ -180,10 +202,14 @@ export default {
       }
     },
     enemyAttack() {
-      const enemyDamage = this.calculateDamage(this.enemy.attack, this.equippedArmor ? this.equippedArmor.defence : 0);
-      const dodgeChance = Math.random();
+      // Calculate defense with SPECIAL bonus
+      const totalDefense = (this.equippedArmor ? this.equippedArmor.defence : 0) + this.totalDefenseBonus;
+      const enemyDamage = this.calculateDamage(this.enemy.attack, totalDefense);
       
-      if (dodgeChance <= (this.equippedArmor ? this.equippedArmor.defence : 0) / 100) {
+      // Use SPECIAL-based dodge chance instead of armor-based
+      const dodgeRoll = Math.random();
+      
+      if (dodgeRoll <= this.dodgeChance) {
         this.addToLog(`You dodged the ${this.enemy.name}'s attack!`, 'dodge-action');
       } else {
         this.$store.commit('updateCharacter', { health: Math.max(this.character.health - enemyDamage, 0) });
@@ -272,12 +298,22 @@ export default {
     applyRewards(rewards) {
       rewards.forEach(reward => {
         switch(reward.type) {
-          case 'exp':
+          case 'exp': {
+            // Apply SPECIAL bonuses to exp rewards
+            const actualExpGained = Math.floor(reward.amount * this.experienceMultiplier);
             this.increaseExp(reward.amount);
+            // Update reward object to show actual amount gained
+            reward.actualAmount = actualExpGained;
             break;
-          case 'money':
+          }
+          case 'money': {
+            // Apply SPECIAL bonuses to money rewards
+            const actualMoneyGained = Math.floor(reward.amount * this.moneyMultiplier);
             this.increaseMoney(reward.amount);
+            // Update reward object to show actual amount gained
+            reward.actualAmount = actualMoneyGained;
             break;
+          }
           case 'weapon':
             this.addItemToWeapons(reward.item.id);
             break;

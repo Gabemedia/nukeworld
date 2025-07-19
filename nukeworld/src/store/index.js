@@ -31,6 +31,19 @@ const state = reactive({
     aid: [],
     resources: [],
     premium: [],
+    // SPECIAL system attributes
+    special: {
+      strength: 1,     // Affects attack damage and carry capacity
+      perception: 1,   // Affects critical hit chance and accuracy
+      endurance: 1,    // Affects health points and poison/radiation resistance
+      charisma: 1,     // Affects shop prices and dialog options
+      intelligence: 1, // Affects experience gained and skill points
+      agility: 1,      // Affects dodge chance and movement speed
+      luck: 1         // Affects critical hit chance and loot quality
+    },
+    skillPoints: 0,    // Available skill points to spend on SPECIAL
+    availablePerks: [], // Array of available perks based on SPECIAL + level
+    activePerks: []     // Array of active perks player has chosen
   },
   quests: reactive(JSON.parse(localStorage.getItem('quests')) || defaultQuests),
   storyLines: reactive(JSON.parse(localStorage.getItem('storyLines')) || defaultStoryLines),
@@ -161,6 +174,58 @@ const getters = {
   completedStoryLines: (state) => state.storyLines.filter(sl => sl.completed),
   currentEnemy: (state) => {
     return state.currentEnemyId ? enemies.find(e => e.id === state.currentEnemyId) : null;
+  },
+
+  // SPECIAL system getters for bonuses
+  totalAttackBonus: (state) => {
+    const strengthBonus = Math.floor(state.character.special.strength / 2);
+    const perkBonus = state.character.activePerks
+      .filter(p => p.effect.type === 'damage')
+      .reduce((sum, p) => sum + p.effect.value, 0);
+    return strengthBonus + perkBonus;
+  },
+
+  totalDefenseBonus: (state) => {
+    const enduranceBonus = Math.floor(state.character.special.endurance / 3);
+    return enduranceBonus;
+  },
+
+  criticalHitChance: (state) => {
+    const perceptionBonus = state.character.special.perception * 0.02; // 2% per point
+    const luckBonus = state.character.special.luck * 0.01; // 1% per point
+    return Math.min(perceptionBonus + luckBonus, 0.5); // Max 50% crit chance
+  },
+
+  dodgeChance: (state) => {
+    const agilityBonus = state.character.special.agility * 0.02; // 2% per point
+    const perkBonus = state.character.activePerks
+      .filter(p => p.effect.type === 'dodge')
+      .reduce((sum, p) => sum + p.effect.value, 0);
+    return Math.min(agilityBonus + perkBonus, 0.5); // Max 50% dodge chance
+  },
+
+  experienceMultiplier: (state) => {
+    const intelligenceBonus = 1 + (state.character.special.intelligence * 0.05); // 5% per point
+    const perkBonus = state.character.activePerks
+      .filter(p => p.effect.type === 'expBonus')
+      .reduce((sum, p) => sum + (p.effect.value - 1), 0);
+    return intelligenceBonus + perkBonus;
+  },
+
+  shopPriceMultiplier: (state) => {
+    const charismaBonus = 1 - (state.character.special.charisma * 0.02); // 2% discount per point
+    const perkBonus = state.character.activePerks
+      .filter(p => p.effect.type === 'shopDiscount')
+      .reduce((multiplier, p) => multiplier * p.effect.value, 1);
+    return Math.max(charismaBonus * perkBonus, 0.5); // Min 50% of original price
+  },
+
+  moneyMultiplier: (state) => {
+    const luckBonus = 1 + (state.character.special.luck * 0.03); // 3% per point
+    const perkBonus = state.character.activePerks
+      .filter(p => p.effect.type === 'moneyBonus')
+      .reduce((sum, p) => sum + (p.effect.value - 1), 0);
+    return luckBonus + perkBonus;
   },
 };
 
@@ -577,6 +642,40 @@ const mutations = {
   },
   toggleDeveloperMode(state) {
     state.userSettings.isDeveloperMode = !state.userSettings.isDeveloperMode;
+  },
+
+  // SPECIAL system mutations
+  increaseSpecialStat(state, { stat, amount = 1 }) {
+    if (state.character.special[stat] && state.character.skillPoints >= amount) {
+      // Max SPECIAL stat is 10
+      const newValue = Math.min(state.character.special[stat] + amount, 10);
+      const actualIncrease = newValue - state.character.special[stat];
+      
+      state.character.special[stat] = newValue;
+      state.character.skillPoints -= actualIncrease;
+    }
+  },
+  
+  setSkillPoints(state, points) {
+    state.character.skillPoints = points;
+  },
+  
+  addSkillPoints(state, points) {
+    state.character.skillPoints += points;
+  },
+  
+  addPerk(state, perk) {
+    if (!state.character.activePerks.find(p => p.id === perk.id)) {
+      state.character.activePerks.push(perk);
+    }
+  },
+  
+  removePerk(state, perkId) {
+    state.character.activePerks = state.character.activePerks.filter(p => p.id !== perkId);
+  },
+  
+  updateAvailablePerks(state, perks) {
+    state.character.availablePerks = perks;
   }
 };
 
@@ -593,13 +692,26 @@ const actions = {
       health: 100,
       maxExp: 2500,
       money: 0,
-        weapons: [state.items[0]],
-  equippedWeapons: [state.items[0]],
-  armor: [state.armor[0]],
-  equippedArmor: state.armor[0],
-  aid: [],
-  resources: [],
-  premium: [],
+      weapons: [state.items[0]],
+      equippedWeapons: [state.items[0]],
+      armor: [state.armor[0]],
+      equippedArmor: state.armor[0],
+      aid: [],
+      resources: [],
+      premium: [],
+      // SPECIAL system for new character
+      special: {
+        strength: 1,
+        perception: 1,
+        endurance: 1,
+        charisma: 1,
+        intelligence: 1,
+        agility: 1,
+        luck: 1
+      },
+      skillPoints: 0,
+      availablePerks: [],
+      activePerks: []
     };
     commit('addCharacter', newCharacter);
     commit('updateCharacter', newCharacter);
@@ -624,8 +736,10 @@ const actions = {
     commit('updateCharacterInArray', updatedCharacter);
     localStorage.setItem('character', JSON.stringify(updatedCharacter));
   },
-  increaseExp({ commit, state, dispatch }, amount) {
-    commit('updateCharacter', { exp: state.character.exp + amount });
+  increaseExp({ commit, state, dispatch, getters }, amount) {
+    const multiplier = getters.experienceMultiplier;
+    const adjustedAmount = Math.floor(amount * multiplier);
+    commit('updateCharacter', { exp: state.character.exp + adjustedAmount });
     if (state.character.exp >= state.character.maxExp) {
       dispatch('levelUp');
     }
@@ -634,22 +748,40 @@ const actions = {
     const newExp = Math.max(state.character.exp - 5, 0);
     commit('updateCharacter', { exp: newExp });
   },
-  increaseMoney({ commit, state }, amount) {
-    commit('updateCharacter', { money: state.character.money + amount });
+  increaseMoney({ commit, state, getters }, amount) {
+    const multiplier = getters.moneyMultiplier;
+    const adjustedAmount = Math.floor(amount * multiplier);
+    commit('updateCharacter', { money: state.character.money + adjustedAmount });
   },
   decreaseMoney({ commit, state }, amount) {
     const newMoney = Math.max(state.character.money - amount, 0);
     commit('updateCharacter', { money: newMoney });
   },
-  levelUp({ commit, state }) {
+  levelUp({ commit, state, dispatch }) {
     const overflowExp = state.character.exp - state.character.maxExp;
     const newMaxExp = Math.floor(state.character.maxExp * 1.6);
+    const newLevel = state.character.level + 1;
+    
+    // Calculate skill points based on Intelligence
+    const intelligenceBonus = state.character.special.intelligence;
+    const baseSkillPoints = 1;
+    const skillPointsGained = baseSkillPoints + Math.floor(intelligenceBonus / 2);
+    
+    // Calculate health bonus from Endurance
+    const enduranceBonus = state.character.special.endurance;
+    const healthGained = 10 + Math.floor(enduranceBonus / 2);
+    
     commit('updateCharacter', {
       exp: overflowExp * 2,
       maxExp: newMaxExp,
-      level: state.character.level + 1,
+      level: newLevel,
+      maxHealth: state.character.maxHealth + healthGained
     });
+    commit('addSkillPoints', skillPointsGained);
     commit('increaseCharacterLevelInArray', state.character);
+    
+    // Recalculate available perks after leveling up
+    dispatch('calculatePerks');
   },
   
   handleQuest({ dispatch, commit, state }, quest) {
@@ -736,7 +868,7 @@ const actions = {
   
   
   
-  claimRewards({ commit, dispatch, state }, quest) {
+  claimRewards({ commit, dispatch, state, getters }, quest) {
     let obtainedReward = null;
     let obtainedArmorReward = null;
     let obtainedResource = null;
@@ -774,11 +906,15 @@ const actions = {
         obtainedResource = randomResource;
       }
   
+    // Calculate actual amounts with SPECIAL bonuses
+    const actualExpGained = Math.floor(quest.exp * getters.experienceMultiplier);
+    const actualMoneyGained = Math.floor(quest.money * getters.moneyMultiplier);
+    
     dispatch('increaseExp', quest.exp);
     dispatch('increaseMoney', quest.money);
     commit('updateCharacterInArray', state.character);
     commit('claimQuest', quest);
-    return {obtainedReward, obtainedArmorReward, obtainedResource};
+    return {obtainedReward, obtainedArmorReward, obtainedResource, actualExpGained, actualMoneyGained};
   },
 
   resetQuests({ state, commit }) {
@@ -807,6 +943,19 @@ const actions = {
       premium: [],
       currentStoryLine: null,
       currentStoryStep: null,
+      // Reset SPECIAL system
+      special: {
+        strength: 1,
+        perception: 1,
+        endurance: 1,
+        charisma: 1,
+        intelligence: 1,
+        agility: 1,
+        luck: 1
+      },
+      skillPoints: 0,
+      availablePerks: [],
+      activePerks: []
     });
     commit('equipWeapon', state.items[0].uuid);
     commit('equipArmor', state.armor[0].uuid); 
@@ -826,19 +975,21 @@ const actions = {
     }
   },
 
-  completeStoryLine({ commit, dispatch, state }, { storyLineId, giveReward }) {
+  completeStoryLine({ commit, dispatch, state, getters }, { storyLineId, giveReward }) {
     const storyLine = state.storyLines.find(sl => sl.id === storyLineId);
     if (storyLine && (!storyLine.completed || storyLine.repeatable)) {
       let rewards = [];
   
       if ((storyLine.alwaysGiveReward || giveReward) && storyLine.reward) {
         if (storyLine.reward.exp) {
+          const actualExpGained = Math.floor(storyLine.reward.exp * getters.experienceMultiplier);
           dispatch('increaseExp', storyLine.reward.exp);
-          rewards.push({ type: 'exp', amount: storyLine.reward.exp });
+          rewards.push({ type: 'exp', amount: actualExpGained });
         }
         if (storyLine.reward.money) {
+          const actualMoneyGained = Math.floor(storyLine.reward.money * getters.moneyMultiplier);
           dispatch('increaseMoney', storyLine.reward.money);
-          rewards.push({ type: 'money', amount: storyLine.reward.money });
+          rewards.push({ type: 'money', amount: actualMoneyGained });
         }
         if (storyLine.reward.resourceRewards && storyLine.reward.resourceRewards.length > 0) {
           storyLine.reward.resourceRewards.forEach(reward => {
@@ -1098,6 +1249,113 @@ const actions = {
     // 3. Show modal with rewards
     commit('setLootboxModalOpen', true);
   },
+
+  // SPECIAL system actions
+  spendSkillPoint({ commit, state }, stat) {
+    if (state.character.skillPoints > 0 && state.character.special[stat] < 10) {
+      commit('increaseSpecialStat', { stat, amount: 1 });
+    }
+  },
+
+  calculatePerks({ commit, state }) {
+    // Define available perks based on SPECIAL stats and level
+    const availablePerks = [];
+    const { special, level, activePerks } = state.character;
+
+    // Strength-based perks
+    if (special.strength >= 3 && level >= 3 && !activePerks.find(p => p.id === 'iron-fist')) {
+      availablePerks.push({
+        id: 'iron-fist',
+        name: 'Iron Fist',
+        description: '+2 unarmed damage',
+        requirement: 'Strength 3, Level 3',
+        effect: { type: 'damage', value: 2 }
+      });
+    }
+
+    // Perception-based perks
+    if (special.perception >= 4 && level >= 6 && !activePerks.find(p => p.id === 'better-criticals')) {
+      availablePerks.push({
+        id: 'better-criticals',
+        name: 'Better Criticals',
+        description: '+50% critical hit damage',
+        requirement: 'Perception 4, Level 6',
+        effect: { type: 'critDamage', value: 1.5 }
+      });
+    }
+
+    // Endurance-based perks
+    if (special.endurance >= 4 && level >= 6 && !activePerks.find(p => p.id === 'lifegiver')) {
+      availablePerks.push({
+        id: 'lifegiver',
+        name: 'Lifegiver',
+        description: '+20 max health',
+        requirement: 'Endurance 4, Level 6',
+        effect: { type: 'health', value: 20 }
+      });
+    }
+
+    // Charisma-based perks
+    if (special.charisma >= 3 && level >= 4 && !activePerks.find(p => p.id === 'negotiator')) {
+      availablePerks.push({
+        id: 'negotiator',
+        name: 'Negotiator',
+        description: '10% better shop prices',
+        requirement: 'Charisma 3, Level 4',
+        effect: { type: 'shopDiscount', value: 0.9 }
+      });
+    }
+
+    // Intelligence-based perks
+    if (special.intelligence >= 4 && level >= 6 && !activePerks.find(p => p.id === 'educated')) {
+      availablePerks.push({
+        id: 'educated',
+        name: 'Educated',
+        description: '+25% experience gained',
+        requirement: 'Intelligence 4, Level 6',
+        effect: { type: 'expBonus', value: 1.25 }
+      });
+    }
+
+    // Agility-based perks
+    if (special.agility >= 5 && level >= 9 && !activePerks.find(p => p.id === 'dodger')) {
+      availablePerks.push({
+        id: 'dodger',
+        name: 'Dodger',
+        description: '+10% dodge chance',
+        requirement: 'Agility 5, Level 9',
+        effect: { type: 'dodge', value: 0.1 }
+      });
+    }
+
+    // Luck-based perks
+    if (special.luck >= 6 && level >= 9 && !activePerks.find(p => p.id === 'fortune-finder')) {
+      availablePerks.push({
+        id: 'fortune-finder',
+        name: 'Fortune Finder',
+        description: '+25% money from quests',
+        requirement: 'Luck 6, Level 9',
+        effect: { type: 'moneyBonus', value: 1.25 }
+      });
+    }
+
+    commit('updateAvailablePerks', availablePerks);
+  },
+
+  activatePerk({ commit, dispatch, state }, perk) {
+    commit('addPerk', perk);
+    
+    // Apply perk effects immediately for permanent bonuses
+    if (perk.effect.type === 'health') {
+      commit('updateCharacter', {
+        maxHealth: state.character.maxHealth + perk.effect.value,
+        health: state.character.health + perk.effect.value
+      });
+    }
+    
+    // Recalculate available perks
+    dispatch('calculatePerks');
+  }
 };
 
 const store = createStore({

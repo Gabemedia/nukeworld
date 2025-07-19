@@ -9,9 +9,10 @@
                 <p>{{ desc }}</p>
                 <p>You have reached level {{ character.level }}</p>
                 <p><b>You have gained the following rewards</b><br/>
-                <img style="width:20px;" :src="require(`@/assets/interface/icons/exp.png`)" title="Experience"> {{ expGained }}
-                <img style="width:20px;" :src="require(`@/assets/interface/icons/money.png`)" title="Money"> {{ moneyGained }}
-                <img style="width:20px;" :src="require(`@/assets/interface/icons/aid/medkit.png`)" title="Health"> +{{ healthGained }} Max Health
+                <img style="width:20px;" :src="require(`@/assets/interface/icons/exp.png`)" title="Experience"> {{ expGained }} Experience<br/>
+                <img style="width:20px;" :src="require(`@/assets/interface/icons/money.png`)" title="Money"> {{ moneyGained }} NukaCoins<br/>
+                <img style="width:20px;" :src="require(`@/assets/interface/icons/aid/medkit.png`)" title="Health"> +{{ healthGained }} Max Health<br/>
+                <img style="width:20px;" :src="require(`@/assets/interface/icons/player.png`)" title="Skill Points"> +{{ skillPointsGained }} Skill Points
                 </p>
                 <div class="progress mt-2">
                 <div class="progress-bar" role="progressbar" :style="{width: progress + '%'}"></div>
@@ -46,7 +47,8 @@ export default {
             progress: 0,
             expGained: 0,
             moneyGained: 0,
-            healthGained: 10
+            healthGained: 10,
+            skillPointsGained: 0
         };
     },
     computed: {
@@ -88,9 +90,14 @@ export default {
             // Beregn belønninger baseret på level med mere balancerede værdier
             this.expGained = Math.floor(this.character.maxExp * 0.0005); // 0.05% af max exp som bonus
             this.moneyGained = this.character.level; // 1 penge per level
+            
+            // Beräkna skill points baserat på Intelligence (samma som i levelUp funktionen)
+            const intelligenceBonus = this.character.special ? this.character.special.intelligence : 1;
+            const baseSkillPoints = 1;
+            this.skillPointsGained = baseSkillPoints + Math.floor(intelligenceBonus / 2);
         },
         addRewardsToCharacter() {
-            // Brug de eksisterende Vuex actions
+            // Brug de eksisterende Vuex actions som allerede inkluderer SPECIAL bonuser
             this.increaseMoney(this.moneyGained);
             this.increaseExp(this.expGained);
             

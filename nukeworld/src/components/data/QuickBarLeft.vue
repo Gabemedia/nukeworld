@@ -11,7 +11,14 @@
         <p class="mb-1 fw-bold small">Character Info</p>
         <p class="mb-1 small">Name: {{ character.name }}</p>
         <p class="mb-1 small">Level: {{ character.level }}</p>
-        <p class="mb-1 small">Class: {{ character.class }}</p>
+        <p class="mb-1 small">Skill Points: {{ character.skillPoints }}</p>
+        <div class="special-bonuses">
+          <p class="mb-0 fw-bold small text-success">SPECIAL Bonuses:</p>
+          <p class="mb-0 small">Attack: +{{ totalAttackBonus }}</p>
+          <p class="mb-0 small">Defense: +{{ totalDefenseBonus }}</p>
+          <p class="mb-0 small">Crit: {{ (criticalHitChance * 100).toFixed(1) }}%</p>
+          <p class="mb-0 small">Exp: +{{ ((experienceMultiplier - 1) * 100).toFixed(1) }}%</p>
+        </div>
       </div>
     </div>
     <div class="stats-container">
@@ -48,7 +55,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'QuickBarLeft',  
@@ -59,6 +66,12 @@ export default {
   },
   computed: {
     ...mapState(['character']),
+    ...mapGetters([
+      'totalAttackBonus', 
+      'totalDefenseBonus', 
+      'criticalHitChance', 
+      'experienceMultiplier'
+    ]),
     healthPercentage() {
       return (this.character.health / this.character.maxHealth) * 100;
     },

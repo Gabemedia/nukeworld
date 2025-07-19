@@ -109,7 +109,7 @@ export default {
       }
     },
     async claimRewardsAction(quest) {
-      const { obtainedReward, obtainedArmorReward, obtainedResource } = await this.claimRewards(quest);
+      const { obtainedReward, obtainedArmorReward, obtainedResource, actualExpGained, actualMoneyGained } = await this.claimRewards(quest);
       confetti({
         particleCount: 100,
         spread: 70,
@@ -124,11 +124,11 @@ export default {
         <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
           <div class="d-flex align-items-start justify-content-start reward-info mb-2">
             <img src="${require('@/assets/interface/icons/exp.png')}" title="Exp" style="width: 20px;" class="me-2">
-            <span>${quest.exp} exp</span>
+            <span>${actualExpGained} exp${actualExpGained !== quest.exp ? ` (${quest.exp} + SPECIAL bonus)` : ''}</span>
           </div>
           <div class="d-flex align-items-start justify-content-start reward-info mb-1">
             <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
-            <span>${quest.money} money</span>
+            <span>${actualMoneyGained} money${actualMoneyGained !== quest.money ? ` (${quest.money} + SPECIAL bonus)` : ''}</span>
           </div>
         `;
       
