@@ -237,13 +237,13 @@ export default {
 
     getStatDescription(stat) {
       const descriptions = {
-        strength: 'Affects attack damage and carry capacity. Higher strength means more powerful melee attacks and the ability to wield heavier weapons effectively.',
-        perception: 'Affects critical hit chance and accuracy. Better perception allows you to spot weaknesses in enemies and land more precise strikes.',
-        endurance: 'Affects health points and resistance to damage. Higher endurance means you can survive longer in combat and resist environmental hazards.',
-        charisma: 'Affects shop prices and dialog options. Better charisma gets you better deals from traders and opens up new conversation paths.',
-        intelligence: 'Affects experience gained and skill points earned. Higher intelligence means you learn faster and gain more skill points when leveling up.',
-        agility: 'Affects dodge chance and movement speed. Better agility allows you to avoid enemy attacks and move more quickly in combat.',
-        luck: 'Affects critical hits and loot quality. Higher luck increases your chances of finding rare items and landing critical hits.'
+        strength: 'Increases your attack power in battles and settlement defense. Each point adds +1 to your total attack damage.',
+        perception: 'Improves your critical hit chance in combat. Each point adds +2% chance to deal critical hits to enemies.',
+        endurance: 'Increases your defense and health gained per level. Each point adds +1 defense and +5 health when leveling up.',
+        charisma: 'Reduces prices when shopping for items. Each point gives -2% discount at traders and the player shop.',
+        intelligence: 'Increases experience gained from all sources. Each point adds +5% bonus EXP from quests, battles, and stories.',
+        agility: 'Improves your dodge chance in combat. Each point adds +2% chance to avoid enemy attacks completely.',
+        luck: 'Increases critical hits and money rewards. Each point adds +1% crit chance and +3% bonus money from all activities.'
       };
       return descriptions[stat] || '';
     },
@@ -252,11 +252,11 @@ export default {
       const value = this.character.special[stat];
       switch(stat) {
         case 'strength':
-          return `+${Math.floor(value / 2)} Attack Damage`;
+          return `+${value} Attack Power`;
         case 'perception':
           return `+${(value * 2).toFixed(1)}% Critical Hit Chance`;
         case 'endurance':
-          return `+${value} Defense, Health Bonus on Level Up`;
+          return `+${value} Defense, +${value * 5} Health per Level`;
         case 'charisma':
           return `-${(value * 2).toFixed(1)}% Shop Prices`;
         case 'intelligence':
@@ -272,13 +272,79 @@ export default {
 
     getPerkDetailedDescription(perk) {
       const details = {
-        'iron-fist': 'Your unarmed combat training pays off with devastating punches that can knock out enemies faster.',
-        'better-criticals': 'Your keen eye for weak spots allows you to deal significantly more damage when you score critical hits.',
-        'lifegiver': 'Your hardy constitution grants you additional health, making you more resilient in dangerous situations.',
-        'negotiator': 'Your silver tongue and natural charisma help you get better deals from traders and merchants.',
-        'educated': 'Your sharp mind allows you to learn from experiences more effectively, gaining knowledge faster than others.',
-        'dodger': 'Your quick reflexes and agility training help you avoid incoming attacks more frequently.',
-        'fortune-finder': 'Your luck seems to attract wealth, finding more valuable rewards in your adventures.'
+        // Original perks
+        'warrior': 'Your basic combat training increases your attack power in all battles, making you deal more damage to enemies in combat.',
+        'berserker': 'Your fierce and reckless fighting style grants you significant attack power bonuses, overwhelming enemies with brute force.',
+        'lifegiver': 'Your hardy constitution grants you additional maximum health, making you more resilient in dangerous combat situations.',
+        'survivalist': 'Your wilderness training and tough endurance grants you substantial additional health to survive the harsh wasteland.',
+        'negotiator': 'Your silver tongue and natural charisma help you get better deals from traders and merchants when shopping.',
+        'merchant': 'Your trading expertise and business knowledge gets you significantly better prices when dealing with all merchants.',
+        'master-trader': 'Your exceptional negotiation skills and market knowledge get you the best possible deals from all traders.',
+        'student': 'Your natural learning ability and curiosity helps you gain more experience from quests, battles, and all activities.',
+        'educated': 'Your sharp mind and educational background allows you to learn significantly more from all experiences.',
+        'scholar': 'Your dedication to knowledge and learning grants you massive experience bonuses from all encounters and activities.',
+        'dodger': 'Your quick reflexes and basic evasion training help you avoid incoming attacks more frequently in combat.',
+        'evasion-expert': 'Your masterful evasion techniques and combat agility make you extremely difficult to hit in any battle.',
+        'fortune-finder': 'Your luck and keen eye for valuable items helps you find significantly more money from all activities.',
+        'wealthy': 'Your business acumen and incredible luck ensure you earn substantially more money from quests, battles, and rewards.',
+        'battle-veteran': 'Your extensive combat experience from multiple battles increases your attack power through hard-earned expertise.',
+        
+        // Perception-based perks
+        'keen-eye': 'Your sharp perception helps you spot valuable opportunities and resources, increasing your money rewards from all sources.',
+        'sharp-shooter': 'Your excellent aim and focus in combat increases your attack precision, dealing more damage to enemies.',
+        'treasure-hunter': 'Your combined perception and luck make you exceptional at finding hidden treasures and valuable rewards.',
+        
+        // Advanced strength perks
+        'iron-muscles': 'Your incredible physical strength helps you learn combat techniques faster, gaining more experience from training.',
+        'unstoppable-force': 'Your legendary strength makes you a devastating force in combat, overwhelming even the toughest enemies.',
+        
+        // Advanced endurance perks
+        'iron-skin': 'Your tough constitution and training help you avoid damage through natural resilience and positioning.',
+        'wasteland-survivor': 'Your mastery of survival in harsh environments grants you exceptional health and resistance to damage.',
+        
+        // Advanced intelligence perks
+        'quick-learner': 'Your natural intelligence and curiosity help you absorb knowledge quickly from every experience.',
+        'genius': 'Your exceptional intellectual capacity allows you to learn and understand at an extraordinary rate.',
+        'combat-analyst': 'Your analytical mind helps you identify enemy weaknesses and optimize your combat effectiveness.',
+        
+        // Advanced agility perks
+        'nimble': 'Your basic agility training helps you move quickly and avoid some enemy attacks through better positioning.',
+        'untouchable': 'Your legendary speed and evasion skills make you nearly impossible for enemies to hit in combat.',
+        
+        // Advanced luck perks
+        'lucky-break': 'Your natural luck occasionally helps you get better deals when negotiating with traders and merchants.',
+        'golden-touch': 'Your incredible luck seems to turn everything you touch into gold, dramatically increasing your wealth.',
+        
+        // Elite multi-stat perks
+        'renaissance-man': 'Your combination of intelligence and charisma makes you exceptionally well-rounded in all learning endeavors.',
+        'jack-of-all-trades': 'Your diverse skills and knowledge help you succeed in multiple areas, increasing your overall rewards.',
+        'ultimate-warrior': 'Your perfect combination of strength, endurance, and agility makes you the ultimate combat machine.',
+        'master-negotiator': 'Your exceptional charisma and intelligence make you unmatched in negotiation and trade dealings.',
+        'legendary-survivor': 'Your perfect combination of strength and endurance makes you nearly indestructible in the wasteland.',
+        
+        // Early game helper perks
+        'beginner-luck': 'Your natural good fortune helps you find a little extra money in your early adventures.',
+        'tough-skin': 'Your naturally tough constitution provides some extra protection against the dangers of the wasteland.',
+        'penny-pincher': 'Your careful spending habits help you get slightly better deals when shopping for supplies.',
+        
+        // Specialist combat perks
+        'combat-expert': 'Your specialized combat training combining strength and perception makes you deadly in battle.',
+        'defensive-stance': 'Your combined agility and endurance training helps you avoid enemy attacks through superior positioning.',
+        'wealthy-merchant': 'Your combination of charisma and luck makes you exceptionally successful in all business dealings.',
+        
+        // Legendary tier perks (Level 30-50)
+        'apex-predator': 'You have become the ultimate hunter in the wasteland, with unmatched combat prowess that makes you feared by all enemies.',
+        'immortal': 'Your incredible endurance and survival instincts have made you nearly impossible to kill, surviving wounds that would fell any normal person.',
+        'mastermind': 'Your intellect has reached legendary levels, allowing you to learn and understand at a rate that defies human comprehension.',
+        'phantom': 'Your agility has reached supernatural levels, making you appear and disappear like a ghost, untouchable in combat.',
+        'midas': 'Your luck has reached mythical proportions - everything you touch seems to turn to gold, bringing incredible wealth.',
+        'merchant-king': 'You have become the ultimate trader, commanding respect and getting unbeatable deals from every merchant in the wasteland.',
+        
+        // Ultimate tier perks (Level 45-50)
+        'god-of-war': 'You have transcended mortal combat limitations, becoming a true god of war with unmatched strength and battle prowess.',
+        'perfect-being': 'You represent the pinnacle of human development, combining intelligence, charisma, and luck in perfect harmony.',
+        'wasteland-emperor': 'You rule the wasteland economy with unmatched charisma and business acumen, accumulating wealth beyond imagination.',
+        'legend': 'You have become a living legend, possessing incredible health and resilience that will be spoken of for generations.'
       };
       return details[perk.id] || perk.description;
     },

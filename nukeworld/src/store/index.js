@@ -10,6 +10,7 @@ import resources from './ressources';
 import premium from './premium.js';
 import enemies from './enemy';
 import settlement from './settlement';
+import perks from './perks';
 
 const state = reactive({
   characters: JSON.parse(localStorage.getItem('characters')) || [],
@@ -227,6 +228,15 @@ const getters = {
       .reduce((sum, p) => sum + (p.effect.value - 1), 0);
     return luckBonus + perkBonus;
   },
+  
+  // Perk system getters
+  getPerkById: () => (perkId) => {
+    return perks.getPerkById(perkId);
+  },
+  
+  getAllPerks: () => {
+    return perks.getAllPerks();
+  }
 };
 
 const mutations = {
@@ -1258,87 +1268,8 @@ const actions = {
   },
 
   calculatePerks({ commit, state }) {
-    // Define available perks based on SPECIAL stats and level
-    const availablePerks = [];
-    const { special, level, activePerks } = state.character;
-
-    // Strength-based perks
-    if (special.strength >= 3 && level >= 3 && !activePerks.find(p => p.id === 'iron-fist')) {
-      availablePerks.push({
-        id: 'iron-fist',
-        name: 'Iron Fist',
-        description: '+2 unarmed damage',
-        requirement: 'Strength 3, Level 3',
-        effect: { type: 'damage', value: 2 }
-      });
-    }
-
-    // Perception-based perks
-    if (special.perception >= 4 && level >= 6 && !activePerks.find(p => p.id === 'better-criticals')) {
-      availablePerks.push({
-        id: 'better-criticals',
-        name: 'Better Criticals',
-        description: '+50% critical hit damage',
-        requirement: 'Perception 4, Level 6',
-        effect: { type: 'critDamage', value: 1.5 }
-      });
-    }
-
-    // Endurance-based perks
-    if (special.endurance >= 4 && level >= 6 && !activePerks.find(p => p.id === 'lifegiver')) {
-      availablePerks.push({
-        id: 'lifegiver',
-        name: 'Lifegiver',
-        description: '+20 max health',
-        requirement: 'Endurance 4, Level 6',
-        effect: { type: 'health', value: 20 }
-      });
-    }
-
-    // Charisma-based perks
-    if (special.charisma >= 3 && level >= 4 && !activePerks.find(p => p.id === 'negotiator')) {
-      availablePerks.push({
-        id: 'negotiator',
-        name: 'Negotiator',
-        description: '10% better shop prices',
-        requirement: 'Charisma 3, Level 4',
-        effect: { type: 'shopDiscount', value: 0.9 }
-      });
-    }
-
-    // Intelligence-based perks
-    if (special.intelligence >= 4 && level >= 6 && !activePerks.find(p => p.id === 'educated')) {
-      availablePerks.push({
-        id: 'educated',
-        name: 'Educated',
-        description: '+25% experience gained',
-        requirement: 'Intelligence 4, Level 6',
-        effect: { type: 'expBonus', value: 1.25 }
-      });
-    }
-
-    // Agility-based perks
-    if (special.agility >= 5 && level >= 9 && !activePerks.find(p => p.id === 'dodger')) {
-      availablePerks.push({
-        id: 'dodger',
-        name: 'Dodger',
-        description: '+10% dodge chance',
-        requirement: 'Agility 5, Level 9',
-        effect: { type: 'dodge', value: 0.1 }
-      });
-    }
-
-    // Luck-based perks
-    if (special.luck >= 6 && level >= 9 && !activePerks.find(p => p.id === 'fortune-finder')) {
-      availablePerks.push({
-        id: 'fortune-finder',
-        name: 'Fortune Finder',
-        description: '+25% money from quests',
-        requirement: 'Luck 6, Level 9',
-        effect: { type: 'moneyBonus', value: 1.25 }
-      });
-    }
-
+    // Use the dedicated perks module to calculate available perks
+    const availablePerks = perks.calculateAvailablePerks(state.character);
     commit('updateAvailablePerks', availablePerks);
   },
 
@@ -1355,6 +1286,22 @@ const actions = {
     
     // Recalculate available perks
     dispatch('calculatePerks');
+  },
+
+  // Additional perk-related actions
+  getPerkInfo(context, perkId) {
+    return perks.getPerkById(perkId);
+  },
+  
+  checkPerkRequirements({ state }, perkId) {
+    const perk = perks.getPerkById(perkId);
+    if (!perk) return false;
+    
+    return perks.meetsRequirements(
+      state.character.special, 
+      state.character.level, 
+      perk.requirements
+    );
   }
 };
 
