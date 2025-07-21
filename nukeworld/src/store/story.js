@@ -176,7 +176,7 @@ export default [
       }
     ],
     "reward": {
-      "exp": 5000,
+      "exp": 2500,
       "money": 500,
       "resourceRewards": [],
       "weaponRewards": [],

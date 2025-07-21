@@ -120,9 +120,12 @@ export default {
       handler(newValue) {
         if (this.audio && this.musicSettings) {
           if (newValue) {
-            this.audio.play().catch(error => {
-              console.warn('Audio autoplay blocked by browser policy:', error);
-            });
+            // Only play if audio is ready
+            if (this.audio.src && typeof this.audio.play === 'function') {
+              this.audio.play().catch(error => {
+                console.warn('Audio autoplay blocked by browser policy:', error);
+              });
+            }
           } else {
             this.audio.pause();
           }
@@ -148,7 +151,8 @@ export default {
       });
     }
     this.initializeMusic();
-    this.addUserInteractionListener();
+    // Removed addUserInteractionListener to prevent any autoplay on user interaction
+    // this.addUserInteractionListener();
   },
   beforeUnmount() {
     if (this.audio) {
@@ -167,7 +171,7 @@ export default {
         this.audio.addEventListener('ended', () => {
           // Auto-play next track when current track ends
           this.currentTrackIndex = (this.currentTrackIndex + 1) % this.playlist.length;
-          this.loadTrack(this.currentTrackIndex, true); // Auto-play when track ends naturally
+          this.loadTrack(this.currentTrackIndex); // Auto-play when track ends naturally
         });
 
         this.audio.addEventListener('timeupdate', () => {
@@ -196,18 +200,21 @@ export default {
           console.error('Audio error:', error);
         });
 
-        // Set initial track
+        // Set initial track (do not autoplay)
         this.currentTrackIndex = Math.floor(Math.random() * this.playlist.length);
-        this.loadTrack(this.currentTrackIndex, true); // Auto-play initial track
+        this.loadTrack(this.currentTrackIndex); // No autoplay, no param
       }
     },
 
-    loadTrack(index, shouldAutoPlay = true) {
+    loadTrack(index) { // Remove shouldAutoPlay parameter, always manual play
       if (this.playlist[index]) {
         // Stop current audio before loading new track
         if (this.audio) {
           this.audio.pause();
-          this.audio.currentTime = 0;
+          // Add null check for currentTime
+          if (typeof this.audio.currentTime === 'number') {
+            this.audio.currentTime = 0;
+          }
           this.isPlaying = false; // Reset playing state
         }
         
@@ -221,29 +228,22 @@ export default {
         this.duration = 0;
         this.$emit('music-status-updated', false, this.currentTrackName); // Emit paused state
         
-        // Auto-play the new track if music is enabled and shouldAutoPlay is true
-        if (this.musicSettings && this.musicSettings.enabled && shouldAutoPlay) {
-          // Wait for audio to load before playing
-          this.audio.addEventListener('canplay', () => {
-            this.audio.play().catch(error => {
-              console.warn('Audio autoplay blocked by browser policy:', error);
-            });
-          }, { once: true });
-        }
+        // Do not autoplay new track
+        // If you want to allow manual play, user must press play button
       }
     },
 
     playNextTrack() {
       if (this.playlist.length > 0) {
         this.currentTrackIndex = (this.currentTrackIndex + 1) % this.playlist.length;
-        this.loadTrack(this.currentTrackIndex, false); // Don't auto-play when manually changing tracks
+        this.loadTrack(this.currentTrackIndex); // No autoplay, no param
       }
     },
 
     playPreviousTrack() {
       if (this.playlist.length > 0) {
         this.currentTrackIndex = this.currentTrackIndex === 0 ? this.playlist.length - 1 : this.currentTrackIndex - 1;
-        this.loadTrack(this.currentTrackIndex, false); // Don't auto-play when manually changing tracks
+        this.loadTrack(this.currentTrackIndex); // No autoplay, no param
       }
     },
 
@@ -252,15 +252,18 @@ export default {
         if (this.isPlaying) {
           this.audio.pause();
         } else {
-          this.audio.play().catch(error => {
-            console.warn('Audio autoplay blocked by browser policy:', error);
-          });
+          // Only play if audio is ready
+          if (this.audio.src && typeof this.audio.play === 'function') {
+            this.audio.play().catch(error => {
+              console.warn('Audio play blocked or failed:', error);
+            });
+          }
         }
       }
     },
 
     selectTrack(index) {
-      this.loadTrack(index, false); // Don't auto-play when manually selecting tracks
+      this.loadTrack(index); // No autoplay, no param
     },
 
     formatTime(seconds) {
@@ -284,7 +287,10 @@ export default {
         const percentage = clickX / rect.width;
         const newTime = percentage * this.duration;
         
-        this.audio.currentTime = newTime;
+        // Add null check for currentTime
+        if (typeof this.audio.currentTime === 'number') {
+          this.audio.currentTime = newTime;
+        }
         this.currentTime = newTime;
       }
     },
@@ -300,22 +306,7 @@ export default {
       });
     },
     
-    addUserInteractionListener() {
-      const enableAudio = () => {
-        if (this.audio && this.musicSettings && this.musicSettings.enabled) {
-          this.audio.play().catch(error => {
-            console.warn('Audio autoplay blocked by browser policy:', error);
-          });
-        }
-        document.removeEventListener('click', enableAudio);
-        document.removeEventListener('keydown', enableAudio);
-        document.removeEventListener('touchstart', enableAudio);
-      };
-      
-      document.addEventListener('click', enableAudio, { once: true });
-      document.addEventListener('keydown', enableAudio, { once: true });
-      document.addEventListener('touchstart', enableAudio, { once: true });
-    }
+    // Removed addUserInteractionListener method and all calls to it
   }
 };
 </script>

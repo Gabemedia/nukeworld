@@ -246,7 +246,7 @@ const actions = {
       maxDefences: 100,
       power: 10,
       maxPower: 100,
-      radiation: Math.floor(Math.random() * 20),
+      radiation: Math.floor(Math.random() * 10),
       maxRadiation: 100,
       lastHealthUpdate: Date.now(),
       lastRadiationUpdate: Date.now(),
@@ -268,18 +268,18 @@ const actions = {
     if (state.settlement.radiationReductionActive) {
       // Only allow decreases, NO increases during clean
       if (Math.random() < 0.9) { // 90% chance for reduction during clean
-        const reductionAmount = Math.floor(Math.random() * 15) + 5; // 5-20% reduction per update
+        const reductionAmount = Math.floor(Math.random() * 15) + 5; // 5-10% reduction per update
         commit('updateSettlementRadiation', -reductionAmount);
       }
     } else {
       // Only apply normal fluctuations when clean is NOT active
-      if (Math.random() < 0.85) { // 85% chance each update
-        if (Math.random() < 0.5) { // 50% chance to increase - random
-          const increase = Math.floor(Math.random() * 25) + 2; // 2-26% increase
+      if (Math.random() < 0.75) { // 75% chance each update
+        if (Math.random() < 0.4) { // 40% chance to increase - random
+          const increase = Math.floor(Math.random() * 15) + 2; // 2-16% increase
           commit('updateSettlementRadiation', increase);
         } else { // 50% chance to decrease - random
           if (state.settlement.radiation > 0) {
-            const decrease = Math.floor(Math.random() * 25) + 2; // 2-26% decrease
+            const decrease = Math.floor(Math.random() * 15) + 2; // 2-16% decrease
             commit('updateSettlementRadiation', -decrease);
           }
         }
@@ -379,7 +379,7 @@ const actions = {
       toast.warning(radiationWarning, {
         dangerouslyHTMLString: true,
         autoClose: 5000,
-        hideProgressBar: false,
+        hideProgressBar: true,
         icon: false,
         toastClassName: 'quest-toast-container',
         bodyClassName: 'quest-toast-body quest-toast'

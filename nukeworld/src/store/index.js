@@ -773,7 +773,7 @@ const actions = {
   },
   levelUp({ commit, state, dispatch }) {
     const overflowExp = state.character.exp - state.character.maxExp;
-    const newMaxExp = Math.floor(state.character.maxExp * 1.6);
+    const newMaxExp = Math.floor(state.character.maxExp * 1.45);
     const newLevel = state.character.level + 1;
     
     // Calculate skill points based on Intelligence
