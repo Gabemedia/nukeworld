@@ -762,13 +762,13 @@ export default [
         ]
       },
       {
-        "npcMessage": "Find 1 Meat (resource) and return to the dog.",
+        "npcMessage": "Find 1 Cloth Scraps and return to the dog.",
         "playerOptions": [
           {
             "text": "Here, doggy!",
             "nextId": null,
             "requiredResources": [
-              { "id": 12, "amount": 1 } // Example: Meat (if exists, else change to another resource)
+              { "id": 5, "amount": 1 } // Cloth Scraps
             ],
             "giveReward": true
           }

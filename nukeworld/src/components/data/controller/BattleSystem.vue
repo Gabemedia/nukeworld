@@ -166,8 +166,13 @@
                     <img :src="require('@/assets/interface/icons/reward.png')" alt="Rewards">
                     <span>{{ rewardsClaimed ? 'Claimed' : 'Claim Rewards' }}</span>
                     <div class="action-details">
-                      {{ Math.floor((currentEnemy.exp || 50) * experienceMultiplier) }} EXP, 
-                      {{ Math.floor((currentEnemy.money || 25) * moneyMultiplier) }} Money
+                      <template v-if="$store.state.currentBattleStoryLineId">
+                        Story Rewards
+                      </template>
+                      <template v-else>
+                        {{ Math.floor((currentEnemy.exp || 50) * experienceMultiplier) }} EXP, 
+                        {{ Math.floor((currentEnemy.money || 25) * moneyMultiplier) }} Money
+                      </template>
                     </div>
                   </button>
                   
@@ -402,26 +407,35 @@ export default {
       this.rewardsClaimed = true;
       
       try {
-        // First handle story quest completion if this was from a story battle
-        if (this.$store.state.currentBattleStoryLineId) {
-          await this.defeatEnemy();
+        // Check if this is a story battle
+        const isStoryBattle = this.$store.state.currentBattleStoryLineId;
+        
+        if (isStoryBattle) {
+          // For story battles, only handle story completion - rewards are handled by the story system
+          const storyResult = await this.defeatEnemy();
+          this.addToLog('Story battle completed!', 'victory-action');
+          
+          // Show story rewards if they exist
+          if (storyResult && storyResult.rewards) {
+            this.showStoryRewardToast(storyResult.storyLineName, storyResult.rewards);
+          }
+        } else {
+          // For regular battles, handle battle-specific rewards
+          const expReward = this.localEnemy.exp || 50;
+          const moneyReward = this.localEnemy.money || 25;
+          
+          // Apply SPECIAL multipliers like SettlementBattle but let store actions handle it
+          await this.increaseExp(expReward);
+          await this.increaseMoney(moneyReward);
+          
+          this.addToLog(`Rewards claimed: ${Math.floor(expReward * this.experienceMultiplier)} EXP, ${Math.floor(moneyReward * this.moneyMultiplier)} Money`, 'victory-action');
+          
+          // Show reward toast like SettlementBattle
+          this.showRewardToast(
+            Math.floor(expReward * this.experienceMultiplier), 
+            Math.floor(moneyReward * this.moneyMultiplier)
+          );
         }
-        
-        // Then handle battle-specific rewards using same pattern as SettlementBattle
-        const expReward = this.localEnemy.exp || 50;
-        const moneyReward = this.localEnemy.money || 25;
-        
-        // Apply SPECIAL multipliers like SettlementBattle but let store actions handle it
-        await this.increaseExp(expReward);
-        await this.increaseMoney(moneyReward);
-        
-        this.addToLog(`Rewards claimed: ${Math.floor(expReward * this.experienceMultiplier)} EXP, ${Math.floor(moneyReward * this.moneyMultiplier)} Money`, 'victory-action');
-        
-        // Show reward toast like SettlementBattle
-        this.showRewardToast(
-          Math.floor(expReward * this.experienceMultiplier), 
-          Math.floor(moneyReward * this.moneyMultiplier)
-        );
         
         // Show reward confetti
         this.showRewardConfetti();
@@ -455,6 +469,82 @@ export default {
               <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
               <span>${moneyReward} money</span>
             </div>
+          </div>
+        </div>
+      `;
+
+      toast.success(rewardMessage, {
+        dangerouslyHTMLString: true,
+        autoClose: 10000,
+        hideProgressBar: false,
+        icon: false,
+        toastClassName: 'quest-toast-container',
+        bodyClassName: 'quest-toast-body quest-toast'
+      });
+    },
+    
+    showStoryRewardToast(storyLineName, rewards) {
+      let rewardMessage = `
+        <div class="d-flex flex-column align-items-start justify-content-start h-100">
+          <p class="text-left fw-bold mb-1">${storyLineName} completed!</p>
+          <p class="text-left fw-semi mb-2">You earned:</p>
+          <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
+      `;
+
+      rewards.forEach(reward => {
+        switch(reward.type) {
+          case 'exp':
+            rewardMessage += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require('@/assets/interface/icons/exp.png')}" title="Exp" style="width: 20px;" class="me-2">
+                <span>${reward.amount} exp</span>
+              </div>
+            `;
+            break;
+          case 'money':
+            rewardMessage += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
+                <span>${reward.amount} money</span>
+              </div>
+            `;
+            break;
+          case 'resource':
+            rewardMessage += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-1">
+                <img src="${require(`@/assets/interface/icons/resources/${reward.item.img}`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                <span>${reward.amount}x ${reward.item.name}</span>
+              </div>
+            `;
+            break;
+          case 'weapon':
+            rewardMessage += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-1">
+                <img src="${require(`@/assets/interface/icons/weapons/${reward.item.img}`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                <span>${reward.item.name}</span>
+              </div>
+            `;
+            break;
+          case 'armor':
+            rewardMessage += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-1">
+                <img src="${require(`@/assets/interface/icons/armor/${reward.item.img}`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                <span>${reward.item.name}</span>
+              </div>
+            `;
+            break;
+          case 'aid':
+            rewardMessage += `
+              <div class="d-flex align-items-start justify-content-start reward-info mb-1">
+                <img src="${require(`@/assets/interface/icons/aid/${reward.item.img}`)}" title="${reward.item.name}" style="width: 20px;" class="me-2">
+                <span>${reward.item.name}</span>
+              </div>
+            `;
+            break;
+        }
+      });
+
+      rewardMessage += `
           </div>
         </div>
       `;

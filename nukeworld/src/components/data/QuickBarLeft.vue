@@ -716,6 +716,9 @@ export default {
 
 .tab-content {
   padding: 5px;
+  /* Ensure tab content never grows outside modal, but scrolls if too large */
+  max-height: 60vh; /* You can adjust this value for your preferred modal height */
+  overflow-y: auto;
 }
 
 .character-section {

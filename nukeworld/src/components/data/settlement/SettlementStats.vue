@@ -111,6 +111,14 @@
                     >
                       <span>Upgrade Settlement</span>
                     </button>
+                    <div class="cost-display">
+                      <span>Cost: {{ settings?.upgradeCosts?.level?.resource1Amount || 0 }}</span>
+                      <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.level?.resource1)?.img}`)" alt="Wood" class="resource-icon">
+                      <span>{{ settings?.upgradeCosts?.level?.resource2Amount || 0 }}</span>
+                      <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.level?.resource2)?.img}`)" alt="Steel" class="resource-icon">
+                      <span>${{ settings?.upgradeCosts?.level?.moneyCost || 0 }}</span>
+                      <img :src="require('@/assets/interface/icons/money.png')" alt="Money" class="resource-icon">
+                    </div>
                   </div>
                 </div>
 

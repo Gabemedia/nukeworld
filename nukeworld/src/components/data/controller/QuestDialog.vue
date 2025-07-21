@@ -236,10 +236,14 @@ export default {
       }
       
       if (result && result.rewards) {
-        this.showRewardToast({
-          storyLineName: this.currentStoryLine.name,
-          rewards: result.rewards
-        });
+        // Only show reward toast if this is not a battle completion
+        // Battle completions will show their own toast in BattleSystem.vue
+        if (!this.$store.state.currentEnemyId) {
+          this.showRewardToast({
+            storyLineName: this.currentStoryLine.name,
+            rewards: result.rewards
+          });
+        }
         this.updateCharacter(this.$store.state.character);
       }
     },
