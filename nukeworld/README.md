@@ -448,6 +448,201 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Improved modal header layout by removing unnecessary shop button elements
 - Streamlined modal controls to focus on essential functionality (close button and player money display)
 
+### Version 0.1.8.4 (19-07-2025)
+- Enhanced quest reward display system across all quest components:
+  - Updated QuestDetails.vue, QuestTabs.vue, and QuestList.vue to show base values with green bonus indicators
+  - Implemented consistent formatting for EXP, Money, Weapon, Armor, and Resource rewards
+  - Added proper bonus calculation display with format "Base (+Bonus)" (e.g., "1360 (+510)")
+  - Fixed weapon and armor reward chance formatting to show "15% (+1)" instead of "15 (+1)%"
+  - Ensured base values are displayed in white and bonus values in green for clear visual distinction
+  - Applied bonus calculations to all quest states including "ready-to-claim" quests
+  - Used v-html directive to render styled bonus text with proper CSS classes
+  - Added .bonus-indicator CSS class for consistent green bonus styling across all components
+  - Improved quest reward readability and user experience with professional RPG-style formatting
+  - Maintained all existing quest functionality while enhancing visual feedback
+  - Optimized quest reward display for better game balance and player understanding
+
+- Implemented comprehensive SPECIAL system bonuses for quest rewards:
+  - Added Luck-based bonus calculations for weapon drop chances (2% per Luck point)
+  - Added Luck-based bonus calculations for armor drop chances (1.5% per Luck point)
+  - Added Luck-based bonus calculations for resource drop chances (2.5% per Luck point)
+  - Integrated Intelligence bonuses for experience rewards (5% per Intelligence point)
+  - Integrated Luck bonuses for money rewards (3% per Luck point)
+  - Applied bonus calculations consistently across all quest components and states
+  - Enhanced player progression by making SPECIAL stats directly impact quest rewards
+  - Improved game balance by providing meaningful rewards for stat investment
+
+- Enhanced quest reward display formatting and styling:
+  - Fixed base value display to show original quest values from quests.js
+  - Implemented proper bonus calculation display with green highlighting
+  - Added consistent CSS styling for bonus indicators across all components
+  - Improved visual feedback for players to understand their SPECIAL stat benefits
+  - Enhanced quest reward readability with professional RPG-style formatting
+  - Optimized quest reward display for better game balance and player understanding
+  - Maintained all existing quest functionality while enhancing visual feedback
+
+- Improved quest system user experience:
+  - Enhanced quest reward visibility and clarity across all quest states
+  - Added proper bonus calculations for "ready-to-claim" quests
+  - Implemented consistent reward display formatting across QuestDetails, QuestTabs, and QuestList
+  - Enhanced quest reward readability with professional styling
+  - Optimized quest reward display for better game balance and player understanding
+  - Maintained all existing quest functionality while enhancing visual feedback
+
+### Version 0.1.8.5 (20-07-2025)
+
+**Complete SPECIAL System Overhaul:**
+- Redesigned SpecialManager.vue modal to match PlayerShop.vue, InventoryStash.vue, QuestLog.vue, QuestDetails.vue, SettlementBattle.vue, SettlementStats.vue, and SettlementModal.vue styling
+- Added tabs system with SPECIAL stats and perks sections
+- Implemented info panel instead of hover tooltips for better user experience
+- Added detailed perk descriptions and upgrade/activation buttons
+- Enhanced modal layout with proper header, body, and footer structure
+- Improved visual consistency with other game modals
+
+**Comprehensive Perks System Enhancement:**
+- Created dedicated perks.js module for better code organization
+- Added 42 functional perks with requirements and effects
+- Implemented perk types: damage, health, shopDiscount, expBonus, dodge, moneyBonus
+- Added utility functions for perk management and calculations
+- Integrated perks system with Vuex store and SpecialManager.vue
+- Balanced perks for level 1-50 progression system
+- Removed non-functional perks and created working alternatives
+
+**Battle System Redesign:**
+- Redesigned BattleSystem.vue to match PlayerShop.vue style
+- Added detailed combat stats display with player and enemy information
+- Implemented battle log with 5-entry limit and scrolling functionality
+- Enhanced battle modal with proper header, body, and footer structure
+- Integrated SPECIAL bonuses into combat calculations
+- Preserved all existing battle logic while improving UI
+- Added action buttons and improved visual feedback
+
+**Quest System & Map Improvements:**
+- Removed all automatic quest coordinate generation to ensure quest markers use static coordinates
+- Fixed quest marker display by using only predefined coordinates from quests.js
+- Removed random coordinate assignment in resetQuests and template creation
+- Ensured quest coordinates remain consistent after quest reset or completion
+- Improved map marker reliability by using only static quest locations
+- Enhanced quest system stability by removing dynamic coordinate generation
+- Fixed issue where quest markers would sometimes not appear on the map
+- Optimized quest location handling for better performance
+- Updated quest templates to preserve original quest coordinates
+- Improved code maintainability by removing redundant coordinate generation logic
+- Updated all quest coordinates to be within specific ranges for better game balance
+- Optimized quest placement for better game balance and exploration
+- Enhanced quest distribution across the game map
+- Improved quest accessibility and discovery flow
+
+**Music System & Settings:**
+- Added user and developer sections in GameSettings
+- Added music controls in user settings with music on/off toggle and volume control slider
+- Implemented settings persistence in localStorage
+- Improved music system in GameWorld with dynamic loading of all MP3 files from music folder
+- Added random shuffle playlist and automatic play next track functionality
+- Implemented error handling with fallback for audio playback
+- Added volume and on/off state sync with settings
+- Fixed ESC key functionality to work with music controls
+- Moved developer mode toggle to header section
+- Improved settings layout and organization
+- Enhanced user experience with better settings categorization
+- Optimized music system performance
+- Maintained all existing functionality while adding new features
+
+**UI Modernization & Styling:**
+- Modernized and unified UI styling across multiple components for consistent RPG experience
+- Updated QuestTabs.vue and QuestDialog.vue to match modern styling used in PlayerShop.vue, InventoryLog.vue, and InventoryStash.vue
+- Replaced old Bootstrap modal structure with modern modal layout in QuestLog.vue and StoryLog.vue
+- Enhanced QuestDialog.vue with improved conversation layout and RPG-style visual elements
+- Removed specific character names from dialog system while maintaining avatar icons and visual elements
+- Added proper content wrappers and padding to prevent content from going to modal edges
+- Improved mobile responsiveness and consistent spacing across all dialog components
+- Enhanced visual feedback with hover effects, animations, and RPG-style elements
+- Maintained all existing functionality including speech synthesis, resource checking, and story progression
+- Fixed layout issues with "Reset Quests" button overflow in QuestLog.vue
+- Optimized modal structure for better user experience and visual consistency
+- Removed shop buttons from InventoryLog.vue and QuestLog.vue modal headers to simplify UI
+- Cleaned up unused shop button methods and CSS styling from modal components
+- Improved modal header layout by removing unnecessary shop button elements
+- Streamlined modal controls to focus on essential functionality
+
+**Quest Reward System Enhancements:**
+- Enhanced quest reward display system across all quest components
+- Updated QuestDetails.vue, QuestTabs.vue, and QuestList.vue to show base values with green bonus indicators
+- Implemented consistent formatting for EXP, Money, Weapon, Armor, and Resource rewards
+- Added proper bonus calculation display with format "Base (+Bonus)" (e.g., "1360 (+510)")
+- Fixed weapon and armor reward chance formatting to show "15% (+1)" instead of "15 (+1)%"
+- Ensured base values are displayed in white and bonus values in green for clear visual distinction
+- Applied bonus calculations to all quest states including "ready-to-claim" quests
+- Used v-html directive to render styled bonus text with proper CSS classes
+- Added .bonus-indicator CSS class for consistent green bonus styling across all components
+- Improved quest reward readability and user experience with professional RPG-style formatting
+- Optimized quest reward display for better game balance and player understanding
+
+**SPECIAL System Integration:**
+- Implemented comprehensive SPECIAL system bonuses for quest rewards
+- Added Luck-based bonus calculations for weapon drop chances (2% per Luck point)
+- Added Luck-based bonus calculations for armor drop chances (1.5% per Luck point)
+- Added Luck-based bonus calculations for resource drop chances (2.5% per Luck point)
+- Integrated Intelligence bonuses for experience rewards (5% per Intelligence point)
+- Integrated Luck bonuses for money rewards (3% per Luck point)
+- Applied bonus calculations consistently across all quest components and states
+- Enhanced player progression by making SPECIAL stats directly impact quest rewards
+- Improved game balance by providing meaningful rewards for stat investment
+- Enhanced quest reward display formatting and styling
+- Fixed base value display to show original quest values from quests.js
+- Implemented proper bonus calculation display with green highlighting
+- Added consistent CSS styling for bonus indicators across all components
+- Improved visual feedback for players to understand their SPECIAL stat benefits
+- Enhanced quest reward readability with professional RPG-style formatting
+- Optimized quest reward display for better game balance and player understanding
+- Maintained all existing quest functionality while enhancing visual feedback
+
+**Enemy and Quest Balancing:**
+- Rebalanced enemies for level 1-50 progression system
+- Added more enemies for early and mid-game progression
+- Rebalanced quests for level 1-50 progression with balanced EXP and money rewards
+- Updated quest reward chances and dynamic coordinates
+- Enhanced quest distribution across the game map
+- Improved quest accessibility and discovery flow
+
+**Settlement System Enhancements:**
+- Updated SettlementModal.vue and SideBar.vue to use dynamic resource costs from Vuex store
+- Implemented dynamic resource cost display reflecting values from the store
+- Enhanced settlement placement with proper resource validation
+- Improved settlement modal styling to match other game modals
+- Added proper error handling for insufficient resources
+
+**Character Info Modal Redesign:**
+- Redesigned QuickBarLeft.vue character info modal to match PlayerShop.vue style
+- Added tabs for stats, combat, equipment, perks, and SPECIAL sections
+- Enhanced character information display with detailed stats
+- Improved modal layout and user experience
+- Added proper navigation and information hierarchy
+
+**UI/UX Improvements:**
+- Fixed modal visibility and stacking context issues by teleporting modals to body
+- Enhanced battle log with proper scrolling and entry limits
+- Improved quest reward readability with professional RPG-style formatting
+- Optimized quest reward display for better game balance and player understanding
+- Maintained all existing functionality while enhancing visual feedback
+- Fixed ESLint errors and improved code consistency
+
+**Code Organization and Maintenance:**
+- Created dedicated perks.js module for better code organization
+- Updated Vuex store to delegate perk calculations and getters to perks.js
+- Improved code consistency and maintainability across components
+- Enhanced error handling and debugging capabilities
+- Optimized performance and reduced code duplication
+
+**Map Coordinate Updates:**
+- Updated all quest coordinates in quests.js to fit new map dimensions
+- Adjusted lon coordinates to range from 850-1250
+- Adjusted lat coordinates to range from 3500
+- Optimized quest distribution across the game map for better exploration
+- Improved quest marker placement for improved accessibility
+- Maintained all existing quest functionality while adapting to new coordinate ranges
+- Enhanced quest accessibility and discovery flow
+
 
 ## Getting Started
 To get started with NukeWorld, follow these steps:

@@ -6,7 +6,7 @@ export default [
     "desc": "Take your first steps into the wasteland and learn the basics of survival.",
     "exp": 180,
     "money": 15,
-    "duration": 5000,
+    "duration": 10000, // Fixed at 10 seconds
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -26,7 +26,7 @@ export default [
     "desc": "Help moving the Settlement Supplies from the old underground tunnels.",
     "exp": 320,
     "money": 25,
-    "duration": 15000,
+    "duration": 45000, // 45 seconds
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -46,7 +46,7 @@ export default [
     "desc": "This looks like a fine area to place our Settlement. Let's search the area first.",
     "exp": 480,
     "money": 40,
-    "duration": 25000,
+    "duration": 90000, // 1.5 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -66,7 +66,7 @@ export default [
     "desc": "Seek shelter for the night near the mysterious Clock Tower.",
     "exp": 650,
     "money": 65,
-    "duration": 40000,
+    "duration": 180000, // 3 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -86,7 +86,7 @@ export default [
     "desc": "Jack heard something that sounded like a *Grum Ahh Grup*. Not sure what to think about that...",
     "exp": 850,
     "money": 90,
-    "duration": 60000,
+    "duration": 300000, // 5 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -108,7 +108,7 @@ export default [
     "desc": "Before we can make this a more permanent location for our Settlement, we need to clean up this mess first!",
     "exp": 1100,
     "money": 120,
-    "duration": 80000,
+    "duration": 480000, // 8 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -128,7 +128,7 @@ export default [
     "desc": "Last Supply Run from The Underground Tunnels has surfaced. Put them inside into the storage area.",
     "exp": 1350,
     "money": 160,
-    "duration": 100000,
+    "duration": 600000, // 10 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -148,7 +148,7 @@ export default [
     "desc": "Jimmy was careless and dropped a live grenade, making a mess in the Library and killing himself in the process!",
     "exp": 1650,
     "money": 200,
-    "duration": 120000,
+    "duration": 720000, // 12 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -168,7 +168,7 @@ export default [
     "desc": "Venture into the dangerous Radioactive Wasteland and collect rare resources for the settlement.",
     "exp": 2100,
     "money": 280,
-    "duration": 180000,
+    "duration": 900000, // 15 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -188,7 +188,7 @@ export default [
     "desc": "Explore the mysterious Overgrown Village and recover the lost artifacts from before the war.",
     "exp": 2800,
     "money": 350,
-    "duration": 240000,
+    "duration": 1080000, // 18 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -210,7 +210,7 @@ export default [
     "desc": "A massive supply shipment has been discovered. Search for weapons, armor, and valuable resources.",
     "exp": 4200,
     "money": 480,
-    "duration": 320000,
+    "duration": 1200000, // 20 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -230,7 +230,7 @@ export default [
     "desc": "We found a signal that leads to Atlantic City. This could be a major discovery for our survival.",
     "exp": 6800,
     "money": 650,
-    "duration": 450000,
+    "duration": 900000, // 15 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -250,7 +250,7 @@ export default [
     "desc": "We are looking for military-grade supplies in the old dock warehouses. High risk, high reward.",
     "exp": 9500,
     "money": 850,
-    "duration": 580000,
+    "duration": 600000, // 10 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -270,7 +270,7 @@ export default [
     "desc": "The Acid Rain is destroying everything! We need to find shelter and wait it out while securing resources.",
     "exp": 13200,
     "money": 1200,
-    "duration": 720000,
+    "duration": 720000, // 12 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -292,7 +292,7 @@ export default [
     "desc": "Patrol the dangerous highway for military convoys and hostile survivors. Elite combat expected.",
     "exp": 16800,
     "money": 1650,
-    "duration": 900000,
+    "duration": 480000, // 8 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -312,7 +312,7 @@ export default [
     "desc": "Venture into the most dangerous part of the wasteland. Only the strongest survive here.",
     "exp": 21500,
     "money": 2100,
-    "duration": 1200000,
+    "duration": 300000, // 5 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -332,7 +332,7 @@ export default [
     "desc": "Defend our settlement from a massive coordinated attack by elite wasteland forces.",
     "exp": 28000,
     "money": 2800,
-    "duration": 1500000,
+    "duration": 600000, // 10 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -354,7 +354,7 @@ export default [
     "desc": "Explore the deepest, most dangerous regions never before mapped. Legendary rewards await the brave.",
     "exp": 35000,
     "money": 3800,
-    "duration": 1800000,
+    "duration": 900000, // 15 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -374,7 +374,7 @@ export default [
     "desc": "Coordinate and execute the largest supply operation in wasteland history. Epic rewards guaranteed.",
     "exp": 48000,
     "money": 5200,
-    "duration": 2100000,
+    "duration": 1200000, // 20 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -396,7 +396,7 @@ export default [
     "desc": "Establish complete dominion over the entire wasteland region. The ultimate challenge for legends only.",
     "exp": 65000,
     "money": 7500,
-    "duration": 2700000,
+    "duration": 1080000, // 18 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -416,7 +416,7 @@ export default [
     "desc": "The ultimate quest that only true legends can complete. Reshape the wasteland forever.",
     "exp": 85000,
     "money": 12000,
-    "duration": 3600000,
+    "duration": 1200000, // 20 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -438,7 +438,7 @@ export default [
     "desc": "Learn the art of scavenging by searching abandoned buildings for useful materials and supplies.",
     "exp": 220,
     "money": 18,
-    "duration": 8000,
+    "duration": 30000, // 30 seconds
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -458,7 +458,7 @@ export default [
     "desc": "Practice combat skills against weak enemies near the settlement perimeter.",
     "exp": 410,
     "money": 32,
-    "duration": 20000,
+    "duration": 60000, // 1 minute
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -478,7 +478,7 @@ export default [
     "desc": "Investigate a potential clean water source that could be vital for settlement survival.",
     "exp": 580,
     "money": 50,
-    "duration": 35000,
+    "duration": 120000, // 2 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -498,7 +498,7 @@ export default [
     "desc": "Explore an abandoned military outpost that might contain valuable equipment and intel.",
     "exp": 780,
     "money": 75,
-    "duration": 50000,
+    "duration": 240000, // 4 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -520,7 +520,7 @@ export default [
     "desc": "Launch a coordinated assault on a dangerous raider camp that's been threatening trade routes.",
     "exp": 1250,
     "money": 140,
-    "duration": 110000,
+    "duration": 360000, // 6 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -540,7 +540,7 @@ export default [
     "desc": "Secure medical supplies from a dangerous hospital overrun by hostile mutants.",
     "exp": 1480,
     "money": 180,
-    "duration": 140000,
+    "duration": 540000, // 9 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -560,7 +560,7 @@ export default [
     "desc": "Map and secure an extensive underground tunnel system that could provide safe passage.",
     "exp": 1900,
     "money": 230,
-    "duration": 160000,
+    "duration": 660000, // 11 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -580,7 +580,7 @@ export default [
     "desc": "Reclaim an old factory from robotic security systems and hostile scavengers.",
     "exp": 2600,
     "money": 310,
-    "duration": 200000,
+    "duration": 780000, // 13 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -600,7 +600,7 @@ export default [
     "desc": "Intercept a heavily armed convoy carrying valuable supplies through disputed territory.",
     "exp": 3800,
     "money": 420,
-    "duration": 280000,
+    "duration": 840000, // 14 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -622,7 +622,7 @@ export default [
     "desc": "Restore power to a nuclear facility while dealing with radiation and hostile forces.",
     "exp": 5800,
     "money": 580,
-    "duration": 400000,
+    "duration": 960000, // 16 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -642,7 +642,7 @@ export default [
     "desc": "Accept a high-paying mercenary contract to eliminate a dangerous warlord and his forces.",
     "exp": 8200,
     "money": 750,
-    "duration": 520000,
+    "duration": 1020000, // 17 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -662,7 +662,7 @@ export default [
     "desc": "Survive and secure resources during a massive toxic storm that devastates the region.",
     "exp": 11400,
     "money": 980,
-    "duration": 640000,
+    "duration": 1140000, // 19 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -684,7 +684,7 @@ export default [
     "desc": "Lead a massive siege against an impregnable fortress controlled by a powerful faction.",
     "exp": 19000,
     "money": 1850,
-    "duration": 1000000,
+    "duration": 420000, // 7 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -704,7 +704,7 @@ export default [
     "desc": "Enter the most dangerous zone in the wasteland where reality itself seems unstable.",
     "exp": 24500,
     "money": 2400,
-    "duration": 1350000,
+    "duration": 540000, // 9 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -724,7 +724,7 @@ export default [
     "desc": "Prevent a catastrophic event that could destroy what remains of civilization.",
     "exp": 31000,
     "money": 3200,
-    "duration": 1650000,
+    "duration": 660000, // 11 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -746,7 +746,7 @@ export default [
     "desc": "Investigate mysterious dimensional rifts that have begun appearing across the wasteland.",
     "exp": 42000,
     "money": 4600,
-    "duration": 2000000,
+    "duration": 780000, // 13 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -766,7 +766,7 @@ export default [
     "desc": "Participate in an experimental time manipulation protocol that could alter history itself.",
     "exp": 56000,
     "money": 6800,
-    "duration": 2400000,
+    "duration": 900000, // 15 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -788,7 +788,7 @@ export default [
     "desc": "Gain the power to reshape reality itself and become the ultimate master of the wasteland.",
     "exp": 72000,
     "money": 9200,
-    "duration": 3000000,
+    "duration": 1020000, // 17 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,
@@ -808,7 +808,7 @@ export default [
     "desc": "Become the eternal guardian of the wasteland, protecting it from all future threats.",
     "exp": 95000,
     "money": 15000,
-    "duration": 4200000,
+    "duration": 1140000, // 19 minutes
     "progress": 0,
     "state": "not-started",
     "claimed": false,

@@ -17,7 +17,7 @@ export default [
   "name": "Wood Scrap",
   "desc": "Wood Scrap is a piece of wood that can be used to craft weapons.",
   "state": "none",
-  "price": "2",
+  "price": "100",
   "quantity": 0,
   "img": "wood_scrap.png"
 },
@@ -27,7 +27,7 @@ export default [
   "name": "Steel Scrap",
   "desc": "Steel Scrap is a piece of steel that can be used to craft weapons.",
   "state": "none",
-  "price": "5",
+  "price": "100",
   "quantity": 0,
   "img": "steel_scrap.png"
 },
@@ -37,7 +37,7 @@ export default [
   "name": "Plastic Scrap",
   "desc": "Plastic Scrap can be melted and molded into various items.",
   "state": "none",
-  "price": "3",
+  "price": "250",
   "quantity": 0,
   "img": "plastic_scrap.png"
 },
@@ -47,7 +47,7 @@ export default [
   "name": "Gasoline",
   "desc": "Gasoline is a flammable liquid that can be used to power vehicles or create explosives.",
   "state": "none",
-  "price": "4",
+  "price": "500",
   "quantity": 0,
   "img": "gasoline.png"
 },
@@ -57,7 +57,7 @@ export default [
   "name": "Cloth Scraps",
   "desc": "Cloth Scraps are useful for creating makeshift bandages or clothing.",
   "state": "none",
-  "price": "2",
+  "price": "50",
   "quantity": 0,
   "img": "cloth_scraps.png"
 },
@@ -67,7 +67,7 @@ export default [
   "name": "Electronic Parts",
   "desc": "Electronic Parts are essential for repairing or creating electronic devices.",
   "state": "none",
-  "price": "10",
+  "price": "250",
   "quantity": 0,
   "img": "electronic_parts.png"
 },
@@ -77,7 +77,7 @@ export default [
   "name": "Ammunition",
   "desc": "Ammunition is essential for using firearms.",
   "state": "none",
-  "price": "20",
+  "price": "50",
   "quantity": 0,
   "img": "ammunition.png"
 },
@@ -87,7 +87,7 @@ export default [
   "name": "Fuel",
   "desc": "Fuel is necessary for running vehicles and generators.",
   "state": "none",
-  "price": "25",
+  "price": "500",
   "quantity": 0,
   "img": "fuel.png"
 },
@@ -97,7 +97,7 @@ export default [
   "name": "Oil",
   "desc": "Oil is a valuable resource that can be used for various purposes, such as lubricating machinery or creating fuel.",
   "state": "none",
-  "price": "12",
+  "price": "500",
   "quantity": 0,
   "img": "oil.png"
 },
@@ -107,7 +107,7 @@ export default [
   "name": "Battery",
   "desc": "Batteries are essential for powering electronic devices.",
   "state": "none",
-  "price": "15",
+  "price": "250",
   "quantity": 0,
   "img": "battery.png"
 },
@@ -117,7 +117,7 @@ export default [
   "name": "Screws",
   "desc": "Screws is a valuable resource that can be used for various purposes",
   "state": "none",
-  "price": "4",
+  "price": "50",
   "quantity": 0,
   "img": "screws.png"
 }

@@ -12,15 +12,15 @@
             <div class="resource-requirements">
               <div class="resource-item">
                 <img :src="require('@/assets/interface/icons/resources/wood_scrap.png')" alt="Wood Scrap">
-                <span>20 Wood Scrap</span>
+                <span>{{ settlementSettings.placementCosts.resource1Amount }} Wood Scrap</span>
               </div>
               <div class="resource-item">
                 <img :src="require('@/assets/interface/icons/resources/steel_scrap.png')" alt="Steel Scrap">
-                <span>20 Steel Scrap</span>
+                <span>{{ settlementSettings.placementCosts.resource2Amount }} Steel Scrap</span>
               </div>
             </div>
             <div class="message-container">
-              <p class="message-text">It costs 20 Wood & Steel Scrap to place a settlement.</p>
+              <p class="message-text">It costs {{ settlementSettings.placementCosts.resource1Amount }} Wood & {{ settlementSettings.placementCosts.resource2Amount }} Steel Scrap to place a settlement.</p>
               <p class="instruction-text">Click anywhere on the map to confirm the location.</p>
             </div>
             <div class="button-group pb-2">
@@ -125,7 +125,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 import QuestLog from './data/QuestLog.vue';
 import InventoryLog from './data/InventoryLog.vue';
 import StoryLog from './data/StoryLog.vue';
@@ -143,6 +143,10 @@ export default {
   },
   computed: {
     ...mapState(['settlementMarker']),
+    ...mapGetters('settlement', ['settings']),
+    settlementSettings() {
+      return this.settings;
+    },
     hasNewStory() {
       return this.$store.getters.availableStoryLines.length > 0;
     },

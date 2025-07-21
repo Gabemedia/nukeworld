@@ -24,31 +24,23 @@
         <div class="quest-rewards">
           <div class="reward">
             <img :src="require(`@/assets/interface/icons/exp.png`)" title="Experience with SPECIAL bonus">
-            <span>{{ quest.displayExpReward || quest.exp }}
-              <span v-if="quest.hasExpBonus" class="bonus-indicator">
-                (+{{ (quest.displayExpReward || quest.exp) - quest.exp }})
-              </span>
-            </span>
+            <span v-html="quest.displayExpReward || getDisplayExpReward(quest)"></span>
           </div>
           <div class="reward">
             <img :src="require(`@/assets/interface/icons/money.png`)" title="Money with SPECIAL bonus">
-            <span>{{ quest.displayMoneyReward || quest.money }}
-              <span v-if="quest.hasMoneyBonus" class="bonus-indicator">
-                (+{{ (quest.displayMoneyReward || quest.money) - quest.money }})
-              </span>
-            </span>
+            <span v-html="quest.displayMoneyReward || getDisplayMoneyReward(quest)"></span>
           </div>
           <div v-if="hasWeaponReward(quest)" class="reward">
             <img :src="require('@/assets/interface/icons/gun.png')" :title="'Weapon Reward Chance: ' + (quest.rewardChance * 100) + '%'">
-            <span>{{ (quest.rewardChance * 100).toFixed(0) }}%</span>
+            <span v-html="quest.displayWeaponChance || getDisplayWeaponChance(quest)"></span>
           </div>
           <div v-if="hasArmorReward(quest)" class="reward">
             <img :src="require('@/assets/interface/icons/shield.png')" :title="'Armor Reward Chance: ' + (quest.armorRewardChance * 100) + '%'">
-            <span>{{ (quest.armorRewardChance * 100).toFixed(0) }}%</span>
+            <span v-html="quest.displayArmorChance || getDisplayArmorChance(quest)"></span>
           </div>
           <div class="reward">
             <img :src="require('@/assets/interface/icons/resources/wood_scrap.png')" title="Random Resource">
-            <span>{{ getTotalRewardChance(quest) }}%</span>
+            <span v-html="quest.displayResourceChance || getDisplayResourceChance(quest)"></span>
           </div>
         </div>
         <div class="quest-action">
@@ -69,7 +61,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapState, mapGetters } from 'vuex';
 import { toast } from "vue3-toastify";
 import confetti from 'canvas-confetti';
 
@@ -79,6 +71,7 @@ export default {
   },
   computed: {
     ...mapState(['character']),
+    ...mapGetters(['experienceMultiplier', 'moneyMultiplier']),
   },
   methods: {
     ...mapActions(['handleQuest', 'claimRewards']),
@@ -102,6 +95,86 @@ export default {
     getTotalRewardChance(quest) {
       const totalChance = (quest.rewardChance || 0) + (quest.armorRewardChance || 0);
       return (totalChance * 100).toFixed(0);
+    },
+    getDisplayExpReward(quest) {
+      if (quest.state === 'completed' && quest.actualExpGained) {
+        return quest.actualExpGained;
+      }
+      if (quest.state === 'not-started' || quest.state === 'in-progress' || quest.state === 'ready-to-claim') {
+        const baseExp = quest.exp || 0;
+        const adjustedExp = Math.floor(baseExp * (this.experienceMultiplier || 1));
+        
+        if (adjustedExp !== baseExp) {
+          const bonus = adjustedExp - baseExp;
+          return `${baseExp} <span class="bonus-indicator">(+${bonus})</span>`;
+        }
+        return `${baseExp}`;
+      }
+      return quest.exp || 0;
+    },
+    getDisplayMoneyReward(quest) {
+      if (quest.state === 'completed' && quest.actualMoneyGained) {
+        return quest.actualMoneyGained;
+      }
+      if (quest.state === 'not-started' || quest.state === 'in-progress' || quest.state === 'ready-to-claim') {
+        const baseMoney = quest.money || 0;
+        const adjustedMoney = Math.floor(baseMoney * (this.moneyMultiplier || 1));
+        
+        if (adjustedMoney !== baseMoney) {
+          const bonus = adjustedMoney - baseMoney;
+          return `${baseMoney} <span class="bonus-indicator">(+${bonus})</span>`;
+        }
+        return `${baseMoney}`;
+      }
+      return quest.money || 0;
+    },
+    getDisplayWeaponChance(quest) {
+      const baseChance = quest.rewardChance || 0;
+      const basePercentage = (baseChance * 100).toFixed(0);
+      
+      // Check if player has Luck bonus that affects weapon drops
+      const luckBonus = this.character.special?.luck || 0;
+      const luckMultiplier = 1 + (luckBonus * 0.02); // 2% per Luck point
+      const adjustedChance = baseChance * luckMultiplier;
+      const adjustedPercentage = (adjustedChance * 100).toFixed(0);
+      
+      if (adjustedPercentage !== basePercentage) {
+        const bonus = Math.round((adjustedChance - baseChance) * 100);
+        return `${adjustedPercentage}% <span class="bonus-indicator">(+${bonus})</span>`;
+      }
+      return `${basePercentage}%`;
+    },
+    getDisplayArmorChance(quest) {
+      const baseChance = quest.armorRewardChance || 0;
+      const basePercentage = (baseChance * 100).toFixed(0);
+      
+      // Check if Luck bonus that affects armor drops
+      const luckBonus = this.character.special?.luck || 0;
+      const luckMultiplier = 1 + (luckBonus * 0.015); // 1.5% per Luck point for armor
+      const adjustedChance = baseChance * luckMultiplier;
+      const adjustedPercentage = (adjustedChance * 100).toFixed(0);
+      
+      if (adjustedPercentage !== basePercentage) {
+        const bonus = Math.round((adjustedChance - baseChance) * 100);
+        return `${adjustedPercentage}% <span class="bonus-indicator">(+${bonus})</span>`;
+      }
+      return `${basePercentage}%`;
+    },
+    getDisplayResourceChance(quest) {
+      const baseChance = (quest.rewardChance || 0) + (quest.armorRewardChance || 0);
+      const basePercentage = (baseChance * 100).toFixed(0);
+      
+      // Check if player has Luck bonus that affects resource drops
+      const luckBonus = this.character.special?.luck || 0;
+      const luckMultiplier = 1 + (luckBonus * 0.025); // 2.5% per Luck point for resources
+      const adjustedChance = baseChance * luckMultiplier;
+      const adjustedPercentage = (adjustedChance * 100).toFixed(0);
+      
+      if (adjustedPercentage !== basePercentage) {
+        const bonus = Math.round((adjustedChance - baseChance) * 100);
+        return `${adjustedPercentage}% <span class="bonus-indicator">(+${bonus})</span>`;
+      }
+      return `${basePercentage}%`;
     },
     handleQuestAction(quest) {
       if (quest.state === 'not-started') {

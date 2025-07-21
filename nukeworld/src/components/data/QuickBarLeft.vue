@@ -29,6 +29,14 @@
           <div class="stat-text">{{ character.exp }}/{{ character.maxExp }}</div>
         </div>
       </div>
+      
+      <div class="stat-item music-control">
+        <img :src="require('@/assets/interface/icons/settings.png')" alt="Music" @click="openMusicPlayer">
+        <div class="stat-info">
+          <div class="music-status">{{ isMusicPlaying ? 'Playing' : 'Paused' }}</div>
+          <div class="music-track">{{ currentTrackName }}</div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -218,17 +226,26 @@
        </div>
      </div>
    </Teleport>
+   
+   <!-- Music Player Component -->
+   <MusicPlayer ref="musicPlayer" @music-status-updated="updateMusicStatus" />
 </template>
 
 <script>
 import { mapState, mapGetters, mapActions } from 'vuex';
+import MusicPlayer from '../MusicPlayer.vue';
 
 export default {
   name: 'QuickBarLeft',
+  components: {
+    MusicPlayer
+  },
   data() {
     return {
       showModal: false,
-      activeTab: 'stats'
+      activeTab: 'stats',
+      isMusicPlaying: false,
+      currentTrackName: ''
     };
   },
   computed: {
@@ -349,6 +366,17 @@ export default {
       } catch {
         return require('@/assets/interface/icons/shield.png');
       }
+    },
+    
+    openMusicPlayer() {
+      if (this.$refs.musicPlayer) {
+        this.$refs.musicPlayer.openMusicPlayer();
+      }
+    },
+    
+    updateMusicStatus(isPlaying, trackName) {
+      this.isMusicPlaying = isPlaying;
+      this.currentTrackName = trackName;
     }
   }
 };
@@ -476,6 +504,36 @@ export default {
   text-shadow: 1px 1px 2px rgba(255, 215, 0, 0.7);
   font-weight: bold;
   font-size: 0.8rem;
+}
+
+.music-control {
+  cursor: pointer;
+  
+  img {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      transform: scale(1.1);
+      filter: drop-shadow(0 0 5px rgba(0, 255, 0, 0.8));
+    }
+  }
+  
+  .music-status {
+    color: #00ff00;
+    font-size: 0.7rem;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+  }
+  
+  .music-track {
+    color: #ccc;
+    font-size: 0.6rem;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 /* Character Modal Styles - Modern design matching PlayerShop */

@@ -67,8 +67,14 @@ export default {
         ...quest,
         displayExpReward: this.getDisplayExpReward(quest),
         displayMoneyReward: this.getDisplayMoneyReward(quest),
+        displayWeaponChance: this.getDisplayWeaponChance(quest),
+        displayArmorChance: this.getDisplayArmorChance(quest),
+        displayResourceChance: this.getDisplayResourceChance(quest),
         hasExpBonus: this.getDisplayExpReward(quest) > quest.exp,
-        hasMoneyBonus: this.getDisplayMoneyReward(quest) > quest.money
+        hasMoneyBonus: this.getDisplayMoneyReward(quest) > quest.money,
+        hasWeaponBonus: this.getDisplayWeaponChance(quest).includes('+'),
+        hasArmorBonus: this.getDisplayArmorChance(quest).includes('+'),
+        hasResourceBonus: this.getDisplayResourceChance(quest).includes('+')
       }));
     },
   },
@@ -100,8 +106,15 @@ export default {
       if (quest.state === 'completed' && quest.actualExpGained) {
         return quest.actualExpGained;
       }
-      if (quest.state === 'not-started' || quest.state === 'in-progress') {
-        return Math.floor(quest.exp * (this.experienceMultiplier || 1));
+      if (quest.state === 'not-started' || quest.state === 'in-progress' || quest.state === 'ready-to-claim') {
+        const baseExp = quest.exp || 0;
+        const adjustedExp = Math.floor(baseExp * (this.experienceMultiplier || 1));
+        
+        if (adjustedExp !== baseExp) {
+          const bonus = adjustedExp - baseExp;
+          return `${baseExp} <span class="bonus-indicator">(+${bonus})</span>`;
+        }
+        return `${baseExp}`;
       }
       return quest.exp || 0;
     },
@@ -109,10 +122,65 @@ export default {
       if (quest.state === 'completed' && quest.actualMoneyGained) {
         return quest.actualMoneyGained;
       }
-      if (quest.state === 'not-started' || quest.state === 'in-progress') {
-        return Math.floor(quest.money * (this.moneyMultiplier || 1));
+      if (quest.state === 'not-started' || quest.state === 'in-progress' || quest.state === 'ready-to-claim') {
+        const baseMoney = quest.money || 0;
+        const adjustedMoney = Math.floor(baseMoney * (this.moneyMultiplier || 1));
+        
+        if (adjustedMoney !== baseMoney) {
+          const bonus = adjustedMoney - baseMoney;
+          return `${baseMoney} <span class="bonus-indicator">(+${bonus})</span>`;
+        }
+        return `${baseMoney}`;
       }
       return quest.money || 0;
+    },
+    getDisplayWeaponChance(quest) {
+      const baseChance = quest.rewardChance || 0;
+      const basePercentage = (baseChance * 100).toFixed(0);
+      
+      // Check if player has Luck bonus that affects weapon drops
+      const luckBonus = this.character.special?.luck || 0;
+      const luckMultiplier = 1 + (luckBonus * 0.02); // 2% per Luck point
+      const adjustedChance = baseChance * luckMultiplier;
+      const adjustedPercentage = (adjustedChance * 100).toFixed(0);
+      
+      if (adjustedPercentage !== basePercentage) {
+        const bonus = Math.round((adjustedChance - baseChance) * 100);
+        return `${adjustedPercentage}% <span class="bonus-indicator">(+${bonus})</span>`;
+      }
+      return `${basePercentage}%`;
+    },
+    getDisplayArmorChance(quest) {
+      const baseChance = quest.armorRewardChance || 0;
+      const basePercentage = (baseChance * 100).toFixed(0);
+      
+      // Check if player has Luck bonus that affects armor drops
+      const luckBonus = this.character.special?.luck || 0;
+      const luckMultiplier = 1 + (luckBonus * 0.015); // 1.5% per Luck point for armor
+      const adjustedChance = baseChance * luckMultiplier;
+      const adjustedPercentage = (adjustedChance * 100).toFixed(0);
+      
+      if (adjustedPercentage !== basePercentage) {
+        const bonus = Math.round((adjustedChance - baseChance) * 100);
+        return `${adjustedPercentage}% <span class="bonus-indicator">(+${bonus})</span>`;
+      }
+      return `${basePercentage}%`;
+    },
+    getDisplayResourceChance(quest) {
+      const baseChance = (quest.rewardChance || 0) + (quest.armorRewardChance || 0);
+      const basePercentage = (baseChance * 100).toFixed(0);
+      
+      // Check if player has Luck bonus that affects resource drops
+      const luckBonus = this.character.special?.luck || 0;
+      const luckMultiplier = 1 + (luckBonus * 0.025); // 2.5% per Luck point for resources
+      const adjustedChance = baseChance * luckMultiplier;
+      const adjustedPercentage = (adjustedChance * 100).toFixed(0);
+      
+      if (adjustedPercentage !== basePercentage) {
+        const bonus = Math.round((adjustedChance - baseChance) * 100);
+        return `${adjustedPercentage}% <span class="bonus-indicator">(+${bonus})</span>`;
+      }
+      return `${basePercentage}%`;
     }
   },
 };
@@ -256,5 +324,12 @@ export default {
     font-size: 10px;
     padding: 1px 4px;
   }
+}
+
+.bonus-indicator {
+  font-size: 0.7rem;
+  color: #00ff00;
+  margin-left: 5px;
+  font-weight: bold;
 }
 </style>

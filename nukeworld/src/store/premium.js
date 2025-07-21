@@ -20,7 +20,7 @@ export default [
   "state": "none",
   "type": "lootbox",
   "lootbox": 5,
-  "price": "100",
+  "price": "4999",
   "quantity": 0,
   "img": "donate.png"
 },
@@ -32,7 +32,7 @@ export default [
   "state": "none",
   "type": "lootbox",
   "lootbox": 1,
-  "price": "50",
+  "price": "999",
   "quantity": 0,
   "img": "shop.png"
 }

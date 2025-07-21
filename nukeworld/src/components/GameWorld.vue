@@ -36,10 +36,6 @@ import GameOver from './data/GameOver.vue';
 import LvlPopUp from './data/controller/popup/LvlPopUp.vue';
 import { mapState } from 'vuex';
 
-// Get all music files from the music directory
-const musicFiles = require.context('@/assets/music', false, /\.mp3$/);
-const playlist = musicFiles.keys().map(key => require('@/assets/music' + key.slice(1)));
-
 export default {
   name: 'GameWorld',
   components: {
@@ -56,10 +52,6 @@ export default {
     return {
       showModal: false,
       windowWidth: window.innerWidth,
-      audio: null,
-      currentTrackIndex: 0,
-      playlist: playlist,
-      currentTrackName: ''
     };
   },
   computed: {
@@ -83,9 +75,7 @@ export default {
         return require('@/assets/maps/nukemap4.webp');
       }
     },
-    musicSettings() {
-      return this.$store.state.userSettings?.music || { enabled: true, volume: 0.5 };
-    }
+
   },
   watch: {
     'character.health': function (newHealth) {
@@ -108,28 +98,7 @@ export default {
         });
       }
     },
-    'musicSettings.enabled': {
-      handler(newValue) {
-        if (this.audio && this.musicSettings) {
-          if (newValue) {
-            this.audio.play().catch(error => {
-              console.warn('Audio autoplay blocked by browser policy:', error);
-            });
-          } else {
-            this.audio.pause();
-          }
-        }
-      },
-      immediate: true
-    },
-    'musicSettings.volume': {
-      handler(newValue) {
-        if (this.audio && this.musicSettings) {
-          this.audio.volume = newValue || 0.5;
-        }
-      },
-      immediate: true
-    },
+
     windowWidth() {
       this.updateUIScale();
     },
@@ -145,21 +114,10 @@ export default {
       character_level: this.character.level
     });
 
-    // Initialize music
-    this.initializeMusic();
-    
-    // Add user interaction listener to enable audio
-    this.addUserInteractionListener();
+
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.handleResize);
-
-    // Clean up audio
-    if (this.audio) {
-      this.audio.pause();
-      this.audio.removeEventListener('ended', () => {});
-      this.audio = null;
-    }
   },
   methods: {
     openModal() {
@@ -178,76 +136,6 @@ export default {
     },
     updateUIScale() {
       // Vi behøver ikke at gøre noget her, da skaleringen håndteres i template
-    },
-
-    initializeMusic() {
-      if (!this.audio) {
-        this.audio = new Audio();
-        this.audio.volume = this.musicSettings.volume || 0.5;
-        
-        // Play next track when current one ends
-        this.audio.addEventListener('ended', () => {
-          // Shuffle to next track
-          this.currentTrackIndex = Math.floor(Math.random() * this.playlist.length);
-          this.audio.src = this.playlist[this.currentTrackIndex];
-          // Extract filename from path for display
-          this.currentTrackName = this.playlist[this.currentTrackIndex].split('/').pop().replace('.mp3', '');
-          
-          if (this.musicSettings && this.musicSettings.enabled) {
-            this.audio.play().catch(error => {
-              console.warn('Audio autoplay blocked by browser policy:', error);
-              // Don't retry on autoplay errors
-            });
-          }
-        });
-
-        // Set initial track
-        this.currentTrackIndex = Math.floor(Math.random() * this.playlist.length);
-        this.audio.src = this.playlist[this.currentTrackIndex];
-        this.currentTrackName = this.playlist[this.currentTrackIndex].split('/').pop().replace('.mp3', '');
-        
-        // Only start playing if music is enabled - but don't force autoplay
-        if (this.musicSettings && this.musicSettings.enabled) {
-          this.audio.play().catch(error => {
-            console.warn('Audio autoplay blocked by browser policy:', error);
-            // Don't retry on autoplay errors
-          });
-        }
-      }
-    },
-
-    playNextTrack() {
-      if (this.playlist.length > 0) {
-        this.currentTrackIndex = (this.currentTrackIndex + 1) % this.playlist.length;
-        this.audio.src = this.playlist[this.currentTrackIndex];
-        this.currentTrackName = this.playlist[this.currentTrackIndex].split('/').pop().replace('.mp3', '');
-        
-        if (this.musicSettings && this.musicSettings.enabled) {
-          this.audio.play().catch(error => {
-            console.warn('Audio autoplay blocked by browser policy:', error);
-            // Don't retry on autoplay errors
-          });
-        }
-      }
-    },
-    
-    addUserInteractionListener() {
-      const enableAudio = () => {
-        if (this.audio && this.musicSettings && this.musicSettings.enabled) {
-          this.audio.play().catch(error => {
-            console.warn('Audio autoplay blocked by browser policy:', error);
-          });
-        }
-        // Remove listeners after first interaction
-        document.removeEventListener('click', enableAudio);
-        document.removeEventListener('keydown', enableAudio);
-        document.removeEventListener('touchstart', enableAudio);
-      };
-      
-      // Add listeners for user interaction
-      document.addEventListener('click', enableAudio, { once: true });
-      document.addEventListener('keydown', enableAudio, { once: true });
-      document.addEventListener('touchstart', enableAudio, { once: true });
     }
   },
   created() {
@@ -343,4 +231,6 @@ export default {
     font-size: 1.4rem;
   }
 }
+
+
 </style>

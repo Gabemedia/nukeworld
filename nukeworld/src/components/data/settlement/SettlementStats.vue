@@ -78,7 +78,6 @@
                   </div>
                   <div class="stat-list">
                     <div class="stat-item radiation-item">
-                      <img :src="require('@/assets/interface/icons/resources/gasoline.png')" alt="Radiation">
                       <div class="radiation-display">
                         <span>Radiation: {{ settlement.radiation }}%</span>
                         <div class="radiation-bar">
@@ -88,10 +87,8 @@
                         </div>
                       </div>
                     </div>
-                    <div class="stat-item" v-if="settlement.lastAttack">
-                      <img :src="require('@/assets/interface/icons/encounter.png')" alt="Last Attack">
-                      <span>Last Attack: {{ formatLastAttack }}</span>
-                    </div>
+
+
                   </div>
                 </div>
               </div>
@@ -309,6 +306,7 @@
                   <div class="status-item" :class="{ 'status-good': settlement.radiation < 25, 'status-warning': settlement.radiation >= 25 && settlement.radiation < 75, 'status-danger': settlement.radiation >= 75 }">
                     <span>Radiation: {{ settlement.radiation < 25 ? 'Safe' : settlement.radiation < 75 ? 'Moderate' : 'Dangerous' }}</span>
                   </div>
+
                 </div>
               </div>
           </div>
@@ -350,7 +348,8 @@ export default {
     },
     canHealSettlement() {
       return this.settlement.health < this.settlement.maxHealth && this.$store.state.character.money >= 100;
-    }
+    },
+
   },
   watch: {
     'settlement.health': {
@@ -360,6 +359,11 @@ export default {
         this.$nextTick(() => {
           this.$forceUpdate();
         });
+      }
+    },
+    'settlement.radiationReductionActive': {
+      handler(newValue) {
+        console.log('Radiation reduction active:', newValue);
       }
     }
   },
@@ -589,6 +593,11 @@ export default {
         
         // Start radiation reduction
         await this.$store.commit('settlement/startRadiationReduction');
+        
+        // Clear radiation reduction after 5 minutes
+        setTimeout(() => {
+          this.$store.commit('settlement/clearRadiationReduction');
+        }, 300000); // 5 minutes = 300,000 ms
         
         const successMessage = `
           <div class="d-flex flex-column align-items-start justify-content-start h-100">
@@ -897,6 +906,8 @@ export default {
     align-items: stretch;
     gap: 8px;
   }
+
+
 }
 
 .radiation-display {
@@ -919,6 +930,8 @@ export default {
   border-radius: 6px;
   transition: width 0.3s ease;
 }
+
+
 
 .upgrade-section, .management-section {
   display: flex;
@@ -1200,6 +1213,8 @@ export default {
     color: #dc3545;
   }
 }
+
+
 
 @media (max-width: 1024px) {
   .settlement-content-grid {

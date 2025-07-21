@@ -50,6 +50,7 @@ const state = reactive({
   storyLines: reactive(JSON.parse(localStorage.getItem('storyLines')) || defaultStoryLines),
   currentStoryLineId: JSON.parse(localStorage.getItem('currentStoryLineId')) || null,
   settlementMarker: JSON.parse(localStorage.getItem('settlementMarker')) || null,
+
   isSettlementModalOpen: false,
   isLootboxModalOpen: false,
   currentLootboxRewards: [],
@@ -419,6 +420,9 @@ const mutations = {
   setSettlementModalOpen(state, isOpen) {
     state.isSettlementModalOpen = isOpen;
   },
+
+
+
   setLootboxModalOpen(state, isOpen) {
     state.isLootboxModalOpen = isOpen;
   },

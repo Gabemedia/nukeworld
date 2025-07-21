@@ -11,11 +11,11 @@ const initialState = {
     health: 100,
     maxHealth: 100,
     inhabitants: 0,
-    maxInhabitants: 10,
+    maxInhabitants: 5,
     defences: 0,
-    maxDefences: 100,
+    maxDefences: 50,
     power: 0,
-    maxPower: 100,
+    maxPower: 50,
     radiation: 0,
     maxRadiation: 100,
     lastHealthUpdate: null,
@@ -38,43 +38,44 @@ const initialState = {
     attackChance: 0.50,
     placementCosts: {
       resource1: 1, // Wood Scrap
-      resource1Amount: 20,
+      resource1Amount: 5,
       resource2: 2, // Steel Scrap
-      resource2Amount: 20,
+      resource2Amount: 5,
     },
     upgradeCosts: {
       defences: {
-        resource1: 1, // Wood Scrap
-        resource1Amount: 1,
+        resource1: 3, // Wood Scrap
+        resource1Amount: 10,
         resource2: 2, // Steel Scrap
-        resource2Amount: 1,
+        resource2Amount: 10,
         amount: 10, // Defence increase amount
-        moneyCost: 100
+        moneyCost: 1000
       },
       power: {
-        resource1: 1, // Wood Scrap
-        resource1Amount: 1,
+        resource1: 5, // Wood Scrap
+        resource1Amount: 10,
         resource2: 2, // Steel Scrap
-        resource2Amount: 1,
+        resource2Amount: 10,
         amount: 10, // Power increase amount
-        moneyCost: 100
+        moneyCost: 1000
       },
       level: {
         resource1: 1, // Wood Scrap
-        resource1Amount: 1,
+        resource1Amount: 25,
         resource2: 2, // Steel Scrap
-        resource2Amount: 1,
+        resource2Amount: 25,
         healthIncrease: 50,
         inhabitantsIncrease: 5,
         defencesIncrease: 25,
         powerIncrease: 25,
-        moneyCost: 200
+        moneyCost: 2500
       },
       inhabitant: {
         resource1: 1, // Wood Scrap
-        resource1Amount: 1,
+        resource1Amount: 5,
         resource2: 2, // Steel Scrap
-        resource2Amount: 1
+        resource2Amount: 5,
+        moneyCost: 500
       }
     }
   }
@@ -142,7 +143,9 @@ const mutations = {
   },
   
   updateSettlementRadiation(state, amount) {
-    state.settlement.radiation = Math.max(0, Math.min(state.settlement.maxRadiation, state.settlement.radiation + amount));
+    // Ensure radiation stays within bounds and can actually decrease
+    const newRadiation = state.settlement.radiation + amount;
+    state.settlement.radiation = Math.max(0, Math.min(state.settlement.maxRadiation, newRadiation));
     state.settlement.lastRadiationUpdate = Date.now();
     localStorage.setItem('settlement', JSON.stringify(state.settlement));
   },
@@ -221,6 +224,12 @@ const mutations = {
     // Initial reduction
     state.settlement.radiation = Math.max(0, state.settlement.radiation - 10);
     localStorage.setItem('settlement', JSON.stringify(state.settlement));
+  },
+  
+  clearRadiationReduction(state) {
+    state.settlement.radiationReductionActive = false;
+    state.settlement.radiationReductionStart = null;
+    localStorage.setItem('settlement', JSON.stringify(state.settlement));
   }
 };
 
@@ -255,91 +264,82 @@ const actions = {
   async updateSettlement({ commit, state, dispatch }) {
     const now = Date.now();
     
-    // Ensure we have valid timestamps
-    const lastHealthUpdate = Number(state.settlement.lastHealthUpdate) || now;
-    const lastRadiationUpdate = Number(state.settlement.lastRadiationUpdate) || now;
-    
-    // Calculate seconds since last health update
-    const secondsSinceLastUpdate = (now - lastHealthUpdate) / 1000;
-    
-    // Update every 20 minutes (1200 seconds)
-    if (secondsSinceLastUpdate >= 1200) {
-      // Ensure we have valid numbers for calculations
-      const healthLossPerSecond = Number(state.settings.healthLossPerSecond) || 0;
-      const radiationDamageMultiplier = Number(state.settings.radiationDamageMultiplier) || 1;
-      const radiation = Number(state.settlement.radiation) || 0;
-      
-      // Base health loss per second
-      const healthLoss = -1 * healthLossPerSecond;
-      
-      // Radiation damage calculation
-      const radiationPercentage = radiation / 100;
-      const radiationDamage = -1 * Math.floor(
-        radiationPercentage * 
-        healthLossPerSecond * 
-        radiationDamageMultiplier
-      );
-      
-      // Apply both health loss and radiation damage
-      const totalDamage = healthLoss + radiationDamage;
-      commit('updateSettlementHealth', totalDamage);
-      commit('updateSettlementLastHealthUpdate', now);
-
-      // Check if settlement is dead
-      if (state.settlement.health <= 0) {
-        // Clear settlement data
-        commit('setSettlement', {
-          id: null,
-          level: 1,
-          health: 100,
-          maxHealth: 100,
-          inhabitants: 0,
-          maxInhabitants: 10,
-          defences: 0,
-          maxDefences: 100,
-          power: 0,
-          maxPower: 100,
-          radiation: 0,
-          maxRadiation: 100,
-          lastHealthUpdate: null,
-          lastRadiationUpdate: null,
-          lastAttack: null,
-          currentEnemyId: null,
-          upgrades: [],
-          resources: [],
-          position: null
-        });
-        
-        // Remove marker and clear localStorage
-        dispatch('updateSettlementMarker', null, { root: true });
-        localStorage.removeItem('settlement');
-        
-        // Close modal
-        commit('setSettlementModalOpen', false, { root: true });
-
-        // Show toast
-        const defeatMessage = `
-          <div class="d-flex flex-column align-items-start justify-content-start h-100">
-            <p class="text-left fw-bold mb-1">Settlement Lost!</p>
-            <p class="text-left fw-semi mb-2">Your settlement was destroyed due to lack of maintenance</p>
-            <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-              <img src="${encounterIcon}" title="Settlement" style="width: 20px;" class="me-2">
-              <span>Settlement was removed</span>
-            </div>
-          </div>
-        `;
-
-        toast.error(defeatMessage, {
-          dangerouslyHTMLString: true,
-          autoClose: 5000,
-          hideProgressBar: false,
-          icon: false,
-          toastClassName: 'quest-toast-container',
-          bodyClassName: 'quest-toast-body quest-toast'
-        });
-
-        return; // Stop further processing
+    // Apply radiation reduction if active - COMPLETELY STOP all radiation when clean is active
+    if (state.settlement.radiationReductionActive) {
+      // Only allow decreases, NO increases during clean
+      if (Math.random() < 0.9) { // 90% chance for reduction during clean
+        const reductionAmount = Math.floor(Math.random() * 15) + 5; // 5-20% reduction per update
+        commit('updateSettlementRadiation', -reductionAmount);
       }
+    } else {
+      // Only apply normal fluctuations when clean is NOT active
+      if (Math.random() < 0.85) { // 85% chance each update
+        if (Math.random() < 0.5) { // 50% chance to increase - random
+          const increase = Math.floor(Math.random() * 25) + 2; // 2-26% increase
+          commit('updateSettlementRadiation', increase);
+        } else { // 50% chance to decrease - random
+          if (state.settlement.radiation > 0) {
+            const decrease = Math.floor(Math.random() * 25) + 2; // 2-26% decrease
+            commit('updateSettlementRadiation', -decrease);
+          }
+        }
+      }
+    }
+    
+    // Check if settlement is dead (moved from old damage system)
+    if (state.settlement.health <= 0) {
+      // Clear settlement data
+      commit('setSettlement', {
+        id: null,
+        level: 1,
+        health: 100,
+        maxHealth: 100,
+        inhabitants: 0,
+        maxInhabitants: 10,
+        defences: 0,
+        maxDefences: 100,
+        power: 0,
+        maxPower: 100,
+        radiation: 0,
+        maxRadiation: 100,
+        lastHealthUpdate: null,
+        lastRadiationUpdate: null,
+        lastAttack: null,
+        currentEnemyId: null,
+        upgrades: [],
+        resources: [],
+        position: null
+      });
+      
+      // Remove marker and clear localStorage
+      dispatch('updateSettlementMarker', null, { root: true });
+      localStorage.removeItem('settlement');
+      
+      // Close modal
+      commit('setSettlementModalOpen', false, { root: true });
+
+      // Show toast
+      const defeatMessage = `
+        <div class="d-flex flex-column align-items-start justify-content-start h-100">
+          <p class="text-left fw-bold mb-1">Settlement Lost!</p>
+          <p class="text-left fw-semi mb-2">Your settlement was destroyed due to lack of maintenance</p>
+          <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+            <img src="${encounterIcon}" title="Settlement" style="width: 20px;" class="me-2">
+            <span>Settlement was removed</span>
+          </div>
+        </div>
+      `;
+
+      toast.error(defeatMessage, {
+        dangerouslyHTMLString: true,
+        autoClose: 5000,
+        hideProgressBar: false,
+        icon: false,
+        toastClassName: 'quest-toast-container',
+        bodyClassName: 'quest-toast-body quest-toast'
+      });
+
+      return; // Stop further processing
     }
     
     // Check for enemy attacks using settings
@@ -358,56 +358,32 @@ const actions = {
       }
     }
     
-    // Update radiation levels - per second
-    const secondsSinceLastRadiation = (now - lastRadiationUpdate) / 500;
-    if (secondsSinceLastRadiation >= 1) {
-      let radiationChange = Math.floor(Math.random() * 21) - 10; // Base change (-10 to +10)
-      
-      // Check if radiation reduction is active
-      if (state.settlement.radiationReductionActive) {
-        const reductionStartTime = Number(state.settlement.radiationReductionStart);
-        const timeSinceReductionStart = (now - reductionStartTime) / 1000; // in seconds
-        
-        if (timeSinceReductionStart <= 300) { // 5 minutes = 300 seconds
-          // During reduction period, bias towards reduction
-          radiationChange = Math.min(radiationChange, -5); // Ensure at least -5 reduction
-        } else {
-          // After 5 minutes, clear the reduction state
-          state.settlement.radiationReductionActive = false;
-          state.settlement.radiationReductionStart = null;
-          localStorage.setItem('settlement', JSON.stringify(state.settlement));
-        }
-      }
-      
-      commit('updateSettlementRadiation', radiationChange);
-      commit('updateSettlementLastRadiationUpdate', now);
 
-      // Apply radiation damage if radiation is high (95% or more)
-      if (state.settlement.radiation >= 95) {
-        const radiationDamage = -1 * state.settings.healthLossPerSecond * 2; // Double damage when radiation is critical
-        commit('updateSettlementHealth', radiationDamage);
-        
-        // Show warning toast about critical radiation
-        const radiationWarning = `
-          <div class="d-flex flex-column align-items-start justify-content-start h-100">
-            <p class="text-left fw-bold mb-1">Critical Radiation Levels!</p>
-            <p class="text-left fw-semi mb-2">Your settlement is taking heavy damage from radiation</p>
-            <div class="d-flex align-items-start justify-content-start reward-info mb-2">
-              <img src="${encounterIcon}" title="Settlement" style="width: 20px;" class="me-2">
-              <span>Settlement health is dropping rapidly</span>
-            </div>
+    // Only apply radiation damage if radiation is high (90% or more)
+    if (state.settlement.radiation >= 90) {
+      const radiationDamage = -1 * state.settings.healthLossPerSecond * 2; // Double damage when radiation is critical
+      commit('updateSettlementHealth', radiationDamage);
+      
+      // Show warning toast about critical radiation
+      const radiationWarning = `
+        <div class="d-flex flex-column align-items-start justify-content-start h-100">
+          <p class="text-left fw-bold mb-1">Critical Radiation Levels!</p>
+          <p class="text-left fw-semi mb-2">Your settlement is taking heavy damage from radiation</p>
+          <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+            <img src="${encounterIcon}" title="Settlement" style="width: 20px;" class="me-2">
+            <span>Settlement health is dropping rapidly</span>
           </div>
-        `;
+        </div>
+      `;
 
-        toast.warning(radiationWarning, {
-          dangerouslyHTMLString: true,
-          autoClose: 5000,
-          hideProgressBar: false,
-          icon: false,
-          toastClassName: 'quest-toast-container',
-          bodyClassName: 'quest-toast-body quest-toast'
-        });
-      }
+      toast.warning(radiationWarning, {
+        dangerouslyHTMLString: true,
+        autoClose: 5000,
+        hideProgressBar: false,
+        icon: false,
+        toastClassName: 'quest-toast-container',
+        bodyClassName: 'quest-toast-body quest-toast'
+      });
     }
   },
   

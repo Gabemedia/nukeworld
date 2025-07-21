@@ -15,15 +15,15 @@
             <div class="resource-requirements">
               <div class="resource-item">
                 <img :src="require('@/assets/interface/icons/resources/wood_scrap.png')" alt="Wood Scrap">
-                <span>20 Wood Scrap</span>
+                <span>{{ settlementSettings.placementCosts.resource1Amount }} Wood Scrap</span>
               </div>
               <div class="resource-item">
                 <img :src="require('@/assets/interface/icons/resources/steel_scrap.png')" alt="Steel Scrap">
-                <span>20 Steel Scrap</span>
+                <span>{{ settlementSettings.placementCosts.resource2Amount }} Steel Scrap</span>
               </div>
             </div>
             <div class="message-container">
-              <p class="message-text">It costs 20 Wood & Steel Scrap to place a settlement.</p>
+              <p class="message-text">It costs {{ settlementSettings.placementCosts.resource1Amount }} Wood & {{ settlementSettings.placementCosts.resource2Amount }} Steel Scrap to place a settlement.</p>
               <p class="instruction-text">Click anywhere on the map to confirm the location.</p>
             </div>
           </div>
@@ -122,14 +122,14 @@
             <div class="resource-requirements">
               <div class="resource-item">
                 <img :src="require('@/assets/interface/icons/resources/wood_scrap.png')" alt="Wood Scrap">
-                <span>20 Wood Scrap</span>
+                <span>{{ settlementSettings.placementCosts.resource1Amount }} Wood Scrap</span>
               </div>
               <div class="resource-item">
                 <img :src="require('@/assets/interface/icons/resources/steel_scrap.png')" alt="Steel Scrap">
-                <span>20 Steel Scrap</span>
+                <span>{{ settlementSettings.placementCosts.resource2Amount }} Steel Scrap</span>
               </div>
             </div>
-            <p class="confirmation-text">It costs 20 Wood & Steel Scrap to place a settlement.</p>
+            <p class="confirmation-text">It costs {{ settlementSettings.placementCosts.resource1Amount }} Wood & {{ settlementSettings.placementCosts.resource2Amount }} Steel Scrap to place a settlement.</p>
             <p class="instruction-text">Click anywhere on the map to confirm the location.</p>
             <div class="button-group">
               <button @click="confirmPlaceSettlement" class="btn btn-primary">Confirm Placement</button>
@@ -143,7 +143,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations } from 'vuex';
+import { mapState, mapActions, mapMutations, mapGetters } from 'vuex';
 import SettlementStats from './settlement/SettlementStats.vue';
 import SettlementBattle from './settlement/SettlementBattle.vue';
 
@@ -156,6 +156,10 @@ export default {
   computed: {
     ...mapState(['settlementMarker', 'isSettlementModalOpen']),
     ...mapState('settlement', ['settlement']),
+    ...mapGetters('settlement', ['settings']),
+    settlementSettings() {
+      return this.settings;
+    },
     woodScrap() {
       return this.$store.state.inventory?.resources?.[1] || 0;
     },
@@ -258,18 +262,24 @@ export default {
       }
     },
     async attemptPlaceSettlement(latlng) {
-      const requiredResources = [{ id: 1, amount: 20 }, { id: 2, amount: 20 }];
+      const requiredResources = [
+        { id: this.settlementSettings.placementCosts.resource1, amount: this.settlementSettings.placementCosts.resource1Amount },
+        { id: this.settlementSettings.placementCosts.resource2, amount: this.settlementSettings.placementCosts.resource2Amount }
+      ];
       const hasEnoughResources = await this.checkRequiredResources(requiredResources);
       if (hasEnoughResources) {
         this.pendingSettlementLocation = latlng;
         this.openConfirmationModal();
       } else {
-        alert('You don\'t have enough resources to place a settlement. You need 20 Wood & Steel Scrap.');
+        alert(`You don't have enough resources to place a settlement. You need ${this.settlementSettings.placementCosts.resource1Amount} Wood & ${this.settlementSettings.placementCosts.resource2Amount} Steel Scrap.`);
       }
     },
     async confirmPlaceSettlement() {
       try {
-        const requiredResources = [{ id: 1, amount: 20 }, { id: 2, amount: 20 }];
+        const requiredResources = [
+          { id: this.settlementSettings.placementCosts.resource1, amount: this.settlementSettings.placementCosts.resource1Amount },
+          { id: this.settlementSettings.placementCosts.resource2, amount: this.settlementSettings.placementCosts.resource2Amount }
+        ];
         await this.useRequiredResources(requiredResources);
         
         // Initialize settlement in store
@@ -396,7 +406,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 99999;
 }
 
 .shop-dialog {

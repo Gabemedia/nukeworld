@@ -120,6 +120,7 @@ export default {
         quest.levelRequirement > Math.max(0, this.characterLevel - 3)
       );
     },
+
   },
   watch: {
     windowWidth() {
@@ -165,6 +166,8 @@ export default {
           }
         });
       }
+      
+
     });
   },
   beforeUnmount() {
@@ -269,7 +272,7 @@ export default {
   left: 0;
   width: 100%;
   height: 105%;
-  z-index: -999;
+  z-index: 1;
 }
 .leaflet-container{
   background: linear-gradient(180deg, rgb(180, 141, 102) 0%, rgb(188, 140, 87) 100%);
@@ -483,4 +486,6 @@ export default {
   white-space: nowrap;
   box-shadow: 0 2px 8px rgba(0,0,0,0.25);
 }
+
+
 </style>

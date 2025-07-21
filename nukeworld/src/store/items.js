@@ -26,6 +26,61 @@ export default [
   {
     "id": 2,
     "uuid": uuidv4(),
+    "name": "Combat Knife",
+    "desc": "A military-grade combat knife with superior craftsmanship.",
+    "attack": 3,
+    "defence": 0,
+    "state": "none",
+    "price": 999,
+    "img": "knife_2.png"
+  },
+  {
+    "id": 3,
+    "uuid": uuidv4(),
+    "name": "Knuckles",
+    "desc": "Knuckles is a great melee weapon. It is used for punching enemies.",
+    "attack": 3,
+    "defence": 0,
+    "state": "none",
+    "price": -1,
+    "img": "knuckles.png"
+  },
+  {
+    "id": 4,
+    "uuid": uuidv4(),
+    "name": "Glove Spikes",
+    "desc": "Spiked gloves that enhance punching power with deadly spikes.",
+    "attack": 4,
+    "defence": 0,
+    "state": "none",
+    "price": 1299,
+    "img": "glove_spikes.png"
+  },
+  {
+    "id": 5,
+    "uuid": uuidv4(),
+    "name": "Wrench",
+    "desc": "A heavy wrench that doubles as an effective melee weapon.",
+    "attack": 3,
+    "defence": 0,
+    "state": "none",
+    "price": 399,
+    "img": "wrench.png"
+  },
+  {
+    "id": 6,
+    "uuid": uuidv4(),
+    "name": "Hammer",
+    "desc": "A solid hammer that delivers crushing blows to enemies.",
+    "attack": 4,
+    "defence": 0,
+    "state": "none",
+    "price": 599,
+    "img": "hammer.png"
+  },
+  {
+    "id": 7,
+    "uuid": uuidv4(),
     "name": "Baseball Bat",
     "desc": "Baseball Bat is a great melee weapon. It is used for bashing enemies.",
     "attack": 2,
@@ -35,7 +90,40 @@ export default [
     "img": "baseball_bat.png"
   },
   {
-    "id": 3,
+    "id": 8,
+    "uuid": uuidv4(),
+    "name": "Police Baton",
+    "desc": "A tactical police baton designed for close combat.",
+    "attack": 3,
+    "defence": 0,
+    "state": "none",
+    "price": 899,
+    "img": "police_baton.png"
+  },
+  {
+    "id": 9,
+    "uuid": uuidv4(),
+    "name": "Spear",
+    "desc": "A simple but effective spear for thrusting attacks.",
+    "attack": 4,
+    "defence": 0,
+    "state": "none",
+    "price": 699,
+    "img": "spear.png"
+  },
+  {
+    "id": 10,
+    "uuid": uuidv4(),
+    "name": "Spade",
+    "desc": "A sturdy spade that can be used as a weapon in a pinch.",
+    "attack": 2,
+    "defence": 0,
+    "state": "none",
+    "price": 299,
+    "img": "spade.png"
+  },
+  {
+    "id": 11,
     "uuid": uuidv4(),
     "name": "Fire Axe",
     "desc": "Fire Axe is a great melee weapon. It is used for chopping enemies.",
@@ -46,7 +134,29 @@ export default [
     "img": "fire_axe.png"
   },
   {
-    "id": 4,
+    "id": 12,
+    "uuid": uuidv4(),
+    "name": "Battle Axe",
+    "desc": "A heavy battle axe designed for devastating melee combat.",
+    "attack": 7,
+    "defence": 0,
+    "state": "none",
+    "price": 3999,
+    "img": "battle_axe.png"
+  },
+  {
+    "id": 13,
+    "uuid": uuidv4(),
+    "name": "Auto Axe",
+    "desc": "A mechanized axe with automated cutting capabilities.",
+    "attack": 8,
+    "defence": 0,
+    "state": "none",
+    "price": 5999,
+    "img": "auto_axe.png"
+  },
+  {
+    "id": 14,
     "uuid": uuidv4(),
     "name": "Machete",
     "desc": "Machete is a versatile melee weapon. It is used for slashing and hacking.",
@@ -57,7 +167,18 @@ export default [
     "img": "machete.png"
   },
   {
-    "id": 5,
+    "id": 15,
+    "uuid": uuidv4(),
+    "name": "Meat Cleaver",
+    "desc": "A heavy cleaver that can slice through flesh and bone.",
+    "attack": 5,
+    "defence": 0,
+    "state": "none",
+    "price": 3499,
+    "img": "meat_cleaver.png"
+  },
+  {
+    "id": 16,
     "uuid": uuidv4(),
     "name": "Coil Stick",
     "desc": "Coil Stick is a great melee weapon. It is used for all sorts of combat.",
@@ -68,7 +189,29 @@ export default [
     "img": "coil_stick.png"
   },
   {
-    "id": 6,
+    "id": 17,
+    "uuid": uuidv4(),
+    "name": "Drill",
+    "desc": "A powered drill that can pierce through armor and flesh.",
+    "attack": 6,
+    "defence": 0,
+    "state": "none",
+    "price": 4499,
+    "img": "drill.png"
+  },
+  {
+    "id": 18,
+    "uuid": uuidv4(),
+    "name": "Bow",
+    "desc": "A traditional bow for silent ranged attacks.",
+    "attack": 8,
+    "defence": 0,
+    "state": "none",
+    "price": 1999,
+    "img": "bow.png"
+  },
+  {
+    "id": 19,
     "uuid": uuidv4(),
     "name": "Flare Gun",
     "desc": "Flare Gun is a great ranged weapon. It is used for signaling.",
@@ -79,7 +222,18 @@ export default [
     "img": "flare_gun.png"
   },
   {
-    "id": 7,
+    "id": 20,
+    "uuid": uuidv4(),
+    "name": "Pistol",
+    "desc": "A standard pistol for reliable close-range combat.",
+    "attack": 10,
+    "defence": 0,
+    "state": "none",
+    "price": 2999,
+    "img": "pistol.png"
+  },
+  {
+    "id": 21,
     "uuid": uuidv4(),
     "name": "10mm Pistol",
     "desc": "10mm Pistol is a reliable sidearm. It is used for close-range combat.",
@@ -90,7 +244,7 @@ export default [
     "img": "10mm_pistol.png"
   },
   {
-    "id": 8,
+    "id": 22,
     "uuid": uuidv4(),
     "name": "Revolver",
     "desc": "Revolver is a powerful sidearm. It is used for close-range combat.",
@@ -101,7 +255,7 @@ export default [
     "img": "revolver.png"
   },
   {
-    "id": 9,
+    "id": 23,
     "uuid": uuidv4(),
     "name": "Laser Pistol",
     "desc": "Laser Pistol is a powerful sidearm. It is used for close-range combat.",
@@ -112,7 +266,7 @@ export default [
     "img": "laser_pistol.png"
   },
   {
-    "id": 10,
+    "id": 24,
     "uuid": uuidv4(),
     "name": "Semi Pistol",
     "desc": "Semi Pistol is a powerful sidearm. It is used for close-range combat.",
@@ -123,7 +277,29 @@ export default [
     "img": "semi_pistol.png"
   },
   {
-    "id": 11,
+    "id": 25,
+    "uuid": uuidv4(),
+    "name": "Advanced Pistol",
+    "desc": "An upgraded pistol with enhanced accuracy and firepower.",
+    "attack": 18,
+    "defence": 0,
+    "state": "none",
+    "price": 15999,
+    "img": "pistol_2.png"
+  },
+  {
+    "id": 26,
+    "uuid": uuidv4(),
+    "name": "Shotgun",
+    "desc": "A powerful shotgun that devastates at close range.",
+    "attack": 20,
+    "defence": 0,
+    "state": "none",
+    "price": 8999,
+    "img": "shotgun.png"
+  },
+  {
+    "id": 27,
     "uuid": uuidv4(),
     "name": "Flinklock Rifle",
     "desc": "Flinklock Rifle is a powerful ranged weapon. It is used for long-range combat.",
@@ -134,7 +310,7 @@ export default [
     "img": "flinklock_rifle.png"
   },
   {
-    "id": 12,
+    "id": 28,
     "uuid": uuidv4(),
     "name": "Hunting Rifle",
     "desc": "Hunting Rifle is a great ranged weapon. It is used for hunting.",
@@ -145,7 +321,18 @@ export default [
     "img": "hunting_rifle.png"
   },
   {
-    "id": 13,
+    "id": 29,
+    "uuid": uuidv4(),
+    "name": "Sniper Rifle",
+    "desc": "A precision sniper rifle for long-range elimination.",
+    "attack": 22,
+    "defence": 0,
+    "state": "none",
+    "price": 39999,
+    "img": "sniper_rifle.png"
+  },
+  {
+    "id": 30,
     "uuid": uuidv4(),
     "name": "SMG",
     "desc": "SMG is a powerful ranged weapon. It is used for short-range combat.",
@@ -156,7 +343,7 @@ export default [
     "img": "smg.png"
   },
   {
-    "id": 14,
+    "id": 31,
     "uuid": uuidv4(),
     "name": "Assault Rifle",
     "desc": "Assault Rifle is a powerful ranged weapon. It is used for short-range combat.",
@@ -167,7 +354,18 @@ export default [
     "img": "assault_rifle.png"
   },
   {
-    "id": 15,
+    "id": 32,
+    "uuid": uuidv4(),
+    "name": "AK-47",
+    "desc": "A legendary assault rifle known for its reliability and power.",
+    "attack": 28,
+    "defence": 0,
+    "state": "none",
+    "price": 59999,
+    "img": "ak47.png"
+  },
+  {
+    "id": 33,
     "uuid": uuidv4(),
     "name": "Tommy Gun",
     "desc": "Tommy Gun is a powerful ranged weapon. It is used for short-range combat.",
@@ -178,7 +376,7 @@ export default [
     "img": "tommy_gun.png"
   },
   {
-    "id": 16,
+    "id": 34,
     "uuid": uuidv4(),
     "name": "LMG",
     "desc": "LMG is a powerful ranged weapon. It is used for short-range combat.",
@@ -189,7 +387,7 @@ export default [
     "img": "lmg.png"
   },
   {
-    "id": 17,
+    "id": 35,
     "uuid": uuidv4(),
     "name": "Minigun",
     "desc": "Minigun is a powerful ranged weapon. It is used for short-range combat.",
@@ -200,7 +398,7 @@ export default [
     "img": "minigun.png"
   },
   {
-    "id": 18,
+    "id": 36,
     "uuid": uuidv4(),
     "name": "Flamethrower",
     "desc": "Flamethrower is a powerful ranged weapon. It is used for short-range combat.",
@@ -211,10 +409,10 @@ export default [
     "img": "flamethrower.png"
   },
   {
-    "id": 19,
+    "id": 37,
     "uuid": uuidv4(),
     "name": "Rocket Launcher",
-    "desc": "Rocket Launcher is a heavy lancher weapon. It is used for crushing enemies.",
+    "desc": "Rocket Launcher is a heavy launcher weapon. It is used for crushing enemies.",
     "attack": 50,
     "defence": 0,
     "state": "none",
@@ -222,7 +420,7 @@ export default [
     "img": "rocket_launcher.png"
   },
   {
-    "id": 20,
+    "id": 38,
     "uuid": uuidv4(),
     "name": "Santa Gloves",
     "desc": "Santa Gloves OMG!!!",
@@ -232,15 +430,291 @@ export default [
     "price": -1,
     "img": "santa_gloves.png"
   },
+  // Variants of existing weapons
   {
-    "id": 21,
+    "id": 39,
     "uuid": uuidv4(),
-    "name": "Knuckles",
-    "desc": "Knuckles is a great melee weapon. It is used for punching enemies.Item description",
-    "attack": 3,
+    "name": "Combat Knuckles",
+    "desc": "Enhanced knuckles with reinforced material for maximum impact.",
+    "attack": 5,
+    "defence": 0,
+    "state": "none",
+    "price": 1999,
+    "img": "knuckles.png"
+  },
+  {
+    "id": 40,
+    "uuid": uuidv4(),
+    "name": "Heavy Wrench",
+    "desc": "A massive wrench that delivers devastating blows.",
+    "attack": 6,
+    "defence": 0,
+    "state": "none",
+    "price": 899,
+    "img": "wrench.png"
+  },
+  {
+    "id": 41,
+    "uuid": uuidv4(),
+    "name": "Sledgehammer",
+    "desc": "A heavy sledgehammer that crushes everything in its path.",
+    "attack": 8,
+    "defence": 0,
+    "state": "none",
+    "price": 1499,
+    "img": "hammer.png"
+  },
+  {
+    "id": 42,
+    "uuid": uuidv4(),
+    "name": "Reinforced Baseball Bat",
+    "desc": "A baseball bat reinforced with metal for enhanced durability.",
+    "attack": 4,
+    "defence": 0,
+    "state": "none",
+    "price": 1299,
+    "img": "baseball_bat.png"
+  },
+  {
+    "id": 43,
+    "uuid": uuidv4(),
+    "name": "Tactical Spear",
+    "desc": "A military-grade spear with tactical enhancements.",
+    "attack": 6,
+    "defence": 0,
+    "state": "none",
+    "price": 1299,
+    "img": "spear.png"
+  },
+  {
+    "id": 44,
+    "uuid": uuidv4(),
+    "name": "Combat Spade",
+    "desc": "A spade modified for combat with sharpened edges.",
+    "attack": 4,
+    "defence": 0,
+    "state": "none",
+    "price": 599,
+    "img": "spade.png"
+  },
+  {
+    "id": 45,
+    "uuid": uuidv4(),
+    "name": "Heavy Fire Axe",
+    "desc": "A massive fire axe that can cleave through anything.",
+    "attack": 7,
+    "defence": 0,
+    "state": "none",
+    "price": 3999,
+    "img": "fire_axe.png"
+  },
+  {
+    "id": 46,
+    "uuid": uuidv4(),
+    "name": "Dual Battle Axe",
+    "desc": "A pair of battle axes for devastating dual-wield attacks.",
+    "attack": 10,
+    "defence": 0,
+    "state": "none",
+    "price": 6999,
+    "img": "battle_axe.png"
+  },
+  {
+    "id": 47,
+    "uuid": uuidv4(),
+    "name": "Enhanced Auto Axe",
+    "desc": "An upgraded auto axe with improved cutting efficiency.",
+    "attack": 12,
+    "defence": 0,
+    "state": "none",
+    "price": 8999,
+    "img": "auto_axe.png"
+  },
+  {
+    "id": 48,
+    "uuid": uuidv4(),
+    "name": "Tactical Machete",
+    "desc": "A military-grade machete with tactical enhancements.",
+    "attack": 8,
+    "defence": 0,
+    "state": "none",
+    "price": 11999,
+    "img": "machete.png"
+  },
+  {
+    "id": 49,
+    "uuid": uuidv4(),
+    "name": "Heavy Meat Cleaver",
+    "desc": "A massive cleaver that can slice through anything.",
+    "attack": 7,
+    "defence": 0,
+    "state": "none",
+    "price": 5499,
+    "img": "meat_cleaver.png"
+  },
+  {
+    "id": 50,
+    "uuid": uuidv4(),
+    "name": "Enhanced Coil Stick",
+    "desc": "An upgraded coil stick with improved electrical output.",
+    "attack": 15,
     "defence": 0,
     "state": "none",
     "price": -1,
-    "img": "knuckles.png"
+    "img": "coil_stick.png"
+  },
+  {
+    "id": 51,
+    "uuid": uuidv4(),
+    "name": "Heavy Drill",
+    "desc": "A massive drill that can pierce through any material.",
+    "attack": 9,
+    "defence": 0,
+    "state": "none",
+    "price": 6999,
+    "img": "drill.png"
+  },
+  {
+    "id": 52,
+    "uuid": uuidv4(),
+    "name": "Compound Bow",
+    "desc": "A modern compound bow with enhanced accuracy and power.",
+    "attack": 12,
+    "defence": 0,
+    "state": "none",
+    "price": 3999,
+    "img": "bow.png"
+  },
+  {
+    "id": 53,
+    "uuid": uuidv4(),
+    "name": "Enhanced Flare Gun",
+    "desc": "An upgraded flare gun with incendiary ammunition.",
+    "attack": 18,
+    "defence": 0,
+    "state": "none",
+    "price": 4999,
+    "img": "flare_gun.png"
+  },
+  {
+    "id": 54,
+    "uuid": uuidv4(),
+    "name": "Tactical Pistol",
+    "desc": "A tactical pistol with enhanced accuracy and stopping power.",
+    "attack": 14,
+    "defence": 0,
+    "state": "none",
+    "price": 5999,
+    "img": "pistol.png"
+  },
+  {
+    "id": 55,
+    "uuid": uuidv4(),
+    "name": "Heavy 10mm Pistol",
+    "desc": "An upgraded 10mm pistol with enhanced firepower.",
+    "attack": 16,
+    "defence": 0,
+    "state": "none",
+    "price": 7999,
+    "img": "10mm_pistol.png"
+  },
+  {
+    "id": 56,
+    "uuid": uuidv4(),
+    "name": "Magnum Revolver",
+    "desc": "A powerful magnum revolver with devastating stopping power.",
+    "attack": 20,
+    "defence": 0,
+    "state": "none",
+    "price": 19999,
+    "img": "revolver.png"
+  },
+  {
+    "id": 57,
+    "uuid": uuidv4(),
+    "name": "Enhanced Laser Pistol",
+    "desc": "An upgraded laser pistol with improved energy output.",
+    "attack": 20,
+    "defence": 0,
+    "state": "none",
+    "price": 34999,
+    "img": "laser_pistol.png"
+  },
+  {
+    "id": 58,
+    "uuid": uuidv4(),
+    "name": "Tactical Shotgun",
+    "desc": "A tactical shotgun with enhanced range and stopping power.",
+    "attack": 25,
+    "defence": 0,
+    "state": "none",
+    "price": 14999,
+    "img": "shotgun.png"
+  },
+  {
+    "id": 59,
+    "uuid": uuidv4(),
+    "name": "Precision Sniper Rifle",
+    "desc": "A high-precision sniper rifle with advanced optics.",
+    "attack": 30,
+    "defence": 0,
+    "state": "none",
+    "price": 59999,
+    "img": "sniper_rifle.png"
+  },
+  {
+    "id": 60,
+    "uuid": uuidv4(),
+    "name": "Heavy SMG",
+    "desc": "A heavy SMG with increased firepower and magazine capacity.",
+    "attack": 22,
+    "defence": 0,
+    "state": "none",
+    "price": 49999,
+    "img": "smg.png"
+  },
+  {
+    "id": 61,
+    "uuid": uuidv4(),
+    "name": "Tactical Assault Rifle",
+    "desc": "A tactical assault rifle with enhanced accuracy and firepower.",
+    "attack": 30,
+    "defence": 0,
+    "state": "none",
+    "price": 69999,
+    "img": "assault_rifle.png"
+  },
+  {
+    "id": 62,
+    "uuid": uuidv4(),
+    "name": "Heavy LMG",
+    "desc": "A heavy LMG with increased firepower and stability.",
+    "attack": 30,
+    "defence": 0,
+    "state": "none",
+    "price": 69999,
+    "img": "lmg.png"
+  },
+  {
+    "id": 63,
+    "uuid": uuidv4(),
+    "name": "Heavy Minigun",
+    "desc": "A massive minigun with devastating firepower.",
+    "attack": 35,
+    "defence": 0,
+    "state": "none",
+    "price": 99999,
+    "img": "minigun.png"
+  },
+  {
+    "id": 64,
+    "uuid": uuidv4(),
+    "name": "Heavy Flamethrower",
+    "desc": "A massive flamethrower that incinerates everything in its path.",
+    "attack": 40,
+    "defence": 0,
+    "state": "none",
+    "price": 119999,
+    "img": "flamethrower.png"
   }
 ];

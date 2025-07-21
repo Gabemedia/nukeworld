@@ -484,8 +484,29 @@ export default {
 .items-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  grid-template-rows: repeat(3, 80px);
   gap: 15px;
   padding: 5px;
+  max-height: calc(3 * 80px + 2 * 15px); /* 3 rows * 80px height + 2 gaps */
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 4px;
+    
+    &:hover {
+      background: #444;
+    }
+  }
 }
 
 .info-panel {
@@ -702,7 +723,9 @@ export default {
 
   .items-grid {
     grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    grid-template-rows: repeat(3, 70px);
     gap: 12px;
+    max-height: calc(3 * 70px + 2 * 12px); /* 3 rows * 70px height + 2 gaps */
   }
 
   .item-slot {
@@ -743,7 +766,9 @@ export default {
 
   .items-grid {
     grid-template-columns: repeat(auto-fill, minmax(65px, 1fr));
+    grid-template-rows: repeat(3, 65px);
     gap: 10px;
+    max-height: calc(3 * 65px + 2 * 10px); /* 3 rows * 65px height + 2 gaps */
   }
 
   .item-slot {
@@ -773,7 +798,9 @@ export default {
 
   .items-grid {
     grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    grid-template-rows: repeat(3, 60px);
     gap: 8px;
+    max-height: calc(3 * 60px + 2 * 8px); /* 3 rows * 60px height + 2 gaps */
   }
 
   .item-slot {
