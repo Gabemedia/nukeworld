@@ -7,6 +7,7 @@
             @battle-ended="closeModal" 
             @battle-cancelled="closeModal" 
             @show-reward-toast="showRewardToast" 
+            @flee-battle="$emit('flee-battle')"
           />
         </div>
       </div>
@@ -39,9 +40,11 @@ export default {
     openModal() {
       this.showModal = true;
     },
-    closeModal() {
+    closeModal(battleResult) {
       this.$store.dispatch('closeEnemyEncounter');
       this.$store.commit('setCurrentEnemyId', null);
+      // Emit battle-ended event to parent component (GameWorld.vue)
+      this.$emit('battle-ended', battleResult);
     },
     showRewardToast(storyLineName, rewards) {
       let rewardMessage = `

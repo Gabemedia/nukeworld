@@ -85,6 +85,17 @@ const state = reactive({
       }
     })(),
     isDeveloperMode: false
+  },
+  // === Savage in the Wasteland State ===
+  savageWasteland: {
+    active: false,
+    days: 1,
+    money: 0,
+    exp: 0,
+    resources: [], // [{id, name, img, amount}]
+    enemyEncounter: false,
+    rewardsLost: false,
+    stakeData: null, // Tilføj stake data for reward scaling
   }
 });
 
@@ -690,6 +701,96 @@ const mutations = {
   
   updateAvailablePerks(state, perks) {
     state.character.availablePerks = perks;
+  },
+  // === Savage in the Wasteland Mutations ===
+  startSavage(state) {
+    state.savageWasteland.active = true;
+    state.savageWasteland.days = 1;
+    state.savageWasteland.money = 20;
+    state.savageWasteland.exp = 15;
+    state.savageWasteland.resources = [];
+    state.savageWasteland.enemyEncounter = false;
+    state.savageWasteland.rewardsLost = false;
+  },
+  startSavageWithStake(state, stakeData) {
+    state.savageWasteland.stakeData = stakeData;
+    state.savageWasteland.active = true;
+    state.savageWasteland.days = 1;
+    state.savageWasteland.money = 20;
+    state.savageWasteland.exp = 15;
+    state.savageWasteland.resources = [];
+    state.savageWasteland.enemyEncounter = false;
+    state.savageWasteland.rewardsLost = false;
+  },
+  continueSavage(state, { money, exp, resources, enemyEncounter }) {
+    state.savageWasteland.days += 1;
+    state.savageWasteland.money += money;
+    state.savageWasteland.exp += exp;
+    // Merge resources
+    resources.forEach(res => {
+      const existing = state.savageWasteland.resources.find(r => r.id === res.id);
+      if (existing) {
+        existing.amount += res.amount;
+      } else {
+        state.savageWasteland.resources.push({ ...res });
+      }
+    });
+    state.savageWasteland.enemyEncounter = enemyEncounter;
+  },
+  savageEncounterEnemy(state) {
+    state.savageWasteland.enemyEncounter = true;
+  },
+  savageClearEnemyEncounter(state) {
+    state.savageWasteland.enemyEncounter = false;
+  },
+  savageFlee(state) {
+    // Udbetal 20% af rewards til character før reset
+    const moneyReward = Math.floor(state.savageWasteland.money * 0.2);
+    const expReward = Math.floor(state.savageWasteland.exp * 0.2);
+    state.character.money += moneyReward;
+    state.character.exp += expReward;
+    // Tilføj 20% af hver ressource til character
+    state.savageWasteland.resources.forEach(res => {
+      const reducedAmount = Math.ceil(res.amount * 0.2);
+      for (let i = 0; i < reducedAmount; i++) {
+        const resource = state.resources.find(r => r.id === res.id);
+        if (resource) {
+          state.character.resources.push({ ...resource, uuid: uuidv4() });
+        }
+      }
+    });
+    state.savageWasteland.rewardsLost = true;
+    state.savageWasteland.active = false;
+    // Nulstil ALTID hele run state efter flee
+    this.commit('resetSavage');
+  },
+  claimSavageRewards(state) {
+    // Add all rewards to character
+    state.character.money += state.savageWasteland.money;
+    state.character.exp += state.savageWasteland.exp;
+    state.savageWasteland.resources.forEach(res => {
+      for (let i = 0; i < res.amount; i++) {
+        const resource = state.resources.find(r => r.id === res.id);
+        if (resource) {
+          state.character.resources.push({ ...resource, uuid: uuidv4() });
+        }
+      }
+    });
+    state.savageWasteland.active = false;
+    // Nulstil ALTID hele run state efter claim
+    this.commit('resetSavage');
+  },
+  resetSavage(state) {
+    state.savageWasteland = {
+      active: false,
+      days: 1,
+      money: 0,
+      exp: 0,
+      resources: [],
+      enemyEncounter: false,
+      rewardsLost: false,
+      stakeData: null,
+    };
   }
 };
 
@@ -1306,6 +1407,95 @@ const actions = {
       state.character.level, 
       perk.requirements
     );
+  },
+  // === Savage in the Wasteland Actions ===
+  startSavage({ commit }) {
+    commit('startSavage');
+  },
+  // Action til at starte survival run
+  startSavageWithStake({ commit, state }, stakeData) {
+    if (!state.savageWasteland.active) {
+      // Træk penge via mutation
+      commit('decreaseMoney', stakeData.gold);
+      // Træk ressourcer fra character
+      stakeData.resources.forEach(res => {
+        for (let i = 0; i < res.amount; i++) {
+          const idx = state.character.resources.findIndex(r => r.id === res.id);
+          if (idx !== -1) state.character.resources.splice(idx, 1);
+        }
+      });
+      // Synk ressourcer til localStorage og UI
+      commit('updateCharacter', state.character);
+      // Start savage session
+      commit('startSavageWithStake', stakeData);
+    }
+  },
+  continueSavage({ commit, state }) {
+    // Skalér rewards med dagene og stake data
+    const day = state.savageWasteland.days + 1;
+    const stakeData = state.savageWasteland.stakeData;
+    
+    // Base rewards (original values for 500 gold)
+    const baseMoney = 20 + Math.floor(day * 15 * (1 + Math.random()));
+    const baseExp = 15 + Math.floor(day * 10 * (1 + Math.random()));
+    
+    // Scale rewards based on gold stake
+    const goldMultiplier = stakeData ? (stakeData.gold / 500) : 1;
+    const money = Math.floor(baseMoney * goldMultiplier);
+    const exp = Math.floor(baseExp * goldMultiplier);
+    
+    // Add resource bonus to exp
+    const resourceBonus = stakeData ? stakeData.resources.reduce((sum, res) => sum + res.amount * 5, 0) : 0;
+    const finalExp = exp + resourceBonus;
+    
+    // 3% chance for random resource pr. dag
+    const resources = [];
+    if (Math.random() < 0.03) {
+      const resourceList = state.resources.filter(r => r.price !== -1 && r.id !== 0);
+      const resource = resourceList[Math.floor(Math.random() * resourceList.length)];
+      resources.push({ id: resource.id, name: resource.name, img: resource.img, amount: 1 });
+    }
+    
+    // Tilføj stake-baserede ressourcer med chance
+    if (stakeData && stakeData.resources.length > 0) {
+      stakeData.resources.forEach(stakeRes => {
+        // Én roll pr. dag pr. ressource-type, chance = 5% * antal (max 100)
+        const chance = Math.min(stakeRes.amount * 5, 100);
+        if (Math.random() * 100 < chance) {
+          resources.push({
+            id: stakeRes.id,
+            name: stakeRes.name,
+            img: stakeRes.img,
+            amount: 1 // altid kun 1 pr. dag pr. type
+          });
+        }
+      });
+    }
+    
+    // Hvis vi lige har vundet en battle, giv en pause før næste enemy
+    // Ellers, 25% chance for enemy encounter, stigende med dagene
+    const encounterChance = Math.min(0.2 + day * 0.05, 0.7);
+    // Reducer chance hvis vi lige har vundet en battle
+    const adjustedChance = state.savageWasteland.enemyEncounter ? encounterChance * 0.3 : encounterChance;
+    const enemyEncounter = Math.random() < adjustedChance;
+    
+    commit('continueSavage', { money, exp: finalExp, resources, enemyEncounter });
+  },
+  handleSavageEnemy({ commit }) {
+    commit('savageEncounterEnemy');
+  },
+  savageBattleVictory({ commit }) {
+    commit('savageClearEnemyEncounter');
+  },
+  fleeSavage({ commit }) {
+    commit('savageFlee');
+  },
+  claimSavageRewards({ commit }) {
+    commit('claimSavageRewards');
+    // Fjern commit('resetSavage') her - reset sker i mutation
+  },
+  resetSavage({ commit }) {
+    commit('resetSavage');
   }
 };
 

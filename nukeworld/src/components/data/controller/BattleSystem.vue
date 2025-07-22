@@ -308,7 +308,8 @@ export default {
     },
     
     calculateDamage(attack, defense) {
-      const baseDamage = Math.max(attack - defense, 0);
+      // Ensure minimum damage even if defense is higher than attack
+      const baseDamage = Math.max(attack - defense, Math.floor(attack * 0.1)); // Minimum 10% of attack
       const variation = Math.random() * 0.2 - 0.1; // -10% to +10%
       return Math.max(Math.floor(baseDamage * (1 + variation)), 1);
     },
@@ -614,6 +615,10 @@ export default {
         survived: this.battleResult === 'victory',
         time: Date.now()
       });
+      // NYT: Emit 'flee-battle' hvis spilleren flygter/taber
+      if (this.battleResult !== 'victory') {
+        this.$emit('flee-battle');
+      }
     }
   },
   

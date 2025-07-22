@@ -79,6 +79,13 @@
               <img :src="require('@/assets/interface/icons/settlement.png')" alt="Settlement">
             </div>
           </div>
+
+          <div class="menu-item">
+            <div class="menu-button">SAVAGE</div>
+            <div class="icon-box" @click="openSavageModal">
+              <img :src="require('@/assets/interface/icons/encounter.png')" alt="Savage in the Wasteland">
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -112,6 +119,12 @@
           <div class="nav-item-name price-box">Settlement</div>
           <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="openSettlementModal">
             <img class="sidebar-icon" :src="require(`@/assets/interface/icons/settlement.png`)" title="Settlement">
+          </button>
+        </li>
+        <li class="nav-item mx-2">
+          <div class="nav-item-name price-box">Savage</div>
+          <button class="btn btn-main sidebar-btn border border-1 border-white m-2" type="button" @click="openSavageModal">
+            <img class="sidebar-icon" :src="require(`@/assets/interface/icons/encounter.png`)" title="Savage in the Wasteland">
           </button>
         </li>
       </ul>
@@ -174,6 +187,9 @@ export default {
       } else {
         this.isSettlementConfirmationModalOpen = true;
       }
+    },
+    openSavageModal() {
+      this.$emit('open-savage-modal');
     },
     closeConfirmationModal() {
       this.isSettlementConfirmationModalOpen = false;
