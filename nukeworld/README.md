@@ -759,18 +759,14 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Created reward mechanisms: `alwaysGiveReward` (boolean), `giveReward` (per option), and SPECIAL system bonuses
 - Integrated Intelligence bonuses for EXP (5% per Intelligence point) and Luck bonuses for Money (3% per Luck point)
 - Added enemy battle integration with `requiredEnemyDefeat` (enemy ID and count)
-- Implemented story progression: `startStoryLine`, `progressStory`, `completeStoryLine`, `cancelCurrentStoryLine`
+- Implemented story progression
 - Created Vuex store integration for character, quests, storylines, inventory, and game settings
-- Added Vue components: `QuestDialog.vue` for conversation display and `BattleSystem.vue` for combat encounters
-- Integrated toast notifications using `vue3-toastify` for displaying reward messages
 - Added speech synthesis integration for NPC messages
 - Implemented story battle reward system to prevent double rewards
 - Fixed "Claim Rewards" button to show comprehensive story rewards for story battles
 - Corrected resource ID validation to ensure all required resources exist in game data
 - Added balanced weapon rewards including firearms for levels 4-12 (Pistol, 10mm Pistol, Bow, Revolver, Hunting Rifle, Shotgun)
-- Ensured `alwaysGiveReward` is `false` for all new stories (only `true` for tutorials)
 - Maintained game balance by avoiding high-tier weapons in early game stories
-- Added proper story dependencies with `requiredStoryLineId` for logical progression
 - Implemented comprehensive reward balancing across EXP, money, items, armor, aid, and resources
 - Created diverse story themes including scavenging, settlement building, mutant threats, raider conflicts, and survival challenges
 - Added proper error handling and data integrity checks for story system
