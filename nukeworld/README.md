@@ -643,6 +643,150 @@ NukeWorld is a post-apocalyptic game built with Vue.js and Vuex. Players can emb
 - Maintained all existing quest functionality while adapting to new coordinate ranges
 - Enhanced quest accessibility and discovery flow
 
+### Version 0.1.9.0 (25-07-2025)
+
+**New Survival in the Wasteland Feature:**
+- Added comprehensive "Survival in the Wasteland" game feature with modal interface
+- Implemented stake-based progression system where players risk Nuka Coins and resources
+- Added dynamic reward scaling based on days survived and initial stake
+- Created SavageWastelandModal.vue component with modern UI matching PlayerShop.vue design
+- Implemented resource grid selection with direct steppers (no popups)
+- Added reward preview system showing expected Gold, EXP, and resource chances
+- Integrated with existing BattleSystem.vue for enemy encounters
+- Added random enemy encounter system with 15% chance per day
+- Implemented flee mechanics with 80% reward loss penalty
+- Added comprehensive toast notification system for all survival events
+
+**Vuex State Management Integration:**
+- Added savageWasteland state object to manage survival run data
+- Implemented mutations: startSavage, continueSavage, savageEncounterEnemy, savageClearEnemyEncounter, savageFlee, claimSavageRewards, resetSavage
+- Added actions: startSavageWithStake, continueSavage, handleSavageEnemy, savageBattleVictory, fleeSavage, claimSavageRewards
+- Integrated with existing decreaseMoney action for Nuka Coins deduction
+- Added random resource drops (3% chance per day) and chance-based return of staked resources (5% per resource, max 100%)
+- Ensured proper state reset after flee/claim to prevent multiple claims
+
+**UI/UX Enhancements:**
+- Designed modal layout matching existing game components (PlayerShop, QuestDialog, QuestTabs)
+- Added progress bar showing days survived with visual feedback
+- Implemented reward display grid showing current Gold, EXP, and resources
+- Added enemy encounter warning with fight/flee options
+- Created stake selection interface with Gold steppers (min 500, max player's gold)
+- Added resource selection grid with player amounts and stake steppers
+- Implemented reward preview showing expected returns and resource chances
+- Added proper modal header, body, and footer structure with consistent styling
+
+**Battle System Integration:**
+- Integrated with existing BattleSystem.vue for enemy encounters
+- Added flee-battle event handling from BattleSystem to GameWorld
+- Implemented proper battle victory handling with reward distribution
+- Added flee reward calculation (20% of current rewards)
+- Ensured enemy encounters disappear after victory or flee
+- Fixed battle damage calculation to ensure minimum 10% of attack damage
+
+**Toast Notification System:**
+- Added comprehensive toast notifications for all survival events
+- Implemented start survival toast with stake information
+- Added continue progression toast with daily rewards
+- Created battle victory toast with earned rewards
+- Added flee toast showing 20% of rewards kept
+- Implemented claim rewards toast with final reward summary
+- Ensured consistent toast styling matching existing game notifications
+- Fixed duplicate toast issues and centralized toast display logic
+
+**Game Logic & Progression:**
+- Implemented day-based progression with increasing rewards
+- Added dynamic reward scaling: Gold = (20 + days * 15) * goldMultiplier
+- Added dynamic EXP scaling: (15 + days * 10) * goldMultiplier + resourceBonus
+- Implemented resource stake system with 5% chance per resource amount
+- Added random resource drops during survival progression
+- Created proper game state management preventing multiple claims
+- Ensured Nuka Coins and resources are correctly deducted from player inventory
+- Added proper flee reward calculation and distribution
+
+**Sidebar Integration:**
+- Added new sidebar button for Survival in the Wasteland feature
+- Integrated with existing SideBar.vue component
+- Used encounter.png icon for consistency with game theme
+- Added proper modal opening/closing functionality
+
+**Modal Scroll Improvements:**
+- Fixed modal content overflow issues by adding scrollable containers
+- Added max-height and overflow-y: auto to .tab-content in QuickBarLeft.vue character modal
+- Ensured S.P.E.C.I.A.L. Stats and Bonus Modifiers sections never exceed modal boundaries
+- Implemented proper scrolling for long content in character info modal
+- Enhanced user experience by preventing modal content from breaking layout
+- Maintained all existing functionality while improving modal usability
+
+**Settlement System Enhancements:**
+- Added cost display section to Settlement Level upgrade card in SettlementStats.vue
+- Implemented resource cost preview showing Wood Scrap, Steel Scrap, and Money requirements
+- Enhanced settlement upgrade interface to match other management cards (Population, Defense, Power)
+- Added proper resource icon display for cost requirements
+- Improved user experience by showing upgrade costs before attempting upgrade
+- Prevented failed upgrade attempts by displaying requirements upfront
+- Maintained consistent styling with other settlement management cards
+
+**Code Organization & Maintenance:**
+- Created modular component structure following existing patterns
+- Implemented proper prop passing and event emission
+- Added comprehensive error handling and state validation
+- Ensured consistent naming conventions (SavageWastelandModal)
+- Added detailed code comments for maintainability
+- Fixed ESLint errors and improved code consistency
+- Maintained all existing functionality while adding new features
+
+**Bug Fixes & Improvements:**
+- Fixed enemy damage calculation to ensure realistic combat
+- Resolved flee reward display inconsistencies
+- Fixed duplicate toast notifications
+- Ensured proper state reset after flee/claim operations
+- Fixed Nuka Coins deduction when starting survival run
+- Resolved enemy encounter persistence issues
+- Fixed battle completion logic and reward distribution
+- Improved toast reward amount display accuracy
+- Fixed modal content overflow issues in character info modal
+- Resolved settlement upgrade cost display issues
+- Enhanced modal scrolling behavior for better user experience
+
+**Story System Enhancements:**
+- Added comprehensive dialogue-based quest system (Story-system) for NukeWorld game
+- Created 67 story quests spanning levels 2-50 with balanced progression
+- Implemented StoryLines (main stories) and Steps (dialogue steps) structure
+- Added player choice system with multiple dialogue options and consequences
+- Integrated resource requirements and automatic resource checking/removal
+- Implemented enemy battle integration with `startEnemyBattle` action
+- Added reward system with EXP, money, resources, weapons, armor, and aid items
+- Created reward mechanisms: `alwaysGiveReward` (boolean), `giveReward` (per option), and SPECIAL system bonuses
+- Integrated Intelligence bonuses for EXP (5% per Intelligence point) and Luck bonuses for Money (3% per Luck point)
+- Added enemy battle integration with `requiredEnemyDefeat` (enemy ID and count)
+- Implemented story progression: `startStoryLine`, `progressStory`, `completeStoryLine`, `cancelCurrentStoryLine`
+- Created Vuex store integration for character, quests, storylines, inventory, and game settings
+- Added Vue components: `QuestDialog.vue` for conversation display and `BattleSystem.vue` for combat encounters
+- Integrated toast notifications using `vue3-toastify` for displaying reward messages
+- Added speech synthesis integration for NPC messages
+- Implemented story battle reward system to prevent double rewards
+- Fixed "Claim Rewards" button to show comprehensive story rewards for story battles
+- Corrected resource ID validation to ensure all required resources exist in game data
+- Added balanced weapon rewards including firearms for levels 4-12 (Pistol, 10mm Pistol, Bow, Revolver, Hunting Rifle, Shotgun)
+- Ensured `alwaysGiveReward` is `false` for all new stories (only `true` for tutorials)
+- Maintained game balance by avoiding high-tier weapons in early game stories
+- Added proper story dependencies with `requiredStoryLineId` for logical progression
+- Implemented comprehensive reward balancing across EXP, money, items, armor, aid, and resources
+- Created diverse story themes including scavenging, settlement building, mutant threats, raider conflicts, and survival challenges
+- Added proper error handling and data integrity checks for story system
+- Enhanced user experience with clear dialogue progression and meaningful choices
+- Optimized story system performance and maintainability
+- Resolved flee reward display inconsistencies
+- Fixed duplicate toast notifications
+- Ensured proper state reset after flee/claim operations
+- Fixed Nuka Coins deduction when starting survival run
+- Resolved enemy encounter persistence issues
+- Fixed battle completion logic and reward distribution
+- Improved toast reward amount display accuracy
+- Fixed modal content overflow issues in character info modal
+- Resolved settlement upgrade cost display issues
+- Enhanced modal scrolling behavior for better user experience
+
 
 ## Getting Started
 To get started with NukeWorld, follow these steps:
