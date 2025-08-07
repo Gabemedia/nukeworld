@@ -1,6 +1,6 @@
 <template>
   <div class="map-container">
-    <l-map ref="map" :zoom="currentZoom" :center="center" :options="mapOptions" @click="onMapClick">
+    <l-map ref="map" :zoom="currentZoom" :center="center" :options="mapOptions" @click="onMapClick" @mousemove="onMapMouseMove" @mouseout="onMapMouseOut">
       <l-image-overlay :url="mapImageUrl" :bounds="mapBounds" :opacity="1"></l-image-overlay>
       <l-rectangle :bounds="playableArea" :color="'transperant'" :weight="2" :fill="false" />
       <l-marker
@@ -21,11 +21,20 @@
       </l-marker>
 
     </l-map>
+    <!-- Vis musens koordinater som en boks ved musen -->
+    <div v-if="mouseCoords && mouseScreen" class="mouse-coords-floating" :style="{ left: mouseScreen.x + 15 + 'px', top: mouseScreen.y + 15 + 'px' }">
+      X: {{ mouseCoords.lng.toFixed(0) }}, Y: {{ mouseCoords.lat.toFixed(0) }}
+    </div>
     <div v-if="showModal" class="modal" tabindex="-1" @click.self="closeModal">
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-body">
-            <QuestDetails v-if="selectedQuest" :quest="selectedQuest"></QuestDetails>
+            <QuestDetails 
+              v-if="selectedQuest" 
+              :quest="selectedQuest" 
+              @quest-updated="onQuestUpdated"
+              :key="selectedQuest.id + selectedQuest.state"
+            ></QuestDetails>
             <div v-if="selectedMarker">{{ selectedMarker.label }}</div>
           </div>
         </div>
@@ -51,45 +60,55 @@ export default {
     SettlementModal,
     LRectangle,
   },
+  props: {
+    mapImageUrl: {
+      type: String,
+      required: true
+    }
+  },
   data() {
     return {
-      center: [600, 960],
+      center: [500, 1000],
       playableArea: [
-        [350, 300], [800, 1600]
+        [350, 300], [1080, 1920]
       ],
-      mapImageUrl: require('@/assets/maps/nukemap2.webp'),
-      mapBounds: [[230, 230], [930, 1700]],
+      mapBounds: [[230, 230], [1080, 1920]],
       mapOptions: {
         zoomControl: false,
         attributionControl: false,
         scrollWheelZoom: false,
         doubleClickZoom: false,
-        dragging: true,
+        dragging: true, // Kortet kan trækkes rundt (standard)
         crs: L.CRS.Simple,
-        maxBounds: [[230, 230], [930, 1700]],
+        maxBounds: [[230, 230], [1080, 1920]],
         maxBoundsViscosity: 1.0
       },
       settlementIcon: L.icon({
         iconUrl: require('@/assets/interface/icons/settlement_marker.png'),
-        iconSize: [40, 55],
-        iconAnchor: [40, 55],
+        iconSize: [36, 54],
+        iconAnchor: [18, 54],
       }),
       showModal: false,
       selectedQuest: null,
       selectedMarker: null,
       windowWidth: window.innerWidth,
       windowHeight: window.innerHeight,
+      mouseCoords: null, // Her gemmes musens koordinater
+      mouseScreen: null, // Her gemmes musens skærmposition
     };
   },
   computed: {
     ...mapState(['quests', 'character']),
     ...mapGetters(['getResource']),
+    characterLevel() {
+      return this.character.level || 1;
+    },
     currentZoom() {
       if (this.windowWidth <= 1440) return 0;
-      if (this.windowWidth <= 1920) return 1;
-      if (this.windowWidth <= 2880) return 2;
-      if (this.windowWidth <= 3840) return 2;
-      return 3;
+      if (this.windowWidth <= 1920) return 2;
+      if (this.windowWidth <= 2880) return 3;
+      if (this.windowWidth <= 3840) return 4;
+      return 4;
     },
     filteredQuests() {
       return this.quests.filter(quest => 
@@ -97,9 +116,11 @@ export default {
         quest.lat && 
         quest.lon && 
         (quest.state === 'not-started' || quest.state === 'ready-to-claim' || quest.state === 'in-progress') &&
-        quest.levelRequirement <= this.character.level
+        quest.levelRequirement <= this.characterLevel &&
+        quest.levelRequirement > Math.max(0, this.characterLevel - 3)
       );
     },
+
   },
   watch: {
     windowWidth() {
@@ -112,6 +133,23 @@ export default {
         this.updateMapSize();
       });
     },
+    mapImageUrl() {
+      this.$nextTick(() => {
+        this.updateMapSize();
+      });
+    },
+    quests: {
+      handler(newQuests) {
+        if (this.selectedQuest) {
+          const updatedQuest = newQuests.find(q => q.id === this.selectedQuest.id);
+          if (updatedQuest) {
+            this.selectedQuest = { ...updatedQuest };
+          }
+        }
+        this.$forceUpdate();
+      },
+      deep: true
+    }
   },
   created() {
     this.updateDragging();
@@ -128,13 +166,15 @@ export default {
           }
         });
       }
+      
+
     });
   },
   beforeUnmount() {
     window.removeEventListener('resize', this.handleResize);
   },
   methods: {
-    ...mapActions(['updateSettlementMarker']),
+    ...mapActions(['updateSettlementMarker', 'updateQuest']),
     ...mapMutations(['setSettlementModalOpen']),
     updateMapSize() {
       const map = this.$refs.map?.$mapObject;
@@ -165,29 +205,29 @@ export default {
       if (quest.state === 'not-started') {
         return L.icon({
           iconUrl: require('@/assets/interface/icons/marker.png'),
-          iconSize: [30, 40],
-          iconAnchor: [12, 12],
+          iconSize: [36, 48],
+          iconAnchor: [18, 48],
           className: 'quest-marker',
         });
       } else if (quest.state === 'ready-to-claim') {
         return L.icon({
           iconUrl: require('@/assets/interface/icons/claim-quest.png'),
-          iconSize: [30, 40],
-          iconAnchor: [12, 12],
+          iconSize: [36, 48],
+          iconAnchor: [18, 48],
           className: 'claim-marker',
         });
       } else if (quest.state === 'in-progress') {
         return L.icon({
           iconUrl: require('@/assets/interface/icons/in-progress-quest.png'),
-          iconSize: [30, 40],
-          iconAnchor: [12, 12],
+          iconSize: [36, 48],
+          iconAnchor: [18, 48],
           className: 'in-progress-marker',
         });
       }
     },
     openModal(item) {
       if (Object.prototype.hasOwnProperty.call(item, 'name')) {
-        this.selectedQuest = item;
+        this.selectedQuest = { ...item };
         if (item.state === 'completed' && !item.claimed) {
           this.selectedQuest.state = 'completed';
         }
@@ -201,6 +241,25 @@ export default {
       this.selectedQuest = null;
       this.selectedMarker = null;
     },
+    onQuestUpdated(updatedQuest) {
+      this.updateQuest(updatedQuest);
+      this.selectedQuest = { ...updatedQuest };
+    },
+    onMapMouseMove(event) {
+      // For CRS.Simple svarer lat/lng til x/y
+      this.mouseCoords = event.latlng;
+      // Find musens position relativt til vinduet
+      if (event.originalEvent) {
+        this.mouseScreen = {
+          x: event.originalEvent.clientX,
+          y: event.originalEvent.clientY
+        };
+      }
+    },
+    onMapMouseOut() {
+      this.mouseCoords = null;
+      this.mouseScreen = null;
+    },
   },
 };
 </script>
@@ -213,7 +272,7 @@ export default {
   left: 0;
   width: 100%;
   height: 105%;
-  z-index: -999;
+  z-index: 1;
 }
 .leaflet-container{
   background: linear-gradient(180deg, rgb(180, 141, 102) 0%, rgb(188, 140, 87) 100%);
@@ -403,4 +462,30 @@ export default {
     line-height: 42px;
   }
 }
+.mouse-coords {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 15px;
+  z-index: 1000;
+  min-width: 180px;
+}
+.mouse-coords-floating {
+  position: fixed;
+  pointer-events: none;
+  background: rgba(0,0,0,0.85);
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 15px;
+  z-index: 99999;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+}
+
+
 </style>

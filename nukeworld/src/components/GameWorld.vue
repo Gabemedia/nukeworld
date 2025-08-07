@@ -48,7 +48,7 @@
 <script>
 import GameHeader from './GameHeader.vue';
 import SideBar from './SideBar.vue';
-import MapComponent from './data/MapComponent.vue';
+import MapComponent from './data/MapComponent2.vue';
 import QuickBar from './data/QuickBar.vue';
 import QuickBarLeft from './data/QuickBarLeft.vue';
 import QuickBarRight from './data/QuickBarRight.vue';
