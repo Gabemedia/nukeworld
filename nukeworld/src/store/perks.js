@@ -418,6 +418,177 @@ const perkDefinitions = {
     description: '+300 max health',
     requirements: { strength: 8, endurance: 10, intelligence: 7, level: 50 },
     effect: { type: 'health', value: 300 }
+  },
+
+  // === SETTLEMENT-SPECIFIC PERKS ===
+  'settlement-commander': {
+    id: 'settlement-commander',
+    name: 'Settlement Commander',
+    description: '+5 settlement attack power',
+    requirements: { strength: 4, level: 8 },
+    effect: { type: 'settlementAttack', value: 5 }
+  },
+
+  'fortress-builder': {
+    id: 'fortress-builder',
+    name: 'Fortress Builder',
+    description: '+8 settlement defense power',
+    requirements: { endurance: 5, level: 10 },
+    effect: { type: 'settlementDefense', value: 8 }
+  },
+
+  'settlement-architect': {
+    id: 'settlement-architect',
+    name: 'Settlement Architect',
+    description: '15% settlement upgrade discount',
+    requirements: { charisma: 4, intelligence: 3, level: 12 },
+    effect: { type: 'settlementUpgradeDiscount', value: 0.85 }
+  },
+
+  'settlement-healer': {
+    id: 'settlement-healer',
+    name: 'Settlement Healer',
+    description: '+0.5% chance for settlement automatic healing',
+    requirements: { intelligence: 5, level: 14 },
+    effect: { type: 'settlementAutoHeal', value: 0.005 }
+  },
+
+  'resource-master': {
+    id: 'resource-master',
+    name: 'Resource Master',
+    description: '+1% chance for automatic resource generation',
+    requirements: { agility: 4, intelligence: 4, level: 16 },
+    effect: { type: 'settlementResourceGen', value: 0.01 }
+  },
+
+  'settlement-economist': {
+    id: 'settlement-economist',
+    name: 'Settlement Economist',
+    description: '+2% chance for automatic gold generation',
+    requirements: { luck: 5, charisma: 3, level: 18 },
+    effect: { type: 'settlementGoldGen', value: 0.02 }
+  },
+
+  'settlement-scout': {
+    id: 'settlement-scout',
+    name: 'Settlement Scout',
+    description: '+5% settlement critical hit chance',
+    requirements: { perception: 4, level: 9 },
+    effect: { type: 'settlementCriticalHit', value: 0.05 }
+  },
+
+  // === ADVANCED SETTLEMENT PERKS ===
+  'warlord': {
+    id: 'warlord',
+    name: 'Warlord',
+    description: '+12 settlement attack power',
+    requirements: { strength: 7, perception: 5, level: 25 },
+    effect: { type: 'settlementAttack', value: 12 }
+  },
+
+  'defensive-master': {
+    id: 'defensive-master',
+    name: 'Defensive Master',
+    description: '+15 settlement defense power',
+    requirements: { endurance: 8, agility: 4, level: 28 },
+    effect: { type: 'settlementDefense', value: 15 }
+  },
+
+  'settlement-tycoon': {
+    id: 'settlement-tycoon',
+    name: 'Settlement Tycoon',
+    description: '25% settlement upgrade discount',
+    requirements: { charisma: 7, intelligence: 6, level: 30 },
+    effect: { type: 'settlementUpgradeDiscount', value: 0.75 }
+  },
+
+  'settlement-sage': {
+    id: 'settlement-sage',
+    name: 'Settlement Sage',
+    description: '+1% chance for settlement automatic healing',
+    requirements: { intelligence: 8, level: 32 },
+    effect: { type: 'settlementAutoHeal', value: 0.01 }
+  },
+
+  'resource-tycoon': {
+    id: 'resource-tycoon',
+    name: 'Resource Tycoon',
+    description: '+2% chance for automatic resource generation',
+    requirements: { agility: 7, intelligence: 6, level: 35 },
+    effect: { type: 'settlementResourceGen', value: 0.02 }
+  },
+
+  'gold-magnate': {
+    id: 'gold-magnate',
+    name: 'Gold Magnate',
+    description: '+4% chance for automatic gold generation',
+    requirements: { luck: 8, charisma: 6, level: 38 },
+    effect: { type: 'settlementGoldGen', value: 0.04 }
+  },
+
+  'settlement-sniper': {
+    id: 'settlement-sniper',
+    name: 'Settlement Sniper',
+    description: '+10% settlement critical hit chance',
+    requirements: { perception: 7, level: 25 },
+    effect: { type: 'settlementCriticalHit', value: 0.10 }
+  },
+
+  // === LEGENDARY SETTLEMENT PERKS ===
+  'settlement-legend': {
+    id: 'settlement-legend',
+    name: 'Settlement Legend',
+    description: '+20 settlement attack power',
+    requirements: { strength: 9, perception: 8, level: 40 },
+    effect: { type: 'settlementAttack', value: 20 }
+  },
+
+  'imperial-fortress': {
+    id: 'imperial-fortress',
+    name: 'Imperial Fortress',
+    description: '+25 settlement defense power',
+    requirements: { endurance: 9, agility: 7, level: 42 },
+    effect: { type: 'settlementDefense', value: 25 }
+  },
+
+  'settlement-emperor': {
+    id: 'settlement-emperor',
+    name: 'Settlement Emperor',
+    description: '40% settlement upgrade discount',
+    requirements: { charisma: 9, intelligence: 8, level: 45 },
+    effect: { type: 'settlementUpgradeDiscount', value: 0.60 }
+  },
+
+  'settlement-immortal': {
+    id: 'settlement-immortal',
+    name: 'Settlement Immortal',
+    description: '+2% chance for settlement automatic healing',
+    requirements: { intelligence: 10, level: 48 },
+    effect: { type: 'settlementAutoHeal', value: 0.02 }
+  },
+
+  'resource-emperor': {
+    id: 'resource-emperor',
+    name: 'Resource Emperor',
+    description: '+3% chance for automatic resource generation',
+    requirements: { agility: 9, intelligence: 8, level: 50 },
+    effect: { type: 'settlementResourceGen', value: 0.03 }
+  },
+
+  'gold-emperor': {
+    id: 'gold-emperor',
+    name: 'Gold Emperor',
+    description: '+6% chance for automatic gold generation',
+    requirements: { luck: 10, charisma: 8, level: 50 },
+    effect: { type: 'settlementGoldGen', value: 0.06 }
+  },
+
+  'settlement-legendary-scout': {
+    id: 'settlement-legendary-scout',
+    name: 'Legendary Settlement Scout',
+    description: '+15% settlement critical hit chance',
+    requirements: { perception: 9, level: 45 },
+    effect: { type: 'settlementCriticalHit', value: 0.15 }
   }
 };
 

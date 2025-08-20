@@ -49,10 +49,197 @@
                       <img :src="require('@/assets/interface/icons/gun.png')" alt="Attack">
                       <span>Attack Power: {{ settlementAttackPower }}</span>
                     </div>
+                    <div class="stat-breakdown">
+                      <div class="breakdown-item">
+                        <span class="breakdown-label">Base:</span>
+                        <span class="breakdown-value">{{ settlementBaseAttack }}</span>
+                      </div>
+                      <div class="breakdown-item" v-if="settlementStrengthAttackBonus > 0">
+                        <span class="breakdown-label">Strength:</span>
+                        <span class="breakdown-value bonus">+{{ settlementStrengthAttackBonus }}</span>
+                      </div>
+                      <div class="breakdown-item" v-if="settlementPerkAttackBonus > 0">
+                        <span class="breakdown-label">Perks:</span>
+                        <span class="breakdown-value bonus">+{{ settlementPerkAttackBonus }}</span>
+                      </div>
+                    </div>
                     <div class="stat-item">
                       <img :src="require('@/assets/interface/icons/shield.png')" alt="Defense">
                       <span>Defence Power: {{ settlementDefencePower }}</span>
                     </div>
+                    <div class="stat-breakdown">
+                      <div class="breakdown-item">
+                        <span class="breakdown-label">Base:</span>
+                        <span class="breakdown-value">{{ settlementBaseDefense }}</span>
+                      </div>
+                      <div class="breakdown-item" v-if="settlementEnduranceDefenseBonus > 0">
+                        <span class="breakdown-label">Endurance:</span>
+                        <span class="breakdown-value bonus">+{{ settlementEnduranceDefenseBonus }}</span>
+                      </div>
+                      <div class="breakdown-item" v-if="settlementPerkDefenseBonus > 0">
+                        <span class="breakdown-label">Perks:</span>
+                        <span class="breakdown-value bonus">+{{ settlementPerkDefenseBonus }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                              <!-- Settlement Bonuses & SPECIAL Effects Card -->
+              <div class="stat-card bonuses-card">
+                <div class="card-header">
+                  <img :src="require('@/assets/interface/icons/exp.png')" alt="Bonuses">
+                  <h4>Settlement Bonuses & SPECIAL Effects</h4>
+                </div>
+                <div class="stat-list">
+                  <!-- Attack Power -->
+                  <div class="stat-item">
+                    <img :src="require('@/assets/interface/icons/gun.png')" alt="Attack">
+                    <span>Attack Power: +{{ settlementStrengthAttackBonus + settlementPerkAttackBonus }}</span>
+                  </div>
+                  <div class="stat-breakdown">
+                    <div class="breakdown-item" v-if="settlementStrengthAttackBonus > 0">
+                      <span class="breakdown-label">Strength ({{ character.special.strength }}):</span>
+                      <span class="breakdown-value bonus">+{{ settlementStrengthAttackBonus }}</span>
+                    </div>
+                    <div class="breakdown-item" v-if="settlementPerkAttackBonus > 0">
+                      <span class="breakdown-label">Perks:</span>
+                      <span class="breakdown-value bonus">+{{ settlementPerkAttackBonus }}</span>
+                    </div>
+                  </div>
+                  
+                  <!-- Defense Power -->
+                  <div class="stat-item">
+                    <img :src="require('@/assets/interface/icons/shield.png')" alt="Defense">
+                    <span>Defense Power: +{{ settlementEnduranceDefenseBonus + settlementPerkDefenseBonus }}</span>
+                  </div>
+                  <div class="stat-breakdown">
+                    <div class="breakdown-item" v-if="settlementEnduranceDefenseBonus > 0">
+                      <span class="breakdown-label">Endurance ({{ character.special.endurance }}):</span>
+                      <span class="breakdown-value bonus">+{{ settlementEnduranceDefenseBonus }}</span>
+                    </div>
+                    <div class="breakdown-item" v-if="settlementPerkDefenseBonus > 0">
+                      <span class="breakdown-label">Perks:</span>
+                      <span class="breakdown-value bonus">+{{ settlementPerkDefenseBonus }}</span>
+                    </div>
+                  </div>
+                  
+                  <!-- Auto-Heal -->
+                  <div class="stat-item">
+                    <img :src="require('@/assets/interface/icons/aid/medkit.png')" alt="Auto-Heal">
+                    <span>Auto-Heal: +{{ (settlementAutoHeal * 100).toFixed(1) }}% Chance</span>
+                  </div>
+                  <div class="stat-breakdown">
+                    <div class="breakdown-item" v-if="settlementIntelligenceHealBonus > 0">
+                      <span class="breakdown-label">Intelligence ({{ character.special.intelligence }}):</span>
+                      <span class="breakdown-value bonus">+{{ (settlementIntelligenceHealBonus * 100).toFixed(1) }}%</span>
+                    </div>
+                    <div class="breakdown-item" v-if="settlementPerkHealBonus > 0">
+                      <span class="breakdown-label">Perks:</span>
+                      <span class="breakdown-value bonus">+{{ (settlementPerkHealBonus * 100).toFixed(1) }}%</span>
+                    </div>
+                  </div>
+                  
+                  <!-- Resource Generation -->
+                  <div class="stat-item">
+                    <img :src="require('@/assets/interface/icons/resources/fuel.png')" alt="Resource Gen">
+                    <span>Resource Gen: +{{ (settlementResourceGen * 100).toFixed(1) }}% Chance</span>
+                  </div>
+                  <div class="stat-breakdown">
+                    <div class="breakdown-item" v-if="settlementAgilityResourceBonus > 0">
+                      <span class="breakdown-label">Agility ({{ character.special.agility }}):</span>
+                      <span class="breakdown-value bonus">+{{ (settlementAgilityResourceBonus * 100).toFixed(1) }}%</span>
+                    </div>
+                    <div class="breakdown-item" v-if="settlementPerkResourceBonus > 0">
+                      <span class="breakdown-label">Perks:</span>
+                      <span class="breakdown-value bonus">+{{ (settlementPerkResourceBonus * 100).toFixed(1) }}%</span>
+                    </div>
+                  </div>
+                  
+                  <!-- Gold Generation -->
+                  <div class="stat-item">
+                    <img :src="require('@/assets/interface/icons/money.png')" alt="Gold Gen">
+                    <span>Gold Gen: +{{ (settlementGoldGen * 100).toFixed(1) }}% Chance</span>
+                  </div>
+                  <div class="stat-breakdown">
+                    <div class="breakdown-item" v-if="settlementLuckGoldBonus > 0">
+                      <span class="breakdown-label">Luck ({{ character.special.luck }}):</span>
+                      <span class="breakdown-value bonus">+{{ (settlementLuckGoldBonus * 100).toFixed(1) }}%</span>
+                    </div>
+                    <div class="breakdown-item" v-if="settlementPerkGoldBonus > 0">
+                      <span class="breakdown-label">Perks:</span>
+                      <span class="breakdown-value bonus">+{{ (settlementPerkGoldBonus * 100).toFixed(1) }}%</span>
+                    </div>
+                  </div>
+                  
+                  <!-- Upgrade Discount -->
+                  <div class="stat-item">
+                    <img :src="require('@/assets/interface/icons/shop.png')" alt="Upgrade Discount">
+                    <span>Upgrade Discount: -{{ ((1 - settlementUpgradeDiscount) * 100).toFixed(1) }}%</span>
+                  </div>
+                  <div class="stat-breakdown">
+                    <div class="breakdown-item" v-if="settlementCharismaDiscount > 0">
+                      <span class="breakdown-label">Charisma ({{ character.special.charisma }}):</span>
+                      <span class="breakdown-value bonus">-{{ (settlementCharismaDiscount * 100).toFixed(1) }}%</span>
+                    </div>
+                    <div class="breakdown-item" v-if="settlementPerkDiscount > 0">
+                      <span class="breakdown-label">Perks:</span>
+                      <span class="breakdown-value bonus">-{{ (settlementPerkDiscount * 100).toFixed(1) }}%</span>
+                    </div>
+                  </div>
+                  
+                  <!-- Critical Hit -->
+                  <div class="stat-item">
+                    <img :src="require('@/assets/interface/icons/gun.png')" alt="Critical Hit">
+                    <span>Critical Hit: +{{ (settlementCriticalHitChance * 100).toFixed(1) }}%</span>
+                  </div>
+                  <div class="stat-breakdown">
+                    <div class="breakdown-item" v-if="settlementPerceptionCritBonus > 0">
+                      <span class="breakdown-label">Perception ({{ character.special.perception }}):</span>
+                      <span class="breakdown-value bonus">+{{ (settlementPerceptionCritBonus * 100).toFixed(1) }}%</span>
+                    </div>
+                    <div class="breakdown-item" v-if="settlementPerkCritBonus > 0">
+                      <span class="breakdown-label">Perks:</span>
+                      <span class="breakdown-value bonus">+{{ (settlementPerkCritBonus * 100).toFixed(1) }}%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+                <!-- Take Rewards Card -->
+                <div class="stat-card rewards-card" v-if="hasPendingRewards">
+                  <div class="card-header">
+                    <img :src="require('@/assets/interface/icons/reward.png')" alt="Rewards">
+                    <h4>Pending Rewards</h4>
+                  </div>
+                  <div class="rewards-section">
+                    <div class="rewards-display">
+                      <!-- Gold Rewards -->
+                      <div class="reward-item" v-if="settlement.pendingRewards?.gold > 0">
+                        <img :src="require('@/assets/interface/icons/money.png')" alt="Gold">
+                        <span>{{ settlement.pendingRewards.gold }} Gold</span>
+                      </div>
+                      
+                      <!-- Experience Rewards -->
+                      <div class="reward-item" v-if="settlement.pendingRewards?.experience > 0">
+                        <img :src="require('@/assets/interface/icons/exp.png')" alt="Experience">
+                        <span>{{ settlement.pendingRewards.experience }} Experience</span>
+                      </div>
+                      
+                      <!-- Resource Rewards -->
+                      <div class="reward-item" v-for="resource in settlement.pendingRewards?.resources" :key="resource.id">
+                        <img :src="require(`@/assets/interface/icons/resources/${resource.img}`)" :alt="resource.name">
+                        <span>{{ resource.amount }} {{ resource.name }}</span>
+                      </div>
+                    </div>
+                    
+                    <button 
+                      @click="claimRewards" 
+                      class="claim-rewards-button"
+                      :disabled="!hasPendingRewards"
+                    >
+                      <img :src="require('@/assets/interface/icons/reward.png')" alt="Claim">
+                      <span>Take Rewards</span>
+                    </button>
                   </div>
                 </div>
 
@@ -98,8 +285,13 @@
                 <!-- Level Upgrade Card -->
                 <div class="stat-card upgrade-card">
                   <div class="card-header">
-                    <img :src="require('@/assets/interface/icons/exp.png')" alt="Level">
-                    <h4>Settlement Level</h4>
+                    <div class="card-title">
+                      <img :src="require('@/assets/interface/icons/exp.png')" alt="Level">
+                      <h4>Settlement Level</h4>
+                    </div>
+                    <div v-if="settlementUpgradeDiscount < 1" class="discount-badge">
+                      -{{ ((1 - settlementUpgradeDiscount) * 100).toFixed(1) }}% Discount
+                    </div>
                   </div>
                   <div class="upgrade-section">
                     <div class="current-level">Level {{ settlement.level }}</div>
@@ -112,11 +304,11 @@
                       <span>Upgrade Settlement</span>
                     </button>
                     <div class="cost-display">
-                      <span>Cost: {{ settings?.upgradeCosts?.level?.resource1Amount || 0 }}</span>
+                      <span>Cost: {{ Math.floor((settings?.upgradeCosts?.level?.resource1Amount || 0) * settlementUpgradeDiscount) }}</span>
                       <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.level?.resource1)?.img}`)" alt="Wood" class="resource-icon">
-                      <span>{{ settings?.upgradeCosts?.level?.resource2Amount || 0 }}</span>
+                      <span>{{ Math.floor((settings?.upgradeCosts?.level?.resource2Amount || 0) * settlementUpgradeDiscount) }}</span>
                       <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.level?.resource2)?.img}`)" alt="Steel" class="resource-icon">
-                      <span>${{ settings?.upgradeCosts?.level?.moneyCost || 0 }}</span>
+                      <span>${{ Math.floor((settings?.upgradeCosts?.level?.moneyCost || 0) * settlementUpgradeDiscount) }}</span>
                       <img :src="require('@/assets/interface/icons/money.png')" alt="Money" class="resource-icon">
                     </div>
                   </div>
@@ -125,8 +317,13 @@
                 <!-- Population Management Card -->
                 <div class="stat-card management-card">
                   <div class="card-header">
-                    <img :src="require('@/assets/interface/icons/player.png')" alt="Population">
-                    <h4>Population Management</h4>
+                    <div class="card-title">
+                      <img :src="require('@/assets/interface/icons/player.png')" alt="Population">
+                      <h4>Population Management</h4>
+                    </div>
+                    <div v-if="settlementUpgradeDiscount < 1" class="discount-badge">
+                      -{{ ((1 - settlementUpgradeDiscount) * 100).toFixed(1) }}% Discount
+                    </div>
                   </div>
                   <div class="management-section">
                     <div class="stat-row">
@@ -141,11 +338,11 @@
                       </button>
                     </div>
                     <div class="cost-display">
-                      <span>Cost: {{ settings?.upgradeCosts?.inhabitant?.resource1Amount || 0 }}</span>
+                      <span>Cost: {{ Math.floor((settings?.upgradeCosts?.inhabitant?.resource1Amount || 0) * settlementUpgradeDiscount) }}</span>
                       <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.inhabitant?.resource1)?.img}`)" alt="Wood" class="resource-icon">
-                      <span>{{ settings?.upgradeCosts?.inhabitant?.resource2Amount || 0 }}</span>
+                      <span>{{ Math.floor((settings?.upgradeCosts?.inhabitant?.resource2Amount || 0) * settlementUpgradeDiscount) }}</span>
                       <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.inhabitant?.resource2)?.img}`)" alt="Steel" class="resource-icon">
-                      <span>${{ settings?.upgradeCosts?.inhabitant?.moneyCost || 0 }}</span>
+                      <span>${{ Math.floor((settings?.upgradeCosts?.inhabitant?.moneyCost || 0) * settlementUpgradeDiscount) }}</span>
                       <img :src="require('@/assets/interface/icons/money.png')" alt="Money" class="resource-icon">
                     </div>
                   </div>
@@ -154,8 +351,13 @@
                 <!-- Infrastructure Management Cards -->
                 <div class="stat-card management-card">
                   <div class="card-header">
-                    <img :src="require('@/assets/interface/icons/shield.png')" alt="Defense">
-                    <h4>Defense Management</h4>
+                    <div class="card-title">
+                      <img :src="require('@/assets/interface/icons/shield.png')" alt="Defense">
+                      <h4>Defense Management</h4>
+                    </div>
+                    <div v-if="settlementUpgradeDiscount < 1" class="discount-badge">
+                      -{{ ((1 - settlementUpgradeDiscount) * 100).toFixed(1) }}% Discount
+                    </div>
                   </div>
                   <div class="management-section">
                     <div class="stat-row">
@@ -170,11 +372,11 @@
                       </button>
                     </div>
                     <div class="cost-display">
-                      <span>Cost: {{ settings?.upgradeCosts?.defences?.resource1Amount || 0 }}</span>
+                      <span>Cost: {{ Math.floor((settings?.upgradeCosts?.defences?.resource1Amount || 0) * settlementUpgradeDiscount) }}</span>
                       <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.defences?.resource1)?.img}`)" alt="Wood" class="resource-icon">
-                      <span>{{ settings?.upgradeCosts?.defences?.resource2Amount || 0 }}</span>
+                      <span>{{ Math.floor((settings?.upgradeCosts?.defences?.resource2Amount || 0) * settlementUpgradeDiscount) }}</span>
                       <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.defences?.resource2)?.img}`)" alt="Steel" class="resource-icon">
-                      <span>${{ settings?.upgradeCosts?.defences?.moneyCost || 0 }}</span>
+                      <span>${{ Math.floor((settings?.upgradeCosts?.defences?.moneyCost || 0) * settlementUpgradeDiscount) }}</span>
                       <img :src="require('@/assets/interface/icons/money.png')" alt="Money" class="resource-icon">
                     </div>
                   </div>
@@ -182,8 +384,13 @@
 
                 <div class="stat-card management-card">
                   <div class="card-header">
-                    <img :src="require('@/assets/interface/icons/resources/fuel.png')" alt="Power">
-                    <h4>Power Management</h4>
+                    <div class="card-title">
+                      <img :src="require('@/assets/interface/icons/resources/fuel.png')" alt="Power">
+                      <h4>Power Management</h4>
+                    </div>
+                    <div v-if="settlementUpgradeDiscount < 1" class="discount-badge">
+                      -{{ ((1 - settlementUpgradeDiscount) * 100).toFixed(1) }}% Discount
+                    </div>
                   </div>
                   <div class="management-section">
                     <div class="stat-row">
@@ -198,11 +405,11 @@
                       </button>
                     </div>
                     <div class="cost-display">
-                      <span>Cost: {{ settings?.upgradeCosts?.power?.resource1Amount || 0 }}</span>
+                      <span>Cost: {{ Math.floor((settings?.upgradeCosts?.power?.resource1Amount || 0) * settlementUpgradeDiscount) }}</span>
                       <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.power?.resource1)?.img}`)" alt="Wood" class="resource-icon">
-                      <span>{{ settings?.upgradeCosts?.power?.resource2Amount || 0 }}</span>
+                      <span>{{ Math.floor((settings?.upgradeCosts?.power?.resource2Amount || 0) * settlementUpgradeDiscount) }}</span>
                       <img :src="require(`@/assets/interface/icons/resources/${resources.find(r => r.id === settings?.upgradeCosts?.power?.resource2)?.img}`)" alt="Steel" class="resource-icon">
-                      <span>${{ settings?.upgradeCosts?.power?.moneyCost || 0 }}</span>
+                      <span>${{ Math.floor((settings?.upgradeCosts?.power?.moneyCost || 0) * settlementUpgradeDiscount) }}</span>
                       <img :src="require('@/assets/interface/icons/money.png')" alt="Money" class="resource-icon">
                     </div>
                   </div>
@@ -337,11 +544,33 @@ export default {
   },
   computed: {
     ...mapState('settlement', ['settlement', 'settings']),
-    ...mapState(['resources']),
+    ...mapState(['resources', 'character']),
     ...mapGetters('settlement', [
       'settlementAttackPower',
       'settlementDefencePower',
-      'canUpgradeLevel'
+      'settlementUpgradeDiscount',
+      'settlementAutoHeal',
+      'settlementResourceGen',
+      'settlementGoldGen',
+      'settlementCriticalHitChance',
+      'canUpgradeLevel',
+      // Detailed breakdown getters
+      'settlementBaseAttack',
+      'settlementStrengthAttackBonus',
+      'settlementPerkAttackBonus',
+      'settlementBaseDefense',
+      'settlementEnduranceDefenseBonus',
+      'settlementPerkDefenseBonus',
+      'settlementCharismaDiscount',
+      'settlementPerkDiscount',
+      'settlementIntelligenceHealBonus',
+      'settlementPerkHealBonus',
+      'settlementAgilityResourceBonus',
+      'settlementPerkResourceBonus',
+      'settlementLuckGoldBonus',
+      'settlementPerkGoldBonus',
+      'settlementPerceptionCritBonus',
+      'settlementPerkCritBonus'
     ]),
     formatLastAttack() {
       if (!this.settlement.lastAttack) return 'Never';
@@ -357,6 +586,13 @@ export default {
     canHealSettlement() {
       return this.settlement.health < this.settlement.maxHealth && this.$store.state.character.money >= 100;
     },
+    
+    hasPendingRewards() {
+      if (!this.settlement.pendingRewards) return false;
+      return this.settlement.pendingRewards.gold > 0 || 
+             this.settlement.pendingRewards.experience > 0 || 
+             (this.settlement.pendingRewards.resources && this.settlement.pendingRewards.resources.length > 0);
+    }
 
   },
   watch: {
@@ -376,7 +612,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('settlement', ['upgradeSettlement']),
+    ...mapActions('settlement', ['upgradeSettlement', 'claimPendingRewards']),
     changeTab(tab) {
       this.activeTab = tab;
     },
@@ -391,15 +627,15 @@ export default {
             <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
               <div class="d-flex align-items-start justify-content-start reward-info mb-2">
                 <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.level?.resource1)?.img}`)}" title="${this.getResourceName(this.settings?.upgradeCosts?.level?.resource1)}" style="width: 20px;" class="me-2">
-                <span>${this.settings?.upgradeCosts?.level?.resource1Amount || 0} ${this.getResourceName(this.settings?.upgradeCosts?.level?.resource1)}</span>
+                <span>${Math.floor((this.settings?.upgradeCosts?.level?.resource1Amount || 0) * this.settlementUpgradeDiscount)} ${this.getResourceName(this.settings?.upgradeCosts?.level?.resource1)}</span>
               </div>
               <div class="d-flex align-items-start justify-content-start reward-info mb-2">
                 <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.level?.resource2)?.img}`)}" title="${this.getResourceName(this.settings?.upgradeCosts?.level?.resource2)}" style="width: 20px;" class="me-2">
-                <span>${this.settings?.upgradeCosts?.level?.resource2Amount || 0} ${this.getResourceName(this.settings?.upgradeCosts?.level?.resource2)}</span>
+                <span>${Math.floor((this.settings?.upgradeCosts?.level?.resource2Amount || 0) * this.settlementUpgradeDiscount)} ${this.getResourceName(this.settings?.upgradeCosts?.level?.resource2)}</span>
               </div>
               <div class="d-flex align-items-start justify-content-start reward-info mb-2">
                 <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
-                <span>$${this.settings?.upgradeCosts?.level?.moneyCost || 0}</span>
+                <span>$${Math.floor((this.settings?.upgradeCosts?.level?.moneyCost || 0) * this.settlementUpgradeDiscount)}</span>
               </div>
             </div>
           </div>`;
@@ -425,15 +661,15 @@ export default {
             <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
               <div class="d-flex align-items-start justify-content-start reward-info mb-2">
                 <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.defences?.resource1)?.img}`)}" title="${this.getResourceName(this.settings?.upgradeCosts?.defences?.resource1)}" style="width: 20px;" class="me-2">
-                <span>${this.settings?.upgradeCosts?.defences?.resource1Amount || 0} ${this.getResourceName(this.settings?.upgradeCosts?.defences?.resource1)}</span>
+                <span>${Math.floor((this.settings?.upgradeCosts?.defences?.resource1Amount || 0) * this.settlementUpgradeDiscount)} ${this.getResourceName(this.settings?.upgradeCosts?.defences?.resource1)}</span>
               </div>
               <div class="d-flex align-items-start justify-content-start reward-info mb-2">
                 <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.defences?.resource2)?.img}`)}" title="${this.getResourceName(this.settings?.upgradeCosts?.defences?.resource2)}" style="width: 20px;" class="me-2">
-                <span>${this.settings?.upgradeCosts?.defences?.resource2Amount || 0} ${this.getResourceName(this.settings?.upgradeCosts?.defences?.resource2)}</span>
+                <span>${Math.floor((this.settings?.upgradeCosts?.defences?.resource2Amount || 0) * this.settlementUpgradeDiscount)} ${this.getResourceName(this.settings?.upgradeCosts?.defences?.resource2)}</span>
               </div>
               <div class="d-flex align-items-start justify-content-start reward-info mb-2">
                 <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
-                <span>$${this.settings?.upgradeCosts?.defences?.moneyCost || 0}</span>
+                <span>$${Math.floor((this.settings?.upgradeCosts?.defences?.moneyCost || 0) * this.settlementUpgradeDiscount)}</span>
               </div>
             </div>
           </div>`;
@@ -459,15 +695,15 @@ export default {
             <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
               <div class="d-flex align-items-start justify-content-start reward-info mb-2">
                 <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.power?.resource1)?.img}`)}" title="${this.getResourceName(this.settings?.upgradeCosts?.power?.resource1)}" style="width: 20px;" class="me-2">
-                <span>${this.settings?.upgradeCosts?.power?.resource1Amount || 0} ${this.getResourceName(this.settings?.upgradeCosts?.power?.resource1)}</span>
+                <span>${Math.floor((this.settings?.upgradeCosts?.power?.resource1Amount || 0) * this.settlementUpgradeDiscount)} ${this.getResourceName(this.settings?.upgradeCosts?.power?.resource1)}</span>
               </div>
               <div class="d-flex align-items-start justify-content-start reward-info mb-2">
                 <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.power?.resource2)?.img}`)}" title="${this.getResourceName(this.settings?.upgradeCosts?.power?.resource2)}" style="width: 20px;" class="me-2">
-                <span>${this.settings?.upgradeCosts?.power?.resource2Amount || 0} ${this.getResourceName(this.settings?.upgradeCosts?.power?.resource2)}</span>
+                <span>${Math.floor((this.settings?.upgradeCosts?.power?.resource2Amount || 0) * this.settlementUpgradeDiscount)} ${this.getResourceName(this.settings?.upgradeCosts?.power?.resource2)}</span>
               </div>
               <div class="d-flex align-items-start justify-content-start reward-info mb-2">
                 <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
-                <span>$${this.settings?.upgradeCosts?.power?.moneyCost || 0}</span>
+                <span>$${Math.floor((this.settings?.upgradeCosts?.power?.moneyCost || 0) * this.settlementUpgradeDiscount)}</span>
               </div>
             </div>
           </div>`;
@@ -484,15 +720,15 @@ export default {
     },
     async addInhabitant() {
       try {
-        const moneyCost = this.settings?.upgradeCosts?.inhabitant?.moneyCost || 0;
+        const moneyCost = Math.floor((this.settings?.upgradeCosts?.inhabitant?.moneyCost || 0) * this.settlementUpgradeDiscount);
         const hasEnoughMoney = await this.$store.dispatch('checkMoney', moneyCost);
         if (!hasEnoughMoney) {
           throw new Error('Not enough money');
         }
 
         const resources = [
-          { id: this.settings.upgradeCosts.inhabitant.resource1, amount: this.settings.upgradeCosts.inhabitant.resource1Amount },
-          { id: this.settings.upgradeCosts.inhabitant.resource2, amount: this.settings.upgradeCosts.inhabitant.resource2Amount }
+          { id: this.settings.upgradeCosts.inhabitant.resource1, amount: Math.floor(this.settings.upgradeCosts.inhabitant.resource1Amount * this.settlementUpgradeDiscount) },
+          { id: this.settings.upgradeCosts.inhabitant.resource2, amount: Math.floor(this.settings.upgradeCosts.inhabitant.resource2Amount * this.settlementUpgradeDiscount) }
         ];
 
         const hasResources = await this.$store.dispatch('checkRequiredResources', resources);
@@ -511,15 +747,15 @@ export default {
             <div class="d-flex flex-column align-items-start justify-content-start mb-1 flex-grow-1">
               <div class="d-flex align-items-start justify-content-start reward-info mb-2">
                 <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.inhabitant?.resource1)?.img}`)}" title="${this.getResourceName(this.settings?.upgradeCosts?.inhabitant?.resource1)}" style="width: 20px;" class="me-2">
-                <span>${this.settings?.upgradeCosts?.inhabitant?.resource1Amount || 0} ${this.getResourceName(this.settings?.upgradeCosts?.inhabitant?.resource1)}</span>
+                <span>${Math.floor((this.settings?.upgradeCosts?.inhabitant?.resource1Amount || 0) * this.settlementUpgradeDiscount)} ${this.getResourceName(this.settings?.upgradeCosts?.inhabitant?.resource1)}</span>
               </div>
               <div class="d-flex align-items-start justify-content-start reward-info mb-2">
                 <img src="${require(`@/assets/interface/icons/resources/${this.resources.find(r => r.id === this.settings?.upgradeCosts?.inhabitant?.resource2)?.img}`)}" title="${this.getResourceName(this.settings?.upgradeCosts?.inhabitant?.resource2)}" style="width: 20px;" class="me-2">
-                <span>${this.settings?.upgradeCosts?.inhabitant?.resource2Amount || 0} ${this.getResourceName(this.settings?.upgradeCosts?.inhabitant?.resource2)}</span>
+                <span>${Math.floor((this.settings?.upgradeCosts?.inhabitant?.resource2Amount || 0) * this.settlementUpgradeDiscount)} ${this.getResourceName(this.settings?.upgradeCosts?.inhabitant?.resource2)}</span>
               </div>
               <div class="d-flex align-items-start justify-content-start reward-info mb-2">
                 <img src="${require('@/assets/interface/icons/money.png')}" title="Money" style="width: 20px;" class="me-2">
-                <span>$${this.settings?.upgradeCosts?.inhabitant?.moneyCost || 0}</span>
+                <span>$${Math.floor((this.settings?.upgradeCosts?.inhabitant?.moneyCost || 0) * this.settlementUpgradeDiscount)}</span>
               </div>
             </div>
           </div>`;
@@ -654,6 +890,66 @@ export default {
           toastClassName: 'quest-toast-container',
           bodyClassName: 'quest-toast-body quest-toast'
         });
+      }
+    },
+    
+    async claimRewards() {
+      try {
+        // Store the rewards before claiming them
+        const rewards = { ...this.settlement.pendingRewards };
+        
+        await this.claimPendingRewards();
+        
+        // Build detailed reward message
+        let rewardItems = [];
+        
+        if (rewards.gold > 0) {
+          rewardItems.push(`
+            <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+              <img src="${require('@/assets/interface/icons/money.png')}" title="Gold" style="width: 20px;" class="me-2">
+              <span>${rewards.gold} Gold</span>
+            </div>
+          `);
+        }
+        
+        if (rewards.experience > 0) {
+          rewardItems.push(`
+            <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+              <img src="${require('@/assets/interface/icons/exp.png')}" title="Experience" style="width: 20px;" class="me-2">
+              <span>${rewards.experience} Experience</span>
+            </div>
+          `);
+        }
+        
+        if (rewards.resources && rewards.resources.length > 0) {
+          rewards.resources.forEach(resource => {
+            rewardItems.push(`
+              <div class="d-flex align-items-start justify-content-start reward-info mb-2">
+                <img src="${require(`@/assets/interface/icons/resources/${resource.img}`)}" title="${resource.name}" style="width: 20px;" class="me-2">
+                <span>${resource.amount} ${resource.name}</span>
+              </div>
+            `);
+          });
+        }
+        
+        const successMessage = `
+          <div class="d-flex flex-column align-items-start justify-content-start h-100">
+            <p class="text-left fw-bold mb-1">Rewards Claimed!</p>
+            <p class="text-left fw-semi mb-2">Your settlement rewards have been added to your inventory:</p>
+            ${rewardItems.join('')}
+          </div>
+        `;
+        
+        toast.success(successMessage, {
+          dangerouslyHTMLString: true,
+          autoClose: 3000,
+          hideProgressBar: false,
+          icon: false,
+          toastClassName: 'quest-toast-container',
+          bodyClassName: 'quest-toast-body quest-toast'
+        });
+      } catch (error) {
+        console.error('Error claiming rewards:', error);
       }
     }
   }
@@ -833,6 +1129,8 @@ export default {
   &.environment-card { border-left: 3px solid #ffa500; }
   &.upgrade-card { border-left: 3px solid #ffd700; }
   &.management-card { border-left: 3px solid #9370db; }
+  &.bonuses-card { border-left: 3px solid #00ffff; }
+  &.rewards-card { border-left: 3px solid #ffd700; }
 }
 
 .card-header {
@@ -842,6 +1140,7 @@ export default {
   margin-bottom: 15px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 10px;
+  justify-content: space-between;
 
   img {
     width: 20px;
@@ -853,6 +1152,23 @@ export default {
     font-size: 14px;
     margin: 0;
     text-transform: uppercase;
+  }
+
+  .card-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .discount-badge {
+    background: rgba(0, 255, 0, 0.2);
+    color: #00ff00;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: bold;
+    margin-left: auto;
+    border: 1px solid #00ff00;
   }
 }
 
@@ -914,8 +1230,95 @@ export default {
     align-items: stretch;
     gap: 8px;
   }
+}
 
+.stat-breakdown {
+  margin-left: 22px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  padding-left: 8px;
+  border-left: 2px solid rgba(255, 255, 255, 0.1);
+}
 
+.breakdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  margin-bottom: 2px;
+  
+  .breakdown-label {
+    color: #aaa;
+    font-style: italic;
+  }
+  
+  .breakdown-value {
+    color: #fff;
+    font-weight: bold;
+    
+    &.bonus {
+      color: #00ff00;
+    }
+  }
+}
+
+.rewards-section {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.rewards-display {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.reward-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  font-size: 12px;
+  color: #fff;
+  
+  img {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+.claim-rewards-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #ffd700, #ffed4e);
+  border: none;
+  border-radius: 6px;
+  color: #000;
+  font-weight: bold;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  img {
+    width: 16px;
+    height: 16px;
+  }
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 215, 0, 0.4);
+  }
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 .radiation-display {

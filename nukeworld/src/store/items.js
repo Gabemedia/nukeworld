@@ -367,6 +367,17 @@ export default [
   {
     "id": 33,
     "uuid": uuidv4(),
+    "name": "AK-47 Legendary",
+    "desc": "A legendary legendary assault rifle known for its reliability and power.",
+    "attack": 48,
+    "defence": 0,
+    "state": "none",
+    "price": 99999,
+    "img": "ak47_legendary.png"
+  },
+  {
+    "id": 34,
+    "uuid": uuidv4(),
     "name": "Tommy Gun",
     "desc": "Tommy Gun is a powerful ranged weapon. It is used for short-range combat.",
     "attack": 28,
@@ -376,7 +387,7 @@ export default [
     "img": "tommy_gun.png"
   },
   {
-    "id": 34,
+    "id": 35,
     "uuid": uuidv4(),
     "name": "LMG",
     "desc": "LMG is a powerful ranged weapon. It is used for short-range combat.",
@@ -387,7 +398,7 @@ export default [
     "img": "lmg.png"
   },
   {
-    "id": 35,
+    "id": 36,
     "uuid": uuidv4(),
     "name": "Minigun",
     "desc": "Minigun is a powerful ranged weapon. It is used for short-range combat.",
@@ -398,7 +409,7 @@ export default [
     "img": "minigun.png"
   },
   {
-    "id": 36,
+    "id": 37,
     "uuid": uuidv4(),
     "name": "Flamethrower",
     "desc": "Flamethrower is a powerful ranged weapon. It is used for short-range combat.",
@@ -409,7 +420,7 @@ export default [
     "img": "flamethrower.png"
   },
   {
-    "id": 37,
+    "id": 38,
     "uuid": uuidv4(),
     "name": "Rocket Launcher",
     "desc": "Rocket Launcher is a heavy launcher weapon. It is used for crushing enemies.",
@@ -420,7 +431,7 @@ export default [
     "img": "rocket_launcher.png"
   },
   {
-    "id": 38,
+    "id": 39,
     "uuid": uuidv4(),
     "name": "Santa Gloves",
     "desc": "Santa Gloves OMG!!!",
@@ -432,7 +443,7 @@ export default [
   },
   // Variants of existing weapons
   {
-    "id": 39,
+    "id": 40,
     "uuid": uuidv4(),
     "name": "Combat Knuckles",
     "desc": "Enhanced knuckles with reinforced material for maximum impact.",
@@ -443,7 +454,7 @@ export default [
     "img": "knuckles.png"
   },
   {
-    "id": 40,
+    "id": 41,
     "uuid": uuidv4(),
     "name": "Heavy Wrench",
     "desc": "A massive wrench that delivers devastating blows.",
@@ -454,7 +465,7 @@ export default [
     "img": "wrench.png"
   },
   {
-    "id": 41,
+    "id": 42,
     "uuid": uuidv4(),
     "name": "Sledgehammer",
     "desc": "A heavy sledgehammer that crushes everything in its path.",
@@ -465,7 +476,7 @@ export default [
     "img": "hammer.png"
   },
   {
-    "id": 42,
+    "id": 43,
     "uuid": uuidv4(),
     "name": "Reinforced Baseball Bat",
     "desc": "A baseball bat reinforced with metal for enhanced durability.",
@@ -476,7 +487,7 @@ export default [
     "img": "baseball_bat.png"
   },
   {
-    "id": 43,
+    "id": 44,
     "uuid": uuidv4(),
     "name": "Tactical Spear",
     "desc": "A military-grade spear with tactical enhancements.",
@@ -487,7 +498,7 @@ export default [
     "img": "spear.png"
   },
   {
-    "id": 44,
+    "id": 45,
     "uuid": uuidv4(),
     "name": "Combat Spade",
     "desc": "A spade modified for combat with sharpened edges.",
@@ -498,7 +509,7 @@ export default [
     "img": "spade.png"
   },
   {
-    "id": 45,
+    "id": 46,
     "uuid": uuidv4(),
     "name": "Heavy Fire Axe",
     "desc": "A massive fire axe that can cleave through anything.",
@@ -509,7 +520,7 @@ export default [
     "img": "fire_axe.png"
   },
   {
-    "id": 46,
+    "id": 47,
     "uuid": uuidv4(),
     "name": "Dual Battle Axe",
     "desc": "A pair of battle axes for devastating dual-wield attacks.",
@@ -520,7 +531,7 @@ export default [
     "img": "battle_axe.png"
   },
   {
-    "id": 47,
+    "id": 48,
     "uuid": uuidv4(),
     "name": "Enhanced Auto Axe",
     "desc": "An upgraded auto axe with improved cutting efficiency.",
@@ -531,7 +542,7 @@ export default [
     "img": "auto_axe.png"
   },
   {
-    "id": 48,
+    "id": 49,
     "uuid": uuidv4(),
     "name": "Tactical Machete",
     "desc": "A military-grade machete with tactical enhancements.",
@@ -542,7 +553,7 @@ export default [
     "img": "machete.png"
   },
   {
-    "id": 49,
+    "id": 50,
     "uuid": uuidv4(),
     "name": "Heavy Meat Cleaver",
     "desc": "A massive cleaver that can slice through anything.",
@@ -553,7 +564,7 @@ export default [
     "img": "meat_cleaver.png"
   },
   {
-    "id": 50,
+    "id": 51,
     "uuid": uuidv4(),
     "name": "Enhanced Coil Stick",
     "desc": "An upgraded coil stick with improved electrical output.",
@@ -564,7 +575,7 @@ export default [
     "img": "coil_stick.png"
   },
   {
-    "id": 51,
+    "id": 52,
     "uuid": uuidv4(),
     "name": "Heavy Drill",
     "desc": "A massive drill that can pierce through any material.",
@@ -575,7 +586,7 @@ export default [
     "img": "drill.png"
   },
   {
-    "id": 52,
+    "id": 53,
     "uuid": uuidv4(),
     "name": "Compound Bow",
     "desc": "A modern compound bow with enhanced accuracy and power.",
@@ -586,7 +597,7 @@ export default [
     "img": "bow.png"
   },
   {
-    "id": 53,
+    "id": 54,
     "uuid": uuidv4(),
     "name": "Enhanced Flare Gun",
     "desc": "An upgraded flare gun with incendiary ammunition.",
@@ -597,7 +608,7 @@ export default [
     "img": "flare_gun.png"
   },
   {
-    "id": 54,
+    "id": 55,
     "uuid": uuidv4(),
     "name": "Tactical Pistol",
     "desc": "A tactical pistol with enhanced accuracy and stopping power.",
@@ -608,7 +619,7 @@ export default [
     "img": "pistol.png"
   },
   {
-    "id": 55,
+    "id": 56,
     "uuid": uuidv4(),
     "name": "Heavy 10mm Pistol",
     "desc": "An upgraded 10mm pistol with enhanced firepower.",
@@ -619,7 +630,7 @@ export default [
     "img": "10mm_pistol.png"
   },
   {
-    "id": 56,
+    "id": 57,
     "uuid": uuidv4(),
     "name": "Magnum Revolver",
     "desc": "A powerful magnum revolver with devastating stopping power.",
@@ -630,7 +641,7 @@ export default [
     "img": "revolver.png"
   },
   {
-    "id": 57,
+    "id": 58,
     "uuid": uuidv4(),
     "name": "Enhanced Laser Pistol",
     "desc": "An upgraded laser pistol with improved energy output.",
@@ -641,7 +652,7 @@ export default [
     "img": "laser_pistol.png"
   },
   {
-    "id": 58,
+    "id": 59,
     "uuid": uuidv4(),
     "name": "Tactical Shotgun",
     "desc": "A tactical shotgun with enhanced range and stopping power.",
@@ -652,7 +663,7 @@ export default [
     "img": "shotgun.png"
   },
   {
-    "id": 59,
+    "id": 60,
     "uuid": uuidv4(),
     "name": "Precision Sniper Rifle",
     "desc": "A high-precision sniper rifle with advanced optics.",
@@ -663,7 +674,7 @@ export default [
     "img": "sniper_rifle.png"
   },
   {
-    "id": 60,
+    "id": 61,
     "uuid": uuidv4(),
     "name": "Heavy SMG",
     "desc": "A heavy SMG with increased firepower and magazine capacity.",
@@ -674,7 +685,7 @@ export default [
     "img": "smg.png"
   },
   {
-    "id": 61,
+    "id": 62,
     "uuid": uuidv4(),
     "name": "Tactical Assault Rifle",
     "desc": "A tactical assault rifle with enhanced accuracy and firepower.",
@@ -685,7 +696,7 @@ export default [
     "img": "assault_rifle.png"
   },
   {
-    "id": 62,
+    "id": 63,
     "uuid": uuidv4(),
     "name": "Heavy LMG",
     "desc": "A heavy LMG with increased firepower and stability.",
@@ -696,7 +707,7 @@ export default [
     "img": "lmg.png"
   },
   {
-    "id": 63,
+    "id": 64,
     "uuid": uuidv4(),
     "name": "Heavy Minigun",
     "desc": "A massive minigun with devastating firepower.",
@@ -707,7 +718,7 @@ export default [
     "img": "minigun.png"
   },
   {
-    "id": 64,
+    "id": 65,
     "uuid": uuidv4(),
     "name": "Heavy Flamethrower",
     "desc": "A massive flamethrower that incinerates everything in its path.",

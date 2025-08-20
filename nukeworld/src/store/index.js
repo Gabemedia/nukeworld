@@ -1408,6 +1408,10 @@ const actions = {
       perk.requirements
     );
   },
+
+  getResourceList({ state }) {
+    return state.resources.filter(r => r.price !== -1 && r.id !== 0);
+  },
   // === Savage in the Wasteland Actions ===
   startSavage({ commit }) {
     commit('startSavage');

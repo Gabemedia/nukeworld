@@ -24,7 +24,12 @@ const initialState = {
     currentEnemyId: null,
     upgrades: [],
     resources: [],
-    position: null
+    position: null,
+    pendingRewards: {
+      gold: 0,
+      experience: 0,
+      resources: []
+    }
   },
   // Add settings with defaults
   settings: JSON.parse(localStorage.getItem('settlementSettings')) || {
@@ -44,38 +49,38 @@ const initialState = {
     },
     upgradeCosts: {
       defences: {
-        resource1: 3, // Wood Scrap
-        resource1Amount: 10,
+        resource1: 7, // Ammunition Scrap
+        resource1Amount: 5,
         resource2: 2, // Steel Scrap
-        resource2Amount: 10,
+        resource2Amount: 5,
         amount: 10, // Defence increase amount
-        moneyCost: 1000
+        moneyCost: 500
       },
       power: {
-        resource1: 5, // Wood Scrap
+        resource1: 6, // Electronic Scrap
         resource1Amount: 10,
-        resource2: 2, // Steel Scrap
+        resource2: 10, // Battery Scrap
         resource2Amount: 10,
         amount: 10, // Power increase amount
-        moneyCost: 1000
+        moneyCost: 500
       },
       level: {
         resource1: 1, // Wood Scrap
-        resource1Amount: 25,
+        resource1Amount: 10,
         resource2: 2, // Steel Scrap
-        resource2Amount: 25,
+        resource2Amount: 10,
         healthIncrease: 50,
         inhabitantsIncrease: 5,
-        defencesIncrease: 25,
-        powerIncrease: 25,
-        moneyCost: 2500
+        defencesIncrease: 5,
+        powerIncrease: 5,
+        moneyCost: 1000
       },
       inhabitant: {
         resource1: 1, // Wood Scrap
         resource1Amount: 5,
         resource2: 2, // Steel Scrap
         resource2Amount: 5,
-        moneyCost: 500
+        moneyCost: 250
       }
     }
   }
@@ -230,6 +235,41 @@ const mutations = {
     state.settlement.radiationReductionActive = false;
     state.settlement.radiationReductionStart = null;
     localStorage.setItem('settlement', JSON.stringify(state.settlement));
+  },
+  
+  addPendingReward(state, { type, amount, resourceId, resourceName, resourceImg }) {
+    if (!state.settlement.pendingRewards) {
+      state.settlement.pendingRewards = { gold: 0, experience: 0, resources: [] };
+    }
+    
+    switch(type) {
+      case 'gold':
+        state.settlement.pendingRewards.gold += amount;
+        break;
+      case 'experience':
+        state.settlement.pendingRewards.experience += amount;
+        break;
+      case 'resource': {
+        const existingResource = state.settlement.pendingRewards.resources.find(r => r.id === resourceId);
+        if (existingResource) {
+          existingResource.amount += amount;
+        } else {
+          state.settlement.pendingRewards.resources.push({
+            id: resourceId,
+            name: resourceName,
+            img: resourceImg,
+            amount: amount
+          });
+        }
+        break;
+      }
+    }
+    localStorage.setItem('settlement', JSON.stringify(state.settlement));
+  },
+  
+  clearPendingRewards(state) {
+    state.settlement.pendingRewards = { gold: 0, experience: 0, resources: [] };
+    localStorage.setItem('settlement', JSON.stringify(state.settlement));
   }
 };
 
@@ -254,15 +294,69 @@ const actions = {
       currentEnemyId: null,
       upgrades: [],
       resources: [],
-      position
+      position,
+      pendingRewards: {
+        gold: 0,
+        experience: 0,
+        resources: []
+      }
     };
     commit('setSettlement', settlement);
     localStorage.setItem('settlement', JSON.stringify(settlement));
     return settlement;
   },
   
-  async updateSettlement({ commit, state, dispatch }) {
+  async updateSettlement({ commit, state, dispatch, getters }) {
     const now = Date.now();
+    
+        // Apply automatic settlement generation based on SPECIAL and perks (single function)
+    const totalGenRate = getters.settlementAutoHeal + getters.settlementResourceGen + getters.settlementGoldGen;
+    
+    if (totalGenRate > 0 && Math.random() < totalGenRate) {
+      // Determine which type of reward to give based on relative chances
+      const healChance = getters.settlementAutoHeal / totalGenRate;
+      const resourceChance = getters.settlementResourceGen / totalGenRate;
+      
+      const randomValue = Math.random();
+      let expGained = Math.floor(Math.random() * 3) + 1; // 1-3 exp
+      
+             if (randomValue < healChance && state.settlement.health < state.settlement.maxHealth) {
+         // Give healing reward (no toast, just heal)
+         const healAmount = Math.floor(Math.random() * 10) + 5; // 5-15 health per heal
+         commit('updateSettlementHealth', healAmount);
+         
+         // Add experience to pending rewards
+         commit('addPendingReward', { type: 'experience', amount: expGained });
+       } else if (randomValue < healChance + resourceChance) {
+         // Give resource reward (add to pending rewards)
+         const resourceList = await dispatch('getResourceList', null, { root: true });
+         if (resourceList && resourceList.length > 0) {
+           const randomResource = resourceList[Math.floor(Math.random() * resourceList.length)];
+           if (randomResource && randomResource.id !== 0) {
+             // Add to pending rewards instead of giving immediately
+             commit('addPendingReward', { 
+               type: 'resource', 
+               amount: 1, 
+               resourceId: randomResource.id, 
+               resourceName: randomResource.name, 
+               resourceImg: randomResource.img 
+             });
+             
+             // Add experience to pending rewards
+             commit('addPendingReward', { type: 'experience', amount: expGained });
+           }
+         }
+       } else {
+         // Give gold reward (add to pending rewards)
+         const goldAmount = Math.floor(Math.random() * 10) + 1; // 1-10 gold
+         
+         // Add to pending rewards instead of giving immediately
+         commit('addPendingReward', { type: 'gold', amount: goldAmount });
+         
+         // Add experience to pending rewards
+         commit('addPendingReward', { type: 'experience', amount: expGained });
+       }
+    }
     
     // Apply radiation reduction if active - COMPLETELY STOP all radiation when clean is active
     if (state.settlement.radiationReductionActive) {
@@ -315,9 +409,6 @@ const actions = {
       dispatch('updateSettlementMarker', null, { root: true });
       localStorage.removeItem('settlement');
       
-      // Close modal
-      commit('setSettlementModalOpen', false, { root: true });
-
       // Show toast
       const defeatMessage = `
         <div class="d-flex flex-column align-items-start justify-content-start h-100">
@@ -423,31 +514,31 @@ const actions = {
     };
   },
   
-  async upgradeSettlement({ commit, dispatch, state }, { type }) {
+  async upgradeSettlement({ commit, dispatch, state, getters }, { type }) {
     let requiredResources;
     let moneyCost;
     
     switch(type) {
       case 'defences':
         requiredResources = [
-          { id: state.settings.upgradeCosts.defences.resource1, amount: state.settings.upgradeCosts.defences.resource1Amount },
-          { id: state.settings.upgradeCosts.defences.resource2, amount: state.settings.upgradeCosts.defences.resource2Amount }
+          { id: state.settings.upgradeCosts.defences.resource1, amount: Math.floor(state.settings.upgradeCosts.defences.resource1Amount * getters.settlementUpgradeDiscount) },
+          { id: state.settings.upgradeCosts.defences.resource2, amount: Math.floor(state.settings.upgradeCosts.defences.resource2Amount * getters.settlementUpgradeDiscount) }
         ];
-        moneyCost = state.settings.upgradeCosts.defences.moneyCost;
+        moneyCost = Math.floor(state.settings.upgradeCosts.defences.moneyCost * getters.settlementUpgradeDiscount);
         break;
       case 'power':
         requiredResources = [
-          { id: state.settings.upgradeCosts.power.resource1, amount: state.settings.upgradeCosts.power.resource1Amount },
-          { id: state.settings.upgradeCosts.power.resource2, amount: state.settings.upgradeCosts.power.resource2Amount }
+          { id: state.settings.upgradeCosts.power.resource1, amount: Math.floor(state.settings.upgradeCosts.power.resource1Amount * getters.settlementUpgradeDiscount) },
+          { id: state.settings.upgradeCosts.power.resource2, amount: Math.floor(state.settings.upgradeCosts.power.resource2Amount * getters.settlementUpgradeDiscount) }
         ];
-        moneyCost = state.settings.upgradeCosts.power.moneyCost;
+        moneyCost = Math.floor(state.settings.upgradeCosts.power.moneyCost * getters.settlementUpgradeDiscount);
         break;
       case 'level':
         requiredResources = [
-          { id: state.settings.upgradeCosts.level.resource1, amount: state.settings.upgradeCosts.level.resource1Amount },
-          { id: state.settings.upgradeCosts.level.resource2, amount: state.settings.upgradeCosts.level.resource2Amount }
+          { id: state.settings.upgradeCosts.level.resource1, amount: Math.floor(state.settings.upgradeCosts.level.resource1Amount * getters.settlementUpgradeDiscount) },
+          { id: state.settings.upgradeCosts.level.resource2, amount: Math.floor(state.settings.upgradeCosts.level.resource2Amount * getters.settlementUpgradeDiscount) }
         ];
-        moneyCost = state.settings.upgradeCosts.level.moneyCost;
+        moneyCost = Math.floor(state.settings.upgradeCosts.level.moneyCost * getters.settlementUpgradeDiscount);
         break;
       default:
         throw new Error('Invalid upgrade type');
@@ -506,20 +597,212 @@ const actions = {
     
     // Save to localStorage
     localStorage.setItem('settlement', JSON.stringify(state.settlement));
+  },
+  
+  async claimPendingRewards({ commit, dispatch, state }) {
+    if (!state.settlement.pendingRewards) {
+      return;
+    }
+    
+    const { gold, experience, resources } = state.settlement.pendingRewards;
+    
+    // Give all rewards to player
+    if (gold > 0) {
+      await dispatch('increaseMoney', gold, { root: true });
+    }
+    
+    if (experience > 0) {
+      await dispatch('increaseExp', experience, { root: true });
+    }
+    
+    if (resources && resources.length > 0) {
+      for (const resource of resources) {
+        for (let i = 0; i < resource.amount; i++) {
+          await dispatch('addResource', resource.id, { root: true });
+        }
+      }
+    }
+    
+    // Clear pending rewards
+    commit('clearPendingRewards');
   }
 };
 
 const getters = {
-  settlementAttackPower: state => {
-    return state.settlement.inhabitants * 2 + state.settlement.power;
+  settlementAttackPower: (state, getters, rootState) => {
+    const baseAttack = state.settlement.inhabitants * 2 + state.settlement.power;
+    
+    // Add SPECIAL bonuses
+    const strengthBonus = rootState.character.special.strength * 2; // +2 per strength point
+    
+    // Add perk bonuses
+    const perkBonus = rootState.character.activePerks
+      .filter(p => p.effect.type === 'settlementAttack')
+      .reduce((sum, p) => sum + p.effect.value, 0);
+    
+    return baseAttack + strengthBonus + perkBonus;
   },
   
-  settlementDefencePower: state => {
-    return state.settlement.defences + state.settlement.power / 2;
+  settlementDefencePower: (state, getters, rootState) => {
+    const baseDefense = state.settlement.defences + state.settlement.power / 2;
+    
+    // Add SPECIAL bonuses
+    const enduranceBonus = rootState.character.special.endurance * 2; // +2 per endurance point
+    
+    // Add perk bonuses
+    const perkBonus = rootState.character.activePerks
+      .filter(p => p.effect.type === 'settlementDefense')
+      .reduce((sum, p) => sum + p.effect.value, 0);
+    
+    return baseDefense + enduranceBonus + perkBonus;
+  },
+  
+  settlementUpgradeDiscount: (state, getters, rootState) => {
+    // Add SPECIAL bonuses
+    const charismaBonus = 1 - (rootState.character.special.charisma * 0.02); // 2% discount per charisma point
+    
+    // Add perk bonuses
+    const perkBonus = rootState.character.activePerks
+      .filter(p => p.effect.type === 'settlementUpgradeDiscount')
+      .reduce((multiplier, p) => multiplier * p.effect.value, 1);
+    
+    return Math.max(charismaBonus * perkBonus, 0.5); // Min 50% of original price
+  },
+  
+  settlementAutoHeal: (state, getters, rootState) => {
+    // Add SPECIAL bonuses
+    const intelligenceBonus = rootState.character.special.intelligence * 0.02; // 2% per intelligence point
+    
+    // Add perk bonuses
+    const perkBonus = rootState.character.activePerks
+      .filter(p => p.effect.type === 'settlementAutoHeal')
+      .reduce((sum, p) => sum + p.effect.value, 0);
+    
+    return intelligenceBonus + perkBonus;
+  },
+  
+  settlementResourceGen: (state, getters, rootState) => {
+    // Add SPECIAL bonuses
+    const agilityBonus = rootState.character.special.agility * 0.02; // 2% per agility point
+    
+    // Add perk bonuses
+    const perkBonus = rootState.character.activePerks
+      .filter(p => p.effect.type === 'settlementResourceGen')
+      .reduce((sum, p) => sum + p.effect.value, 0);
+    
+    return agilityBonus + perkBonus;
+  },
+  
+  settlementGoldGen: (state, getters, rootState) => {
+    // Add SPECIAL bonuses
+    const luckBonus = rootState.character.special.luck * 0.04; // 4% per luck point
+    
+    // Add perk bonuses
+    const perkBonus = rootState.character.activePerks
+      .filter(p => p.effect.type === 'settlementGoldGen')
+      .reduce((sum, p) => sum + p.effect.value, 0);
+    
+    return luckBonus + perkBonus;
+  },
+
+  settlementCriticalHitChance: (state, getters, rootState) => {
+    // Add SPECIAL bonuses
+    const perceptionBonus = rootState.character.special.perception * 0.02; // 2% per perception point
+    
+    // Add perk bonuses
+    const perkBonus = rootState.character.activePerks
+      .filter(p => p.effect.type === 'settlementCriticalHit')
+      .reduce((sum, p) => sum + p.effect.value, 0);
+    
+    return Math.min(perceptionBonus + perkBonus, 0.5); // Max 50% crit chance
   },
   
   canUpgradeLevel: state => {
     return state.settlement.health > 50 && state.settlement.inhabitants >= state.settlement.level * 5;
+  },
+
+  // Detailed breakdown getters for UI display
+  settlementBaseAttack: (state) => {
+    return state.settlement.inhabitants * 2 + state.settlement.power;
+  },
+
+  settlementStrengthAttackBonus: (state, getters, rootState) => {
+    return rootState.character.special.strength * 2;
+  },
+
+  settlementPerkAttackBonus: (state, getters, rootState) => {
+    return rootState.character.activePerks
+      .filter(p => p.effect.type === 'settlementAttack')
+      .reduce((sum, p) => sum + p.effect.value, 0);
+  },
+
+  settlementBaseDefense: (state) => {
+    return state.settlement.defences + state.settlement.power / 2;
+  },
+
+  settlementEnduranceDefenseBonus: (state, getters, rootState) => {
+    return rootState.character.special.endurance * 2;
+  },
+
+  settlementPerkDefenseBonus: (state, getters, rootState) => {
+    return rootState.character.activePerks
+      .filter(p => p.effect.type === 'settlementDefense')
+      .reduce((sum, p) => sum + p.effect.value, 0);
+  },
+
+  settlementBaseUpgradeCost: () => {
+    return 1; // Base multiplier (no discount)
+  },
+
+  settlementCharismaDiscount: (state, getters, rootState) => {
+    return rootState.character.special.charisma * 0.02; // 2% per charisma point
+  },
+
+  settlementPerkDiscount: (state, getters, rootState) => {
+    const perkMultiplier = rootState.character.activePerks
+      .filter(p => p.effect.type === 'settlementUpgradeDiscount')
+      .reduce((multiplier, p) => multiplier * p.effect.value, 1);
+    return 1 - perkMultiplier; // Convert to discount percentage
+  },
+
+  settlementIntelligenceHealBonus: (state, getters, rootState) => {
+    return rootState.character.special.intelligence * 0.05; // 5% per intelligence point
+  },
+
+  settlementPerkHealBonus: (state, getters, rootState) => {
+    return rootState.character.activePerks
+      .filter(p => p.effect.type === 'settlementAutoHeal')
+      .reduce((sum, p) => sum + p.effect.value, 0);
+  },
+
+  settlementAgilityResourceBonus: (state, getters, rootState) => {
+    return rootState.character.special.agility * 0.05; // 5% per agility point
+  },
+
+  settlementPerkResourceBonus: (state, getters, rootState) => {
+    return rootState.character.activePerks
+      .filter(p => p.effect.type === 'settlementResourceGen')
+      .reduce((sum, p) => sum + p.effect.value, 0);
+  },
+
+  settlementLuckGoldBonus: (state, getters, rootState) => {
+    return rootState.character.special.luck * 0.05; // 5% per luck point
+  },
+
+  settlementPerkGoldBonus: (state, getters, rootState) => {
+    return rootState.character.activePerks
+      .filter(p => p.effect.type === 'settlementGoldGen')
+      .reduce((sum, p) => sum + p.effect.value, 0);
+  },
+
+  settlementPerceptionCritBonus: (state, getters, rootState) => {
+    return rootState.character.special.perception * 0.02;
+  },
+
+  settlementPerkCritBonus: (state, getters, rootState) => {
+    return rootState.character.activePerks
+      .filter(p => p.effect.type === 'settlementCriticalHit')
+      .reduce((sum, p) => sum + p.effect.value, 0);
   },
 
   settings: state => state.settings

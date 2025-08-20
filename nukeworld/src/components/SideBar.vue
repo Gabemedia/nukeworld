@@ -30,6 +30,10 @@
         </div>
       </div>
     </div>
+    
+    <!-- Settlement Modal -->
+    <SettlementModal ref="settlementModal" />
+    
     <!-- Mobile Offcanvas -->
     <div class="offcanvas offcanvas-start w-25 d-md-none" tabindex="-1" id="sidebarOffcanvas">
       <div class="offcanvas-header">
@@ -144,6 +148,7 @@ import InventoryLog from './data/InventoryLog.vue';
 import StoryLog from './data/StoryLog.vue';
 import PlayerShop from './data/PlayerShop.vue';
 import SpecialManager from './data/SpecialManager.vue';
+import SettlementModal from './data/SettlementModal.vue';
 
 export default {
   name: 'SideBar',
@@ -153,6 +158,7 @@ export default {
     StoryLog,
     PlayerShop,
     SpecialManager,
+    SettlementModal,
   },
   computed: {
     ...mapState(['settlementMarker']),
@@ -183,7 +189,8 @@ export default {
     },
     async openSettlementModal() {
       if (this.settlementMarker) {
-        this.$store.commit('setSettlementModalOpen', true);
+        // Call the settlement modal's openModal method directly
+        this.$refs.settlementModal.openModal();
       } else {
         this.isSettlementConfirmationModalOpen = true;
       }

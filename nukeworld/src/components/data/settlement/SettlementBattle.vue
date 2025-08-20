@@ -39,6 +39,53 @@
                     <span>Defense: {{ settlementDefencePower }}</span>
                   </div>
                 </div>
+                
+                <!-- Attack Breakdown -->
+                <div class="stat-breakdown" v-if="settlementStrengthAttackBonus > 0 || settlementPerkAttackBonus > 0">
+                  <div class="breakdown-item" v-if="settlementBaseAttack > 0">
+                    <span class="breakdown-label">Base:</span>
+                    <span class="breakdown-value">{{ settlementBaseAttack }}</span>
+                  </div>
+                  <div class="breakdown-item" v-if="settlementStrengthAttackBonus > 0">
+                    <span class="breakdown-label">Strength:</span>
+                    <span class="breakdown-value bonus">+{{ settlementStrengthAttackBonus }}</span>
+                  </div>
+                  <div class="breakdown-item" v-if="settlementPerkAttackBonus > 0">
+                    <span class="breakdown-label">Perks:</span>
+                    <span class="breakdown-value bonus">+{{ settlementPerkAttackBonus }}</span>
+                  </div>
+                </div>
+                
+                <!-- Defense Breakdown -->
+                <div class="stat-breakdown" v-if="settlementEnduranceDefenseBonus > 0 || settlementPerkDefenseBonus > 0">
+                  <div class="breakdown-item" v-if="settlementBaseDefense > 0">
+                    <span class="breakdown-label">Base:</span>
+                    <span class="breakdown-value">{{ settlementBaseDefense }}</span>
+                  </div>
+                  <div class="breakdown-item" v-if="settlementEnduranceDefenseBonus > 0">
+                    <span class="breakdown-label">Endurance:</span>
+                    <span class="breakdown-value bonus">+{{ settlementEnduranceDefenseBonus }}</span>
+                  </div>
+                  <div class="breakdown-item" v-if="settlementPerkDefenseBonus > 0">
+                    <span class="breakdown-label">Perks:</span>
+                    <span class="breakdown-value bonus">+{{ settlementPerkDefenseBonus }}</span>
+                  </div>
+                </div>
+                
+                <div class="stat-row">
+                  <div class="stat-item">
+                    <img :src="require('@/assets/interface/icons/aid/medkit.png')" alt="Auto-Heal">
+                    <span>Auto-Heal: +{{ (settlementAutoHeal * 100).toFixed(1) }}%</span>
+                  </div>
+                  <div class="stat-item">
+                    <img :src="require('@/assets/interface/icons/shop.png')" alt="Upgrade Discount">
+                    <span>Discount: -{{ ((1 - settlementUpgradeDiscount) * 100).toFixed(1) }}%</span>
+                  </div>
+                  <div class="stat-item">
+                    <img :src="require('@/assets/interface/icons/gun.png')" alt="Critical Hit">
+                    <span>Critical Hit: +{{ (settlementCriticalHitChance * 100).toFixed(1) }}%</span>
+                  </div>
+                </div>
 
                 <div class="health-section">
                   <div class="health-bar">
@@ -187,7 +234,22 @@ export default {
   },
   computed: {
     ...mapState('settlement', ['settlement']),
-    ...mapGetters('settlement', ['settlementAttackPower', 'settlementDefencePower']),
+    ...mapGetters('settlement', [
+      'settlementAttackPower', 
+      'settlementDefencePower',
+      'settlementUpgradeDiscount',
+      'settlementAutoHeal',
+      'settlementCriticalHitChance',
+      // Detailed breakdown getters
+      'settlementBaseAttack',
+      'settlementStrengthAttackBonus',
+      'settlementPerkAttackBonus',
+      'settlementBaseDefense',
+      'settlementEnduranceDefenseBonus',
+      'settlementPerkDefenseBonus',
+      'settlementPerceptionCritBonus',
+      'settlementPerkCritBonus'
+    ]),
     currentEnemy() {
       if (!this.settlement.currentEnemyId) return null;
       return require('@/store/enemy').default.find(e => e.id === this.settlement.currentEnemyId);
@@ -233,13 +295,27 @@ export default {
       const settlementDamage = this.calculateDamage(this.settlementAttackPower, this.localEnemy.defense);
       const enemyDodgeChance = Math.random();
       
+      // Check for critical hit
+      const criticalHitChance = Math.random();
+      let finalDamage = settlementDamage;
+      let isCritical = false;
+      
+      if (criticalHitChance <= this.settlementCriticalHitChance) {
+        finalDamage = Math.floor(settlementDamage * 1.5); // 50% bonus damage on crit
+        isCritical = true;
+      }
+      
       // Dodge chance is capped at 25% based on defense (defense/500 for reasonable dodge rates)
       if (enemyDodgeChance <= Math.min(this.localEnemy.defense / 500, 0.25)) {
         this.addToLog(`The ${this.localEnemy.name} dodged the attack!`, 'dodge-action');
       } else {
-        this.enemyHealth = Math.max(0, this.enemyHealth - settlementDamage);
-        this.totalDamageDealt += settlementDamage;
-        this.addToLog(`Settlement dealt ${settlementDamage} damage to ${this.localEnemy.name}`, 'player-action');
+        this.enemyHealth = Math.max(0, this.enemyHealth - finalDamage);
+        this.totalDamageDealt += finalDamage;
+        if (isCritical) {
+          this.addToLog(`Settlement dealt ${finalDamage} CRITICAL damage to ${this.localEnemy.name}!`, 'victory-action');
+        } else {
+          this.addToLog(`Settlement dealt ${finalDamage} damage to ${this.localEnemy.name}`, 'player-action');
+        }
       }
 
       // Check if enemy is defeated
@@ -332,7 +408,7 @@ export default {
       localStorage.removeItem('settlement');
       
       // Close modals
-      this.$store.commit('setSettlementModalOpen', false);
+      this.$emit('close-modal');
       
       // Show defeat toast
       this.showDefeatToast();
@@ -622,6 +698,36 @@ export default {
   img {
     width: 14px;
     height: 14px;
+  }
+}
+
+.stat-breakdown {
+  margin-left: 22px;
+  margin-top: 4px;
+  margin-bottom: 8px;
+  padding-left: 8px;
+  border-left: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.breakdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  margin-bottom: 2px;
+  
+  .breakdown-label {
+    color: #aaa;
+    font-style: italic;
+  }
+  
+  .breakdown-value {
+    color: #fff;
+    font-weight: bold;
+    
+    &.bonus {
+      color: #00ff00;
+    }
   }
 }
 

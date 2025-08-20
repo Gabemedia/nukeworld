@@ -46,7 +46,7 @@
 
 <script>
 import { LMap, LMarker, LImageOverlay, LRectangle } from '@vue-leaflet/vue-leaflet';
-import { mapState, mapGetters, mapActions, mapMutations } from 'vuex';
+import { mapState, mapGetters, mapActions } from 'vuex';
 import QuestDetails from './controller/QuestDetails.vue';
 import SettlementModal from './SettlementModal.vue';
 import L from 'leaflet';
@@ -175,7 +175,6 @@ export default {
   },
   methods: {
     ...mapActions(['updateSettlementMarker', 'updateQuest']),
-    ...mapMutations(['setSettlementModalOpen']),
     updateMapSize() {
       const map = this.$refs.map?.$mapObject;
       if (map) {
@@ -198,7 +197,7 @@ export default {
     },
     openSettlementModal() {
       if (this.$refs.settlementModal) {
-        this.$refs.settlementModal.openSettlementModal();
+        this.$refs.settlementModal.openModal();
       }
     },
     getQuestIcon(quest) {

@@ -237,13 +237,13 @@ export default {
 
     getStatDescription(stat) {
       const descriptions = {
-        strength: 'Increases your attack power in battles and settlement defense. Each point adds +1 to your total attack damage.',
-        perception: 'Improves your critical hit chance in combat. Each point adds +2% chance to deal critical hits to enemies.',
-        endurance: 'Increases your defense and health gained per level. Each point adds +1 defense and +5 health when leveling up.',
-        charisma: 'Reduces prices when shopping for items. Each point gives -2% discount at traders and the player shop.',
-        intelligence: 'Increases experience gained from all sources. Each point adds +5% bonus EXP from quests, battles, and stories.',
-        agility: 'Improves your dodge chance in combat. Each point adds +2% chance to avoid enemy attacks completely.',
-        luck: 'Increases critical hits and money rewards. Each point adds +1% crit chance and +3% bonus money from all activities.'
+        strength: 'Increases your attack power in battles and settlement attack power. Each point adds +1 to your total attack damage and +2 to settlement attack power.',
+        perception: 'Improves your critical hit chance in combat and settlement critical hit chance. Each point adds +2% chance to deal critical hits to enemies and +2% settlement critical hit chance.',
+        endurance: 'Increases your defense, health gained per level, and settlement defense. Each point adds +1 defense, +5 health when leveling up, and +2 to settlement defense power.',
+        charisma: 'Reduces prices when shopping for items and settlement upgrade costs. Each point gives -2% discount at traders, player shop, and settlement upgrades.',
+        intelligence: 'Increases experience gained from all sources and settlement automatic healing chance. Each point adds +5% bonus EXP from quests, battles, and stories, and +5% chance for settlement automatic healing.',
+        agility: 'Improves your dodge chance in combat and settlement automatic resource generation chance. Each point adds +2% chance to avoid enemy attacks completely and +5% chance for automatic resource generation.',
+        luck: 'Increases critical hits, money rewards, and settlement automatic gold generation chance. Each point adds +1% crit chance, +3% bonus money from all activities, and +5% chance for automatic gold generation.'
       };
       return descriptions[stat] || '';
     },
@@ -252,19 +252,19 @@ export default {
       const value = this.character.special[stat];
       switch(stat) {
         case 'strength':
-          return `+${value} Attack Power`;
+          return `+${value} Attack Power, +${value * 2} Settlement Attack Power`;
         case 'perception':
-          return `+${(value * 2).toFixed(1)}% Critical Hit Chance`;
+          return `+${(value * 2).toFixed(1)}% Critical Hit Chance, +${(value * 2).toFixed(1)}% Settlement Critical Hit`;
         case 'endurance':
-          return `+${value} Defense, +${value * 5} Health per Level`;
+          return `+${value} Defense, +${value * 5} Health per Level, +${value * 2} Settlement Defense Power`;
         case 'charisma':
-          return `-${(value * 2).toFixed(1)}% Shop Prices`;
+          return `-${(value * 2).toFixed(1)}% Shop Prices, -${(value * 2).toFixed(1)}% Settlement Upgrade Costs`;
         case 'intelligence':
-          return `+${(value * 5).toFixed(1)}% Experience Gained`;
+          return `+${(value * 5).toFixed(1)}% Experience Gained, +${(value * 5).toFixed(1)}% Settlement Auto-Heal Chance`;
         case 'agility':
-          return `+${(value * 2).toFixed(1)}% Dodge Chance`;
+          return `+${(value * 2).toFixed(1)}% Dodge Chance, +${(value * 5).toFixed(1)}% Settlement Resource Generation Chance`;
         case 'luck':
-          return `+${(value * 1).toFixed(1)}% Crit, +${(value * 3).toFixed(1)}% Money`;
+          return `+${(value * 1).toFixed(1)}% Crit, +${(value * 3).toFixed(1)}% Money, +${(value * 5).toFixed(1)}% Settlement Gold Generation Chance`;
         default:
           return '';
       }
@@ -344,7 +344,36 @@ export default {
         'god-of-war': 'You have transcended mortal combat limitations, becoming a true god of war with unmatched strength and battle prowess.',
         'perfect-being': 'You represent the pinnacle of human development, combining intelligence, charisma, and luck in perfect harmony.',
         'wasteland-emperor': 'You rule the wasteland economy with unmatched charisma and business acumen, accumulating wealth beyond imagination.',
-        'legend': 'You have become a living legend, possessing incredible health and resilience that will be spoken of for generations.'
+        'legend': 'You have become a living legend, possessing incredible health and resilience that will be spoken of for generations.',
+        
+        // Settlement-specific perks
+        'settlement-commander': 'Your leadership skills and combat experience directly enhance your settlement\'s attack capabilities, making it more effective in defending against threats.',
+        'fortress-builder': 'Your knowledge of defensive structures and fortifications significantly improves your settlement\'s ability to withstand enemy attacks.',
+        'settlement-architect': 'Your expertise in construction and planning allows you to build settlement upgrades more efficiently, reducing costs significantly.',
+        'settlement-healer': 'Your medical knowledge and healing techniques give your settlement a chance to automatically recover health over time.',
+        'resource-master': 'Your resource management skills and efficiency give your settlement a chance to automatically generate additional resources.',
+        'settlement-economist': 'Your economic expertise and business acumen give your settlement a chance to automatically generate additional gold income.',
+        
+        // Advanced settlement perks
+        'warlord': 'Your legendary combat leadership transforms your settlement into a military powerhouse with devastating attack capabilities.',
+        'defensive-master': 'Your mastery of defensive warfare makes your settlement nearly impregnable against all forms of attack.',
+        'settlement-tycoon': 'Your exceptional business skills allow you to build and upgrade settlement structures at dramatically reduced costs.',
+        'settlement-sage': 'Your advanced healing knowledge gives your settlement a higher chance to recover health automatically.',
+        'resource-tycoon': 'Your exceptional resource management skills give your settlement a higher chance to generate resources automatically.',
+        'gold-magnate': 'Your mastery of economics gives your settlement a higher chance to generate substantial gold income automatically.',
+        
+        // Legendary settlement perks
+        'settlement-legend': 'Your legendary status as a warrior directly empowers your settlement with unmatched attack capabilities.',
+        'imperial-fortress': 'Your settlement has become an imperial fortress, nearly impossible to breach with its legendary defensive capabilities.',
+        'settlement-emperor': 'Your imperial authority allows you to build and upgrade settlement structures at minimal cost.',
+        'settlement-immortal': 'Your settlement has achieved near-immortality through your legendary healing knowledge, with a very high chance to recover health automatically.',
+        'resource-emperor': 'Your settlement has become a resource empire, with a very high chance to generate vast amounts of materials automatically.',
+        'gold-emperor': 'Your settlement has become a gold empire, with a very high chance to generate massive wealth automatically through your economic mastery.',
+        
+        // Settlement critical hit perks
+        'settlement-scout': 'Your keen perception and scouting skills help your settlement identify enemy weak points, increasing critical hit chances in battle.',
+        'settlement-sniper': 'Your exceptional accuracy and precision training enable your settlement to land devastating critical hits on enemies.',
+        'settlement-legendary-scout': 'Your legendary perception and scouting mastery make your settlement nearly unstoppable with incredibly high critical hit rates.'
       };
       return details[perk.id] || perk.description;
     },

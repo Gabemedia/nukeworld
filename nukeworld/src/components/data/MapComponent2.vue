@@ -320,7 +320,6 @@ export default {
   },
   methods: {
     ...mapActions(['updateSettlementMarker', 'updateQuest']),
-    ...mapMutations(['setSettlementModalOpen']),
     
     // Mobile detection
     detectMobile() {
@@ -1011,7 +1010,7 @@ export default {
     
     openSettlementModal() {
       if (this.$refs.settlementModal) {
-        this.$refs.settlementModal.openSettlementModal();
+        this.$refs.settlementModal.openModal();
       }
     }
   },

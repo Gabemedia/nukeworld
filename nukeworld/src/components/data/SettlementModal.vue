@@ -34,7 +34,7 @@
       </div>
     </div>
 
-    <div v-if="isSettlementModalOpen" class="shop-modal" tabindex="-1" @click.self="closeSettlementModal">
+    <div v-if="showModal" class="shop-modal" tabindex="-1" @click.self="closeModal">
       <div class="shop-dialog">
         <div class="shop-content">
           <div class="shop-header">
@@ -44,11 +44,11 @@
                 Settlement: {{ settlementMarker?.latlng ? `${settlementMarker.latlng.lat.toFixed(2)}, ${settlementMarker.latlng.lng.toFixed(2)}` : 'Not placed' }}
               </h5>
             </div>
-            <button class="close-button" @click="closeSettlementModal">&times;</button>
+            <button class="close-button" @click="closeModal">&times;</button>
           </div>
           <div class="modal-body">
             <div v-if="isUnderAttack" class="mb-4">
-              <SettlementBattle @battle-ended="onBattleEnded" />
+              <SettlementBattle @battle-ended="onBattleEnded" @close-modal="closeModal" />
             </div>
             <div v-else>
               <SettlementStats @open-log="openLogModal" />
@@ -58,7 +58,7 @@
             <template v-if="settlementMarker">
               <button @click="confirmRemoveSettlement" class="btn btn-danger">Remove Settlement</button>
             </template>
-            <button type="button" class="btn btn-secondary" @click="closeSettlementModal">Close</button>
+            <button type="button" class="btn btn-secondary" @click="closeModal">Close</button>
           </div>
         </div>
       </div>
@@ -143,7 +143,7 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapMutations, mapGetters } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 import SettlementStats from './settlement/SettlementStats.vue';
 import SettlementBattle from './settlement/SettlementBattle.vue';
 
@@ -154,7 +154,7 @@ export default {
     SettlementBattle
   },
   computed: {
-    ...mapState(['settlementMarker', 'isSettlementModalOpen']),
+    ...mapState(['settlementMarker']),
     ...mapState('settlement', ['settlement']),
     ...mapGetters('settlement', ['settings']),
     settlementSettings() {
@@ -176,6 +176,7 @@ export default {
   },
   data() {
     return {
+      showModal: false,
       showPlacementModal: false,
       isSettlementConfirmationModalOpen: false,
       isLogModalOpen: false,
@@ -214,12 +215,11 @@ export default {
   methods: {
     ...mapActions(['updateSettlementMarker', 'checkRequiredResources', 'useRequiredResources']),
     ...mapActions('settlement', ['initializeSettlement', 'updateSettlement']),
-    ...mapMutations(['setSettlementModalOpen']),
-    openSettlementModal() {
-      this.setSettlementModalOpen(true);
+    openModal() {
+      this.showModal = true;
     },
-    closeSettlementModal() {
-      this.setSettlementModalOpen(false);
+    closeModal() {
+      this.showModal = false;
     },
     openConfirmationModal() {
       this.isSettlementConfirmationModalOpen = true;
@@ -258,7 +258,7 @@ export default {
         // Clear from localStorage
         localStorage.removeItem('settlement');
         
-        this.closeSettlementModal();
+        this.closeModal();
       }
     },
     async attemptPlaceSettlement(latlng) {
